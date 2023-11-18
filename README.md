@@ -10,3 +10,4 @@ Memory stores allow petabytes of data to be addressed.
 
 All Hiperspace objects are immutable, but versioning provides the experience of mutability without the cache-coherency that would require constant server lookup.
 
+[Sparx UML documentation](https://channell.github.io/Hiperspace/doc/)
