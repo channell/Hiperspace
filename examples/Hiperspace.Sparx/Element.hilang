@@ -1,0 +1,203 @@
+﻿" All elements in a Sparx model are stored as seperately"
+@Table ( "t_object" ), Versioned
+entity Sparx.EA.Element 
+    = Node (SKey = SKey, Name = Name, TypeName = "EA-" + ObjectType + "-" + Stereotype),
+      Edge (From = Package , To = self, TypeName = "EA-PackageContains")
+    #100
+(
+    "Unique global key within a model"
+    @KeyAttribute, Column ( "Object_ID" ),DatabaseGenerated ( DatabaseGeneratedOption.Identity )
+    Id : Int32 #1
+)
+{
+    "GUID is used form XMI export/import to identify an elements independent of the database it is currently stored in"
+    @StringLength ( 40 ), Column ( "ea_guid" )
+    GUID : Guid,
+    Package : Sparx.EA.Package,
+    Parent : Sparx.EA.Element,
+
+    "UML type of the element" 
+    @StringLength ( 255 ), Column ( "Object_Type" )
+    ObjectType : String
+,
+    "composit disgram that explains the element"
+    @Column ( "Diagram_ID" )
+    Diagram     : Sparx.EA.Diagram
+,
+    "Name of the element displayed without parameters"
+    @StringLength ( 255 )
+    Name : String
+,
+    "for tables, that can be the shortend name for implementation"
+    @StringLength ( 255 )
+    Alias : String
+,
+    @StringLength ( 255 )
+    Author : String
+,
+    @StringLength ( 50 )
+    Version : String
+,
+    "long textual description"
+    @Column()
+    Note : String
+,
+    "table, struct, etc"
+    @StringLength ( 255 )
+    Stereotype : String
+,
+    NType : Int32
+,
+    @StringLength ( 50 )
+    Complexity : String
+,
+    Effort : Int32
+,
+    @StringLength ( 255 )
+    Style : String
+,
+    Backcolor : Int32
+,
+    BorderStyle : Int32
+,
+    BorderWidth : Int32
+,
+    Fontcolor : Int32
+,
+    Bordercolor : Int32
+,
+    CreatedDate : DateTime
+,
+    ModifiedDate : DateTime
+,
+    @StringLength ( 50 )
+    Status : String
+,
+    @StringLength ( 1 )
+    Abstract : String
+,
+    Tagged : Int32
+,
+    @StringLength ( 255 )
+    PDATA1 : String
+,
+    @Column()
+    PDATA2 : String
+,
+    @Column()
+    PDATA3 : String
+,
+    @Column()
+    PDATA4 : String
+,
+    @StringLength ( 255 )
+    PDATA5 : String
+,
+    @StringLength ( 50 )
+    Concurrency : String
+,
+    @StringLength ( 50 )
+    Visibility : String
+,
+    @StringLength ( 50 )
+    Persistence : String
+,
+    @StringLength ( 50 )
+    Cardinality : String
+,
+    @StringLength ( 50 )
+    GenType : String
+,
+    @StringLength ( 255 )
+    GenFile : String
+,
+    @Column()
+    Header1 : String
+,
+    @Column()
+    Header2 : String
+,
+    @StringLength ( 50 )
+    Phase : String
+,
+    @StringLength ( 25 )
+    Scope : String
+,
+    @Column()
+    GenOption : String
+,
+    @Column()
+    GenLinks : String
+,
+    Classifier : Int32
+,
+    @Column()
+    RunState : String
+,
+    @StringLength ( 40 )
+    Classifier_GUID : Guid
+,
+    TPos : Int32
+,
+    IsRoot : Boolean/*int*/
+,
+    IsLeaf : Boolean/*int*/
+,
+    IsSpec : Boolean/*int*/
+,
+    IsActive : Boolean/*int*/
+,
+    @StringLength ( 255 )
+    StateFlags : String
+,
+    @StringLength ( 255 )
+    PackageFlags : String
+,
+    @StringLength ( 50 )
+    Multiplicity : String
+,
+    @Column()
+    StyleEx : String
+,
+    @Column()
+    EventFlags : String
+,
+    @StringLength ( 255 )
+    ActionFlags : String
+,
+    "witin a sparx database this is seperate table, but here it is a set fo values for demonstration"
+    Efforts : Set<Sparx.EA.ObjectEffort>
+,
+    "witin a sparx database this is seperate table, but here it is a set fo values for demonstration"
+    Constraints : Set<Sparx.EA.ObjectConstraint>
+,
+    "
+    Tombstone, to indicate the the latest update to this element was to delete it.
+    This field is initialised when bound to a subspace if it does not already have a value
+    "
+    Deleted = false
+}
+[
+    "
+    connections to 'Connector' objects where this Element is the StartElement.
+    Note: this will create an index (alternate key) in Connector set to navigate from Element
+    "
+    StartConnectors : Sparx.EA.Connector (StartElement = self),
+    EndConnectors   : Sparx.EA.Connector (EndElement = self),
+    Attributes      : Sparx.EA.Attribute (Element = self),
+    Links           : Sparx.EA.DiagramObject (Element = self),
+    Files           : Sparx.EA.ObjectFile,
+    "Metrics is a segment of Element that can be updated without chnaging the full element"
+    Metrics         : Sparx.EA.ObjectMetric,
+    Problems        : Sparx.EA.ObjectProblem,
+    Properties      : Sparx.EA.ObjectProperty ,
+    Requirements    : Sparx.EA.ObjectRequire,
+    Resources       : Sparx.EA.ObjectResource,
+    Risks           : Sparx.EA.ObjectRisk,
+    Scenarions      : Sparx.EA.ObjectScenario ,
+    Tests           : Sparx.EA.ObjectTest,
+    Trx             : Sparx.EA.ObjectTrx,
+    Operations      : Sparx.EA.Operation,
+    Diagrams        : Sparx.EA.DiagramObject (Element = self),
+    Children        : Sparx.EA.Element (Parent = self)
+];

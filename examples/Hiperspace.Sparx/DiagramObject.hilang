@@ -1,0 +1,28 @@
+﻿@Table("t_diagramobjects"), Versioned
+entity Sparx.EA.DiagramObject = Edge (From = Diagram , To = Element, TypeName = "EA-DiagramObject")
+(
+/*    [Column("Diagram_ID")] */
+    Diagram     : Sparx.EA.Diagram
+,
+/*    [Column("Object_ID")] */
+    Element     : Sparx.EA.Element
+)
+{
+    RectTop     : Int32
+,
+    RectLeft    : Int32
+,
+    RectRight   : Int32
+,
+    RectBottom  : Int32
+,
+    Sequence    : Int32
+,
+    @StringLength(255)
+    ObjectStyle : String
+,
+    @Key, DatabaseGenerated(DatabaseGeneratedOption.Identity), Column("Instance_ID")
+    Id          : Int32
+,
+    Deleted = false
+};
