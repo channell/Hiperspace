@@ -1,4 +1,11 @@
-﻿using System.Collections;
+﻿// ---------------------------------------------------------------------------------------
+//                                   Hiperspace
+//                        Copyright (c) 2023 Cepheis Ltd
+//                                    www.cepheis.com
+//
+// This file is part of Hiperspace and is distributed under the GPL Open Source License. 
+// ---------------------------------------------------------------------------------------
+using System.Collections;
 
 namespace Hiperspace
 {
@@ -103,7 +110,7 @@ namespace Hiperspace
 
         public void CopyTo(TEntity[] array, int arrayIndex) => Lazy().CopyTo(array, arrayIndex);
 
-        public IEnumerator<TEntity> GetEnumerator() => _cached.GetEnumerator();
+        public IEnumerator<TEntity> GetEnumerator() => Lazy().GetEnumerator();
 
         public bool Remove(TEntity item) => throw new NotImplementedException();
 

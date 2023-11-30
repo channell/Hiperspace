@@ -1,4 +1,13 @@
-﻿using System.Collections;
+﻿// ---------------------------------------------------------------------------------------
+//                                   Hiperspace
+//                        Copyright (c) 2023 Cepheis Ltd
+//                                    www.cepheis.com
+//
+// This file is part of Hiperspace and is distributed under the GPL Open Source License. 
+// ---------------------------------------------------------------------------------------
+using ProtoBuf;
+using System.Collections;
+using System.Diagnostics;
 
 namespace Hiperspace
 {
@@ -16,6 +25,7 @@ namespace Hiperspace
             _keyBuilder = () => new TKey();
             _binder = _ => { };
         }
+
         public RefSingle(Func<TKey> keyBuilder, Action<TEntity> binder)
         {
             _keyBuilder = keyBuilder;
@@ -42,6 +52,7 @@ namespace Hiperspace
                 if (SetSpace != null && value != null) 
                 {
                     _key = _keyBuilder();
+                    _binder(value);
                     SetSpace.Bind(value);
                 }
             }
@@ -50,6 +61,16 @@ namespace Hiperspace
         private Func<TKey> _keyBuilder;
         private Action<TEntity> _binder;
         public SetSpace<TEntity>? SetSpace;
+
+        public void Bind (Func<TKey> keyBuilder, Action<TEntity> binder)
+        {
+            _keyBuilder = keyBuilder;
+            _binder = binder;
+            if (_entity != null) 
+            {
+                _binder(_entity);
+            }
+        }
 
         public void Bind(SetSpace<TEntity> setspace)
         {

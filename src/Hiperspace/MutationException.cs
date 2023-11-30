@@ -1,4 +1,11 @@
-﻿namespace Hiperspace
+﻿// ---------------------------------------------------------------------------------------
+//                                   Hiperspace
+//                        Copyright (c) 2023 Cepheis Ltd
+//                                    www.cepheis.com
+//
+// This file is part of Hiperspace and is distributed under the GPL Open Source License. 
+// ---------------------------------------------------------------------------------------
+namespace Hiperspace
 {
     /// <summary>
     /// Element base classes are mutable to allow them to be used with Element Framework and initialiisers

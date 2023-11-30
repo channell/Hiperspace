@@ -1,6 +1,11 @@
-﻿using ProtoBuf;
-using System.Collections;
-using System.Diagnostics;
+﻿// ---------------------------------------------------------------------------------------
+//                                   Hiperspace
+//                        Copyright (c) 2023 Cepheis Ltd
+//                                    www.cepheis.com
+//
+// This file is part of Hiperspace and is distributed under the GPL Open Source License. 
+// ---------------------------------------------------------------------------------------
+using ProtoBuf;
 
 namespace Hiperspace
 {

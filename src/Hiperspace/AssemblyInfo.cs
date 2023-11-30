@@ -1,4 +1,10 @@
-using System.Reflection;
+// ---------------------------------------------------------------------------------------
+//                                   Hiperspace
+//                        Copyright (c) 2023 Cepheis Ltd
+//                                    www.cepheis.com
+//
+// This file is part of Hiperspace and is distributed under the GPL Open Source License. 
+// ---------------------------------------------------------------------------------------
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 

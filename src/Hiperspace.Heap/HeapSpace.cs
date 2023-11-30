@@ -1,4 +1,11 @@
-﻿using System.Buffers.Binary;
+﻿// ---------------------------------------------------------------------------------------
+//                                   Hiperspace
+//                        Copyright (c) 2023 Cepheis Ltd
+//                                    www.cepheis.com
+//
+// This file is part of Hiperspace and is distributed under the GPL Open Source License. 
+// ---------------------------------------------------------------------------------------
+using System.Buffers.Binary;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;

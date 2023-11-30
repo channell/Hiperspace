@@ -1,4 +1,11 @@
-﻿using System.Runtime.CompilerServices;
+﻿// ---------------------------------------------------------------------------------------
+//                                   Hiperspace
+//                        Copyright (c) 2023 Cepheis Ltd
+//                                    www.cepheis.com
+//
+// This file is part of Hiperspace and is distributed under the GPL Open Source License. 
+// ---------------------------------------------------------------------------------------
+using System.Runtime.CompilerServices;
 
 namespace Hiperspace
 {
@@ -29,7 +36,7 @@ namespace Hiperspace
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Push (int key, int poppoint)
         {
-            int s = 0, e = _map.Length - 1, m = _map.Length / 2;
+            int s = 0, e = _map.Length - 1, m = _map.Length / 2, lm = 0;
             do
             {
                 if (_map[s].key == key)
@@ -53,6 +60,10 @@ namespace Hiperspace
                 else 
                     e = m;
                 m = (s + e) / 2;
+                if (m == lm)
+                    break;
+                else
+                    lm = m;
             }
             while (s != e);
             return;

@@ -1,6 +1,14 @@
-﻿using Hiperspace.Meta;
+﻿// ---------------------------------------------------------------------------------------
+//                                   Hiperspace
+//                        Copyright (c) 2023 Cepheis Ltd
+//                                    www.cepheis.com
+//
+// This file is part of Hiperspace and is distributed under the GPL Open Source License. 
+// ---------------------------------------------------------------------------------------
+using Hiperspace.Meta;
 using RocksDbSharp;
 using System.Buffers.Binary;
+using System.Runtime.CompilerServices;
 
 namespace Hiperspace.Rocks
 {
@@ -105,14 +113,15 @@ namespace Hiperspace.Rocks
         {
             var fullkey = new byte[key.Length + sizeof(long) + 1];
             key.CopyTo(fullkey, 1);
-            BinaryPrimitives.WriteInt64BigEndian(new Span<byte>(fullkey, fullkey.Length - sizeof(long), sizeof(long)), version.Ticks);
+            var toend = ulong.MaxValue - (ulong)version.Ticks;
+            BinaryPrimitives.WriteUInt64BigEndian(new Span<byte>(fullkey, fullkey.Length - sizeof(long), sizeof(long)), toend);
 
             var (cur, v) = Get(key, version);
             if (cur != null)
             {
                 if (v == version)
                     return Result.Skip(cur);
-                if (Compare(cur,value) == 0)
+                if (cur.Length > 0 && cur.SequenceEqual(value))
                     return Result.Skip(cur);    // no change to value
             }
             _db.Put(fullkey, value);
@@ -149,18 +158,45 @@ namespace Hiperspace.Rocks
                 return Space().ToList() as IEnumerable<(byte[], byte[])>;
             });
         }
-        private static int Compare(byte[] left, byte[] right)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int Compare(Span<byte> left, Span<byte> right)
         {
-            var min = left.Length < right.Length ? left.Length : right.Length ;
-            for (var c = 0; c < min; c++)
-            {
-                var cmp = left[c].CompareTo(right[c]);
-                if (cmp != 0)
-                    return cmp;
-            }
-            return (left.Length) - (right.Length);
-        }
+            var min = left.Length < right.Length ? left.Length : right.Length;
+            int c = 0, d = 0;
 
+            // compare 8-byte chunks
+            while ((d += sizeof(long)) < min)
+            {
+                var longleft = BinaryPrimitives.ReadUInt64BigEndian(left.Slice(c, sizeof(long)));
+                var longright = BinaryPrimitives.ReadUInt64BigEndian(right.Slice(c, sizeof(long)));
+                if (longleft < longright)
+                    return -1;
+                else if (longright < longleft)
+                    return 1;
+                c = d;
+            }
+            // compare 4-byte chunks
+            if (min - c > sizeof(int))
+            {
+                var intleft = BinaryPrimitives.ReadUInt32BigEndian(left.Slice(c, sizeof(int)));
+                var intright = BinaryPrimitives.ReadUInt32BigEndian(right.Slice(c, sizeof(int)));
+                if (intleft < intright)
+                    return -1;
+                else if (intright < intleft)
+                    return 1;
+                c += sizeof(int);
+            }
+            // compare bytes
+            while (c < min)
+            {
+                if (left[c] < right[c])
+                    return -1;
+                else if (left[c] > right[c])
+                    return 1;
+                c++;
+            }
+            return left.Length < right.Length ? -1 : left.Length > right.Length ? 1 : 0;
+        }
         public override IEnumerable<(byte[], byte[])> Find(byte[] begin, byte[] end)
         {
             using (var iter = _db.NewIterator())
@@ -180,15 +216,14 @@ namespace Hiperspace.Rocks
                 }
             }
         }
+        private static byte[] FF = new byte[] { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Find(byte[] begin, byte[] end, DateTime? version)
         {
             var vbegin = new byte[begin.Length + sizeof(long) + 1];
             var vend = new byte[end.Length + sizeof(long) + 1];
-
             begin.CopyTo(new Span<byte>(vbegin, 1, begin.Length));
             end.CopyTo(new Span<byte>(vend, 1, end.Length));
-            for (int c = end.Length; c < vend.Length; c++) vend[c] = 0xFF;
-
+            FF.CopyTo(new Span<byte>(vend, vend.Length - sizeof(long), sizeof(long)));
             using (var iter = _db.NewIterator())
             {
                 byte[] lastKey = Array.Empty<byte>();
@@ -198,14 +233,15 @@ namespace Hiperspace.Rocks
                 while (range.Valid())
                 {
                     var k = range.Key();
-                    if (Compare(vbegin, k) <= 0 && Compare(vend, k) >= 0)
+                    if (Compare(k, vend) <= 0)
                     {
-                        var keypart = new byte[k.Length - sizeof(long) -1];
-                        for (int c = 0; c < keypart.Length; c++) keypart[c] = k[c + 1];
-                        if (Compare(keypart, lastKey) == 0 || lastKey == Array.Empty<byte>())
+                        var keypart = new byte[k.Length - sizeof(long) - 1];
+                        var span = new Span<byte>(k, 1, k.Length - sizeof(long) - 1);
+                        span.CopyTo(keypart);
+                        if (lastKey == Array.Empty<byte>() || Compare(keypart, lastKey) == 0)
                         {
-                            var ver = BinaryPrimitives.ReadInt64BigEndian(new Span<byte>(k, k.Length - sizeof(long), sizeof(long)));
-                            if (!version.HasValue || (ver < version.Value.Ticks && ver > lastVersion))
+                            var ver = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(k, k.Length - sizeof(ulong), sizeof(ulong))));
+                            if ((version.HasValue && ver < version.Value.Ticks && ver > lastVersion) || lastVersion == 0)
                             {
                                 lastKey = keypart;
                                 lastVersion = ver;
@@ -217,10 +253,12 @@ namespace Hiperspace.Rocks
                             if (lastValue != null)
                                 yield return (lastKey, new DateTime(lastVersion), lastValue);
                             lastKey = keypart;
-                            lastVersion = BinaryPrimitives.ReadInt64BigEndian(new Span<byte>(k, k.Length - sizeof(long), sizeof(long)));
+                            lastVersion = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(k, k.Length - sizeof(ulong), sizeof(ulong))));
                             lastValue = range.Value();
                         }
                     }
+                    else
+                        break;
                     range.Next();
                 }
                 if (lastVersion != 0 && lastValue != null)
@@ -246,29 +284,29 @@ namespace Hiperspace.Rocks
 
         public override (byte[], DateTime) Get(byte[] key, DateTime? version)
         {
-            var end = new byte[key.Length + sizeof(long) + 1];
-            key.CopyTo(end, 1);
-            var endVersion = version.HasValue ? version.Value.Ticks : long.MaxValue;
-            BinaryPrimitives.WriteInt64BigEndian(new Span<byte>(end, end.Length - sizeof(long), sizeof(long)), endVersion);
-
+            var vbegin = new byte[key.Length + sizeof(long) + 1];
+            key.CopyTo(new Span<byte>(vbegin, 1, key.Length));
+            byte[] lastValue = Array.Empty<byte>();
+            long lastVersion = 0;
             using (var iter = _db.NewIterator())
             {
-                var range = iter.Seek(end);
+                var range = iter.Seek(vbegin);
                 while (range.Valid())
                 {
                     var k = range.Key();
-                    var keypart = new byte[k.Length - sizeof(long)];
-                    for (int c = 0; c < keypart.Length; c++) keypart[c] = k[c + 1];
-                    if (Compare(key, keypart) == 0)
+                    var keypart = new byte[k.Length - sizeof(ulong) - 1];
+                    var span = new Span<byte>(k, 1, k.Length - sizeof(ulong) - 1);
+                    span.CopyTo(keypart);
+                    if (Compare(keypart, key) == 0)
                     {
-                        long ver = BinaryPrimitives.ReadInt64BigEndian(new Span<byte>(k, k.Length - sizeof(long), sizeof(long)));
+                        var ver = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(k, k.Length - sizeof(ulong), sizeof(ulong))));
                         if (version.HasValue)
                         {
-                            if (ver < version.Value.Ticks)
+                            if (ver < version.Value.Ticks && ver > lastVersion)
                             {
-                                return (range.Value(), new DateTime(ver));
+                                lastVersion = ver;
+                                lastValue = range.Value();
                             }
-                            range.Prev();
                         }
                         else
                         {
@@ -276,12 +314,17 @@ namespace Hiperspace.Rocks
                         }
                     }
                     else
-                        range.Prev();
+                        break;
+                    range.Next();
                 }
             }
-            return (Array.Empty<byte>(),new DateTime());
+            if (lastVersion != 0)
+            {
+                if (lastValue != null)
+                    return (lastValue, new DateTime(lastVersion));
+            }
+            return (Array.Empty<byte>(), new DateTime());
         }
-
         public override Task<byte[]> GetAsync(byte[] key)
         {
             return Task.Run(() => Get(key));
@@ -297,16 +340,16 @@ namespace Hiperspace.Rocks
             var end = new byte[key.Length + sizeof(long) + 1];
             key.CopyTo(begin, 1);
             key.CopyTo(end, 1);
-            BinaryPrimitives.WriteInt64BigEndian(new Span<byte>(begin, begin.Length - sizeof(long), sizeof(long)), 0);
-            BinaryPrimitives.WriteInt64BigEndian(new Span<byte>(end, end.Length - sizeof(long), sizeof(long)), long.MaxValue);
+            BinaryPrimitives.WriteUInt64BigEndian(new Span<byte>(begin, begin.Length - sizeof(long), sizeof(long)), 0);
+            BinaryPrimitives.WriteUInt64BigEndian(new Span<byte>(end, end.Length - sizeof(long), sizeof(long)), ulong.MaxValue);
             foreach (var r in Find(begin, end))
             {
-                var keypart = new byte[r.Item1.Length - sizeof(long)];
+                var keypart = new byte[r.Item1.Length - sizeof(ulong)];
                 r.Item1.CopyTo(new Span<byte>(keypart, 0, keypart.Length));
 
                 if (Compare(key, keypart) == 0)
                 {
-                    long ver = BinaryPrimitives.ReadInt64BigEndian(new Span<byte>(r.Item1, r.Item1.Length - sizeof(long), sizeof(long)));
+                    var ver = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(r.Item1, r.Item1.Length - sizeof(ulong), sizeof(ulong))));
                     yield return (r.Item2, new DateTime(ver));
                 }
             }
@@ -339,7 +382,7 @@ namespace Hiperspace.Rocks
 
         public override void EndTransaction()
         {
-            // RocksDBSharp deos not currently support trnsactions
+            // RocksDBSharp deos not currently support transactions
         }
     }
 }

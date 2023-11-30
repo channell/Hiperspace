@@ -1,4 +1,11 @@
-﻿using System.Linq.Expressions;
+﻿// ---------------------------------------------------------------------------------------
+//                                   Hiperspace
+//                        Copyright (c) 2023 Cepheis Ltd
+//                                    www.cepheis.com
+//
+// This file is part of Hiperspace and is distributed under the GPL Open Source License. 
+// ---------------------------------------------------------------------------------------
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 
 namespace Hiperspace
