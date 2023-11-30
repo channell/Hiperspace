@@ -1,9 +1,12 @@
-﻿namespace Sparx.EA
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace Sparx.EA
 {
+    [PrimaryKey(nameof(OperationId), nameof(Name))]
     public partial class ElementOperationsParameters
     {
-        [Key]
-        [Column("OperationID", Order = 0)]
+        [JsonIgnore]
+        [Column("OperationID")]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int OperationId
         {
@@ -18,13 +21,20 @@
                 owner = new(new() { Id = value });
             }
         }
-        [Key]
-        [Column("Name", Order = 1)]
-        [StringLength(255)]
-        public string DBName
+        [JsonIgnore]
+        [NotMapped]
+        public virtual ElementOperations? DBOperation
         {
-            get => Name ?? string.Empty;
-            set => Name = value;
+            get
+            {
+                if (owner != null)
+                    return owner.Value.Value;
+                return null;
+            }
+            set
+            {
+                owner = new(new() { Id = value?.Id }, value);
+            }
         }
     }
 }

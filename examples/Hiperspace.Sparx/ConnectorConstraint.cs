@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
+using Sparx.Internal;
 
 namespace Sparx.EA
 {
+    [PrimaryKey(nameof(ConnectorId), nameof(Constraint))]
     public partial class ConnectorConstraints
     {
+        [JsonIgnore]
         [Key]
         [Column("ConnectorID", Order = 0)]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
@@ -24,13 +23,20 @@ namespace Sparx.EA
                 owner = new (new () { Id = value });
             }
         }
-        [Key]
-        [Column(Order = 1)]
-        [StringLength(255)]
-        public string DBConstraint 
+        [JsonIgnore]
+        [NotMapped]
+        public virtual Connector? DBConnector
         {
-            get => Constraint ?? string.Empty;
-            set => Constraint = value;
+            get
+            {
+                if (owner.HasValue)
+                    return owner.Value.Value;
+                return null;
+            }
+            set
+            {
+                owner = new(new() { Id = value?.Id }, value);
+            }
         }
     }
 }

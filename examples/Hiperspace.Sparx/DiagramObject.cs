@@ -1,8 +1,18 @@
-﻿namespace Sparx.EA
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace Sparx.EA
 {
+    [PrimaryKey (nameof(InstanceId))]
     public partial class DiagramObject
     {
-        [Column("DiagramID")]
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity), Column("Instance_ID")]
+        public int InstanceId
+        {
+            get => Id!.Value;
+            set => Id = value;
+        }
+        [JsonIgnore]
+        [Column("Diagram_ID")]
         public int DiagramId
         {
             get
@@ -16,8 +26,10 @@
                 Diagram = new(new() { Id = value });
             }
         }
+        
+        [JsonIgnore]
         [Column("Object_ID")]
-        public int ElementId
+        public int ObjectId
         {
             get
             {
@@ -30,11 +42,13 @@
                 Element = new(new() { Id = value });
             }
         }
-        public Element? DBElement
+        
+        [JsonIgnore]
+        public virtual Element DBElement
         {
             get
             {
-                return Element?.Value;
+                return Element?.Value!;
             }
             set
             {
@@ -42,7 +56,9 @@
                     Element = new(value._key, value);
             }
         }
-        public Diagram? DBDiagram
+        
+        [JsonIgnore]
+        public virtual Diagram? DBDiagram
         {
             get
             {

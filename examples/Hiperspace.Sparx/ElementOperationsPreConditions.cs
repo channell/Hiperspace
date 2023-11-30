@@ -1,9 +1,13 @@
-﻿namespace Sparx.EA
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Sparx.EA
 {
+    [PrimaryKey(nameof(OperationId), nameof(PreCondition))]
     public partial class ElementOperationsPreConditions
     {
-        [Key]
-        [Column("OperationID", Order = 0)]
+        [JsonIgnore]
+        [Column("OperationID")]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int OperationId
         {
@@ -18,13 +22,20 @@
                 owner = new(new() { Id = value });
             }
         }
-        [Key]
-        [Column("PreCondition", Order = 1)]
-        [StringLength(255)]
-        public string DBPostCondition
+        [JsonIgnore]
+        [NotMapped]
+        public virtual ElementOperations? DBOperation
         {
-            get => PreCondition ?? string.Empty;
-            set => PreCondition = value;
+            get
+            {
+                if (owner != null)
+                    return owner.Value.Value;
+                return null;
+            }
+            set
+            {
+                owner = new(new() { Id = value?.Id }, value);
+            }
         }
     }
 }

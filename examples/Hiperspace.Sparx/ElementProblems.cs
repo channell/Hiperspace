@@ -1,11 +1,14 @@
-﻿namespace Sparx.EA
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace Sparx.EA
 {
+    [PrimaryKey(nameof(DBObjectId), nameof(Problem), nameof(ProblemType))]
     public partial class ElementProblems
     {
-        [Key]
+        [JsonIgnore]
         [Column("Object_ID", Order = 0)]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int DBElementId
+        public int DBObjectId
         {
             get
             {
@@ -18,21 +21,19 @@
                 owner = new(new() { Id = value });
             }
         }
-        [Key]
-        [Column("Problem", Order = 1)]
-        [StringLength(255)]
-        public string DBProblem
+        [JsonIgnore]
+        public virtual Element? DBElement
         {
-            get => Problem ?? string.Empty;
-            set => Problem = value;
-        }
-        [Key]
-        [Column("ProblemType", Order = 1)]
-        [StringLength(255)]
-        public string DBProblemType
-        {
-            get => ProblemType ?? string.Empty;
-            set => ProblemType = value;
+            get
+            {
+                if (owner != null)
+                    return owner.Value.Value;
+                return default;
+            }
+            set
+            {
+                owner = new(new() { Id = value?.Id }, value);
+            }
         }
     }
 }

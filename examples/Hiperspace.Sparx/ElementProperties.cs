@@ -2,10 +2,10 @@
 {
     public partial class ElementProperties
     {
-        [Key]
+        [JsonIgnore]
         [Column("Object_ID", Order = 0)]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int ElementId
+        public int ObjectId
         {
             get
             {
@@ -16,6 +16,20 @@
             set
             {
                 owner = new(new() { Id = value });
+            }
+        }
+        [JsonIgnore]
+        public virtual Element? DBElement
+        {
+            get
+            {
+                if (owner != null)
+                    return owner.Value.Value;
+                return default;
+            }
+            set
+            {
+                owner = new(new() { Id = value?.Id }, value);
             }
         }
     }

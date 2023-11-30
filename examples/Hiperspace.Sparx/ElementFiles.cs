@@ -1,11 +1,15 @@
-﻿namespace Sparx.EA
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace Sparx.EA
 {
+
+    [PrimaryKey(nameof(ObjectId), nameof(FileName))]
     public partial class ElementFiles
     {
-        [Key]
-        [Column("Object_ID", Order = 0)]
+        [JsonIgnore]
+        [Column("Object_ID")]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int ElementId
+        public int ObjectId
         {
             get
             {
@@ -18,13 +22,19 @@
                 owner = new(new() { Id = value });
             }
         }
-        [Key]
-        [Column("FileName", Order = 1)]
-        [StringLength(255)]
-        public string DBFileName
+        [JsonIgnore]
+        public virtual Element? DBElement
         {
-            get => FileName ?? string.Empty;
-            set => FileName = value;
+            get
+            {
+                if (owner != null)
+                    return owner.Value.Value;
+                return default;
+            }
+            set
+            {
+                owner = new(new() { Id = value?.Id }, value);
+            }
         }
     }
 }

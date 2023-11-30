@@ -1,0 +1,27 @@
+﻿@Table("t_diagramlinks"), Versioned
+entity Sparx.EA.DiagramLink 
+(
+/*    @Column("DiagramID") */
+    @NotMapped , JsonIgnore
+    Diagram         : Sparx.EA.Diagram
+,
+/*    @Column("ConnectorID") */
+    @NotMapped , JsonIgnore
+    Connector       : Sparx.EA.Connector
+)
+{
+    Geometry        : String
+,
+    @StringLength(255)
+    Style           : String
+,
+    Hidden          : Int32 
+,
+    @StringLength(255)
+    Path            : String
+,
+    @Key, Column("Instance_ID"), DatabaseGenerated(DatabaseGeneratedOption.Identity)
+    Id              : Int32
+,
+    Deleted = false
+}

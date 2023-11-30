@@ -1,0 +1,71 @@
+@Table ( "t_package" ), Versioned
+entity Sparx.EA.Package = Node (SKey = SKey, Name = Name, TypeName = "EA-Package"),
+                          Edge (From = Parent, To = self, TypeName = "EA-PackageChildren")    
+(
+    @KeyAttribute, Column ( "Package_ID" ), DatabaseGenerated ( DatabaseGeneratedOption.Identity )
+    Id : Int32
+)
+{
+    @StringLength ( 255 )
+    Name : String
+,
+    @NotMapped , JsonIgnore
+    Parent      : Sparx.EA.Package
+,
+    CreatedDate : DateTime
+,
+    ModifiedDate : DateTime
+,
+    @Column()
+    Notes : String
+,
+    @StringLength ( 40 ), Column ( "ea_guid" )
+    GUID : String
+,
+    @StringLength ( 255 )
+    XMLPath : String
+,
+    IsControlled : Int32
+,
+    LastLoadDate : DateTime
+,
+    LastSaveDate : DateTime
+,
+    @StringLength ( 50 )
+    Version : String
+,
+    Protected : Int32
+,
+    @StringLength ( 255 )
+    PkgOwner : String
+,
+    @StringLength ( 50 )
+    UMLVersion : String
+,
+    UseDTD : Int32
+,
+    LogXML : Int32
+,
+    @StringLength ( 255 )
+    CodePath : String
+,
+    @StringLength ( 50 )
+    Namespace : String
+,
+    TPos : Int32
+,
+    @StringLength ( 255 )
+    PackageFlags : String
+,
+    BatchSave : Int32
+,
+    BatchLoad : Int32
+,
+    Deleted = false
+
+}
+[
+    Diagrams    : Sparx.EA.Diagram (Package = self),
+    Content     : Sparx.EA.Element (Package = self),
+    Children    : Sparx.EA.Package (Parent  = self),
+];

@@ -1,6 +1,6 @@
 ﻿# Sparx Model
 
-Sparks enterprise architect is the leading architecture modeling tool in the world. There are many reasons why it leads, but one of them (my reason) is that it uses a relational database to store the model. Within the enterprise architect tool, the database is queried directly to provide searches, for document generation and HTML views. More information about sparks can be at found [Sparx Systems]( https://sparxsystems.com/).
+Sparks enterprise architect is the leading architecture modeling tool in the world. There are many reasons why it leads, but one of them (my reason) is that it uses a relational database to store the model. Within the enterprise architect tool, the database is queried directly to provide searches, for document generation and HTML views. More information about sparks can be at found [Sparx Systems]( https:[JsonIgnore]parxsystems.com/).
 For complex reporting scenarios, the database can be queried directly, In this example, we are using it to create a graph view of a model to track changes over time.
 Note and edge are special views that are common to all Hiperspace models. Views in Hiperspace are a union of all {entity, segment, aspect} that are equivalent to each view type.
 
@@ -26,3 +26,5 @@ The entire model can be traversed as if it was in memory using key references, b
 # Storage
 
 The [Hiperspace.Rocks]( https://www.nuget.org/packages/Hiperspace.Rocks) can be used to durably store the content of the Hiperspace to SSD or CXL memory, but any key/value store can be used with a simple Hiperspace driver
+
+![Rosyln generated code] (/doc/Screenshots/Rosyln.png)

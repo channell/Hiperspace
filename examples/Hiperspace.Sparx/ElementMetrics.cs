@@ -1,11 +1,14 @@
-﻿namespace Sparx.EA
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace Sparx.EA
 {
+    [PrimaryKey(nameof(ObjectId), nameof(Metric))]
     public partial class ElementMetrics
     {
-        [Key]
-        [Column("Object_ID", Order = 0)]
+        [JsonIgnore]
+        [Column("Object_ID")]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int ElementId
+        public int ObjectId
         {
             get
             {
@@ -18,13 +21,19 @@
                 owner = new(new() { Id = value });
             }
         }
-        [Key]
-        [Column("Metric", Order = 1)]
-        [StringLength(255)]
-        public string DBMetric
+        [JsonIgnore]
+        public virtual Element? DBElement
         {
-            get => Metric ?? string.Empty;
-            set => Metric = value;
+            get
+            {
+                if (owner != null)
+                    return owner.Value.Value;
+                return default;
+            }
+            set
+            {
+                owner = new(new() { Id = value?.Id }, value);
+            }
         }
     }
 }

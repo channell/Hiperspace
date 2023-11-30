@@ -2,6 +2,7 @@
 {
     public partial class DiagramLink
     {
+        [JsonIgnore]
         [Column("DiagramID")]
         public int DiagramId
         {
@@ -16,6 +17,7 @@
                 Diagram = new(new() { Id = value });
             }
         }
+        [JsonIgnore]
         [Column("ConnectorID")]
         public int ConnectorId
         {
@@ -30,7 +32,8 @@
                 Connector = new(new() { Id = value });
             }
         }
-        public Diagram? DBDiagram
+        [JsonIgnore]
+        public virtual Diagram? DBDiagram
         {
             get
             {
@@ -44,5 +47,21 @@
                     Diagram = new(value._key, value);
             }
         }
+        [JsonIgnore]
+        public virtual Connector? DBConnector
+        {
+            get
+            {
+                if (Connector.HasValue)
+                    return Connector.Value.Value;
+                return null;
+            }
+            set
+            {
+                if (value != null)
+                    Connector = new(value._key, value);
+            }
+        }
     }
+
 }

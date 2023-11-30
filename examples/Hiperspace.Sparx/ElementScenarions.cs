@@ -1,11 +1,14 @@
-﻿namespace Sparx.EA
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace Sparx.EA
 {
-    public partial class ElementScenarions
+    [PrimaryKey(nameof(ObjectId), nameof(Scenario))]
+    public partial class ElementScenarios
     {
-        [Key]
+        [JsonIgnore]
         [Column("Object_ID", Order = 0)]
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public int ElementId
+        public int ObjectId
         {
             get
             {
@@ -16,6 +19,20 @@
             set
             {
                 owner = new(new() { Id = value });
+            }
+        }
+        [JsonIgnore]
+        public virtual Element? DBElement
+        {
+            get
+            {
+                if (owner != null)
+                    return owner.Value.Value;
+                return default;
+            }
+            set
+            {
+                owner = new(new() { Id = value?.Id }, value);
             }
         }
     }

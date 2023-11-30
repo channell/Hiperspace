@@ -1,46 +1,0 @@
-﻿@Table ( "t_diagram" ), Versioned
-entity Sparx.EA.Diagram = Node (SKey = SKey, Name = Name, TypeName = "EA-Diagram" + DiagramTypeCode)(    @Key,Column ( "Diagram_ID" ), DatabaseGenerated ( DatabaseGeneratedOption.Identity )
-    Id : Int32){
-    @Column ( "Package_ID" )
-    PackageId : Int32,
-    ParentID : Int32,
-    @StringLength ( 50 ) ,Column ( "Diagram_Type" )
-    DiagramTypeCode : String,
-    @StringLength ( 255 )
-    Name : String,
-    @StringLength ( 50 )
-    Version : String,
-    @StringLength ( 255 )
-    Author : String,
-    ShowDetails : Int32,
-    @Column()
-    Notes : String,
-    @StringLength ( 50 )
-    Stereotype : String,
-    AttPub : Boolean,
-    AttPri : Boolean,
-    AttPro : Boolean,
-    @StringLength ( 1 )
-    Orientation : String,
-    cx : Int32,
-    cy : Int32,
-    Scale : Int32,
-    CreatedDate : DateTime,
-    ModifiedDate : DateTime,
-    @StringLength ( 255 )
-    HTMLPath : String,
-    ShowForeign : Boolean,
-    ShowBorder : Boolean,
-    ShowPackageContents : Boolean,
-    @StringLength ( 255 )
-    PDATA : String,
-    Locked : Boolean,
-    @StringLength ( 40 ),Column ( "ea_guid" )    GUID : Guid,
-    TPos : Int32,
-    @StringLength ( 255 )
-    Swimlanes : String,
-    @Column()
-    StyleEx : String,
-    Package : Sparx.EA.Package,
-    Deleted = false
-}[    DiagramLinks   : Sparx.EA.DiagramLink (Diagram = self),    Parts          : Sparx.EA.DiagramObject (Diagram = self)];
