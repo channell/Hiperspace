@@ -32,9 +32,9 @@ Intel Core i9-9980HK CPU 2.40GHz, 1 CPU, 16 logical and 8 physical cores
 
 Source Sparx EA database consisted of 623248 observations (1319 packages, 42433 classes, 208599 attributes, 370897 methods) gathered from reverse engineering of .NET framework and Java JRE.
 
-Stored in local a 968 MB SQL/Server 2019 database and a 197 MB RocksDB directory database, producing a 3Gb JSON file on when exported to JSON text 
+Stored in local a 968 MB SQL/Server 2019 database and a 197 MB RocksDB directory database, producing a 3Gb JSON file when exported to JSON text 
 
-Entity Framework has been optimized to use non-tracking proxies and  no lazy loading, but is slower than Hiperspace
+Entity Framework has been optimized to use non-tracking proxies and no lazy loading, but is slower than Hiperspace
 • Hiperspace takes 20% of the time to count all observations (traversing object-graph)
 • Hiperspace takes 12% of the time to update a range of rows (40) 
 • Hiperspace takes 65% of the time to export model to JSON (most time dedicated to JSON serialization
