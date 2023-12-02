@@ -35,10 +35,10 @@ Source Sparx EA database consisted of 623248 observations (1319 packages, 42433 
 Stored in local a 968 MB SQL/Server 2019 database and a 197 MB RocksDB directory database, producing a 3Gb JSON file when exported to JSON text 
 
 Entity Framework has been optimized to use non-tracking proxies and no lazy loading, but is slower than Hiperspace
-• Hiperspace takes 20% of the time to count all observations (traversing object-graph)
-• Hiperspace takes 12% of the time to update a range of rows (40) 
-• Hiperspace takes 65% of the time to export model to JSON (most time dedicated to JSON serialization
+* Hiperspace takes 20% of the time to count all observations (traversing object-graph)
+* Hiperspace takes 12% of the time to update a range of rows (40) 
+* Hiperspace takes 65% of the time to export model to JSON (most time dedicated to JSON serialization
 
-• Interestingly, it was faster to export entire model to Hiperspace, and traverse than to recursively count though SQL/Server 
+* Interestingly, it was faster to export entire model to Hiperspace, and traverse than to recursively count though SQL/Server 
 
 [Sparx UML documentation](https://channell.github.io/Hiperspace/doc/)
