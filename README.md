@@ -10,4 +10,37 @@ Memory stores allow petabytes of data to be addressed.
 
 All Hiperspace objects are immutable, but versioning provides the experience of mutability without the cache-coherency that would require constant server lookup.
 
+// * Summary *
+
+BenchmarkDotNet v0.13.10, Windows 11 (10.0.22621.2715/22H2/2022Update/SunValley2)
+Intel Core i9-9980HK CPU 2.40GHz, 1 CPU, 16 logical and 8 physical cores
+.NET SDK 8.0.100
+  [Host]     : .NET 8.0.0 (8.0.23.53103), X64 RyuJIT AVX2 DEBUG
+  DefaultJob : .NET 8.0.0 (8.0.23.53103), X64 RyuJIT AVX2
+
+| Method      | Mean            | Error           | StdDev          |
+|------------ |----------------:|----------------:|----------------:|
+| Load        | 12,262,692.6 us |   715,060.23 us | 2,005,105.54 us |
+| CountRocks  | 17,353,641.0 us |    341,246.2 us |    665,574.6 ms |
+| CountSQL    | 84,193,776.9 us | 1,636,317.08 us | 2,184,436.31 us |
+| UpdateRocks |        491.2 us |         7.41 us |         6.57 us |
+| UpdateSQL   |      4,113.3 us |        71.36 us |        63.26 us |
+| JSONRocks   | 59,447,597.0 us |    879,269.1 us |    779,449.2 us |
+| JSONSQL     | 91,045,615.6 us | 1,815,004.73 us | 2,017,372.94 us |
+
+
+
+Source Sparx EA database consisted of 623248 observations (1319 packages, 42433 classes, 208599 attributes, 370897 methods) gathered from reverse engineering of .NET framework and Java JRE.
+
+Stored in local a 968 MB SQL/Server 2019 database and a 197 MB RocksDB directory database, producing a 3Gb JSON file on when exported to JSON text 
+
+Entity Framework has been optimized to use non-tracking proxies and  no lazy loading, but is slower than Hiperspace
+	• Hiperspace takes 20% of the time to count all observations (traversing object-graph)
+	• Hiperspace takes 12% of the time to update a range of rows (40) 
+	• Hiperspace takes 65% of the time to export model to JSON (most time dedicated to JSON serialization
+
+	• Interestingly, it was faster to export entire model to Hiperspace, and traverse than to recursively count though SQL/Server 
+
+![image](https://github.com/channell/Hiperspace/assets/5961853/f5533722-e6f9-4a6b-986b-a42f059d43eb)
+
 [Sparx UML documentation](https://channell.github.io/Hiperspace/doc/)
