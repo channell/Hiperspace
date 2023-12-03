@@ -21,7 +21,7 @@ Intel Core i9-9980HK CPU 2.40GHz, 1 CPU, 16 logical and 8 physical cores
 | Method      | Mean            | Error           | StdDev          |
 |------------ |----------------:|----------------:|----------------:|
 | Load        | 12,262,692.6 us |   715,060.23 us | 2,005,105.54 us |
-| CountRocks  | 17,353,641.0 us |    341,246.2 us |    665,574.6 ms |
+| CountRocks  | 17,353,641.0 us |    341,246.2 us |  665,574,600 us |
 | CountSQL    | 84,193,776.9 us | 1,636,317.08 us | 2,184,436.31 us |
 | UpdateRocks |        491.2 us |         7.41 us |         6.57 us |
 | UpdateSQL   |      4,113.3 us |        71.36 us |        63.26 us |
