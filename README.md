@@ -40,6 +40,7 @@ Entity Framework has been optimized to use non-tracking proxies and no lazy load
 * Interestingly, it was faster to export entire model to Hiperspace, and traverse than to recursively count though SQL/Server 
 
 ## Comparison with a document DB 
-was not undertaken because the size of the document exceeds storage limitations.  Splitting the document into 42433 separate documents is not expected to compare favorably with a relational database and would present problems for connections between classes (GridFS)[https://www.mongodb.com/docs/manual/core/gridfs/]
+was not undertaken because the size of the document exceeds storage limitations.  Splitting the document into 42433 separate documents is not expected to compare favorably with a relational database and would present problems for connections between classes 
+[GridFS](https://www.mongodb.com/docs/manual/core/gridfs/)
 
 [Sparx UML documentation](https://channell.github.io/Hiperspace/doc/)
