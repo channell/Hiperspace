@@ -10,7 +10,7 @@ Memory stores allow petabytes of data to be addressed.
 
 All Hiperspace objects are immutable, but versioning provides the experience of mutability without the cache-coherency that would require constant server lookup.
 
-// * Summary *
+##// * Summary *
 
 BenchmarkDotNet v0.13.10, Windows 11 (10.0.22621.2715/22H2/2022Update/SunValley2)
 Intel Core i9-9980HK CPU 2.40GHz, 1 CPU, 16 logical and 8 physical cores
@@ -28,8 +28,6 @@ Intel Core i9-9980HK CPU 2.40GHz, 1 CPU, 16 logical and 8 physical cores
 | JSONRocks   | 59,447,597.0 us |    879,269.1 us |    779,449.2 us |
 | JSONSQL     | 91,045,615.6 us | 1,815,004.73 us | 2,017,372.94 us |
 
-
-
 Source Sparx EA database consisted of 623248 observations (1319 packages, 42433 classes, 208599 attributes, 370897 methods) gathered from reverse engineering of .NET framework and Java JRE.
 
 Stored in local a 968 MB SQL/Server 2019 database and a 197 MB RocksDB directory database, producing a 3Gb JSON file when exported to JSON text 
@@ -40,5 +38,8 @@ Entity Framework has been optimized to use non-tracking proxies and no lazy load
 * Hiperspace takes 65% of the time to export model to JSON (most time dedicated to JSON serialization
 
 * Interestingly, it was faster to export entire model to Hiperspace, and traverse than to recursively count though SQL/Server 
+
+## Comparison with a document DB 
+was not undertaken because the size of the document exceeds storage limitations.  Splitting the document into 42433 separate documents is not expected to compare favorably with a relational database and would present problems for connections between classes (GridFS)[https://www.mongodb.com/docs/manual/core/gridfs/]
 
 [Sparx UML documentation](https://channell.github.io/Hiperspace/doc/)
