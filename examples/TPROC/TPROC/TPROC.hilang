@@ -1,0 +1,175 @@
+﻿type Char;
+type Int328;
+
+@Versioned
+entity tpc.tpcc.customer						#1001	/* id field is explicitly set to allow schema evolution */
+(
+	c_id 			: Int32						#1
+)
+{
+	c_d_id 			: tpc.tpcc.district			#2,		/* ass efficient to reference the entity as the base int */
+	c_w_id 			: tpc.tpcc.warehouse		#3,
+	c_discount 		: Decimal					#4,
+	c_credit_lim 	: Decimal					#5,
+	c_last 			: Char						#6,
+	c_first 		: Char						#7,
+	c_credit 		: Char						#8,
+	c_balance 		: Decimal					#9,
+	c_ytd_payment 	: Decimal					#10,
+	c_payment_cnt 	: Int16						#11,
+	c_delivery_cnt 	: Int16						#12,
+	c_street_1 		: Char						#13,
+	c_street_2 		: Char						#14,
+	c_city 			: Char						#15,
+	c_state 		: Char						#16,
+	c_zip 			: Char						#17,
+	c_phone 		: Char						#18,
+	c_since 		: DateTime					#19,
+	c_middle		: Char						#20,
+	c_data 			: Char						#21,
+	constraint		= c_id = null   ||
+					  c_d_id = null ||
+					  c_w_id = null
+					  ? false : true
+};
+
+@Versioned
+entity tpc.tpcc.district 						#1002
+(
+	d_id 			: Int16						#1
+)
+{
+	d_w_id 			: tpc.tpcc.warehouse		#2,
+	d_ytd 			: Decimal					#3,
+	d_next_o_id 	: Int32						#4,
+	d_tax 			: Decimal					#5,
+	d_name 			: Char						#6,
+	d_street_1 		: Char						#7,
+	d_street_2 		: Char						#8,
+	d_city 			: Char						#9,
+	d_state 		: Char						#10,
+	d_zip 			: Char						#11,
+	padding 		: String					#12,
+	constraint		= d_id = null   ||
+					  d_w_id = null 
+					  ? false : true
+};
+
+@Versioned
+entity tpc.tpcc.history 						#1003
+(
+	h_c_id 			: tpc.tpcc.customer			#1,	/* composite keys are supported */
+	h_c_d_id 		: tpc.tpcc.district			#2,
+	h_c_w_id 		: tpc.tpcc.warehouse		#3,
+	h_d_id 			: tpc.tpcc.district			#4,
+	h_w_id 			: tpc.tpcc.warehouse		#5
+)
+{
+	h_date 			: DateTime					#6,
+	h_amount 		: Decimal					#7,
+	h_data 			: Char						#8,
+	constraint		= h_c_id = null   ||
+					  h_c_d_id = null ||
+					  h_c_w_id = null ||
+					  h_d_id = null	  ||
+					  h_w_id = null   
+					  ? false : true
+};
+"
+	Prices are temporial, and could be updated 
+"
+@Versioned
+aspect Price<T>									#1010
+{
+	Value			: T							#1
+};
+
+@Versioned
+entity tpc.tpcc.item 							#1004
+(
+	i_id 			: Int32						#1
+)
+{
+	i_name 			: Char						#2,
+	i_data 			: Char						#4,
+	i_im_id 		: Int32						#5,
+	constraint		= i_id = null   ||
+					  i_name = null ||
+					  i_price = null			/* constraint references aspect price */
+					  ? false : true
+}
+[
+	i_price 		: Price<Decimal>			#3,
+];
+
+@Versioned
+entity tpc.tpcc.new_order 						#1005
+(
+	no_o_id 		: Int16						#1,
+	no_d_id 		: tpc.tpcc.district			#2,
+	no_w_id 		: tpc.tpcc.warehouse		#3
+)
+{
+	constraint		= no_o_id = null ||
+					  no_d_id = null ||
+					  no_w_id = null 
+					  ? false : true
+};
+
+@Versioned
+segment tpc.tpcc.order_line 					#1006
+(
+	ol_number 		: Int16						#1		/* order line is a segment of order, and inherits its key */
+)
+{
+	ol_i_id 		: tpc.tpcc.item				#2,
+	ol_delivery_d 	: DateTime					#3,
+	ol_amount 		: Decimal					#4,
+	ol_supply_w_id 	: Int32						#5,
+	ol_quantity 	: Int16						#6,
+	ol_dist_info 	: Char						#7,
+	constraint		= ol_number = null ||
+					  owner = null						/* owner referenced in constraint */
+					  ? false : true
+};
+@Versioned
+entity tpc.tpcc.order 							#1007
+(
+	o_id 			: Int32						#1,
+	o_d_id 			: tpc.tpcc.district			#2,
+	o_w_id 			: tpc.tpcc.warehouse		#3,
+	o_c_id 			: tpc.tpcc.customer			#4
+)
+{
+	o_carrier_id 	: Int16						#5,
+	o_ol_cnt 		: Int16						#6,
+	o_all_local 	: Int16						#7,
+	o_entry_d 		: DateTime					#8,
+	constraint		= o_id = null	||
+					  o_d_id = null ||
+					  o_w_id = null ||
+					  o_c_id = null 
+					  ? false : true
+}
+[
+	lines			: tpc.tpcc.order_line
+];
+
+@Versioned
+entity tpc.tpcc.warehouse 						#1009
+(
+	w_id 			: Int32						#1
+)
+{
+	w_ytd 			: Decimal					#2,
+	w_tax 			: Decimal					#3,
+	w_name 			: Char						#4,
+	w_street_1 		: Char						#5,
+	w_street_2 		: Char						#6,
+	w_city 			: Char						#7,
+	w_state 		: Char						#8,
+	w_zip 			: Char						#10,
+	padding 		: String					#11,
+	constraint		= w_id = null	
+					  ? false : true
+};
