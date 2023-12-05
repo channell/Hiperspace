@@ -1,5 +1,5 @@
 # Hiperspace
-Hiperspace is an Object technology that uses a key-addressable store to expand an application data-model beyond the limits of memory. 
+Hiperspace is an Object technology that uses a key-addressable store to expand an application data-model beyond the limits of memory 
 that can be directly referenced in main memory. 
 
 Elements are not duplicated or changed to match database shapes.  
@@ -10,7 +10,8 @@ Memory stores allow petabytes of data to be addressed.
 
 All Hiperspace objects are immutable, but versioning provides the experience of mutability without the cache-coherency that would require constant server lookup.
 
-##  * Summary *
+## Hiperspace vs Relational Database
+// * Summary *
 
 BenchmarkDotNet v0.13.10, Windows 11 (10.0.22621.2715/22H2/2022Update/SunValley2)
 Intel Core i9-9980HK CPU 2.40GHz, 1 CPU, 16 logical and 8 physical cores
@@ -36,7 +37,6 @@ Entity Framework has been optimized to use non-tracking proxies and no lazy load
 * Hiperspace takes 20% of the time to count all observations (traversing object-graph)
 * Hiperspace takes 12% of the time to update a range of rows (40) 
 * Hiperspace takes 65% of the time to export model to JSON (most time dedicated to JSON serialization
-
 * Interestingly, it was faster to export entire model to Hiperspace, and traverse than to recursively count though SQL/Server 
 
 ## Comparison with a document DB 
