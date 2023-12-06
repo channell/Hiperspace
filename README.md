@@ -1,5 +1,5 @@
 # Hiperspace
-Hiperspace is an Object technology that uses a key-addressable store to expand an application data-model beyond the limits of memory. 
+Hiperspace is an Object technology that uses a key-addressable store to expand an application data-model beyond the limits of memory 
 that can be directly referenced in main memory. 
 
 Elements are not duplicated or changed to match database shapes.  
@@ -10,6 +10,7 @@ Memory stores allow petabytes of data to be addressed.
 
 All Hiperspace objects are immutable, but versioning provides the experience of mutability without the cache-coherency that would require constant server lookup.
 
+## Hiperspace vs Relational Database
 // * Summary *
 
 BenchmarkDotNet v0.13.10, Windows 11 (10.0.22621.2715/22H2/2022Update/SunValley2)
@@ -21,14 +22,12 @@ Intel Core i9-9980HK CPU 2.40GHz, 1 CPU, 16 logical and 8 physical cores
 | Method      | Mean            | Error           | StdDev          |
 |------------ |----------------:|----------------:|----------------:|
 | Load        | 12,262,692.6 us |   715,060.23 us | 2,005,105.54 us |
-| CountRocks  | 17,353,641.0 us |    341,246.2 us |    665,574.6 ms |
+| CountRocks  | 17,353,641.0 us |    341,246.2 us |  665,574,600 us |
 | CountSQL    | 84,193,776.9 us | 1,636,317.08 us | 2,184,436.31 us |
 | UpdateRocks |        491.2 us |         7.41 us |         6.57 us |
 | UpdateSQL   |      4,113.3 us |        71.36 us |        63.26 us |
 | JSONRocks   | 59,447,597.0 us |    879,269.1 us |    779,449.2 us |
 | JSONSQL     | 91,045,615.6 us | 1,815,004.73 us | 2,017,372.94 us |
-
-
 
 Source Sparx EA database consisted of 623248 observations (1319 packages, 42433 classes, 208599 attributes, 370897 methods) gathered from reverse engineering of .NET framework and Java JRE.
 
@@ -38,7 +37,10 @@ Entity Framework has been optimized to use non-tracking proxies and no lazy load
 * Hiperspace takes 20% of the time to count all observations (traversing object-graph)
 * Hiperspace takes 12% of the time to update a range of rows (40) 
 * Hiperspace takes 65% of the time to export model to JSON (most time dedicated to JSON serialization
-
 * Interestingly, it was faster to export entire model to Hiperspace, and traverse than to recursively count though SQL/Server 
+
+## Comparison with a document DB 
+was not undertaken because the size of the document exceeds storage limitations.  Splitting the document into 42433 separate documents is not expected to compare favorably with a relational database and would present problems for connections between classes 
+[GridFS](https://www.mongodb.com/docs/manual/core/gridfs/)
 
 [Sparx UML documentation](https://channell.github.io/Hiperspace/doc/)
