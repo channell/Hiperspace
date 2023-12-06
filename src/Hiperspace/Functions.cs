@@ -77,5 +77,20 @@ namespace Hiperspace
             }
             return returner;
         }
+        public static T Count<T, S>(RefSet<S> source, Func<S, T> func)
+            where S : Element<S>, new()
+            where T : INumber<T>, new()
+        {
+            T returner = T.Zero;
+            foreach (var item in source)
+            {
+                T result = func(item);
+                if (result != null && returner != null)
+                {
+                    returner = returner + T.One;
+                }
+            }
+            return returner ?? T.Zero;
+        }
     }
 }

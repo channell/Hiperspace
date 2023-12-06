@@ -6,6 +6,7 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using ProtoBuf;
+using System.Diagnostics.CodeAnalysis;
 
 /*
 "edge between nodes"
@@ -23,7 +24,7 @@ namespace Hiperspace
 {
     public class Edge : Element<Edge>
     {
-        internal KeyType _key;
+        public KeyType _key;
         internal ValueType _value;
 
         public Edge ()
@@ -38,13 +39,21 @@ namespace Hiperspace
 
         public KeyRef<Node.KeyType, Node>? From
         {
-            get;
-            set;
+            get => _key.From;
+            set
+            {
+                if (SetSpace != null) throw new Hiperspace.MutationException($"From can not be changed once bound to a Space");
+                _key.From = value;
+            }
         }
         public KeyRef<Node.KeyType, Node>? To
         {
-            get;
-            set;
+            get => _key.To;
+            set
+            {
+                if (SetSpace != null) throw new Hiperspace.MutationException($"To can not be changed once bound to a Space");
+                _key.To = value;
+            }
         }
         public string? TypeName
         {
@@ -78,12 +87,12 @@ namespace Hiperspace
         {
             public KeyType(Edge item)
             {
-                From = item.From?.Key;
-                To = item.To?.Key;
+                From = item.From;
+                To = item.To;
                 TypeName = item?.TypeName;
             }
-            [ProtoMember(2)] public Node.KeyType? From;
-            [ProtoMember(3)] public Node.KeyType? To;
+            [ProtoMember(2)] public KeyRef<Node.KeyType, Node>? From;
+            [ProtoMember(3)] public KeyRef<Node.KeyType, Node>? To;
             [ProtoMember(4)] public String? TypeName;
 
             public bool IsGetable()
@@ -179,7 +188,7 @@ namespace Hiperspace
                 }
                 return result;
             }
-            return Result.Fail(this);
+            return Result.Skip(this);
         }
         public override void Unbind(SubSpace subSpace)
         {
@@ -212,5 +221,19 @@ namespace Hiperspace
                 return false;
             return (_key == other._key);
         }
+        #region  helpers
+        internal KeyRef<Edge.KeyType, Edge> self { get => new KeyRef<Edge.KeyType, Edge>(_key, this); }
+
+        public static implicit operator KeyRef<KeyType, Edge>([NotNull] Edge other)
+        {
+            return other.self;
+        }
+        public static implicit operator KeyRef<KeyType, Edge>?(Edge? other)
+        {
+            if (!ReferenceEquals(null, other))
+                return other.self;
+            return null;
+        }
+        #endregion
     }
 }

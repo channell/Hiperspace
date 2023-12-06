@@ -13,8 +13,9 @@ open Sparx.EA
 open System.Text.Json
 open System.IO
 open System.Text.Json.Serialization
-open Microsoft.EntityFrameworkCore;
+open Microsoft.EntityFrameworkCore
 open Log
+open System.Linq
 
 let dirOperation tabs (o : ElementOperations) =
     printfn "%s%s" tabs o.Name
@@ -47,14 +48,41 @@ let listing (space : SparxSpace) =
 /// graph listing
 let graphListing (space : SparxSpace) =
     log "Graph list"
-    space.Nodes
+    query { for n in (query { for n in space.Nodes do select n }).ToList() do
+            groupBy n.TypeName into g
+            select (g.Key, g.Count())}
+    |> Seq.iter (fun g -> printfn "Node Type %s : %i" (fst g) (snd g))
+
+    query { for n in (query { for e in space.Edges do select e }).ToList() do
+            groupBy n.TypeName into g
+            select (g.Key, g.Count())}
+    |> Seq.iter (fun g -> printfn "Edge Type %s : %i" (fst g) (snd g))
+
+    query { for n in space.Nodes do 
+            where (n.TypeName.StartsWith("EA-Package") &&
+                   n.Froms.Count > 0) 
+            select n }
     |> Seq.iter     
         (fun node -> 
             printfn "\t%s (%s)" node.Name node.TypeName
-            node.Froms
+            query { for e in node.Froms do
+                    select e }
             |> Seq.iter   
                 (fun edge -> printfn "\t\t%s (%s) %s" edge.Name edge.TypeName edge.To.Value.Value.Name))
 
+let nodes (space : SparxSpace) (typename : string) =
+    log "Nodes"
+    query { for n in space.Nodes do
+            where (n.TypeName.StartsWith(typename))
+            select n }
+    |> Seq.iter (fun n -> printfn """"Node", "%s", "%s", "%s" """ n.SKey n.Name n.TypeName)
+
+let edges (space : SparxSpace) (typename : string) =
+    log "Edges"
+    query { for e in space.Edges do
+            where (e.TypeName.StartsWith(typename))
+            select e }
+    |> Seq.iter (fun e -> printfn """"Edge", "%s", "%s", "%s", "%s", "%s" """ e.SKey e.Name e.From.Value.Key.SKey e.To.Value.Key.SKey e.TypeName)
 
 let savejson prefix (package : Package) = 
     log $"Saving {package.Name}"

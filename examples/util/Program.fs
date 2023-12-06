@@ -29,6 +29,8 @@ type Arguments =
     | [<Unique>]    CountSQL
     | [<Unique>]    Update 
     | [<Unique>]    UpdateSQL
+    | [<Unique>]    Nodes   of typename : string
+    | [<Unique>]    Edges   of typename : string
     
 
     interface IArgParserTemplate with
@@ -45,6 +47,8 @@ type Arguments =
             | CountSQL      -> "count the objects in the SQL"
             | Update        -> "update 'Visitor' to 'Approved'"            
             | UpdateSQL     -> "update SQL 'Visitor' to 'Approved'"
+            | Nodes _       -> "listing of nodes by type name"
+            | Edges _       -> "listing of edges by type name"
 
 [<EntryPoint>]
 let main argv = 
@@ -77,6 +81,8 @@ let main argv =
     if results.Contains CountSQL    then export.countsql ctx
     if results.Contains Update      then updates.update rocks
     if results.Contains UpdateSQL   then updates.updateSQL ctx
+    if results.Contains Nodes       then export.nodes rocks (results.GetResult Nodes)
+    if results.Contains Edges       then export.edges rocks (results.GetResult Edges)
     log "Finish"
 
     0

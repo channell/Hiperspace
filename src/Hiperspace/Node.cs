@@ -21,7 +21,7 @@ namespace Hiperspace
 {
     public class Node : Element<Node>
     {
-        internal KeyType _key;
+        public KeyType _key;
         internal ValueType _value;
 
         public Node ()
@@ -40,7 +40,11 @@ namespace Hiperspace
         public override string SKey 
         {
             get => _key.SKey;
-            set => _key.SKey = value;
+            set
+            {
+                if (SetSpace != null) throw new Hiperspace.MutationException($"SKey can not be changed once bound to a Space");
+                _key.SKey = value;
+            }
         }
         public string? Name 
         { 

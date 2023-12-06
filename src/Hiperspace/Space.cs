@@ -26,7 +26,7 @@ namespace Hiperspace
             var vpl = Lpv2Vpl(key, map);
 #if DEBUG
             var lpv = Vpl2lpv(vpl, map);
-            Debug.Assert(key.SequenceEqual(lpv));
+            System.Diagnostics.Debug.Assert(key.SequenceEqual(lpv));
 #endif
             return vpl;
         }

@@ -20,46 +20,64 @@ type Perf () =
     let rocks = @"C:\Hiperspace\Sparx"
     let sql = @"Data Source=localhost;Initial Catalog=dotnet;User id=demo;Password=demo;MultipleActiveResultSets=True;Max Pool Size=100;TrustServerCertificate=True"
 
-    do 
-      if (Directory.Exists(rocks)) then Directory.Delete(rocks, true) |> ignore;
-      Directory.CreateDirectory (rocks) |> ignore
 
-    let space = 
-        let ssd = new RockSpace(rocks, MetaModel())
-        new SparxSpace (ssd)
-    let ctx = 
-        let bld = 
-            (new DbContextOptionsBuilder<Context> ()).UseSqlServer (sql)
-        new Context (bld.Options)
-
-    [<Benchmark>]
+    [<Benchmark()>]
     member _.Load () =
+        if (Directory.Exists(rocks)) then Directory.Delete(rocks, true) |> ignore;
+        Directory.CreateDirectory (rocks) |> ignore
+        let space = 
+            let ssd = new RockSpace(rocks, MetaModel())
+            new SparxSpace (ssd)
+        let ctx = 
+            let bld = 
+                (new DbContextOptionsBuilder<Context> ()).UseSqlServer (sql)
+            new Context (bld.Options)
         loader.load space ctx
 
     [<Benchmark>]
     member _.CountRocks () =
-        export.countrocks space
+        let space = 
+            let ssd = new RockSpace(rocks, MetaModel())
+            new SparxSpace (ssd)
+        export.countrocks space 
 
     [<Benchmark>]
     member _.CountSQL () =
+        let ctx = 
+            let bld = 
+                (new DbContextOptionsBuilder<Context> ()).UseSqlServer (sql)
+            new Context (bld.Options)
         export.countsql ctx
 
     [<Benchmark>]
     member _.UpdateRocks () =
-        updates.update space
+        let space = 
+            let ssd = new RockSpace(rocks, MetaModel())
+            new SparxSpace (ssd)
+        updates.update space 
 
     [<Benchmark>]
     member _.UpdateSQL () =
+        let ctx = 
+            let bld = 
+                (new DbContextOptionsBuilder<Context> ()).UseSqlServer (sql)
+            new Context (bld.Options)
         updates.updateSQL ctx
 
     [<Benchmark>]
     member _.JSONRocks () =
-        export.jsonrocks space
+        let space = 
+            let ssd = new RockSpace(rocks, MetaModel())
+            new SparxSpace (ssd)
+        export.jsonrocks space 
 
     [<Benchmark>]
     member _.JSONSQL () =
+        let ctx = 
+            let bld = 
+                (new DbContextOptionsBuilder<Context> ()).UseSqlServer (sql)
+            new Context (bld.Options)
         export.jsonsql ctx
-
 
 [<EntryPoint>]
 let main argv = 
