@@ -124,6 +124,9 @@ namespace Hiperspace
         {
             if (typeof(TElement) == typeof(Node)) return (IQueryable<TElement>)new Query<Node>(Nodes, this, expression);
             if (typeof(TElement) == typeof(Edge)) return (IQueryable<TElement>)new Query<Edge>(Edges, this, expression);
+
+            var t = new EnumerableQuery<TElement>(expression).AsQueryable();
+            return t;
             throw new ArgumentException($"{typeof(TElement).FullName} is not as a supported collection type");
         }
         public virtual object? Execute(Expression expression)

@@ -31,6 +31,8 @@ type Arguments =
     | [<Unique>]    UpdateSQL
     | [<Unique>]    Nodes   of typename : string
     | [<Unique>]    Edges   of typename : string
+    | [<Unique>]    Sample
+
     
 
     interface IArgParserTemplate with
@@ -49,6 +51,7 @@ type Arguments =
             | UpdateSQL     -> "update SQL 'Visitor' to 'Approved'"
             | Nodes _       -> "listing of nodes by type name"
             | Edges _       -> "listing of edges by type name"
+            | Sample        -> "list a sample item without traversal"
 
 [<EntryPoint>]
 let main argv = 
@@ -83,6 +86,7 @@ let main argv =
     if results.Contains UpdateSQL   then updates.updateSQL ctx
     if results.Contains Nodes       then export.nodes rocks (results.GetResult Nodes)
     if results.Contains Edges       then export.edges rocks (results.GetResult Edges)
+    if results.Contains Sample      then export.oneVistor rocks 
     log "Finish"
 
     0

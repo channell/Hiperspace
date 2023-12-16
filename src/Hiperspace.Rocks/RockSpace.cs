@@ -241,7 +241,7 @@ namespace Hiperspace.Rocks
                         if (lastKey == Array.Empty<byte>() || Compare(keypart, lastKey) == 0)
                         {
                             var ver = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(k, k.Length - sizeof(ulong), sizeof(ulong))));
-                            if ((version.HasValue && ver < version.Value.Ticks && ver > lastVersion) || lastVersion == 0)
+                            if ((version.HasValue && ver < version.Value.Ticks && ver > lastVersion) || (!version.HasValue && lastVersion == 0))
                             {
                                 lastKey = keypart;
                                 lastVersion = ver;

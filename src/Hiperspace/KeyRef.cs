@@ -13,7 +13,7 @@ namespace Hiperspace
     /// Provided a key reference from one entity to another with lazy loading
     /// </summary>
     [ProtoContract]
-    public struct KeyRef<TKey, TEntity> : IEquatable<KeyRef<TKey, TEntity>>, IComparable<KeyRef<TKey, TEntity>>
+    public struct KeyRef<TKey, TEntity> : IEquatable<KeyRef<TKey, TEntity>>, IComparable<KeyRef<TKey, TEntity>>, IComparable
         where TKey : struct, IEquatable<TKey>, IComparable<TKey>
         where TEntity : Element<TEntity>, new()
     {
@@ -88,6 +88,15 @@ namespace Hiperspace
             if (this > other) return 1;
             return 0;
         }
+
+        public int CompareTo(object? obj)
+        {
+            if (obj == null) throw new ArgumentNullException();
+            if (obj is KeyRef<TKey, TEntity> kr)
+                return CompareTo(kr);
+            throw new ArgumentException();
+        }
+
         public static bool operator ==(KeyRef<TKey, TEntity> left, KeyRef<TKey, TEntity> right)
         {
             if (left._key.Equals(right._key)) return true;

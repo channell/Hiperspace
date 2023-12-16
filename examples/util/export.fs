@@ -16,6 +16,7 @@ open System.Text.Json.Serialization
 open Microsoft.EntityFrameworkCore
 open Log
 open System.Linq
+open Hiperspace
 
 let dirOperation tabs (o : ElementOperations) =
     printfn "%s%s" tabs o.Name
@@ -48,28 +49,30 @@ let listing (space : SparxSpace) =
 /// graph listing
 let graphListing (space : SparxSpace) =
     log "Graph list"
-    query { for n in (query { for n in space.Nodes do select n }).ToList() do
-            groupBy n.TypeName into g
-            select (g.Key, g.Count())}
-    |> Seq.iter (fun g -> printfn "Node Type %s : %i" (fst g) (snd g))
+    let edgeListing (edges : Edge list) =
+        edges 
+        |> List.iter (fun e -> let n = e.To.Value.Value
+                               printfn "\t(%s) %s (%s)" e.TypeName  n.Name n.TypeName)
 
-    query { for n in (query { for e in space.Edges do select e }).ToList() do
-            groupBy n.TypeName into g
-            select (g.Key, g.Count())}
-    |> Seq.iter (fun g -> printfn "Edge Type %s : %i" (fst g) (snd g))
+    let listing (node : Node, edges : Edge list) =
+        printfn "%s (%s)" node.Name node.TypeName
+        edgeListing edges
 
-    query { for n in space.Nodes do 
-            where (n.TypeName.StartsWith("EA-Package") &&
-                   n.Froms.Count > 0) 
-            select n }
-    |> Seq.iter     
-        (fun node -> 
-            printfn "\t%s (%s)" node.Name node.TypeName
-            query { for e in node.Froms do
-                    select e }
-            |> Seq.iter   
-                (fun edge -> printfn "\t\t%s (%s) %s" edge.Name edge.TypeName edge.To.Value.Value.Name))
-
+    let edges = 
+        use scope = new SparxSpace(space)
+        query { for e in scope.Edges do
+                where (e.TypeName.StartsWith ("EA-Package")) 
+                select e}
+        |> Seq.filter   (fun e -> not (e.From.Value.Value = null))
+        |> Seq.toList
+        |> List.map     (fun e -> ignore e.From.Value.Value     // touch references to escape scope
+                                  ignore e.To.Value.Value
+                                  e)
+        |> List.groupBy (fun e -> e.From.Value.Value)
+    
+    edges
+    |> List.iter    listing
+        
 let nodes (space : SparxSpace) (typename : string) =
     log "Nodes"
     query { for n in space.Nodes do
@@ -181,3 +184,28 @@ let countsql (ctx : Context ) =
     sqlGraph ctx
     |> count
     |> fun c -> log $"Count of objects is {c}"
+
+
+/// extract one object without traveral
+let oneVistor  (space : SparxSpace) =
+    log "One Visitor"
+    let incl (set : ('t -> RefSet<'i>)) (op : ('i -> unit)) (self : 't) =
+        set self |> Seq.iter op
+        self
+    let visitor : Element = 
+        use scope = new SparxSpace (space)
+        query { for element in scope.EAElements do
+                 where (element.Name = "Visitor" && element.ObjectType = "Class")
+                 select element}
+        |> Seq.head
+        |> incl (fun e -> e.Attributes) (fun a -> ignore a.Tags )
+//        |> incl (fun e -> e.Operations) (fun o -> ignore o.Tags )
+//        |> incl (fun e -> e.Operations) (fun o -> ignore o.Parameters)
+    let options = JsonSerializerOptions()
+    options.ReferenceHandler <- ReferenceHandler.Preserve
+    options.WriteIndented <- true
+    options.DefaultIgnoreCondition <- JsonIgnoreCondition.WhenWritingNull
+    options.Converters.Add(SetSpaceConverter())
+    options.Converters.Add(KeyRefConverter())
+    printfn "%s" (JsonSerializer.Serialize (visitor, options));
+    log "End One Visitor"
