@@ -29,7 +29,7 @@ namespace Hiperspace
 
         public bool Equals(Timestamp other)
         {
-            if (this == other) return true;
+            if (Value.AsDateTime().Ticks == other.Value.AsDateTime().Ticks) return true;
             return false;
         }
         public override bool Equals(Object? other)
@@ -40,32 +40,35 @@ namespace Hiperspace
         }
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return Value.GetHashCode();
         }
 
         public int CompareTo(Timestamp other)
         {
-            if (this < other) return -1;
-            if (this > other) return 1;
+            if (Value.AsDateTime().Ticks < other.Value.AsDateTime().Ticks) return -1;
+            if (Value.AsDateTime().Ticks > other.Value.AsDateTime().Ticks) return 1;
             return 0;
         }
 
         public static bool operator ==(Timestamp left, Timestamp right)
         {
-            if (left != right) return false;
-            return true;
+            if (left.Equals(right)) return true;
+            return false;
         }
         public static bool operator !=(Timestamp left, Timestamp right)
         {
-            return !(left == right);
+            if (left.Equals(right)) return false;
+            return true;
         }
         public static bool operator <(Timestamp left, Timestamp right)
         {
-            return left < right;
+            if (left.Value.AsDateTime().Ticks < right.Value.AsDateTime().Ticks) return true;
+            return false;
         }
         public static bool operator >(Timestamp left, Timestamp right)
         {
-            return left > right;
+            if (left.Value.AsDateTime().Ticks > right.Value.AsDateTime().Ticks) return true;
+            return false;
         }
     }
 }

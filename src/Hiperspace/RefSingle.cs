@@ -71,6 +71,7 @@ namespace Hiperspace
                 _binder(_entity);
             }
         }
+        public void Refresh() => _entity = null;
 
         public void Bind(SetSpace<TEntity> setspace)
         {

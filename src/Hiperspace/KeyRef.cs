@@ -28,6 +28,7 @@ namespace Hiperspace
         {
             _key = key;
             _entity = entity;
+            SetSpace = entity.SetSpace;
         }
 
         [ProtoMember(2)]
@@ -66,6 +67,8 @@ namespace Hiperspace
                 SetSpace = null;
             }
         }
+        public void Refresh() => _entity = null;
+
         public bool Equals(KeyRef<TKey, TEntity> other)
         {
             if (this == other) return true;

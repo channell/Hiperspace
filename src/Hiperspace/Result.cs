@@ -56,6 +56,7 @@ namespace Hiperspace
         }
 
         public bool Ok => Status == Result.Status.Ok || Status == Result.Status.Skip;
+        public bool New => Status == Result.Status.Ok;
         public bool Skip => Status == Result.Status.Skip || Status == Result.Status.Fail;
         public bool Fail => Status == Result.Status.Fail;
 

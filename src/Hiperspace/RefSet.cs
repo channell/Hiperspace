@@ -21,18 +21,42 @@ namespace Hiperspace
             _template = () => new TEntity();
             _binder = e => { };
             _cached = new HashSet<TEntity>();
+            _filter = e => true;
         }
         public RefSet(Func<TEntity> template, Action<TEntity> binder)
         {
             _template = template;
             _binder = binder;
             _cached = new HashSet<TEntity>();
+            _filter = e => true;
         }
         public void PreBind(Func<TEntity> template, Action<TEntity> binder)
         {
             _template = template;
             _binder = binder;
             _cached = new HashSet<TEntity>();
+            _filter = e => true;
+        }
+        /// <summary>
+        /// Construct a reference, including a a filter for scenario where the index to the set overlaps with 
+        /// the key
+        /// </summary>
+        /// <param name="template">for search in Hiperspace</param>
+        /// <param name="binder">for items added to the collection</param>
+        /// <param name="filter">for filtering results from Hiperspace</param>
+        public RefSet(Func<TEntity> template, Action<TEntity> binder, Func<TEntity,bool> filter)
+        {
+            _template = template;
+            _binder = binder;
+            _cached = new HashSet<TEntity>();
+            _filter = filter;
+        }
+        public void PreBind(Func<TEntity> template, Action<TEntity> binder, Func<TEntity, bool> filter)
+        {
+            _template = template;
+            _binder = binder;
+            _cached = new HashSet<TEntity>();
+            _filter = filter;
         }
 
         private ISet<TEntity> Lazy()
@@ -47,7 +71,7 @@ namespace Hiperspace
                     TEntity[] result = SetSpace.Find(_template(),true).ToArray();
                     if (result != Array.Empty<TEntity>())
                     {
-                        _cached.UnionWith(result);
+                        _cached.UnionWith(result.Where(_filter));
                     }
                     _lock.Exit();
                 }
@@ -61,15 +85,17 @@ namespace Hiperspace
         private volatile bool _new = true;
         private Func<TEntity> _template;
         private Action<TEntity> _binder;
+        private Func<TEntity, bool> _filter;
         public SetSpace<TEntity>? SetSpace;
+
 
         public void Bind(SetSpace<TEntity> setspace)
         {
             SetSpace = setspace;
             foreach (var en in _cached) 
             {
-                en.Bind(SetSpace.Space);
                 _binder(en);
+                en.Bind(SetSpace.Space);
             }
         }
         public void Unbind(SubSpace subSpace)
@@ -94,8 +120,8 @@ namespace Hiperspace
             {
                 if (SetSpace != null)
                 {
-                    item.Bind(SetSpace.Space);
                     _binder(item);
+                    item.Bind(SetSpace.Space);
                 }
                _cached.Add(item);
                 _lock.Exit();

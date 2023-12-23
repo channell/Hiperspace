@@ -8,6 +8,7 @@
 using System.Buffers.Binary;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace Hiperspace.Heap
@@ -36,7 +37,8 @@ namespace Hiperspace.Heap
         {
             var fullkey = new byte[key.Length + sizeof(long) + 1];
             key.CopyTo(fullkey, 1);
-            BinaryPrimitives.WriteInt64BigEndian(new Span<byte>(fullkey, fullkey.Length - sizeof(long), sizeof(long)), version.Ticks);
+            var toend = ulong.MaxValue - (ulong)version.Ticks;
+            BinaryPrimitives.WriteUInt64BigEndian(new Span<byte>(fullkey, fullkey.Length - sizeof(long), sizeof(long)), toend);
 
             var (cur, v) = Get(key, version);
             if (cur != null)
@@ -81,16 +83,44 @@ namespace Hiperspace.Heap
             });
         }
 
-        private static int Compare(byte[] left, byte[] right)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int Compare(Span<byte> left, Span<byte> right)
         {
             var min = left.Length < right.Length ? left.Length : right.Length;
-            for (var c = 0; c < min; c++)
+            int c = 0, d = 0;
+
+            // compare 8-byte chunks
+            while ((d += sizeof(long)) < min)
             {
-                var cmp = left[c].CompareTo(right[c]);
-                if (cmp != 0)
-                    return cmp;
+                var longleft = BinaryPrimitives.ReadUInt64BigEndian(left.Slice(c, sizeof(long)));
+                var longright = BinaryPrimitives.ReadUInt64BigEndian(right.Slice(c, sizeof(long)));
+                if (longleft < longright)
+                    return -1;
+                else if (longright < longleft)
+                    return 1;
+                c = d;
             }
-            return (left.Length) - (right.Length);
+            // compare 4-byte chunks
+            if (min - c > sizeof(int))
+            {
+                var intleft = BinaryPrimitives.ReadUInt32BigEndian(left.Slice(c, sizeof(int)));
+                var intright = BinaryPrimitives.ReadUInt32BigEndian(right.Slice(c, sizeof(int)));
+                if (intleft < intright)
+                    return -1;
+                else if (intright < intleft)
+                    return 1;
+                c += sizeof(int);
+            }
+            // compare bytes
+            while (c < min)
+            {
+                if (left[c] < right[c])
+                    return -1;
+                else if (left[c] > right[c])
+                    return 1;
+                c++;
+            }
+            return left.Length < right.Length ? -1 : left.Length > right.Length ? 1 : 0;
         }
 
         public override IEnumerable<(byte[], byte[])> Find(byte[] begin, byte[] end)
@@ -107,6 +137,7 @@ namespace Hiperspace.Heap
                 return cursor;
             }
         }
+        private static byte[] FF = new byte[] { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
 
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Find(byte[] begin, byte[] end, DateTime? version)
         {
@@ -115,7 +146,7 @@ namespace Hiperspace.Heap
 
             begin.CopyTo(new Span<byte>(vbegin, 1, begin.Length));
             end.CopyTo(new Span<byte>(vend, 1, end.Length));
-            for (int c = end.Length; c < vend.Length; c++) vend[c] = 0xFF;
+            FF.CopyTo(new Span<byte>(vend, vend.Length - sizeof(long), sizeof(long)));
 
             byte[] lastKey = Array.Empty<byte>();
             byte[] lastValue = Array.Empty<byte>();
@@ -137,11 +168,12 @@ namespace Hiperspace.Heap
                 if (Compare(vbegin, row.Key) <= 0 && Compare(vend, row.Key) >= 0)
                 {
                     var keypart = new byte[row.Key.Length - sizeof(long) - 1];
-                    for (int c = 0; c < keypart.Length; c++) keypart[c] = row.Key[c + 1];
-                    if (Compare(keypart, lastKey) == 0 || lastKey == Array.Empty<byte>())
+                    var span = new Span<byte>(row.Key, 1, row.Key.Length - sizeof(long) - 1);
+                    span.CopyTo(keypart);
+                    if (lastKey == Array.Empty<byte>() || Compare(keypart, lastKey) == 0 )
                     {
-                        var ver = BinaryPrimitives.ReadInt64BigEndian(new Span<byte>(row.Key, row.Key.Length - sizeof(long), sizeof(long)));
-                        if (!version.HasValue || (ver < version.Value.Ticks && ver > lastVersion))
+                        var ver = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(row.Key, row.Key.Length - sizeof(ulong), sizeof(ulong))));
+                        if ((version.HasValue && ver < version.Value.Ticks && ver > lastVersion) || (!version.HasValue && lastVersion == 0))
                         {
                             lastKey = keypart;
                             lastVersion = ver;
@@ -152,7 +184,7 @@ namespace Hiperspace.Heap
                     {
                         yield return (lastKey, new DateTime(lastVersion), lastValue);
                         lastKey = keypart;
-                        lastVersion = BinaryPrimitives.ReadInt64BigEndian(new Span<byte>(row.Key, row.Key.Length - sizeof(long), sizeof(long)));
+                        lastVersion = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(row.Key, row.Key.Length - sizeof(ulong), sizeof(ulong))));
                         lastValue = row.Value;
                     }
                 }
