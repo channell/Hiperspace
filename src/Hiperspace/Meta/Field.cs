@@ -22,7 +22,6 @@ namespace Hiperspace.Meta
         }
         public bool Equals(Field other)
         {
-            if (!Name.Equals(other.Name)) return false;
             if (!DataType.Equals(other.DataType)) return false;
             if (Id != other.Id) return false;
             return true;

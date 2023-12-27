@@ -25,7 +25,7 @@ namespace Plan
         }
 
         public static decimal? ZeroNull (decimal? value)
-       {
+        {
             if (value == null)
                 return 0m;
             return value;

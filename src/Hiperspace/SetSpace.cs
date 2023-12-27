@@ -47,7 +47,10 @@ namespace Hiperspace
             {
                 TEntity? res;
                 if (((HashSet<TEntity>)this).TryGetValue(item, out res))
+                {
+                    _lock.Exit();
                     return Result.Skip(res);
+                }
 
                 if (!cache || Filter(item).Ok)
                 {
@@ -57,7 +60,10 @@ namespace Hiperspace
                     return Result.Ok(item);
                 }
                 else
+                {
+                    _lock.Exit();
                     return Result.Fail(item, "Filtered by Horizon");
+                }
             }
             else
                 throw new LockRecursionException();
@@ -179,7 +185,10 @@ namespace Hiperspace
                 if (((HashSet<TEntity>)this).TryGetValue(item, out res))
                 {
                     if (_isStrict)
+                    {
+                        _lock.Exit();
                         return Result.Skip(res);
+                    }
                     else
                         base.Remove(res);
                 }
@@ -192,7 +201,10 @@ namespace Hiperspace
                     return Result.Ok(item);
                 }
                 else
+                {
+                    _lock.Exit();
                     return Result.Fail(item, "Filtered by Horizon");
+                }
             }
             else
                 throw new LockRecursionException();
@@ -212,7 +224,10 @@ namespace Hiperspace
                 if (base.TryGetValue(item, out res))
                     base.Remove(res);
                 else if (_isStrict)
+                {
+                    _lock.Exit();
                     return Result.Skip(res);
+                }
 
                 if (!cache || Filter(item).Ok)
                 {
@@ -222,7 +237,10 @@ namespace Hiperspace
                     return Result.Ok(item);
                 }
                 else
+                {
+                    _lock.Exit();
                     return Result.Fail(item, "Filtered by Horizon");
+                }
             }
             else
                 throw new LockRecursionException();

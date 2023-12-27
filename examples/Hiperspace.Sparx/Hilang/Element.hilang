@@ -1,8 +1,18 @@
-﻿" All elements in a Sparx model are stored seperately"
+﻿" Additional Edge for Element structure"
+view Sparx.EA.Graph.ElementEdge = Edge (From = Element, To = Parent, TypeName = "EA-ElementParent", Name = Element.Name)
+(
+    Element : Sparx.EA.Element
+)
+{
+    Parent  : Sparx.EA.Element
+};
+
+" All elements in a Sparx model are stored seperately"
 @Table ( "t_object" ), Versioned
 entity Sparx.EA.Element 
     = Node (SKey = SKey, Name = Name, TypeName = "EA-" + ObjectType + "-" + Stereotype),
-      Edge (From = Package , To = self, TypeName = "EA-PackageContains", Name = Name)
+      Edge (From = self , To = Package, TypeName = "EA-PackageContent", Name = Name),
+      Sparx.EA.Graph.ElementEdge (Element = self, Parent = Parent)
     #100
 (
     "Unique global key within a model"

@@ -22,8 +22,6 @@ namespace Sparx.EA
         
         public virtual DbSet<DiagramObject> DiagramObjects { get; set; }
         
-        public virtual DbSet<ObjectEffort> ObjectEfforts { get; set; }
-
         public virtual DbSet<Element> Elements { get; set; }
         public virtual DbSet<ElementFiles> ElementFiles { get; set; }
 
@@ -405,9 +403,6 @@ namespace Sparx.EA
                 .Ignore(t => t.SetSpace)
                 .Ignore(t => t.AsAt)
                 .Ignore(t => t.Deleted)
-                ;
-            modelBuilder.Entity<ObjectEffort>()
-                .Ignore(t => t.SetSpace)
                 ;
 
             modelBuilder.Entity<Connector>()

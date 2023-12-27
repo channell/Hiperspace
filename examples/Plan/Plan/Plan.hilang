@@ -128,7 +128,6 @@ entity Plan.Tasks.Task = Node (SKey = SKey, Name = Name, TypeName = "Plan-Task")
     PctComplete = Actual.Duration.Time / Duration.Time,
     Effort      = count (Resources.Weight) * Duration.Time,
     ImpResCost  = 0.0 + sum (Resources.ImpliedCost),
-/*    PlnResCost  = 0.0 + (sum (Resources.TimeCost) * Duration.Time), */
     PlanCost    = Cost +
                   sum (SubTasks.PlanCost) +
                   sum (Resources.UseCost) + 
@@ -162,7 +161,7 @@ segment Plan.Tasks.TaskLink
     Lag         : TimeSpan
 }
 [
-    LinkCost = 0.0 + Task.SunkCost
+    LinkCost    = 0.0 + Task.SunkCost
 ]
 ;
 
@@ -176,7 +175,7 @@ enum Plan.Tasks.ScheduleType
 Resources used by the task
 "
 segment Plan.Tasks.TaskResource  = Node (SKey = SKey, Name = Resource.Name, TypeName = "Plan-Task-Resource"), 
-                                   Edge (From = self, To = owner, Name = Resource.Name, TypeName = "Plan-Task-Resource") 
+                                   Edge (From = owner, To = Resource, Name = Resource.Name, TypeName = "Plan-Task-Resource")
 (
     Resource    : Plan.Resource
 )
@@ -194,10 +193,10 @@ segment Plan.Tasks.TaskResource  = Node (SKey = SKey, Name = Resource.Name, Type
     "Implied Cost"
     ImpliedCost = 0.0 + sum (Timesheets.Cost),
 
-    "Time cost is an aggregate because the the Resource reference is not infered to be a single"
+    "Time cost is an aggregate because the Resource reference is not infered to be a single"
     TimeCost    = Resource.TimeCost,
     
-    "Use cost is an aggregate because the the Resource reference is not infered to be a single"
+    "Use cost is an aggregate because the Resource reference is not infered to be a single"
     UseCost     = Resource.UseCost
 ];
 
@@ -225,7 +224,10 @@ entity Plan.Resource = Node (SKey = SKey, Name = Name, TypeName = "Plan-Resource
 
     "Cost per hour of resource usage"
     TimeCost  : Decimal
-};
+}
+[
+    Booked    : Booking.Timesheet (Resource = self)
+];
 
 /* 
  * view for BI analysis
@@ -253,6 +255,9 @@ view BI.Item    = Node (SKey = SKey, Name = Name, TypeName = "BI-Cost-" + TypeNa
     ActualTime  = Actual.Time
 ];
 
+"
+Time booking by resources against 
+"
 entity Booking.Timesheet
 (
     Resource    : Plan.Resource,
@@ -264,11 +269,11 @@ entity Booking.Timesheet
     "Estimated time to complete this task"
     Estimate    : Decimal,
     Comment     : String,
-    Valid       = Resource = null ||
-                  Task = null ||
-                  Date <= Task.Duration.Start ||
-                  Date >= Task.Duration.End ||
-                  Date <= Task.Actual.Close     /* Closing date for time booking in the Task Actual aspect */
+    Valid       = Resource = null ||             /* resource can not be null                                */
+                  Task = null ||                 /* task can not be null                                    */
+                  Date <= Task.Duration.Start || /* date before task start is invalid                       */
+                  Date >= Task.Duration.End ||   /* date after task end is invalid                          */
+                  Date <= Task.Actual.Close      /* Closing date for time booking in the Task Actual aspect */
                   ? false : true
 }
 [

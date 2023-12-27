@@ -36,7 +36,7 @@ namespace Hiperspace
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Push (int key, int poppoint)
         {
-            int s = 0, e = _map.Length - 1, m = _map.Length / 2, lm = 0;
+            int s = 0, e = _map.Length - 1, m = _map.Length / 2, ls = m, le = m;
             do
             {
                 if (_map[s].key == key)
@@ -60,10 +60,13 @@ namespace Hiperspace
                 else 
                     e = m;
                 m = (s + e) / 2;
-                if (m == lm)
+                if (s == ls && e == le)
                     break;
                 else
-                    lm = m;
+                {
+                    ls = s;
+                    le = e;
+                }
             }
             while (s != e);
             return;
@@ -90,7 +93,7 @@ namespace Hiperspace
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Next (int member, int poppoint)
         {
-            int s = 0, e = _currentMap.Length - 1, m = _currentMap.Length / 2, lm = 0;
+            int s = 0, e = _currentMap.Length - 1, m = _currentMap.Length / 2, ls = m, le = m;
             do
             {
                 if (_currentMap[s].member == member)
@@ -108,10 +111,13 @@ namespace Hiperspace
                 else 
                     e = m;
                 m = (s + e) / 2;
-                if (m == lm)
+                if (s == ls && e == le)
                     break;
                 else
-                    lm = m;
+                {
+                    ls = s;
+                    le = e;
+                }
             }
             while (s != e);
             return false;

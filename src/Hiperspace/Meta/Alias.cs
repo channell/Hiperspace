@@ -23,7 +23,6 @@ namespace Hiperspace.Meta
         public bool Equals(Alias other)
         {
             Parameters = Parameters ?? new Relation[0];
-            if (!Name.Equals(other.Name)) return false;
             if (Id != other.Id) return false;
             var map = other.Parameters.ToDictionary(i => i.Id);
             for (int c = 0; c < Parameters.Length; c++) 

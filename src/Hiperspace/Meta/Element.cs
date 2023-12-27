@@ -34,7 +34,6 @@ namespace Hiperspace.Meta
             Keys = Keys ?? new Field[0];
             Values = Values ?? new Field[0];
             Index = Index ?? new Alias[0];
-            if (!Name.Equals(other.Name)) return false;
             if (Id != other.Id) return false;
             if (Category != other.Category) return false;
             if (Versioned != other.Versioned) return false;
