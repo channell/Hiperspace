@@ -63,12 +63,12 @@ let graphListing (space : SparxSpace) =
         query { for e in scope.Edges do
                 where (e.TypeName.StartsWith ("EA-Package")) 
                 select e}
-        |> Seq.filter   (fun e -> not (e.From.Value.Value = null))
+        |> Seq.filter   (fun e -> not (e.To.Value.Value = null))
         |> Seq.toList
         |> List.map     (fun e -> ignore e.From.Value.Value     // touch references to escape scope
                                   ignore e.To.Value.Value
                                   e)
-        |> List.groupBy (fun e -> e.From.Value.Value)
+        |> List.groupBy (fun e -> e.To.Value.Value)
     
     edges
     |> List.iter    listing
@@ -197,7 +197,7 @@ let oneVistor  (space : SparxSpace) =
         query { for element in scope.EAElements do
                  where (element.Name = "Visitor" && element.ObjectType = "Class")
                  select element}
-        |> Seq.head
+        |>  Seq.head
         |> incl (fun e -> e.Attributes) (fun a -> ignore a.Tags )
 //        |> incl (fun e -> e.Operations) (fun o -> ignore o.Tags )
 //        |> incl (fun e -> e.Operations) (fun o -> ignore o.Parameters)
