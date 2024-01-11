@@ -123,7 +123,8 @@ namespace Hiperspace
                     _binder(item);
                     item.Bind(SetSpace.Space);
                 }
-               _cached.Add(item);
+                else
+                   _cached.Add(item);
                 _lock.Exit();
             }
             else

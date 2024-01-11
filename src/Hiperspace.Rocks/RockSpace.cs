@@ -344,8 +344,8 @@ namespace Hiperspace.Rocks
             BinaryPrimitives.WriteUInt64BigEndian(new Span<byte>(end, end.Length - sizeof(long), sizeof(long)), ulong.MaxValue);
             foreach (var r in Find(begin, end))
             {
-                var keypart = new byte[r.Item1.Length - sizeof(ulong)];
-                r.Item1.CopyTo(new Span<byte>(keypart, 0, keypart.Length));
+                var keypart = new byte[r.Item1.Length - sizeof(ulong) - 1];
+                var span = new Span<byte>(r.Item1, 1, r.Item1.Length - sizeof(ulong) - 1);
 
                 if (Compare(key, keypart) == 0)
                 {
@@ -382,7 +382,7 @@ namespace Hiperspace.Rocks
 
         public override void EndTransaction()
         {
-            // RocksDBSharp deos not currently support transactions
+            // RocksDBSharp does not currently support transactions
         }
     }
 }

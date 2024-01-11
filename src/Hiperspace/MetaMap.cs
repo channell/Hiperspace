@@ -93,6 +93,7 @@ namespace Hiperspace
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Next (int member, int poppoint)
         {
+            if (_currentMap.Length == 0) return false;
             int s = 0, e = _currentMap.Length - 1, m = _currentMap.Length / 2, ls = m, le = m;
             do
             {

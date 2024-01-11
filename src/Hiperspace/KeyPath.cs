@@ -31,8 +31,36 @@ namespace Hiperspace
         public abstract bool Bind(TEntity item);
         public abstract Task<bool> BindAsync(TEntity item);
 
+        public virtual (byte[] key, byte[] value) PrepareBind(TEntity item)
+        {
+            throw new NotImplementedException();
+        }
+        public virtual Task<(byte[] key, byte[] value)> PrepareBindAsync(TEntity item)
+        {
+            throw new NotImplementedException();
+        }
+
         public abstract TEntity? Get(ref TKey key);
         public abstract IEnumerable<TEntity> Find(TEntity template);
         public abstract Task<IEnumerable<TEntity>> FindAsync(TEntity template);
+
+        /// <summary>
+        /// Perform a full table scan because there are no suitable Key or Index to use
+        /// </summary>
+        /// <param name="template">empty structure</param>
+        /// <returns>every instance of TEntity in the hiperspace</returns>
+        public virtual IEnumerable<TEntity> Scan(TEntity template)
+        {
+            return Find(template);
+        }
+        /// <summary>
+        /// Perform a full table scan async because there are no suitable Key or Index to use
+        /// </summary>
+        /// <param name="template">empty structure</param>
+        /// <returns>every instance of TEntity in the hiperspace</returns>
+        public virtual Task<IEnumerable<TEntity>> ScanAsync(TEntity template)
+        {
+            return FindAsync(template);
+        }
     }
 }

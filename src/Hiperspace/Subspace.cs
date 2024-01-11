@@ -177,6 +177,22 @@ namespace Hiperspace
         {
             return _space.GetVersionsAsync(key);
         }
+
+        /// <summary>
+        /// Implementation of the Subspace should provide an implementation for entities they map
+        /// </summary>
+        /// <typeparam name="TEntity"></typeparam>
+        /// <returns></returns>
+        public virtual SetSpace<TEntity>? SetSpace<TEntity>() where TEntity : Element<TEntity>, new()
+        {
+            if (typeof(TEntity) == typeof(Node))
+                return Nodes as SetSpace<TEntity>;
+
+            else if (typeof(TEntity) == typeof(Edge))
+                return Edges as SetSpace<TEntity>;
+
+            return null;
+        }
         #endregion
     }
 }

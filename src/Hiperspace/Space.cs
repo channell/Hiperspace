@@ -6,6 +6,7 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using ProtoBuf;
+using System;
 
 namespace Hiperspace
 {
@@ -16,7 +17,12 @@ namespace Hiperspace
             var find = Vpl2f(source, map);
             return (find.begin, find.end);
         }
-        
+        public static ValueTuple<byte[], byte[]> ScanBytes(byte[] source, (int key, (int member, int key)[] values)[] map)
+        {
+            var find = Vpl2s(source, map);
+            return (find.begin, find.end);
+        }
+
         public static byte[] KeyBytes<TProto>(TProto proto, (int key, (int member, int key)[] values)[] map)
         {
             var ms = new MemoryStream();
@@ -67,7 +73,7 @@ namespace Hiperspace
         const byte btype  = 0b0000_0111;
 
         /// <summary>
-        /// Convert length prefixed value to value prefix length to allow ordeed search
+        /// Convert length prefixed value to value prefix length to allow ordered search
         /// </summary>
         /// <remarks>
         /// only the top level lengths are reordered
@@ -101,10 +107,11 @@ namespace Hiperspace
                         bytes[s++] = source[p++];
                         break;
                     case 1: // I64
-                        for (int c = 0; c < 9; c++)
-                        {
-                            bytes[s++] = source[p++];
-                        }
+                        var tspan = new Span<byte>(bytes, s, sizeof(Int64));
+                        var sspan = new Span<byte>(bytes, p, sizeof(Int64));
+                        sspan.CopyTo(tspan);
+                        s += sizeof(Int64);
+                        p += sizeof(Int64);
                         break;
                     case 2: // LEN prefixed value
                         int id = (source[p] & ival) >> 3;
@@ -132,11 +139,11 @@ namespace Hiperspace
                         // is not a nested message
                         if (!meta.Next(id, p + totlen))
                         {
-                            // copy the length prefixed field
-                            while (totlen-- != 0)
-                            {
-                                bytes[s++] = source[p++];
-                            }
+                            tspan = new Span<byte>(bytes, s, totlen);
+                            sspan = new Span<byte>(source, p, totlen);
+                            sspan.CopyTo(tspan);
+                            s += totlen;
+                            p += totlen;
                         }
                         break;
                     case 5: // I32
@@ -188,10 +195,11 @@ namespace Hiperspace
                         bytes[s++] = source[p++];
                         break;
                     case 1: // I64
-                        for (int c = 0; c < 9; c++)
-                        {
-                            bytes[s++] = source[p++];
-                        }
+                        var tspan = new Span<byte>(bytes, s, sizeof(Int64));
+                        var sspan = new Span<byte>(bytes, p, sizeof(Int64));
+                        sspan.CopyTo(tspan);
+                        s += sizeof(Int64);
+                        p += sizeof(Int64);
                         break;
                     case 2: // LEN prefixed value
                         int id = (source[p] & ival) >> 3;
@@ -219,11 +227,11 @@ namespace Hiperspace
                         // is a nested message
                         if (!meta.Next(id, p + totlen))
                         {
-                            // copy the length prefixed field
-                            while (totlen-- != 0)
-                            {
-                                bytes[s++] = source[p++];
-                            }
+                            tspan = new Span<byte>(bytes, s, totlen);
+                            sspan = new Span<byte>(source, p, totlen);
+                            sspan.CopyTo(tspan);
+                            s += totlen;
+                            p += totlen;
                         }
                         break;
                     case 5: // I32
@@ -267,10 +275,11 @@ namespace Hiperspace
                         bytes[s++] = source[p++];
                         break;
                     case 1: // I64
-                        for (int c = 0; c < 9; c++)
-                        {
-                            bytes[s++] = source[p++];
-                        }
+                        var tspan = new Span<byte>(bytes, s, sizeof(Int64));
+                        var sspan = new Span<byte>(bytes, p, sizeof(Int64));
+                        sspan.CopyTo(tspan);
+                        s += sizeof(Int64);
+                        p += sizeof(Int64);
                         break;
                     case 2: // LEN prefixed value
                         int totlen = 0;
@@ -297,11 +306,11 @@ namespace Hiperspace
                         bytes[e--] = 0x00;
                         if (!meta.Next(id, p + totlen))
                         {
-                            // copy the length prefixed field
-                            while (totlen-- != 0)
-                            {
-                                bytes[s++] = source[p++];
-                            }
+                            tspan = new Span<byte>(bytes, s, totlen);
+                            sspan = new Span<byte>(source, p, totlen);
+                            sspan.CopyTo(tspan);
+                            s += totlen;
+                            p += totlen;
                         }
                         break;
                     case 5: // I32
@@ -315,9 +324,99 @@ namespace Hiperspace
                         break;
                 }
             }
-            bytes.CopyTo(other,0);
+            bytes.CopyTo(other, 0);
             while (++e < other.Length) other[e] = 0xFF;
-            return (bytes,other);
+            return (bytes, other);
+        }
+        /// <summary>
+        /// For scan, we are only intereted in the first field
+        /// </summary>
+        /// <param name="source">source stream serialised to protobuf</param>
+        /// <param name="metadata">metadata for nested fields</param>
+        /// <returns>scan range to first buffer</returns>
+        public static (byte[] begin, byte[] end) Vpl2s(byte[] source, (int key, (int member, int key)[] values)[] metadata)
+        {
+            if (source.Length == 0) return (source, source);
+            var meta = new MetaMap(metadata, source.Length);
+            byte[] bytes = new byte[source.Length];
+            byte[] other = new byte[source.Length];
+            int s = 0;
+            int p = 0;
+            int e = source.Length - 1;
+            bool finding = true;
+            while (e >= s && p < source.Length && finding)
+            {
+                meta.PopIf(p);
+                switch (source[p] & btype)
+                {
+                    case 0: //varint
+                        while ((source[p] & icont) == icont)
+                        {
+                            bytes[s++] = source[p++];
+                        }
+                        bytes[s++] = source[p++];
+                        // copy value
+                        while ((source[p] & icont) == icont)
+                        {
+                            bytes[s++] = source[p++];
+                        }
+                        bytes[s++] = source[p++];
+                        break;
+                    case 1: // I64
+                        var tspan = new Span<byte>(bytes, s, sizeof(Int64));
+                        var sspan = new Span<byte>(bytes, p, sizeof(Int64));
+                        sspan.CopyTo(tspan);
+                        s += sizeof(Int64);
+                        p += sizeof(Int64);
+                        break;
+                    case 2: // LEN prefixed value
+                        int totlen = 0;
+                        int id = (source[p] & ival) >> 3;
+                        int shift = 4;
+                        while ((source[p] & icont) == icont) // copy varint
+                        {
+                            bytes[s++] = source[p++];
+                            id += (source[p] & ival) << shift;
+                            shift += 4;
+                        }
+                        bytes[s++] = source[p++];
+                        int len = source[e] & ival;
+                        shift = 4;
+                        // copy LEN field from the end of the buffer
+                        while ((source[e] & icont) == icont)
+                        {
+                            len += (source[p] & ival) << shift;
+                            shift += 4;
+                            bytes[e--] = 0x00;
+                            totlen--;
+                        }
+                        totlen += len;
+                        bytes[e--] = 0x00;
+                        if (!meta.Next(id, p + totlen))
+                        {
+                            tspan = new Span<byte>(bytes, s, totlen);
+                            sspan = new Span<byte>(source, p, totlen);
+                            sspan.CopyTo(tspan);
+                            s += totlen;
+                            p += totlen;
+                        }
+                        else
+                            finding = false;
+                        break;
+                    case 5: // I32
+                        for (int c = 0; c < 5; c++)
+                        {
+                            bytes[s++] = source[p++];
+                        }
+                        break;
+                    default: // others copy
+                        bytes[s++] = source[p++];
+                        break;
+                }
+            }
+            bytes.CopyTo(other, 0);
+            while (p < other.Length) other[p++] = 0xFF;
+            return (bytes, other);
         }
     }
 }

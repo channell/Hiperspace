@@ -109,6 +109,10 @@ namespace Hiperspace
 
         public new abstract void UnionWith (IEnumerable<TEntity> other);
 
+        public virtual bool IsSargable(TEntity template)
+        {
+            return false;  // change to abstract in next release
+        }
         public abstract IEnumerable<TEntity> Find(TEntity template, bool cache = true);
 
         public abstract Task<IEnumerable<TEntity>> FindAsync(TEntity template, bool cache = true);

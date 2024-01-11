@@ -31,6 +31,14 @@ namespace Hiperspace
             Froms = new RefSet<Edge>(() => new Edge { From = self }, item => item.From = self);
             Tos = new RefSet<Edge>(() => new Edge { To = self }, item => item.To = self);
         }
+        public Node(Node source, SubSpace? space = null) : this()
+        {
+            _key = source._key;
+            _value = source._value;
+            if (space != null)
+                Bind (space);
+        }
+
         public Node (KeyType key) : this()
         {
             _key = key;

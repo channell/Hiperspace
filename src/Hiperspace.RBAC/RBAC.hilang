@@ -1,0 +1,397 @@
+﻿%domain(Access);
+
+%function (unary, approved, Access.RBAC.Functions.Approved, Boolean);
+%function (unary, authorised, Access.RBAC.Functions.Authorised, Boolean);
+%function (set, empty, Access.RBAC.Functions.Empty, Boolean);
+
+/* addin for Permissioned elements */
+type Access.RBAC.Permissioned 
+{ 
+    " Author is the user that is making this change, And subject to access validation "
+    Author      : Access.RBAC.User
+}
+[
+    ValidAuthor = Author = null ? false : true
+];
+
+/* helper type to add Versioned attribute and Deleted value */
+@Versioned type Versioned { Deleted = false };
+
+/* Helper to enable a set of references in a set */
+value Ref<T>
+{
+    Value       : T
+};
+
+/*
+    Additional Edge definitions
+*/
+view Edge2 = Edge ()  
+(
+    From        : Node,
+    To          : Node,
+    TypeName    : String
+)
+{
+    Name        : String
+};
+view Edge3 = Edge ()  
+(
+    From        : Node,
+    To          : Node,
+    TypeName    : String
+)
+{
+    Name        : String
+};
+view Edge4 = Edge ()  
+(
+    From        : Node,
+    To          : Node,
+    TypeName    : String
+)
+{
+    Name        : String
+};
+
+/* addin for Permissioned elements */
+type Access.RBAC.Permissioned 
+{ 
+    Author      : Access.RBAC.User
+}
+[
+    ValidAuthor = Author = null ? false : true,
+    ErrorAuthor = ValidAuthor = false ? "Missing user, " : ""
+];
+
+"Permission enum can be checked with a bitwise and"
+enum Access.RBAC.PermissionType
+{
+    Create          #1,
+    Delete          #2,
+    Update          #4,
+    CreateDelete    #3,
+    CreateUpdate    #5,
+    DeleteUpdate    #6,
+    All             #7
+};
+
+" 
+A Access realm is a mechanism used for protecting Web application resources. 
+It gives you the ability to protect a resource with a defined Access constraint 
+and then define the user roles that can access the protected resource.
+"
+entity Access.RBAC.Realm : Access.RBAC.Permissioned
+                           = Node ( SKey = SKey, Name = Name, TypeName = "RBAC-Realm")    
+(
+    Name        : String
+)
+{
+    " Validation constraint for the creation of a realm in hiperspace. "
+    Valid       = Name = null ||
+                  Author = null ||
+                  CanCreate = false
+                  ? false : true
+}
+[
+    /* Validation property to check for uniqueness for permission checks. */
+    Exists      : Access.RBAC.Realm (Name = Name),
+
+    TypeName    = "RBAC-Realm",
+
+    " Can the user create this realm using permissions granted to them, their group or their role? "
+    CanCreate   = empty(Exists) = true && authorised (Author, Access.RBAC.PermissionType.Create, TypeName) = true ? true : false,
+
+    " Diagnostic error message for when validation fails. "
+    ErrorMsg    = (empty(Exists) = false ? "Realm Exists, " : "") + 
+                  (Author = null ? "Invalid Author, " : "") +
+                  (CanCreate = false ? "not authorised " : "")
+];
+
+"
+A Access principal is any entity that can be authenticated by the operating system, 
+such as a user account, a computer account, or a thread or process that runs in the 
+Access context of a user or computer account, or the Access groups for these accounts. 
+Access principals have long been a foundation for controlling access to securable resources. 
+"
+type Access.RBAC.Principal : Versioned, Access.RBAC.Permissioned
+(
+    Realm       : Access.RBAC.Realm
+)
+{
+    Name        : String
+}
+[
+    " The set of permissions granted to this security principal, stored in the segment. "
+    Permission  : Access.RBAC.Permission,
+
+    " Set of Roles that this security principle is a member of. "
+    Roles       : Access.RBAC.RoleMember,
+
+    " Base validation that is used by all implementations of this security principle. "
+    ValidBase   = Realm = null || 
+                  Name = null ||
+                  ValidAuthor = false
+                  ? false : true,
+
+    " Diagnostic error message for when the validation fails. "
+    ErrorBase   = (Realm = null ? "Realm is null, " : "") +
+                  (Name = null ? "Name Is null, " : "") + 
+                  (ValidAuthor = false ? "Author invalid, " : "")
+];
+"
+A permission granted to a group user or role on a resource, typically an entity in hiperspace database. 
+"
+segment Access.RBAC.Permission : Versioned, Access.RBAC.Permissioned 
+                                 = Edge  (From = owner, To = Item, Name = Item.Subject, TypeName = TypeName),
+                                   Edge2 (From = Item, To = owner, Name = Item.Subject, TypeName = TypeName + "|From")
+(
+    " Identify all the resource item. "
+    Item        : Access.RBAC.Resource,
+
+    " The permission being granted create, update, delete. "
+    Right       : Access.RBAC.PermissionType
+)
+{
+    " The set of roles that have approve this permission. "
+    Approval    : Set<Ref<Access.RBAC.Group>>,
+
+    " The set of roles that are required  to aprove this permission before it is used. "
+    Required    = Item.Approvers,
+
+    " Flag for Horizon conditions to hide unapproved permission requests. "
+    Approved    = approved (Approval, Required),
+
+    " Validation criteria to implement standard constraint rules. "
+    Valid       = owner = null || 
+                  Item = null ||
+                  CanUpdate = false ||
+                  CanDelete = false
+                  ? false : true
+}
+[
+    TypeName    = "RBAC-Permission",
+    Subject     = Item.Subject,
+    Authorised  = authorised (Author, Right, Subject),
+
+    " Property that applies a security check to see if the user can update this permission through user, group or role permission"
+    CanUpdate   = authorised (Author, Access.RBAC.PermissionType.Update, TypeName),
+
+    " Property that applies a security check to see if the user can deleet this permission through user, group or role permission"
+    CanDelete   = Deleted = false || authorised (Author, Access.RBAC.PermissionType.Delete, TypeName) = true ? true : false,
+
+    " Diagnostic error message for when the validation fails. "
+    ErrorMsg    = (owner = null ? "Inalid owner, " : "") +
+                  (Item = null ? "Invalid item, " : "") +
+                  (CanUpdate = false ? "Can not update, " : "") +
+                  (CanDelete = false ? "Can not delete, " : "")
+]
+;
+
+"
+Group is a hierarchical organization of users  
+"
+entity Access.RBAC.Group : Access.RBAC.Principal
+                           = Node  (SKey = SKey, Name = Name, TypeName = TypeName),
+                             Edge  (From = self, To = Parent, Name = Name, TypeName = TypeName),
+                             Edge2 (From = self, To = Realm, Name = Name, TypeName = "RBAC-Realm-Member"),
+                             Edge3 (From = Parent, To = self, Name = Name, TypeName = TypeName + "|From"),
+                             Edge4 (From = Realm, To = self, Name = Name, TypeName = "RBAC-Realm-Member|From") 
+(
+    Id          : Guid
+)
+{
+    " Referenced to the parent group of this group. "
+    Parent      : Access.RBAC.Group,
+
+    " Flag for searching to indicate whether this is a root group. "
+    Root        = Parent = null ? true : false,
+
+    " Validation criteria to implement constraints, used with Horizon filters. "
+    Valid       = Id = null ||
+                  ValidBase = false ||
+                  CanUpdate = false ||
+                  CanDelete = false 
+                  ? false : true
+}
+[
+    " Join extension to all the children of this group. "
+    SubGroups   : Access.RBAC.Group (Parent = self),
+
+    " Users that are members of this group. "
+    Members     : Access.RBAC.User (Group = self),
+
+    /* Validation property to check for uniqueness for permission checks. */
+    Exists      : Access.RBAC.Group (Realm = Realm, Name = Name),
+
+    TypeName    = "RBAC-Group",
+
+    " Can the author update this group using permissions granted to itself, to its groups or to the role it's a member of? "
+    CanUpdate   = authorised (Author, Access.RBAC.PermissionType.Update, TypeName),
+
+    " Can the author delete this group using its permissions? "
+    CanDelete   = Deleted = true && authorised (Author, Access.RBAC.PermissionType.Delete, TypeName) = false ? false : true,
+
+    " Can the author simulate deletion by hiding this item from the current view? "
+    CanCreate   = empty (Exists) = true && authorised (Author, Access.RBAC.PermissionType.Create, TypeName) = true ? true : false,
+
+    " Diagnostic property for validation failure. "
+    ErrorMsg    = (Id = null ? "Invalid Id, " : "") +
+                  (ValidBase = false ? ErrorBase : "") +
+                  (CanUpdate = false ? "Can not update, " : "") +
+                  (CanDelete = false ? "Can not delete, " : "")
+]
+;
+
+"
+User is a security principal that can connect to a resource. Either a person or a service account. 
+"
+entity Access.RBAC.User : Access.RBAC.Principal
+                          = Node  (SKey = SKey, Name = Name, TypeName = TypeName),
+                            Edge  (From = self, To = Group, Name = Name, TypeName = TypeName),
+                            Edge2 (From = Group, To = self, Name = Name, TypeName = TypeName + "|From")
+(
+    Id          : Guid
+)
+{
+    PublicKey   : String,
+
+    " Group that this user is a member of. "
+    Group       : Access.RBAC.Group,
+
+    " Validation criteria prior to creating this user in hyperspace. "
+    Valid       = Id = null ||
+                  PublicKey = null ||
+                  ValidBase = false ||
+                  CanUpdate = false ||
+                  CanDelete = false   
+                  ? false : true
+}
+[
+    /* Validation property to check for uniqueness for permission checks. */
+    Exists      : Access.RBAC.User (Realm = Realm, Name = Name),
+
+    TypeName    = "RBAC-User",
+
+    " Can the author update this user using permissions assigned to itself, its group or role that is a member of. "
+    CanUpdate   = authorised (Author, Access.RBAC.PermissionType.Update, TypeName),
+
+    " Can the user simulate deleting of the user by hiding it from the current view? "
+    CanDelete   = Deleted = false || authorised (Author, Access.RBAC.PermissionType.Delete, TypeName) = true ? true : false,
+
+    " Can the author create a new user using permissions assigned to itself, its group or a role, but it is a member of. "
+    CanCreate   = empty (Exists) = true && authorised (Author, Access.RBAC.PermissionType.Create, TypeName) = true ? true : false,
+
+    " Diagnostic error property for validation failures. "
+    ErrorMsg    = (Id = null ? "Invalid Id, " : "") +
+                  (PublicKey = null ? "Missing PublicKey, " : "") +
+                  (ValidBase = false ? ErrorBase : "") +
+                  (CanUpdate = false ? "Can not update, " : "") +
+                  (CanDelete = false ? "Can not delete, " : "")
+];
+
+"
+Royal membership can be validated directly for groups and users but also applies to a collection of permissions. 
+"
+entity Access.RBAC.Role : Access.RBAC.Principal 
+                        = Node  (SKey = SKey, Name = Name, TypeName = TypeName)
+(
+    " Friendly name for his user enroll check. "
+    Code        : String
+)
+{
+    " Validation criteria for implementation of constraints and to prevent unauthorized update. "
+    Valid       = Code = null ||
+                  ValidBase = false ||
+                  CanUpdate = false ||
+                  CanDelete = false   
+                  ? false : true
+}
+[
+    /* Validation property to check for uniqueness for permission checks. */
+    Exists      : Access.RBAC.User (Realm = Realm, Name = Name),
+
+    TypeName    = "RBAC-Role",
+
+    " Can the author update this role using permissions granted to itself, its group or role that is a member of "
+    CanUpdate   = authorised (Author, Access.RBAC.PermissionType.Update, TypeName),
+
+    " Can the author simulate deletion by hiding this role from the current view? "
+    CanDelete   = Deleted = true && authorised (Author, Access.RBAC.PermissionType.Delete, TypeName) = false ? true : false,
+
+    " Can the author create this role? "
+    CanCreate   = empty (Exists) = true && authorised (Author, Access.RBAC.PermissionType.Create, TypeName) = true ? true : false,
+
+    " Diagnostic error message for validation failures. "
+    ErrorMsg    = (Code = null ? "Invalid Code, " : "") +
+                  (ValidBase = false ? ErrorBase : "") +
+                  (CanUpdate = false ? "Can not update, " : "") +
+                  (CanDelete = false ? "Can not delete, " : "")
+];
+
+"
+Any security principal (group, user or role) can be a member of a role - it is Separately. "
+segment Access.RBAC.RoleMember : Versioned, Access.RBAC.Permissioned  
+(
+    " Reference to the role that this group user or role is a member of "
+    Role        : Access.RBAC.Role
+)
+{
+    " Validation criteria to implement standard constraints. "
+    Valid       = owner = null ||
+                  Role = null || 
+                  CanUpdate = false ||
+                  CanDelete = false
+                  ? false : true
+}
+[
+    TypeName    = "RBAC-Role-Member",
+
+    " Can the author update this role membership? "
+    CanUpdate   = authorised (Author, Access.RBAC.PermissionType.Update, TypeName),
+
+    " Can the author simulate deletion of this role membership by hiding it from the current view? "
+    CanDelete   = Deleted = false || authorised (Author, Access.RBAC.PermissionType.Delete, TypeName) = true ? true : false,
+
+    " Diagnostic error property for validation failures. "
+    ErrorMsg    = (owner = null ? "Invalid owner, " : "") +
+                  (Role = null ? "Invalid Role, " : "") +
+                  (CanUpdate = false ? "Can not update, " : "") +
+                  (CanDelete = false ? "Can not delete, " : "")
+]
+;
+
+"
+A resource is a subject where permissions can be granted to create, update, delete, or a combination of all
+"
+entity Access.RBAC.Resource : Versioned, Access.RBAC.Permissioned 
+                            = Node (SKey = SKey, Name = Subject, TypeName = "RBAC-Resource")
+(
+    Subject     : String
+)
+{
+    " Set of groups that must approve this resource access. "
+    Approvers   : Set<Ref<Access.RBAC.Group>>,
+
+    "Validation property to implement standard constraints. "
+    Valid       = Subject = null ||
+                  Approvers = null ||
+                  ValidAuthor = false ||
+                  CanUpdate = false ||
+                  CanDelete = false
+                  ? false : true
+}
+[
+    " Can the author update this resource? "
+    CanUpdate   = authorised (Author, Access.RBAC.PermissionType.Update, Subject),
+
+    " Can the author simulate deletion of resource by hiding it from the current view? "
+    CanDelete   = Deleted = false || authorised (Author, Access.RBAC.PermissionType.Delete, Subject) = true ? true : false,
+
+    " Diagnostic error message for validation failures. "
+    ErrorMsg    = (Subject = null ? "Invalid Subject, " : "") +
+                  (Approvers = null ? "Invalid Approvers, " : "") +
+                  (ValidAuthor = false ? "Invalid Author, " : "") +
+                  (CanUpdate = false ? "Can not update, " : "") +
+                  (CanDelete = false ? "Can not delete, " : "")
+];

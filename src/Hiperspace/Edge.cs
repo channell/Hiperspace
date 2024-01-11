@@ -36,6 +36,13 @@ namespace Hiperspace
             _key = key;
             _value = new ValueType();
         }
+        public Edge(Edge source, SubSpace? space = null) : this()
+        {
+            _key = source._key;
+            _value = source._value;
+            if (space != null) 
+                Bind(space);
+        }
 
         public KeyRef<Node.KeyType, Node>? From
         {
@@ -179,13 +186,20 @@ namespace Hiperspace
         {       
             if (SetSpace != subspace.Edges)
             {
+                if (From.HasValue)
+                {
+                    var value = From.Value;
+                    value.Bind(subspace.Nodes);
+                    From = value;
+                }
+                if (To.HasValue)
+                {
+                    var value = To.Value;
+                    value.Bind(subspace.Nodes);
+                    To = value;
+                }
                 SetSpace = subspace.Edges;
                 var result = SetSpace.Bind(this);
-                if (result.Ok && this == result.Value)
-                {
-                    From?.Bind(subspace.Nodes);
-                    To?.Bind(subspace.Nodes);
-                }
                 return result;
             }
             return Result.Skip(this);

@@ -229,10 +229,10 @@ namespace Hiperspace.Heap
         {
             var begin = new byte[key.Length + sizeof(long) + 1];
             var end = new byte[key.Length + sizeof(long) + 1];
-            key.CopyTo(begin, 0);
-            key.CopyTo(end, 0);
-            BinaryPrimitives.WriteInt64BigEndian(new Span<byte>(begin, begin.Length - sizeof(long), sizeof(long)), 0);
-            BinaryPrimitives.WriteInt64BigEndian(new Span<byte>(end, end.Length - sizeof(long), sizeof(long)), long.MaxValue);
+            key.CopyTo(begin, 1);
+            key.CopyTo(end, 1);
+            BinaryPrimitives.WriteUInt64BigEndian(new Span<byte>(begin, begin.Length - sizeof(long), sizeof(long)), 0);
+            BinaryPrimitives.WriteUInt64BigEndian(new Span<byte>(end, end.Length - sizeof(long), sizeof(long)), ulong.MaxValue);
             (byte[] Key, byte[] Value)[] cursor;
 
             lock (_heap)
@@ -247,12 +247,13 @@ namespace Hiperspace.Heap
             }
             foreach (var row in cursor)
             {
-                var keypart = new byte[row.Key.Length - sizeof(long)];
-                row.Key.CopyTo(new Span<byte>(keypart, 0, keypart.Length));
+                var keypart = new byte[row.Key.Length - sizeof(long) - 1];
+                var span = new Span<byte>(row.Key, 1, row.Key.Length - sizeof(long) - 1);
+                span.CopyTo(keypart);
 
                 if (Compare(key, keypart) == 0)
                 {
-                    long ver = BinaryPrimitives.ReadInt64BigEndian(new Span<byte>(row.Key, row.Key.Length - sizeof(long), sizeof(long)));
+                    var ver = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(row.Item1, row.Item1.Length - sizeof(ulong), sizeof(ulong))));
                     yield return (row.Value, new DateTime(ver));
                 }
             }

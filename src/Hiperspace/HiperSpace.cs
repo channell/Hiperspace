@@ -63,6 +63,57 @@ namespace Hiperspace
         public abstract Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, object? source = null);
 
         /// <summary>
+        /// Bind a batch of values for server single trip
+        /// </summary>
+        /// <param name="batch">array of request</param>
+        /// <returns>array of results</returns>
+        public virtual Result<byte[]>[] BatchBind((byte[] key, byte[] value, object? source)[] batch)
+        {
+            var result = new Result<byte[]>[batch.Length];
+
+            for (int c = 0; c < batch.Length; c++)
+            {
+                result[c] = Bind(batch[c].key, batch[c].value, batch[c].source);
+            }
+            return result;
+        }
+        /// <summary>
+        /// Bind a batch of values for server single trip
+        /// </summary>
+        /// <param name="batch">array of request</param>
+        /// <returns>array of results</returns>
+        public virtual Result<byte[]>[] BatchBind((byte[] key, byte[] value, DateTime version, object? source)[] batch)
+        {
+            var result = new Result<byte[]>[batch.Length];
+
+            for (int c = 0; c < batch.Length; c++)
+            {
+                result[c] = Bind(batch[c].key, batch[c].value, batch[c].source);
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Bind a batch of values for server single trip async
+        /// </summary>
+        /// <param name="batch">array of request</param>
+        /// <returns>array of results</returns>
+        public virtual async Task<Result<byte[]>[]> BatchBindAsync((byte[] key, byte[] value, object? source)[] batch)
+        {
+            return await Task.Run(() => BatchBind(batch));
+        }
+
+        /// <summary>
+        /// Bind a batch of values for server single trip async
+        /// </summary>
+        /// <param name="batch">array of request</param>
+        /// <returns>array of results</returns>
+        public virtual async Task<Result<byte[]>[]> BatchBindAsync((byte[] key, byte[] value, DateTime version, object? source)[] batch)
+        {
+            return await Task.Run(() => BatchBind(batch));
+        }
+
+        /// <summary>
         /// Enumeration of raw values for transfer
         /// </summary>
         /// <returns>content of space</returns>
