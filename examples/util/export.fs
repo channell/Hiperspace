@@ -72,6 +72,33 @@ let graphListing (space : SparxSpace) =
     
     edges
     |> List.iter    listing
+
+/// graph tree
+let GraphTree (space : SparxSpace) =
+
+    let root = 
+        query { for n in space.Packages do
+                where (n.Name = "Model")
+                select n}
+        |> Seq.head
+        |> fun p -> Node (p, space)
+
+    let rec print tabs (visited : Set<Node>) (n : Node) =
+        let printEdges tabs (visited : Set<Node>) (n : Node)  =
+            let printFrom tabs (visited : Set<Node>) (e : Edge) =
+                printfn $"{tabs}Edge {{ From = {e.From.Value.Value.SKey}, To = {e.To.Value.Value.SKey}, Name = {e.Name}, TypeName = {e.TypeName}}}"
+                print ($"{tabs}\t") visited e.To.Value.Value
+            n.Froms
+            |> Seq.filter  (fun e -> not (e.From.Value.Value = null || e.To.Value.Value = null))
+            |> List.ofSeq
+            |> List.iter    (printFrom tabs visited)
+        printfn $"{tabs}Node {{ SKey = {n.SKey}, Name = {n.Name}, TypeName = {n.TypeName} }}"
+        if not (visited.Contains n) then 
+            let newVisited = visited |> Set.add n
+            printEdges $"{tabs}\t" newVisited n
+
+    print "" (Set.ofList []) root
+
         
 let nodes (space : SparxSpace) (typename : string) =
     log "Nodes"
@@ -171,6 +198,15 @@ let rec count (package : Package) =
     |> Seq.fold (fun a i -> a + i) 0
 
 let countrocks (space : SparxSpace) = 
+    let id = NV 1
+    query {for p in space.Packages do
+            where (p.Id = id)
+            select p} 
+    |> Seq.head
+    |> count
+    |> fun c -> log $"Count of objects is {c}"
+
+let countremote (space : SparxSpace) = 
     let id = NV 1
     query {for p in space.Packages do
             where (p.Id = id)

@@ -15,7 +15,7 @@ type Access.RBAC.Permissioned
 ];
 
 /* helper type to add Versioned attribute and Deleted value */
-@Versioned type Versioned { Deleted = false };
+@Versioned type Versioned { "Flag for read horizon filter to hide when true" Deleted = false };
 
 /* Helper to enable a set of references in a set */
 value Ref<T>
@@ -156,7 +156,7 @@ segment Access.RBAC.Permission : Versioned, Access.RBAC.Permissioned
     " The set of roles that have approve this permission. "
     Approval    : Set<Ref<Access.RBAC.Group>>,
 
-    " The set of roles that are required  to aprove this permission before it is used. "
+    " The set of roles that are required to approve this permission before it is used. "
     Required    = Item.Approvers,
 
     " Flag for Horizon conditions to hide unapproved permission requests. "
@@ -189,7 +189,7 @@ segment Access.RBAC.Permission : Versioned, Access.RBAC.Permissioned
 ;
 
 "
-Group is a hierarchical organization of users  
+Group is a hierarchical organization of users or service accounts
 "
 entity Access.RBAC.Group : Access.RBAC.Principal
                            = Node  (SKey = SKey, Name = Name, TypeName = TypeName),
@@ -330,7 +330,8 @@ entity Access.RBAC.Role : Access.RBAC.Principal
 ];
 
 "
-Any security principal (group, user or role) can be a member of a role - it is Separately. "
+Any security principal (group, user or role) can be a member of a role - it is stored Separately. 
+"
 segment Access.RBAC.RoleMember : Versioned, Access.RBAC.Permissioned  
 (
     " Reference to the role that this group user or role is a member of "

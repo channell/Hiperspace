@@ -12,22 +12,27 @@ namespace Access
             Read        // applies valid constraint and permissions that have been approved
         }
 
+        /// <summary>
+        /// Horizon filters canot refer to properties that would require navigation
+        /// </summary>
+        /// <param name="realm"></param>
+        /// <returns></returns>
         private static Horizon[] Read (RBAC.Realm realm) =>
         [
             new Horizon<RBAC.Realm>(r => r.Valid == true && r.Name == realm.Name),
-            new Horizon<RBAC.UserPermission>(p => p.Valid == true && p.Approved == true && p.owner?.Key.Realm == realm.self), // && p.owner?.Value?.Realm == realm),
+            new Horizon<RBAC.UserPermission>(p => p.Valid == true && p.Approved == true && p.owner?.Key.Realm == realm.self), 
             new Horizon<RBAC.GroupPermission>(p => p.Valid == true && p.Approved == true && p.owner?.Key.Realm == realm.self),
-            new Horizon<RBAC.User>(u => u.Valid == true && u?.Realm == realm),
-            new Horizon<RBAC.Group>(g => g.Valid == true && g?.Realm == realm),
+            new Horizon<RBAC.User>(u => u.Valid == true && u?.Realm == realm.self),
+            new Horizon<RBAC.Group>(g => g.Valid == true && g?.Realm == realm.self),
             new Horizon<RBAC.Resource>(i => i.Valid == true),
         ];
         private static Horizon[] Write (RBAC.Realm realm) =>
         [
             new Horizon<RBAC.Realm>(r => r.Valid == true && r == realm),
-            new Horizon<RBAC.UserPermission>(p => p.Valid == true), // && p.owner?.Value?.Realm == realm),
-            new Horizon<RBAC.GroupPermission>(p => p.Valid == true), // && p.owner?.Value?.Realm == realm),
-            new Horizon<RBAC.User>(u => u.Valid == true && u?.Realm == realm),
-            new Horizon<RBAC.Group>(g => g.Valid == true && g?.Realm == realm),
+            new Horizon<RBAC.UserPermission>(p => p.Valid == true && p.owner?.Key.Realm == realm.self),
+            new Horizon<RBAC.GroupPermission>(p => p.Valid == true && p.owner?.Key.Realm == realm.self),
+            new Horizon<RBAC.User>(u => u.Valid == true && u?.Realm == realm.self),
+            new Horizon<RBAC.Group>(g => g.Valid == true && g?.Realm == realm.self),
             new Horizon<RBAC.Resource>(i => i.Valid == true),
         ];
 

@@ -5,6 +5,7 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using System;
 using System.Buffers.Binary;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
@@ -125,6 +126,7 @@ namespace Hiperspace.Heap
 
         public override IEnumerable<(byte[], byte[])> Find(byte[] begin, byte[] end)
         {
+            RaiseOnBeforeFind(ref begin, ref end);
             lock (_heap)
             {
                 var beginnode = new HeapNode(begin, Array.Empty<byte>());
@@ -134,6 +136,7 @@ namespace Hiperspace.Heap
                     .GetViewBetween(beginnode, endnode)
                     .Select(n => (n.Key, n.Value))
                     .ToArray();
+                RaiseOnAfterFind(ref begin, ref end);
                 return cursor;
             }
         }
@@ -141,6 +144,7 @@ namespace Hiperspace.Heap
 
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Find(byte[] begin, byte[] end, DateTime? version)
         {
+            RaiseOnBeforeFind(ref begin, ref end);
             var vbegin = new byte[begin.Length + sizeof(long) + 1];
             var vend = new byte[end.Length + sizeof(long) + 1];
 
@@ -173,7 +177,7 @@ namespace Hiperspace.Heap
                     if (lastKey == Array.Empty<byte>() || Compare(keypart, lastKey) == 0 )
                     {
                         var ver = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(row.Key, row.Key.Length - sizeof(ulong), sizeof(ulong))));
-                        if ((version.HasValue && ver < version.Value.Ticks && ver > lastVersion) || (!version.HasValue && lastVersion == 0))
+                        if ((version.HasValue && ver <= version.Value.Ticks && ver > lastVersion) || (!version.HasValue && lastVersion == 0))
                         {
                             lastKey = keypart;
                             lastVersion = ver;
@@ -193,6 +197,7 @@ namespace Hiperspace.Heap
             {
                 yield return (lastKey, new DateTime(lastVersion), lastValue);
             }
+            RaiseOnAfterFind(ref begin, ref end);
         }
 
         public override Task<IEnumerable<(byte[], byte[])>> FindAsync(byte[] begin, byte[] end)
@@ -206,19 +211,22 @@ namespace Hiperspace.Heap
 
         public override byte[] Get(byte[] key)
         {
-            return Find(key, key).FirstOrDefault().Item2;
+            RaiseOnBeforeGet(ref key);
+            var result = Find(key, key).FirstOrDefault().Item2;
+            RaiseOnAfterGet (ref key, ref result);
+            return result;
         }
         public override (byte[], DateTime) Get(byte[] key, DateTime? version)
         {
+            RaiseOnBeforeGet(ref key);
             var (_,d,v) = Find(key,key,version).LastOrDefault();
+            RaiseOnAfterGet(ref key, ref v);
             return (v, d);
         }
 
-        public override async Task<byte[]> GetAsync(byte[] key)
+        public override Task<byte[]> GetAsync(byte[] key)
         {
-            var node = new HeapNode(key, Array.Empty<byte>());
-            var find = await FindAsync(key, key);
-            return find.FirstOrDefault().Item2;
+            return Task.Run(() => Get(key));
         }
         public override Task<(byte[], DateTime)> GetAsync(byte[] key, DateTime? version)
         {
@@ -227,6 +235,8 @@ namespace Hiperspace.Heap
 
         public override IEnumerable<(byte[] value, DateTime version)> GetVersions(byte[] key)
         {
+            RaiseOnBeforeGet(ref key);
+            var finding = true;
             var begin = new byte[key.Length + sizeof(long) + 1];
             var end = new byte[key.Length + sizeof(long) + 1];
             key.CopyTo(begin, 1);
@@ -253,6 +263,12 @@ namespace Hiperspace.Heap
 
                 if (Compare(key, keypart) == 0)
                 {
+                    if (finding)
+                    {
+                        finding = false;
+                        var value = row.Value;
+                        RaiseOnAfterGet(ref key, ref value);
+                    }
                     var ver = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(row.Item1, row.Item1.Length - sizeof(ulong), sizeof(ulong))));
                     yield return (row.Value, new DateTime(ver));
                 }
@@ -317,10 +333,6 @@ namespace Hiperspace.Heap
                     throw new ArgumentException($"Type {nameof(other)} is not compatible with Node");
                 }
                 var min = Key.Length < objTuple.Key.Length ? Key.Length : objTuple.Key.Length;
-#if DEBUG
-                var thisStr = asString(Key);
-                var thatStr = asString(objTuple.Key);
-#endif
                 var cmp = CompareKeys(Key, objTuple.Key);
                 return cmp;
             }
@@ -377,14 +389,5 @@ namespace Hiperspace.Heap
             return sb.ToString();
         }
 #endif
-
-        public override Transaction BeginTransaction()
-        {
-            return new Transaction(this);
-        }
-
-        public override void EndTransaction()
-        {
-        }
     }
 }

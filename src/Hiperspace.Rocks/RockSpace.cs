@@ -199,6 +199,7 @@ namespace Hiperspace.Rocks
         }
         public override IEnumerable<(byte[], byte[])> Find(byte[] begin, byte[] end)
         {
+            RaiseOnBeforeFind(ref begin, ref end);
             using (var iter = _db.NewIterator())
             {
                 var range = iter.Seek(begin);
@@ -215,10 +216,12 @@ namespace Hiperspace.Rocks
                         break;
                 }
             }
+            RaiseOnAfterFind(ref begin, ref end);
         }
         private static byte[] FF = new byte[] { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Find(byte[] begin, byte[] end, DateTime? version)
         {
+            RaiseOnBeforeFind(ref begin, ref end);
             var vbegin = new byte[begin.Length + sizeof(long) + 1];
             var vend = new byte[end.Length + sizeof(long) + 1];
             begin.CopyTo(new Span<byte>(vbegin, 1, begin.Length));
@@ -265,6 +268,7 @@ namespace Hiperspace.Rocks
                 {
                     yield return (lastKey, new DateTime(lastVersion), lastValue);
                 }
+                RaiseOnAfterFind(ref begin, ref end);
             }
         }
 
@@ -279,11 +283,15 @@ namespace Hiperspace.Rocks
 
         public override byte[] Get(byte[] key)
         {
-            return _db.Get(key);
+            RaiseOnBeforeGet(ref key);
+            var result = _db.Get(key);
+            RaiseOnAfterGet(ref key, ref result);
+            return result;
         }
 
         public override (byte[], DateTime) Get(byte[] key, DateTime? version)
         {
+            RaiseOnBeforeGet(ref key);
             var vbegin = new byte[key.Length + sizeof(long) + 1];
             key.CopyTo(new Span<byte>(vbegin, 1, key.Length));
             byte[] lastValue = Array.Empty<byte>();
@@ -302,7 +310,7 @@ namespace Hiperspace.Rocks
                         var ver = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(k, k.Length - sizeof(ulong), sizeof(ulong))));
                         if (version.HasValue)
                         {
-                            if (ver < version.Value.Ticks && ver > lastVersion)
+                            if (ver <= version.Value.Ticks && ver > lastVersion)
                             {
                                 lastVersion = ver;
                                 lastValue = range.Value();
@@ -310,7 +318,9 @@ namespace Hiperspace.Rocks
                         }
                         else
                         {
-                            return (range.Value(), new DateTime(ver));
+                            var result = range.Value();
+                            RaiseOnAfterGet(ref key, ref result);
+                            return (result, new DateTime(ver));
                         }
                     }
                     else
@@ -321,7 +331,10 @@ namespace Hiperspace.Rocks
             if (lastVersion != 0)
             {
                 if (lastValue != null)
+                {
+                    RaiseOnAfterGet(ref key, ref lastValue);
                     return (lastValue, new DateTime(lastVersion));
+                }
             }
             return (Array.Empty<byte>(), new DateTime());
         }
@@ -336,6 +349,8 @@ namespace Hiperspace.Rocks
 
         public override IEnumerable<(byte[], DateTime)> GetVersions(byte[] key)
         {
+            RaiseOnBeforeGet(ref key);
+            var finding = true;
             var begin = new byte[key.Length + sizeof(long) + 1];
             var end = new byte[key.Length + sizeof(long) + 1];
             key.CopyTo(begin, 1);
@@ -349,6 +364,11 @@ namespace Hiperspace.Rocks
 
                 if (Compare(key, keypart) == 0)
                 {
+                    if (finding)
+                    {
+                        var result = r.Item1;
+                        RaiseOnAfterGet(ref key, ref result);
+                    }
                     var ver = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(r.Item1, r.Item1.Length - sizeof(ulong), sizeof(ulong))));
                     yield return (r.Item2, new DateTime(ver));
                 }
@@ -373,16 +393,6 @@ namespace Hiperspace.Rocks
                 // TODO: set large fields to null
                 _disposedValue = true;
             }
-        }
-
-        public override Transaction BeginTransaction()
-        {
-            return new Transaction(this);
-        }
-
-        public override void EndTransaction()
-        {
-            // RocksDBSharp does not currently support transactions
         }
     }
 }

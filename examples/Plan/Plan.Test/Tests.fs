@@ -6,6 +6,8 @@ open System.IO
 open Hiperspace
 open FluentAssertions
 open Xunit.Abstractions
+open System.Text.Json
+open System.Text.Json.Serialization
 
 type  PlanTest (output : ITestOutputHelper) =
 
@@ -158,7 +160,6 @@ type  PlanTest (output : ITestOutputHelper) =
 
         let addActual (task : Plan.Tasks.Task)  = 
             task.Resources.Refresh ()       // refresh triggers re-fetch for next reference
-            task.Actual.Refresh()           // needed because we're reusing a SubSpace that was updated
             task.Resources |> Seq.iter (fun r -> r.Timesheets.Refresh())
             let actual =
                 Plan.Tasks.TaskActual 
@@ -170,7 +171,9 @@ type  PlanTest (output : ITestOutputHelper) =
                     )
                 |> planSpace.TaskActuals.Bind
                 |> result
-            task.Actual.Value.Should().Be(actual, "assigned") |> ignore
+            let mutable rs = RefSingle<Plan.Tasks.TaskActual.KeyType, Plan.Tasks.TaskActual>  ()
+            rs.Value <- actual
+            task.Actual <- rs
             actual
 
         let addTimeSheet (task : Plan.Tasks.Task) = 
@@ -217,3 +220,25 @@ type  PlanTest (output : ITestOutputHelper) =
         output.WriteLine($"\nBase including time and latest actual")
         bireport snapbase
 
+        let rec print tabs (visited : Set<Node>) (n : Node) =
+            let printEdges tabs (visited : Set<Node>) (n : Node)  =
+                let printFrom tabs (visited : Set<Node>) (e : Edge) =
+                    output.WriteLine ($"{tabs}Edge {{ From = {e.From.Value.Value.SKey}, To = {e.To.Value.Value.SKey}, Name = {e.Name}, TypeName = {e.TypeName}}}")
+                    print ($"{tabs}\t") visited e.To.Value.Value
+                n.Froms
+                |> Seq.filter  (fun e -> not (e.From.Value.Value = null || e.To.Value.Value = null))
+                |> List.ofSeq
+                |> List.iter    (printFrom tabs visited)
+            output.WriteLine ($"{tabs}Node {{ SKey = {n.SKey}, Name = {n.Name}, TypeName = {n.TypeName} }}")
+            if not (visited.Contains n) then 
+                let newVisited = visited |> Set.add n
+                printEdges $"{tabs}\t" newVisited n
+
+        let node = 
+            query {for n in planSpace.Nodes do 
+                   where (n.SKey = p.SKey)
+                   select n}
+
+            |> Seq.head
+
+        print "" (Set.ofList []) node

@@ -101,15 +101,6 @@ namespace Hiperspace
         {
             return _space.GetAsync(key);
         }
-        public override Transaction BeginTransaction()
-        {
-            return _space.BeginTransaction();
-        }
-
-        public override void EndTransaction()
-        {
-            _space.EndTransaction();
-        }
 
         public DateTime? AsAt => _version;
 

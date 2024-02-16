@@ -73,13 +73,12 @@ entity Plan.Project : Versioned
 ];
 
 "SubTask enables the entity Task to export more than one Edge"
-view Plan.Tasks.SubTask = Edge (From = Task, To = Parent, TypeName = "Plan-Task-Part", Name = Task.Name)
+view Plan.Tasks.SubTask = Edge (From = Parent, To = Task, TypeName = "Plan-Task-Part", Name = Task.Name)
 (
+    Parent      : Plan.Tasks.Task,
     Task        : Plan.Tasks.Task
 )
-{
-    Parent        : Plan.Tasks.Task
-};
+;
 
 "
 While the word “task” might bring about feelings of despair related to chores or undesirable actions, 
@@ -90,7 +89,7 @@ projects into them, while covering efficient approaches to manage and distribute
 "
 entity Plan.Tasks.Task : Versioned
                        = Node (SKey = SKey, Name = Name, TypeName = "Plan-Task"),
-                         Edge (From = self, To = Project, TypeName = "Plan-Task", Name = Name),
+                         Edge (From = Project, To = self, TypeName = "Plan-Task", Name = Name),
                          Plan.Tasks.SubTask (Task = self, Parent = Parent),
                          BI.Item (WBS         = BIWBS, 
                                   Name        = Name,

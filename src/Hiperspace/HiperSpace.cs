@@ -5,6 +5,7 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using System;
 using System.IO.Compression;
 
 namespace Hiperspace
@@ -14,14 +15,42 @@ namespace Hiperspace
         protected bool _disposedValue;
 
         public delegate void Bound(byte[] key, byte[] value, object? entity);
+        public delegate void BeforeGet(ref byte[] key);
+        public delegate void AfterGet(ref byte[] key, ref byte[] value);
+        public delegate void BeforeFind(ref byte[] begin, ref byte[] end);
+        public delegate void AfterFind(ref byte[] begin, ref byte[] end);
         /// <summary>
         /// Event to capture Bind Events
         /// </summary>
         public event Bound? OnBind;
-        protected void RaiseOnBind (byte[] key, byte[] value, object? entity)
+        public event BeforeGet? OnBeforeGet;
+        public event AfterGet? OnAfterGet;
+        public event BeforeFind? OnBeforeFind;
+        public event AfterFind? OnAfterFind;
+        protected void RaiseOnBind(byte[] key, byte[] value, object? entity)
         {
-            if (OnBind != null && entity != null) 
-                OnBind (key, value, entity);
+            if (OnBind != null && entity != null)
+                OnBind(key, value, entity);
+        }
+        protected void RaiseOnBeforeGet(ref byte[] key)
+        {
+            if (OnBeforeGet != null)
+                OnBeforeGet(ref key);
+        }
+        protected void RaiseOnAfterGet(ref byte[] key, ref byte[] value)
+        {
+            if (OnAfterGet != null)
+                OnAfterGet(ref key, ref value);
+        }
+        protected void RaiseOnBeforeFind(ref byte[] key, ref byte[] value)
+        {
+            if (OnBeforeFind != null)
+                OnBeforeFind(ref key, ref value);
+        }
+        protected void RaiseOnAfterFind(ref byte[] key, ref byte[] value)
+        {
+            if (OnAfterFind != null)
+                OnAfterFind(ref key, ref value);
         }
         public HiperSpace() 
         {
@@ -67,13 +96,19 @@ namespace Hiperspace
         /// </summary>
         /// <param name="batch">array of request</param>
         /// <returns>array of results</returns>
-        public virtual Result<byte[]>[] BatchBind((byte[] key, byte[] value, object? source)[] batch)
+        public virtual Result<(byte[] Key, byte[] Value)>[] BatchBind((byte[] key, byte[] value, object? source)[] batch)
         {
-            var result = new Result<byte[]>[batch.Length];
+            var result = new Result<(byte[] Key, byte[] Value)>[batch.Length];
 
             for (int c = 0; c < batch.Length; c++)
             {
-                result[c] = Bind(batch[c].key, batch[c].value, batch[c].source);
+                var value = Bind(batch[c].key, batch[c].value, batch[c].source);
+                result[c] = value.Status switch
+                {
+                    Result.Status.Ok => Result.Ok((batch[c].key, value.Value)),
+                    Result.Status.Skip => Result.Skip((batch[c].key, value.Value)),
+                    _ => Result.Fail((batch[c].key, value.Value), value.Reason)
+                };
             }
             return result;
         }
@@ -82,13 +117,19 @@ namespace Hiperspace
         /// </summary>
         /// <param name="batch">array of request</param>
         /// <returns>array of results</returns>
-        public virtual Result<byte[]>[] BatchBind((byte[] key, byte[] value, DateTime version, object? source)[] batch)
+        public virtual Result<(byte[] Key, byte[] Value)>[] BatchBind((byte[] key, byte[] value, DateTime version, object? source)[] batch)
         {
-            var result = new Result<byte[]>[batch.Length];
+            var result = new Result<(byte[] Key, byte[] Value)>[batch.Length];
 
             for (int c = 0; c < batch.Length; c++)
             {
-                result[c] = Bind(batch[c].key, batch[c].value, batch[c].source);
+                var value = Bind(batch[c].key, batch[c].value, batch[c].version, batch[c].source);
+                result[c] = value.Status switch
+                {
+                    Result.Status.Ok => Result.Ok((batch[c].key, value.Value)),
+                    Result.Status.Skip => Result.Skip((batch[c].key, value.Value)),
+                    _ => Result.Fail((batch[c].key, value.Value), value.Reason)
+                };
             }
             return result;
         }
@@ -98,7 +139,7 @@ namespace Hiperspace
         /// </summary>
         /// <param name="batch">array of request</param>
         /// <returns>array of results</returns>
-        public virtual async Task<Result<byte[]>[]> BatchBindAsync((byte[] key, byte[] value, object? source)[] batch)
+        public virtual async Task<Result<(byte[] Key, byte[] Value)>[]> BatchBindAsync((byte[] key, byte[] value, object? source)[] batch)
         {
             return await Task.Run(() => BatchBind(batch));
         }
@@ -108,7 +149,7 @@ namespace Hiperspace
         /// </summary>
         /// <param name="batch">array of request</param>
         /// <returns>array of results</returns>
-        public virtual async Task<Result<byte[]>[]> BatchBindAsync((byte[] key, byte[] value, DateTime version, object? source)[] batch)
+        public virtual async Task<Result<(byte[] Key, byte[] Value)>[]> BatchBindAsync((byte[] key, byte[] value, DateTime version, object? source)[] batch)
         {
             return await Task.Run(() => BatchBind(batch));
         }
@@ -193,17 +234,6 @@ namespace Hiperspace
         /// <param name="key"></param>
         /// <returns></returns>
         public abstract Task<IEnumerable<(byte[] value, DateTime version)>> GetVersionsAsync(byte[] key);
-
-        /// <summary>
-        /// If the space supports transactions, start one to ensure that values and indexes are both stored 
-        /// </summary>
-        /// <returns></returns>
-        public abstract Transaction BeginTransaction();
-        /// <summary>
-        /// End transaction called from <see cref="Transaction"/> 
-        /// </summary>
-        /// <returns></returns>
-        public abstract void EndTransaction();
 
         #endregion
 
