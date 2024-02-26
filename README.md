@@ -39,6 +39,21 @@ Entity Framework has been optimized to use non-tracking proxies and no lazy load
 * Hiperspace takes 65% of the time to export model to JSON (most time dedicated to JSON serialization
 * Interestingly, it was faster to export entire model to Hiperspace, and traverse than to recursively count though SQL/Server 
 
+## Direct RocksDB vs remote
+
+As an embedded store RocksDB can be written by a single process (or multiple when opened read-only). [Rockshare C++ gRPC Server](https://github.com/channell/Hiperspace/tree/master/cpp/rockshare) enables shared write to a RocksDB hiperspace over a TCP socket connection.
+The additional network latency takes 2.3 times as long for a full scan of the hiperspace, but  ~half the time of a relational database.  
+
+|Time|Note|Elapsed|Factor|
+|-|-|-|-|
+|26:14.2|Opening RocksDB|||
+|26:34.1|Count of objects is 579821|00:19.8||
+|26:34.1|Opening Remote RocksDB|||
+|27:20.8|Count of objects is 579821|00:46.7|2.36|
+|27:20.8|Opening database|||
+|28:44.6|Count of objects is 579821|01:23.5|4.21|
+|28:44.6|Finish|||
+
 ## Comparison with a document DB 
 was not undertaken because the size of the document exceeds storage limitations.  Splitting the document into 42433 separate documents is not expected to compare favorably with a relational database and would present problems for connections between classes 
 [GridFS](https://www.mongodb.com/docs/manual/core/gridfs/)
