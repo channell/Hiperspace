@@ -73,6 +73,20 @@ namespace Hiperspace
 		Open();
 		return _space->Find(request);
 	}
+	unique_ptr<Values> SpaceConnection::FindIndex(const FindRequest& request)
+	{
+		_clock = clock();
+		tbb::spin_rw_mutex::scoped_lock lock(_mux, false);
+		Open();
+		return _space->FindIndex(request);
+	}
+	unique_ptr<ValueVersions> SpaceConnection::FindIndex(const FindVersionRequest& request)
+	{
+		_clock = clock();
+		tbb::spin_rw_mutex::scoped_lock lock(_mux, false);
+		Open();
+		return _space->FindIndex(request);
+	}
 
 	unique_ptr<Value> SpaceConnection::Get(const KeyRequest& request)
 	{

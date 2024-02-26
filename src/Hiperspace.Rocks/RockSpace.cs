@@ -27,11 +27,11 @@ namespace Hiperspace.Rocks
         /// and that expected indexes ID are not not changed
         /// </param>
         /// <param name="compress">attempt to open store with compression when metamodel provided</param>
-        public RockSpace(string path, MetaModel? metaModel = null, bool compress = false)
+        public RockSpace(string path, MetaModel? metaModel = null, bool compress = false, bool read = false)
         { 
             try
             {
-                _db = Open(path, metaModel, metaModel != null ? compress : false);
+                _db = Open(path, metaModel, metaModel != null ? compress : false, read);
             }
             catch (MutationException)
             {
@@ -39,10 +39,10 @@ namespace Hiperspace.Rocks
             }
             catch 
             {
-                _db = Open(path, metaModel, !compress);
+                _db = Open(path, metaModel, !compress, read);
             }
         }
-        protected RocksDb Open(string path, MetaModel? metaModel = null, bool compress = false)
+        protected RocksDb Open(string path, MetaModel? metaModel = null, bool compress = false, bool read = false)
         {
             var option = compress ?
                 new DbOptions()
@@ -51,7 +51,9 @@ namespace Hiperspace.Rocks
                 new DbOptions()
                 .SetCreateIfMissing(true);
 
-            _db = RocksDb.Open(option, path);
+            _db = read
+                ? RocksDb.OpenReadOnly (option, path, false)
+                : RocksDb.Open(option, path);
 
             if (metaModel != null ) 
             {

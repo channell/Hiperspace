@@ -94,7 +94,9 @@ namespace Hiperspace
 	{
 		try
 		{
+#ifdef DEBUG
 			cout << LogTime() << " Bind " << endl;
+#endif // DEBUG
 			auto space = _pool->Find(request->token());
 			auto result = space->Bind(*request);
 			response->CopyFrom(*result);
@@ -120,7 +122,9 @@ namespace Hiperspace
 	{
 		try
 		{
+#ifdef DEBUG
 			cout << LogTime() << " BatchBind " << endl;
+#endif
 			auto space = _pool->Find(request->token());
 			auto result = space->BatchBind(*request);
 			response->CopyFrom(*result);
@@ -146,7 +150,9 @@ namespace Hiperspace
 	{
 		try
 		{
+#ifdef DEBUG
 			cout << LogTime() << " Find " << endl;
+#endif
 			auto space = _pool->Find(request->token());
 			auto result = space->Find(*request);
 			response->CopyFrom(*result);
@@ -172,7 +178,9 @@ namespace Hiperspace
 	{
 		try
 		{
+#ifdef DEBUG
 			cout << LogTime() << " Get " << endl;
+#endif
 			auto space = _pool->Find(request->token());
 			auto result = space->Get(*request);
 			response->CopyFrom(*result);
@@ -198,7 +206,9 @@ namespace Hiperspace
 	{
 		try
 		{
+#ifdef DEBUG
 			cout << LogTime() << " BindVersion " << endl;
+#endif
 			auto space = _pool->Find(request->token());
 			auto result = space->Bind(*request);
 			response->CopyFrom(*result);
@@ -224,7 +234,9 @@ namespace Hiperspace
 	{
 		try
 		{
+#ifdef DEBUG
 			cout << LogTime() << " BatchVersionBind " << endl;
+#endif
 			auto space = _pool->Find(request->token());
 			auto result = space->BatchBind(*request);
 			response->CopyFrom(*result);
@@ -250,7 +262,9 @@ namespace Hiperspace
 	{
 		try
 		{
+#ifdef DEBUG
 			cout << LogTime() << " FindVersion " << endl;
+#endif
 			auto token = request->token().tokenid();
 			auto space = _pool->Find(request->token());
 			auto result = space->Find(*request);
@@ -277,7 +291,9 @@ namespace Hiperspace
 	{
 		try
 		{
+#ifdef DEBUG
 			cout << LogTime() << " GetVersion " << endl;
+#endif
 			auto space = _pool->Find(request->token());
 			auto result = space->Get(*request);
 			response->CopyFrom(*result);
@@ -303,7 +319,9 @@ namespace Hiperspace
 	{
 		try
 		{
+#ifdef DEBUG
 			cout << LogTime() << " GetVersions " << endl;
+#endif
 			auto space = _pool->Find(request->token());
 			auto result = space->GetVersions(*request);
 			response->CopyFrom(*result);
@@ -324,5 +342,63 @@ namespace Hiperspace
 			cout << LogTime() << "\tExcpetion " << e.what() << endl;
 			return grpc::Status(grpc::StatusCode::INTERNAL, e.what());
 		}
+	}
+	grpc::Status HipServer::FindIndex(ServerContext* context, const FindRequest* request, Values* response)
+	{
+		try
+		{
+#ifdef DEBUG
+			cout << LogTime() << " Find " << endl;
+#endif
+			auto space = _pool->Find(request->token());
+			auto result = space->FindIndex(*request);
+			response->CopyFrom(*result);
+			return grpc::Status::OK;
+		}
+		catch (ProtocolExcepetion pe)
+		{
+			cout << LogTime() << "\tProtocolExcepetion " << pe.what() << endl;
+			return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, pe.what());
+		}
+		catch (RocksExcpetion re)
+		{
+			cout << LogTime() << "\tRocksExcpetion " << re.what() << endl;
+			return grpc::Status(grpc::StatusCode::DATA_LOSS, re.what());
+		}
+		catch (exception e)
+		{
+			cout << LogTime() << "\tExcpetion " << e.what() << endl;
+			return grpc::Status(grpc::StatusCode::INTERNAL, e.what());
+		}
+	}
+	grpc::Status HipServer::FindIndexVersion(ServerContext* context, const FindVersionRequest* request, ValueVersions* response)
+	{
+		try
+		{
+#ifdef DEBUG
+			cout << LogTime() << " FindVersion " << endl;
+#endif
+			auto token = request->token().tokenid();
+			auto space = _pool->Find(request->token());
+			auto result = space->FindIndex(*request);
+			response->CopyFrom(*result);
+			return grpc::Status::OK;
+		}
+		catch (ProtocolExcepetion pe)
+		{
+			cout << LogTime() << "\tProtocolExcepetion " << pe.what() << endl;
+			return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, pe.what());
+		}
+		catch (RocksExcpetion re)
+		{
+			cout << LogTime() << "\tRocksExcpetion " << re.what() << endl;
+			return grpc::Status(grpc::StatusCode::DATA_LOSS, re.what());
+		}
+		catch (exception e)
+		{
+			cout << LogTime() << "\tExcpetion " << e.what() << endl;
+			return grpc::Status(grpc::StatusCode::INTERNAL, e.what());
+		}
+
 	}
 }

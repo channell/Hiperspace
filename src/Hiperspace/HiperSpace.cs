@@ -194,7 +194,60 @@ namespace Hiperspace
         /// <param name="end"></param>
         /// <param name="version">version stamp or null for latest</param>
         /// <returns></returns>
-        public abstract Task<IEnumerable<(byte[] Key,DateTime AsAt, byte[] Value)>> FindAsync(byte[] begin, byte[] end, DateTime? version);
+        public abstract Task<IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)>> FindAsync(byte[] begin, byte[] end, DateTime? version);
+
+        /// <summary>
+        /// Find all values of space for index values between the index values
+        /// </summary>
+        /// <param name="begin"></param>
+        /// <param name="end"></param>
+        /// <param name="entityId">the proto id of key field</param>
+        /// <returns></returns>
+        public virtual IEnumerable<(byte[] Key, byte[] Value)> FindIndex(byte[] begin, byte[] end)
+        {
+            foreach (var inx in Find(begin, end))
+            {
+                var value = Get(inx.Value);
+                yield return (inx.Value, value);
+            }
+        }
+
+        /// <summary>
+        /// Find all values of space for index values between the index values
+        /// </summary>
+        /// <param name="begin"></param>
+        /// <param name="end"></param>
+        /// <param name="version">version stamp or null for latest</param>
+        /// <returns></returns>
+        public virtual IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindIndex(byte[] begin, byte[] end, DateTime? version)
+        {
+            foreach (var inx in Find(begin, end, version))
+            {
+                var value = Get(inx.Value, version);
+                yield return (inx.Value, value.version, value.Value);
+            }
+        }
+        /// <summary>
+        /// Find all values of space for index values between the index values asyncronously
+        /// </summary>
+        /// <param name="begin"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        public virtual Task<IEnumerable<(byte[] Key, byte[] Value)>> FindIndexAsync(byte[] begin, byte[] end)
+        {
+            return Task.Run(() => FindIndex (begin, end));
+        }
+        /// <summary>
+        /// Find all values of space for index values between the index values asyncronously
+        /// </summary>
+        /// <param name="begin"></param>
+        /// <param name="end"></param>
+        /// <param name="version">version stamp or null for latest</param>
+        /// <returns></returns>
+        public virtual Task<IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)>> FindIndexAsync(byte[] begin, byte[] end, DateTime? version)
+        {
+            return Task.Run(() => FindIndex(begin, end, version));
+        }
 
         /// <summary>
         /// Get a single unique value from space

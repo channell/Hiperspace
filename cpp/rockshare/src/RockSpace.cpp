@@ -11,11 +11,14 @@
 #include <boost/endian.hpp>
 #include <type_traits>
 #include <span>
+#include <google/protobuf/arena.h>
 
 using namespace rocksdb;
 using namespace boost;
 using namespace std;
 using google::protobuf::Timestamp;
+
+#define arena auto
 
 namespace Hiperspace
 {
@@ -30,15 +33,16 @@ namespace Hiperspace
 			options.compression = CompressionType::kSnappyCompression;
 		}
 
+		arena allocator = make_unique<google::protobuf::Arena>();
 		DB* db;
 		rocksdb::Status rc;
 
-		if (!(rc = DB::Open(options, request.path(), &db)).ok())
+		if (!(rc = request.read() ?  DB::OpenForReadOnly(options, request.path(), &db) : DB::Open(options, request.path(), &db)).ok())
 		{
 			try
 			{
 				options.compression = CompressionType::kNoCompression;
-				if (!(rc = DB::Open(options, request.path(), &db)).ok())
+				if (!(rc = request.read() ? DB::OpenForReadOnly(options, request.path(), &db) : DB::Open(options, request.path(), &db)).ok())
 				{
 					throw RocksExcpetion(rc.ToString());
 				}
@@ -91,6 +95,7 @@ namespace Hiperspace
 		Slice slice(parts, &buffer);
 		return slice;
 	}
+	
 	Slice RockSpace::toVersion(const string& source, uint64_t version, string& buffer)
 	{
 		Slice slices[3];
@@ -152,7 +157,7 @@ namespace Hiperspace
 		string value;
 		if (_db->Get(ReadOptions(), key, &value).ok())
 		{
-			unique_ptr<Value> ret(new Value());
+			auto ret = make_unique<Value>();
 			ret->set_content(value);
 			ret->set_state (ResponseState::Skip);
 			return move(ret);
@@ -162,7 +167,7 @@ namespace Hiperspace
 		{
 			throw RocksExcpetion(rc.ToString());
 		}
-		unique_ptr<Value> ret(new Value());
+		unique_ptr<Value> ret(google::protobuf::Arena::CreateMessage<Value>(request.GetArena()));
 		ret->set_content(request.value());
 		ret->set_state(ResponseState::Skip);
 		return move(ret);
@@ -171,7 +176,7 @@ namespace Hiperspace
 	unique_ptr<Values> RockSpace::BatchBind(const BatchBindRequest& request)
 	{
 		auto value = request.value();
-		unique_ptr<Values> result(new Values);
+		auto result = make_unique<Values>();
 		for (auto i = begin(value); i != end(value); i++)
 		{
 			auto value = Bind(*i);
@@ -184,7 +189,7 @@ namespace Hiperspace
 	unique_ptr<Values> RockSpace::BatchBind(const BatchBindVersionRequest& request)
 	{
 		auto value = request.value();
-		unique_ptr<Values> result(new Values);
+		unique_ptr<Values> result(google::protobuf::Arena::CreateMessage<Values>(request.GetArena()));
 		for (auto i = begin(value); i != end(value); i++)
 		{
 			auto value = Bind(*i);
@@ -209,14 +214,14 @@ namespace Hiperspace
 		if (curentVersion.seconds() == request.version().seconds() &&
 			curentVersion.nanos() == request.version().nanos())
 		{
-			unique_ptr<ValueVersion> v(new ValueVersion());
+			unique_ptr<ValueVersion> v(google::protobuf::Arena::CreateMessage<ValueVersion>(request.GetArena()));
 			v->set_content(current->content());
 			v->set_state(ResponseState::Skip);
 			return move(v);
 		}
 		if (current->content().length() != 0 && current->content() == request.value())
 		{
-			unique_ptr<ValueVersion> v(new ValueVersion());
+			unique_ptr<ValueVersion> v(google::protobuf::Arena::CreateMessage<ValueVersion>(request.GetArena()));
 			v->set_content(current->content());
 			v->set_state(ResponseState::Skip);
 			return move(v);
@@ -227,7 +232,7 @@ namespace Hiperspace
 		{
 			throw RocksExcpetion(s.ToString());
 		}
-		unique_ptr<ValueVersion> v(new ValueVersion());
+		unique_ptr<ValueVersion> v(google::protobuf::Arena::CreateMessage<ValueVersion>(request.GetArena()));
 		v->set_content(current->content());
 		v->set_state(ResponseState::Ok);
 		return move(v);
@@ -235,7 +240,7 @@ namespace Hiperspace
 
 	unique_ptr<Values> RockSpace::Find(const FindRequest& request)
 	{
-		unique_ptr<Values> result(new Values);
+		unique_ptr<Values> result(google::protobuf::Arena::CreateMessage<Values>(request.GetArena()));
 		unique_ptr<Iterator> iter(_db->NewIterator(ReadOptions()));
 
 		auto begin = Slice(request.begin());
@@ -255,9 +260,9 @@ namespace Hiperspace
 		}
 		return move(result);
 	}
-	unique_ptr<ValueVersions> RockSpace::Find(const FindVersionRequest& request)
+	unique_ptr<ValueVersions> __stdcall RockSpace::Find(const FindVersionRequest& request)
 	{
-		unique_ptr<ValueVersions> result(new ValueVersions());
+		unique_ptr<ValueVersions> result(google::protobuf::Arena::CreateMessage<ValueVersions>(request.GetArena()));
 		unique_ptr<Iterator> iter(_db->NewIterator(ReadOptions()));
 
 		string beginBuff;
@@ -315,9 +320,118 @@ namespace Hiperspace
 		return move(result);
 	}
 
+
+	unique_ptr<Values> RockSpace::FindIndex(const FindRequest& request)
+	{
+		unique_ptr<Values> result(google::protobuf::Arena::CreateMessage<Values>(request.GetArena()));
+		unique_ptr<Iterator> iter(_db->NewIterator(ReadOptions()));
+		unique_ptr<Iterator> getiter(_db->NewIterator(ReadOptions()));
+
+		auto begin = Slice(request.begin());
+		auto end = request.end();
+		iter->Seek(Slice(request.begin()));
+
+		while (iter->Valid())
+		{
+			auto key = toString(iter->key());
+			if (key < end)
+			{
+				getiter->Seek(iter->value());
+				if (getiter->Valid())
+				{
+					auto value = toString(getiter->value());
+					auto val = result->add_content();
+					val->set_key(key);
+					val->set_value(value);
+				}
+			}
+		}
+		return move(result);
+	}
+	unique_ptr<ValueVersions> __stdcall RockSpace::FindIndex(const FindVersionRequest& request)
+	{
+		unique_ptr<ValueVersions> result(google::protobuf::Arena::CreateMessage<ValueVersions>(request.GetArena()));
+		unique_ptr<Iterator> iter(_db->NewIterator(ReadOptions()));
+		unique_ptr<Iterator> getiter(_db->NewIterator(ReadOptions()));
+
+		string beginBuff;
+		string endBuff;
+		auto begin = toVersion(request.begin(), RockSpace::MinValue, beginBuff);
+		auto end = toVersion(request.end(), RockSpace::MaxValue, endBuff);
+
+		string lastkey;
+		string lastvalue;
+		int64_t lastversion = 0;
+		bool hasLast = false;
+
+		iter->Seek(begin);
+		while (iter->Valid())
+		{
+			auto key = iter->key();
+			if (key.compare(end) < 1)
+			{
+				auto t = toString(key);
+				auto keypart = stripVersion(key);
+				if (lastkey.empty() || keypart == lastkey)
+				{
+					auto ver = extractVersion(key);
+					if ((request.has_version() && ver < fromTimeStamp(request.version()) && ver > lastversion) || (!request.has_version() && lastversion == 0))
+					{
+						lastkey = toString(keypart);
+						lastversion = ver;
+						lastvalue = toString(iter->value());
+						hasLast = true;
+					}
+				}
+				else if (lastversion != 0 && hasLast)
+				{
+					auto getkey(google::protobuf::Arena::CreateMessage<KeyVersionRequest>(request.GetArena()));
+					auto ts(google::protobuf::Arena::CreateMessage<Timestamp>(request.GetArena()));
+					if (request.has_version())
+					{
+						ts->CopyFrom(request.version());
+						getkey->set_allocated_version(ts);
+					}
+					getkey->set_key(lastvalue);
+					auto value = Get(*getkey);
+					auto row = result->add_content();
+					row->set_key(lastvalue);
+					row->set_value(value->content());
+					ts->CopyFrom(value->version());
+					row->set_allocated_version(ts);
+
+					lastkey = toString(keypart);
+					lastversion = extractVersion(key);
+					lastvalue = toString(iter->value());
+				}
+			}
+			else
+				break;
+			iter->Next();
+		}
+		if (hasLast)
+		{
+			auto getkey(google::protobuf::Arena::CreateMessage<KeyVersionRequest>(request.GetArena()));
+			getkey->set_key(lastvalue);
+			auto ts(google::protobuf::Arena::CreateMessage<Timestamp>(request.GetArena()));
+			if (request.has_version())
+			{
+				ts->CopyFrom(request.version());
+				getkey->set_allocated_version(ts);
+			}
+			auto value = Get(*getkey);
+			auto row = result->add_content();
+			row->set_key(lastvalue);
+			row->set_value(value->content());
+			ts->CopyFrom(value->version());
+			row->set_allocated_version(ts);
+		}
+		return move(result);
+	}
+
 	unique_ptr<Value> RockSpace::Get(const KeyRequest& request)
 	{
-		unique_ptr<Value> result(new Value());
+		unique_ptr<Value> result(google::protobuf::Arena::CreateMessage<Value>(request.GetArena()));
 		rocksdb::Status s;
 		string value;
 		if (!(s = _db->Get(ReadOptions(), Slice(request.key()), &value)).ok())
@@ -329,7 +443,7 @@ namespace Hiperspace
 	}
 	unique_ptr<ValueVersion> RockSpace::Get(const KeyVersionRequest& request)
 	{
-		unique_ptr<ValueVersion> result(new ValueVersion);
+		unique_ptr<ValueVersion> result(google::protobuf::Arena::CreateMessage<ValueVersion>(request.GetArena()));
 		unique_ptr<Iterator> iter(_db->NewIterator(ReadOptions()));
 
 		string beginBuff;
@@ -362,7 +476,7 @@ namespace Hiperspace
 					}
 					else
 					{
-						unique_ptr<ValueVersion> result(new ValueVersion());
+						unique_ptr<ValueVersion> result(google::protobuf::Arena::CreateMessage<ValueVersion>(request.GetArena()));
 						result->set_content(toString(iter->value()));
 						result->set_allocated_version(toTimeStamp(lastversion));
 						return move(result);
@@ -375,7 +489,7 @@ namespace Hiperspace
 		}
 		if (hasLast)
 		{
-			unique_ptr<ValueVersion> result(new ValueVersion());
+			unique_ptr<ValueVersion> result(google::protobuf::Arena::CreateMessage<ValueVersion>(request.GetArena()));
 			result->set_content(toString(lastvalue));
 			result->set_state(ResponseState::Ok);
 			result->set_allocated_version(toTimeStamp(lastversion));
@@ -386,7 +500,7 @@ namespace Hiperspace
 
 	unique_ptr<VersionHistory> RockSpace::GetVersions(const KeyRequest& request)
 	{
-		unique_ptr<VersionHistory> result(new VersionHistory);
+		unique_ptr<VersionHistory> result(google::protobuf::Arena::CreateMessage<VersionHistory>(request.GetArena()));
 		unique_ptr<Iterator> iter(_db->NewIterator(ReadOptions()));
 
 		string beginBuff;

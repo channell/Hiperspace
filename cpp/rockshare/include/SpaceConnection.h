@@ -46,6 +46,8 @@ namespace Hiperspace
 
 		unique_ptr<Values> Find(const FindRequest& request);
 		unique_ptr<ValueVersions> Find(const FindVersionRequest& request);
+		unique_ptr<Values> FindIndex(const FindRequest& request);
+		unique_ptr<ValueVersions> FindIndex(const FindVersionRequest& request);
 
 		unique_ptr<Value> Get(const KeyRequest& request);
 		unique_ptr<ValueVersion> Get(const KeyVersionRequest& request);

@@ -54,6 +54,7 @@ namespace Hiperspace
         grpc::Status FindVersion(ServerContext* context, const FindVersionRequest* request, ValueVersions* response) override;
         grpc::Status GetVersion(ServerContext* context, const KeyVersionRequest* request, ValueVersion* response) override;
         grpc::Status GetVersions(ServerContext* context, const KeyRequest* request, VersionHistory* response) override;
-
+        grpc::Status FindIndex(ServerContext* context, const FindRequest* request, Values* response) override;
+        grpc::Status FindIndexVersion(ServerContext* context, const FindVersionRequest* request, ValueVersions* response) override;
 	};
 }

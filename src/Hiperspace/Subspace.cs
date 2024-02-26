@@ -169,6 +169,22 @@ namespace Hiperspace
             return _space.GetVersionsAsync(key);
         }
 
+        public override IEnumerable<(byte[] Key, byte[] Value)> FindIndex(byte[] begin, byte[] end)
+        {
+            return _space.FindIndex(begin, end);
+        }
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindIndex(byte[] begin, byte[] end, DateTime? version)
+        {
+            return _space.FindIndex(begin, end, version);
+        }
+        public override Task<IEnumerable<(byte[] Key, byte[] Value)>> FindIndexAsync(byte[] begin, byte[] end)
+        {
+            return _space.FindIndexAsync(begin, end);
+        }
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
         /// <summary>
         /// Implementation of the Subspace should provide an implementation for entities they map
         /// </summary>

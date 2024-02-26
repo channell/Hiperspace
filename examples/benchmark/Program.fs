@@ -14,30 +14,18 @@ open Microsoft.EntityFrameworkCore
 open Sparx.EA
 open System.IO
 open BenchmarkDotNet.Running
+open Argu
+open System
 
-type Perf () =
+type Count () =
 
     let rocks = @"C:\Hiperspace\Sparx"
     let sql = @"Data Source=localhost;Initial Catalog=dotnet;User id=demo;Password=demo;MultipleActiveResultSets=True;Max Pool Size=100;TrustServerCertificate=True"
 
-
-    [<Benchmark()>]
-    member _.Load () =
-        if (Directory.Exists(rocks)) then Directory.Delete(rocks, true) |> ignore;
-        Directory.CreateDirectory (rocks) |> ignore
-        let space = 
-            let ssd = new RockSpace(rocks, MetaModel())
-            new SparxSpace (ssd)
-        let ctx = 
-            let bld = 
-                (new DbContextOptionsBuilder<Context> ()).UseSqlServer (sql)
-            new Context (bld.Options)
-        loader.load space ctx
-
     [<Benchmark>]
     member _.CountRocks () =
-        let space = 
-            let ssd = new RockSpace(rocks, MetaModel())
+        use space = 
+            let ssd = new RockSpace(rocks, MetaModel(), false, false)
             new SparxSpace (ssd)
         export.countrocks space 
 
@@ -49,9 +37,15 @@ type Perf () =
             new Context (bld.Options)
         export.countsql ctx
 
+
+type Update () =
+
+    let rocks = @"C:\Hiperspace\Sparx"
+    let sql = @"Data Source=localhost;Initial Catalog=dotnet;User id=demo;Password=demo;MultipleActiveResultSets=True;Max Pool Size=100;TrustServerCertificate=True"
+
     [<Benchmark>]
     member _.UpdateRocks () =
-        let space = 
+        use space = 
             let ssd = new RockSpace(rocks, MetaModel())
             new SparxSpace (ssd)
         updates.update space 
@@ -64,10 +58,15 @@ type Perf () =
             new Context (bld.Options)
         updates.updateSQL ctx
 
+type Json () =
+
+    let rocks = @"C:\Hiperspace\Sparx"
+    let sql = @"Data Source=localhost;Initial Catalog=dotnet;User id=demo;Password=demo;MultipleActiveResultSets=True;Max Pool Size=100;TrustServerCertificate=True"
+
     [<Benchmark>]
     member _.JSONRocks () =
         let space = 
-            let ssd = new RockSpace(rocks, MetaModel())
+            let ssd = new RockSpace(rocks, MetaModel(), false, false)
             new SparxSpace (ssd)
         export.jsonrocks space 
 
@@ -79,7 +78,50 @@ type Perf () =
             new Context (bld.Options)
         export.jsonsql ctx
 
+type Load () =
+
+    let rocks = @"C:\Hiperspace\Sparx"
+    let sql = @"Data Source=localhost;Initial Catalog=dotnet;User id=demo;Password=demo;MultipleActiveResultSets=True;Max Pool Size=100;TrustServerCertificate=True"
+
+    [<Benchmark>]
+    member _.Load () =
+        if (Directory.Exists(rocks)) then Directory.Delete(rocks, true) |> ignore;
+        Directory.CreateDirectory (rocks) |> ignore
+        let space = 
+            let ssd = new RockSpace(rocks, MetaModel())
+            new SparxSpace (ssd)
+        let ctx = 
+            let bld = 
+                (new DbContextOptionsBuilder<Context> ()).UseSqlServer (sql)
+            new Context (bld.Options)
+        loader.load space ctx
+
+type Arguments =
+| [<Unique>]    Count
+| [<Unique>]    Update
+| [<Unique>]    Json
+| [<Unique>]    Load
+
+
+  interface IArgParserTemplate with
+    member s.Usage =
+        match s with
+        | Count         -> "Count benchmarks"
+        | Update        -> "Count benchmarks"
+        | Json          -> "Count benchmarks"
+        | Load          -> "Count benchmarks"
+
 [<EntryPoint>]
 let main argv = 
-    let summary = BenchmarkRunner.Run<Perf>() 
+
+    let cmdLine = 
+        let errorHandler = ProcessExiter(colorizer = function ErrorCode.HelpText -> None | _ -> Some ConsoleColor.Red)
+        ArgumentParser.Create<Arguments>(programName = "util", errorHandler = errorHandler)
+
+    let results = cmdLine.ParseCommandLine argv
+
+    if results.Contains Count   then BenchmarkRunner.Run<Count>() |> printfn "%A"
+    if results.Contains Update  then BenchmarkRunner.Run<Update>() |> printfn "%A"
+    if results.Contains Json    then BenchmarkRunner.Run<Json>() |> printfn "%A"
+    if results.Contains Load    then BenchmarkRunner.Run<Load>() |> printfn "%A"
     0

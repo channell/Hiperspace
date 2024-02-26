@@ -9,7 +9,6 @@ module util
 
 open Argu
 open System
-open Microsoft.Data.SqlClient
 open Microsoft.EntityFrameworkCore
 open Sparx
 open Sparx.EA

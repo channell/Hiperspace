@@ -3,11 +3,6 @@ using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Grpc.Net.Client;
 using Hiperspace.Meta;
-using Hiperspace.Remote;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
-using System.Diagnostics.CodeAnalysis;
-using System.Xml.Linq;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Hiperspace.Remote
 {
@@ -22,9 +17,10 @@ namespace Hiperspace.Remote
         private string _address;
         private string _realm;
         private string _user;
-        private Token _sessionToken;
+        private Token? _sessionToken;
         private Guid _token;
-        public Client(string name, MetaModel? model, HiperDrive hiperDrive, string address, string realm, string user, Guid token)
+        private bool _read;
+        public Client(string name, MetaModel? model, HiperDrive hiperDrive, string address, string realm, string user, Guid token, bool read = false)
         {
             _channel = GrpcChannel.ForAddress(address);
             _service = new HiServ.HiServClient(_channel);
@@ -35,6 +31,7 @@ namespace Hiperspace.Remote
             _realm = realm;
             _user = user;
             _token = token;
+            _read = read;
 
             Open();
         }
@@ -57,6 +54,7 @@ namespace Hiperspace.Remote
                             true => ByteString.CopyFrom(_model.Bytes),
                             false => ByteString.CopyFrom(Array.Empty<byte>())
                         },
+                        Read = _read,
                         Driver = _drive,
                         Realm = _realm,
                         UserName = _user,
@@ -725,6 +723,141 @@ namespace Hiperspace.Remote
                     case StatusCode.FailedPrecondition:
                         Open();
                         return await GetVersionsAsync(key);
+
+                    case StatusCode.DataLoss:
+                        throw new IOException(ex.Message);
+
+                    case StatusCode.Internal:
+                        throw new Exception(ex.Message);
+                }
+                throw;
+            }
+        }
+
+        public override IEnumerable<(byte[] Key, byte[] Value)> FindIndex(byte[] begin, byte[] end)
+        {
+            try
+            {
+                var result =
+                    _service
+                    .FindIndex(
+                        new FindRequest
+                        {
+                            Begin = ByteString.CopyFrom(begin),
+                            End = ByteString.CopyFrom(end),
+                            Token = _sessionToken
+                        });
+                return result.Content.Select(r => (r.Key.ToArray(), r.Value.ToArray()));
+            }
+            catch (RpcException ex)
+            {
+                switch (ex.StatusCode)
+                {
+                    case StatusCode.FailedPrecondition:
+                        Open();
+                        return FindIndex(begin,end);
+
+                    case StatusCode.DataLoss:
+                        throw new IOException(ex.Message);
+
+                    case StatusCode.Internal:
+                        throw new Exception(ex.Message);
+                }
+                throw;
+            }
+        }
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindIndex(byte[] begin, byte[] end, DateTime? version)
+        {
+            try
+            {
+                var result =
+                    _service
+                    .FindIndexVersion(
+                        new FindVersionRequest
+                        {
+                            Begin = ByteString.CopyFrom(begin),
+                            End = ByteString.CopyFrom(end),
+                            Version = version.HasValue
+                                      ? Timestamp.FromDateTime(version.Value.ToUniversalTime())
+                                      : null,
+                            Token = _sessionToken
+                        });
+                return result.Content.Select(r => (r.Key.ToArray(), r.Version.ToDateTime().ToUniversalTime(), r.Value.ToArray()));
+            }
+            catch (RpcException ex)
+            {
+                switch (ex.StatusCode)
+                {
+                    case StatusCode.FailedPrecondition:
+                        Open();
+                        return FindIndex(begin, end, version);
+
+                    case StatusCode.DataLoss:
+                        throw new IOException(ex.Message);
+
+                    case StatusCode.Internal:
+                        throw new Exception(ex.Message);
+                }
+                throw;
+            }
+        }
+        public override async Task<IEnumerable<(byte[] Key, byte[] Value)>> FindIndexAsync(byte[] begin, byte[] end)
+        {
+            try
+            {
+                var result = await
+                    _service
+                    .FindIndexAsync(
+                        new FindRequest
+                        {
+                            Begin = ByteString.CopyFrom(begin),
+                            End = ByteString.CopyFrom(end),
+                            Token = _sessionToken
+                        });
+                return result.Content.Select(r => (r.Key.ToArray(), r.Value.ToArray()));
+            }
+            catch (RpcException ex)
+            {
+                switch (ex.StatusCode)
+                {
+                    case StatusCode.FailedPrecondition:
+                        Open();
+                        return await FindIndexAsync(begin, end);
+
+                    case StatusCode.DataLoss:
+                        throw new IOException(ex.Message);
+
+                    case StatusCode.Internal:
+                        throw new Exception(ex.Message);
+                }
+                throw;
+            }
+        }
+        public override async Task<IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)>> FindIndexAsync(byte[] begin, byte[] end, DateTime? version)
+        {
+            try
+            {
+                var result = await
+                    _service
+                    .FindIndexVersionAsync(
+                        new FindVersionRequest
+                        {
+                            Begin = ByteString.CopyFrom(begin),
+                            End = ByteString.CopyFrom(end),
+                            Version = version.HasValue
+                                      ? Timestamp.FromDateTime(version.Value.ToUniversalTime())
+                                      : null,
+                            Token = _sessionToken
+                        });
+                return result.Content.Select(r => (r.Key.ToArray(), r.Version.ToDateTime().ToUniversalTime(), r.Value.ToArray()));
+            }
+            catch (RpcException ex)
+            {
+                switch (ex.StatusCode)
+                {
+                    case StatusCode.FailedPrecondition:
+                        Open();
+                        return await FindIndexAsync(begin, end, version);
 
                     case StatusCode.DataLoss:
                         throw new IOException(ex.Message);

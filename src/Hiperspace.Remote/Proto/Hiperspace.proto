@@ -32,6 +32,7 @@ message OpenRequest
 	bytes MetaModel = 3;
 	HiperDrive Driver = 4;
 	bool Compression = 5;
+	bool Read = 8;
 	string Realm = 6;
 	string UserName = 7;
 }
@@ -162,6 +163,9 @@ service HiServ
 	rpc FindVersion (FindVersionRequest) returns (ValueVersions);
 	rpc GetVersion (KeyVersionRequest) returns (ValueVersion);
 	rpc GetVersions (KeyRequest) returns (VersionHistory);
+
+	rpc FindIndex (FindRequest) returns (Values);
+	rpc FindIndexVersion (FindVersionRequest) returns (ValueVersions);
 
 	rpc UnZip (ZipStream) returns (ZipStatus);
 	rpc Zip (ZipStatus) returns (ZipStream);

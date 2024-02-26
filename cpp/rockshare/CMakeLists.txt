@@ -25,7 +25,7 @@ add_executable (rockshare
   "include/RockSpace.h" 
   "src/RockSpace.cpp" 
   "include/HipException.h" 
-  "include/Token.h")
+  "include/Token.h" "include/areacall.h")
 
 
 # Enable Hot Reload for MSVC compilers if supported.

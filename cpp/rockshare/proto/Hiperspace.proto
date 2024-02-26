@@ -1,10 +1,3 @@
-// ---------------------------------------------------------------------------------------
-//                                   Hiperspace
-//                        Copyright (c) 2024 Cepheis Ltd
-//                                    www.cepheis.com
-//
-// This file is part of Hiperspace and is distributed under the GPL Open Source License. 
-// ---------------------------------------------------------------------------------------
 syntax = "proto3";
 
 option csharp_namespace = "Hiperspace.Remote";
@@ -39,6 +32,7 @@ message OpenRequest
 	bytes MetaModel = 3;
 	HiperDrive Driver = 4;
 	bool Compression = 5;
+	bool Read = 8;
 	string Realm = 6;
 	string UserName = 7;
 }
@@ -138,6 +132,20 @@ message VersionHistory
 	repeated ValueVersion Content = 1;
 	ResponseState State = 2;
 }
+
+message ZipStream
+{
+	bytes content = 1;
+	ResponseState State = 2;
+	Token Token = 3;
+}
+
+message ZipStatus
+{
+	ResponseState State = 1;
+	Token Token = 3;
+}
+
 // Provides a remote interface to a hiperspace driver
 // for authorised users
 service HiServ
@@ -155,4 +163,10 @@ service HiServ
 	rpc FindVersion (FindVersionRequest) returns (ValueVersions);
 	rpc GetVersion (KeyVersionRequest) returns (ValueVersion);
 	rpc GetVersions (KeyRequest) returns (VersionHistory);
-}
+
+	rpc FindIndex (FindRequest) returns (Values);
+	rpc FindIndexVersion (FindVersionRequest) returns (ValueVersions);
+
+	rpc UnZip (ZipStream) returns (ZipStatus);
+	rpc Zip (ZipStatus) returns (ZipStream);
+}	
