@@ -18,7 +18,6 @@
 
 #include "Hiperspace.pb.h"
 #include "Hiperspace.grpc.pb.h"
-#include "Token.h"
 #include "SpacePool.h"
 
 using grpc::Server;
@@ -30,19 +29,25 @@ using namespace std;
 
 namespace Hiperspace
 {
+    // Class implementing the hiperspace proto iinterface 
 	class HipServer final: public HiServ::Service
 	{
 
     private:
         string _address;
 
+        //  connections to hiperspaces are pooled for reuse between sessions. 
         unique_ptr<SpacePool> _pool;
-        unordered_set<Token, TokenExtension, TokenExtension> _tokens;
 
     public:
+        // Created from main entry point with a reference to the space pool. 
         HipServer(string port, unique_ptr<SpacePool>& pool);
+        // Run the service until cancellation 
         void Run();
 
+        //
+        // Interface functions defined in the hiperspace proto file. 
+        //
         grpc::Status Open(ServerContext* context, const OpenRequest* request, Token* response) override;
         grpc::Status Close(ServerContext* context, const Token* request, Token* response) override;
         grpc::Status Bind(ServerContext* context, const BindRequest* request, Value* response) override;

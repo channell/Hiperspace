@@ -31,7 +31,6 @@ namespace Hiperspace
 		{
 			this_thread::sleep_for(_ttl);
 			{
-				scoped_lock lock(_lock);
 				clock_t now = clock_t();
 				for (auto i = cbegin(_stores); i != cend(_stores); i++)
 				{

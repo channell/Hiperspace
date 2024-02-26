@@ -19,13 +19,13 @@ add_executable (rockshare
   "include/HipServer.h" 
   "src/HipServer.cpp" 
   "include/SpacePool.h" 
-  "src/SparePool.cpp" 
+  "src/SpacePool.cpp" 
   "include/SpaceConnection.h" 
   "src/SpaceConnection.cpp" 
   "include/RockSpace.h" 
   "src/RockSpace.cpp" 
   "include/HipException.h" 
-  "include/Token.h")
+  )
 
 
 # Enable Hot Reload for MSVC compilers if supported.

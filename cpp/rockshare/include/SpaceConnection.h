@@ -18,24 +18,28 @@ using tbb::spin_rw_mutex;
 
 namespace Hiperspace
 {
-	/// <summary>
-	/// connection to the rocks DB that can be re-opened 
-	/// </summary>
+	// connection to the rocks DB that can be re-opened 
 	class SpaceConnection
 	{
 	private:
 		unique_ptr<RockSpace> _space;
 		clock_t _clock;
+		// Spinlock to prevent close of connections while rocks is currently being used
 		spin_rw_mutex _mux;
+		// Reopen the connexion if it has been closed due to time out. 
 		void Open();
 
 	public:
+		// Copy of the GRPC open request used for reconnection. 
 		unique_ptr<OpenRequest> Context;
 
 		SpaceConnection(const OpenRequest* request);
 
 		const clock_t& getClock() { return _clock; }
 
+		//
+		// Interface functions defined in hiperspace protophile. 
+		//
 		void Close();
 		
 		unique_ptr<Value> Bind(const BindRequest& request);
