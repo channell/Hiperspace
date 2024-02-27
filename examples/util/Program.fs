@@ -83,7 +83,7 @@ let main argv =
         log "Opening Remote RocksDB"
         let path = results.GetResult Path
         let port =  results.GetResult Port
-        let remote = new Hiperspace.Remote.Client (path, MetaModel(), Hiperspace.Remote.HiperDrive.Rocks, port, "Access", "root", Guid.NewGuid())
+        let remote = new Hiperspace.Remote.Client (path, MetaModel(), Hiperspace.Remote.HiperDrive.Rocks, port, "Access", "root", Guid.NewGuid(), true)
         new SparxSpace (remote))
 
 
