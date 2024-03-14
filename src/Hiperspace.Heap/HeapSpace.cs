@@ -200,6 +200,82 @@ namespace Hiperspace.Heap
             RaiseOnAfterFind(ref begin, ref end);
         }
 
+
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)
+        {
+            space.Float();
+            var ranks = new SortedSet<Nearest>();
+            RaiseOnBeforeFind(ref begin, ref end);
+            var vbegin = new byte[begin.Length + sizeof(long) + 2];
+            var vend = new byte[end.Length + sizeof(long) + 2];
+
+            begin.CopyTo(new Span<byte>(vbegin, 2, begin.Length));
+            end.CopyTo(new Span<byte>(vend, 2, end.Length));
+            FF.CopyTo(new Span<byte>(vend, vend.Length - sizeof(long), sizeof(long)));
+
+            byte[] lastKey = Array.Empty<byte>();
+            byte[] lastValue = Array.Empty<byte>();
+            long lastVersion = 0;
+            (byte[] Key, byte[] Value)[] cursor;
+
+            lock (_heap)
+            {
+                var beginnode = new HeapNode(vbegin, Array.Empty<byte>());
+                var endnode = new HeapNode(vend, Array.Empty<byte>());
+                cursor =
+                    _heap
+                    .GetViewBetween(beginnode, endnode)
+                    .Select(n => (n.Key, n.Value))
+                    .ToArray();
+            }
+            foreach (var row in cursor)
+            {
+                if (Compare(vbegin, row.Key) <= 0 && Compare(vend, row.Key) >= 0)
+                {
+                    var keypart = new byte[row.Key.Length - sizeof(long) - 2];
+                    var span = new Span<byte>(row.Key, 2, row.Key.Length - sizeof(long) - 2);
+                    span.CopyTo(keypart);
+                    if (lastKey == Array.Empty<byte>() || Compare(keypart, lastKey) == 0)
+                    {
+                        var ver = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(row.Key, row.Key.Length - sizeof(ulong), sizeof(ulong))));
+                        if ((version.HasValue && ver <= version.Value.Ticks && ver > lastVersion) || (!version.HasValue && lastVersion == 0))
+                        {
+                            lastKey = keypart;
+                            lastVersion = ver;
+                            lastValue = row.Value;
+                        }
+                    }
+                    else if (lastVersion != 0)
+                    {
+                        var vec = Hiperspace.Space.FromValue<Vector>(row.Value);
+                        var distance = space.Nearest(vec, method);
+                        if (distance.HasValue)
+                            ranks.Add(new Nearest(distance.Value, lastKey));
+
+                        lastKey = keypart;
+                        lastVersion = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(row.Key, row.Key.Length - sizeof(ulong), sizeof(ulong))));
+                        lastValue = row.Value;
+                    }
+                }
+            }
+            if (lastVersion != 0)
+            {
+                var vec = Hiperspace.Space.FromValue<Vector>(lastValue);
+                var distance = space.Nearest(vec, method);
+                if (distance.HasValue)
+                    ranks.Add(new Nearest(distance.Value, lastKey));
+            }
+            var keys = limit == 0 ? ranks : ranks.Take(limit);
+
+            foreach (var r in keys)
+            {
+                var res = Get(r.Key, version);
+                yield return (r.Key, res.Item2, res.Item1, r.Distance);
+            }
+
+            RaiseOnAfterFind(ref begin, ref end);
+        }
+
         public override Task<IEnumerable<(byte[], byte[])>> FindAsync(byte[] begin, byte[] end)
         {
             return Task.Run (() => Find (begin, end));

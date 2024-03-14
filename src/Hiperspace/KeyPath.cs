@@ -43,6 +43,15 @@ namespace Hiperspace
         public abstract TEntity? Get(ref TKey key);
         public abstract IEnumerable<TEntity> Find(TEntity template);
         public abstract Task<IEnumerable<TEntity>> FindAsync(TEntity template);
+        public virtual IEnumerable<(TEntity Item, double Distance)> Nearest(TEntity template, Vector space, Vector.Method method, int limit)
+        {
+            throw new NotImplementedException("This SetSpace does not support Vector Search");
+        }
+
+        public virtual Task<IEnumerable<(TEntity Item, double Distance)>> NearestAsync(TEntity template, Vector space, Vector.Method method, int limit)
+        {
+            throw new NotImplementedException("This SetSpace does not support Vector Search");
+        }
 
         /// <summary>
         /// Perform a full table scan because there are no suitable Key or Index to use

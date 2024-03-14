@@ -4,6 +4,11 @@
 %function (unary, authorised, Access.RBAC.Functions.Authorised, Boolean);
 %function (set, empty, Access.RBAC.Functions.Empty, Boolean);
 
+aspect Note
+{
+    Text : String
+};
+
 /* addin for Permissioned elements */
 type Access.RBAC.Permissioned 
 { 
@@ -26,6 +31,7 @@ value Ref<T>
 /*
     Additional Edge definitions
 */
+/*@Guid("F526699A-CECB-4EC8-994D-4680961F4C51")*/
 view Edge2 = Edge ()  
 (
     From        : Node,
@@ -105,7 +111,10 @@ entity Access.RBAC.Realm : Access.RBAC.Permissioned
     " Diagnostic error message for when validation fails. "
     ErrorMsg    = (empty(Exists) = false ? "Realm Exists, " : "") + 
                   (Author = null ? "Invalid Author, " : "") +
-                  (CanCreate = false ? "not authorised " : "")
+                  (CanCreate = false ? "not authorised " : ""),
+
+    Note : Note
+
 ];
 
 "

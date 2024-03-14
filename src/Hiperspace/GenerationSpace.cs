@@ -93,6 +93,37 @@ namespace Hiperspace
             }
             return Yielder(returns);
         }
+
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)
+        {
+            var ranks = new SortedSet<Nearest>();
+            for (int c = 0; c < _read.Length; c++)
+            {
+                foreach (var result in _read[c].Nearest(begin, end, version, space, method, limit))
+                    ranks.Add(new Nearest(result));
+            }
+            var keys = limit == 0 ? ranks : ranks.Take(limit);
+            foreach (var key in keys)
+                yield return key.ToTuple();
+        }
+        public override async Task<IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)>> NearestAsync(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)
+        {
+            var ranks = new SortedSet<Nearest>();
+            var reads = new Task<IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)>>[_read.Length];
+
+            for (int c = 0; c < _read.Length; c++)
+            {
+                reads[c] = _read[c].NearestAsync(begin, end, version, space, method, limit);
+            }
+            for (int c = 0; c < _read.Length; c++)
+            {
+                foreach (var result in await reads[c])
+                    ranks.Add(new Nearest(result));
+            }
+            var keys = limit == 0 ? ranks : ranks.Take(limit);
+            return keys.Select(key => key.ToTuple());
+        }
+
         public override IEnumerable<(byte[] value, DateTime version)> GetVersions(byte[] key)
         {
             for (int c = 0; c < _read.Length; c++)

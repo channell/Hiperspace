@@ -24,7 +24,7 @@ namespace Hiperspace
         public KeyType _key;
         internal ValueType _value;
 
-        public Node ()
+        public Node()
         {
             _key = new KeyType();
             _value = new ValueType();
@@ -36,16 +36,16 @@ namespace Hiperspace
             _key = source._key;
             _value = source._value;
             if (space != null)
-                Bind (space);
+                Bind(space);
         }
 
-        public Node (KeyType key) : this()
+        public Node(KeyType key) : this()
         {
             _key = key;
             _value = new ValueType();
         }
 
-        public override string SKey 
+        public override string SKey
         {
             get => _key.SKey;
             set
@@ -54,8 +54,8 @@ namespace Hiperspace
                 _key.SKey = value;
             }
         }
-        public string? Name 
-        { 
+        public string? Name
+        {
             get => _value.Name;
             set
             {
@@ -63,13 +63,39 @@ namespace Hiperspace
                 _value.Name = value;
             }
         }
-        public string? TypeName 
+        public string? TypeName
         {
             get => _value.TypeName;
             set
             {
                 if (SetSpace != null) throw new Hiperspace.MutationException($"TypeName can not be changed once bound to a Space");
                 _value.TypeName = value;
+            }
+        }
+
+        /// <summary>
+        /// Get the underlying object from hiperspace
+        /// </summary>
+        public object? Object => SetSpace?.Space?.Get(SKey);
+
+        /// <summary>
+        /// Get all the properties of the underlying object
+        /// </summary>
+        public (string,object?)[]? Properties 
+        {
+            get
+            {
+                var obj = Object;
+                if (obj != null)
+                {
+                    return obj
+                        .GetType()
+                        .GetProperties()
+                        .Select(pi => (pi.Name, pi.GetValue(obj)))
+                        .ToArray();
+                }
+                else 
+                    return Array.Empty<(string,object?)>();
             }
         }
 

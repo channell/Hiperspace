@@ -5,14 +5,18 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using System.Collections;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
 
 namespace Hiperspace
 {
-    public abstract class SetSpace<TEntity> : HashSet<TEntity>, IOrderedQueryable<TEntity>
+    public abstract class SetSpace<TEntity> : ISet<TEntity>, IOrderedQueryable<TEntity> //HashSet<TEntity>
         where TEntity : Element<TEntity>, new()
     {
+        public HashSet<TEntity> Cached = new HashSet<TEntity>();
+
         public delegate void Bound (TEntity entity);
         /// <summary>
         /// Event to capture Bind Events
@@ -46,7 +50,7 @@ namespace Hiperspace
             if (taken)
             {
                 TEntity? res;
-                if (((HashSet<TEntity>)this).TryGetValue(item, out res))
+                if (Cached.TryGetValue(item, out res))
                 {
                     _lock.Exit();
                     return Result.Skip(res);
@@ -54,7 +58,7 @@ namespace Hiperspace
 
                 if (!cache || Filter(item).Ok)
                 {
-                    base.Add(item);
+                    Cached.Add(item);
                     _lock.Exit();
                     RaiseOnbind(item);
                     return Result.Ok(item);
@@ -69,23 +73,19 @@ namespace Hiperspace
                 throw new LockRecursionException();
         }
 
-        public new bool Add(TEntity item)
+        public bool Add(TEntity item)
         {
             return Bind(item, true).Ok;
         }
-        protected bool ProtecedAdd(TEntity item)
-        {
-            return base.Add(item);
-        }
 
-        public new bool TryGetValue(TEntity equalValue, out TEntity actualValue)
+        public bool TryGetValue(TEntity equalValue, out TEntity actualValue)
         {
             bool taken = false;
             _lock.Enter(ref taken);
             if (taken)
             {
                 TEntity? res;
-                if (base.TryGetValue(equalValue, out res))
+                if (Cached.TryGetValue(equalValue, out res))
                 {
                     actualValue = res;
                     _lock.Exit();
@@ -107,7 +107,7 @@ namespace Hiperspace
 
         public abstract Task<Result<TEntity>> BindAsync(TEntity item, bool cache = true);
 
-        public new abstract void UnionWith (IEnumerable<TEntity> other);
+        public abstract void UnionWith (IEnumerable<TEntity> other);
 
         public virtual bool IsSargable(TEntity template)
         {
@@ -116,6 +116,16 @@ namespace Hiperspace
         public abstract IEnumerable<TEntity> Find(TEntity template, bool cache = true);
 
         public abstract Task<IEnumerable<TEntity>> FindAsync(TEntity template, bool cache = true);
+
+        public virtual IEnumerable<(TEntity Item, double Distance)> Nearest(TEntity template, Vector space, Vector.Method method, int limit = 0, bool cache = true)
+        {
+            throw new NotImplementedException("This SetSpace does not support Vector Search");
+        }
+
+        public virtual Task<IEnumerable<(TEntity Item, double Distance)>> NearestAsync(TEntity template, Vector space, Vector.Method method, int limit = 0, bool cache = true)
+        {
+            throw new NotImplementedException("This SetSpace does not support Vector Search");
+        }
 
         public IEnumerable<TEntity> Filter(IEnumerable<TEntity> entities)
         {
@@ -126,6 +136,21 @@ namespace Hiperspace
                         for (int c = 0; c < predicates.Length; c++)
                         {
                             if (!predicates[c](e))
+                                return false;
+                        }
+                        return true;
+                    });
+            return entities;
+        }
+        public IEnumerable<(TEntity Item, double Distance)> Filter(IEnumerable<(TEntity Item, double Distance)> entities)
+        {
+            if (predicates != null)
+                return entities
+                    .Where(e =>
+                    {
+                        for (int c = 0; c < predicates.Length; c++)
+                        {
+                            if (!predicates[c](e.Item))
                                 return false;
                         }
                         return true;
@@ -148,16 +173,91 @@ namespace Hiperspace
         #region key functions
         public abstract TEntity? Get<TKey>(ref TKey key);
 
-        public IEnumerable<TEntity> Cached => (HashSet<TEntity>)this;
         #endregion
         #region queryable
-        IEnumerator<TEntity> IEnumerable<TEntity>.GetEnumerator()
+        public IEnumerator<TEntity> GetEnumerator()
         {
             foreach (var item in Find(new TEntity()))
             {
                 yield return item;
             }
         }
+
+        public void ExceptWith(IEnumerable<TEntity> other)
+        {
+            Cached.ExceptWith(other);
+        }
+
+        public void IntersectWith(IEnumerable<TEntity> other)
+        {
+            Cached.IntersectWith(other);
+        }
+
+        public bool IsProperSubsetOf(IEnumerable<TEntity> other)
+        {
+            return Cached.IsProperSubsetOf(other);
+        }
+
+        public bool IsProperSupersetOf(IEnumerable<TEntity> other)
+        {
+            return Cached.IsProperSupersetOf(other);
+        }
+
+        public bool IsSubsetOf(IEnumerable<TEntity> other)
+        {
+            return Cached.IsSubsetOf(other);
+        }
+
+        public bool IsSupersetOf(IEnumerable<TEntity> other)
+        {
+            return Cached.IsSupersetOf(other);
+        }
+
+        public bool Overlaps(IEnumerable<TEntity> other)
+        {
+            return Cached.Overlaps(other);
+        }
+
+        public bool SetEquals(IEnumerable<TEntity> other)
+        {
+            return Cached.SetEquals(other);
+        }
+
+        public void SymmetricExceptWith(IEnumerable<TEntity> other)
+        {
+            Cached.SymmetricExceptWith(other);
+        }
+
+        void ICollection<TEntity>.Add(TEntity item)
+        {
+            Cached.Add(item);
+        }
+
+        public void Clear()
+        {
+            Cached.Clear();
+        }
+
+        public bool Contains(TEntity item)
+        {
+            return Cached.Contains(item);
+        }
+
+        public void CopyTo(TEntity[] array, int arrayIndex)
+        {
+            Cached.CopyTo(array, arrayIndex);
+        }
+
+        public bool Remove(TEntity item)
+        {
+            return Cached.Remove(item);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable)Cached).GetEnumerator();
+        }
+
         public static Expression<Predicate<TEntity>> True = f => true;
 
         Type IQueryable.ElementType => typeof(TEntity);
@@ -165,6 +265,10 @@ namespace Hiperspace
         Expression IQueryable.Expression => Expression.Constant(this);
 
         public IQueryProvider Provider { get; init; }
+
+        public int Count => Cached.Count;
+
+        public bool IsReadOnly => false;
         #endregion
     }
 
@@ -186,7 +290,7 @@ namespace Hiperspace
             if (taken)
             {
                 TEntity? res;
-                if (((HashSet<TEntity>)this).TryGetValue(item, out res))
+                if (Cached.TryGetValue(item, out res))
                 {
                     if (_isStrict)
                     {
@@ -199,7 +303,7 @@ namespace Hiperspace
 
                 if (cache && Filter(item).Ok)
                 {
-                    base.ProtecedAdd(item);
+                    Cached.Add(item);
                     _lock.Exit();
                     RaiseOnbind(item);
                     return Result.Ok(item);

@@ -49,6 +49,7 @@ namespace Hiperspace
             // for deserialisation
             set
             {
+                _entity = value;
                 if (SetSpace != null && value != null) 
                 {
                     _key = _keyBuilder();
@@ -76,6 +77,11 @@ namespace Hiperspace
         public void Bind(SetSpace<TEntity> setspace)
         {
             SetSpace = setspace;
+            if (_entity != null && _entity.SetSpace != setspace)
+            {
+                _binder(_entity);
+                setspace.Bind(_entity);
+            }
         }
         public void Unbind(SubSpace subSpace)
         {

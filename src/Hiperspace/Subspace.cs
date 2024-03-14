@@ -37,6 +37,7 @@ namespace Hiperspace
 
         public SetSpace<Node> Nodes { get; protected set; }
         public SetSpace<Edge> Edges { get; protected set; }
+        public SetSpace<VectorSpace> VectorSpaces { get; protected set; }
 
 #pragma warning disable CS8618 // Nodes and Edges will be constructed from domain
         public SubSpace (HiperSpace space) : base ()
@@ -92,6 +93,15 @@ namespace Hiperspace
             return _space.FindAsync(begin, end);
         }
 
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)
+        {
+            return _space.Nearest(begin, end, version, space, method, limit);
+        }
+        public override Task<IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)>> NearestAsync(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)
+        {
+            return base.NearestAsync(begin, end, version, space, method, limit);
+        }
+
         public override byte[] Get(byte[] key)
         {
             return _space.Get(key);
@@ -109,15 +119,14 @@ namespace Hiperspace
         {
             if (expression.Type == typeof(Node)) return new Query<Node>(Nodes, this, expression);
             if (expression.Type == typeof(Edge)) return new Query<Edge>(Edges, this, expression);
+            if (expression.Type == typeof(VectorSpace)) return new Query<VectorSpace>(VectorSpaces, this, expression);
             throw new ArgumentException($"{expression.Type.Name} is not as a suppoerted collection type");
         }
         public virtual IQueryable<TElement> CreateQuery<TElement>(Expression expression)
         {
             if (typeof(TElement) == typeof(Node)) return (IQueryable<TElement>)new Query<Node>(Nodes, this, expression);
             if (typeof(TElement) == typeof(Edge)) return (IQueryable<TElement>)new Query<Edge>(Edges, this, expression);
-
-            var t = new EnumerableQuery<TElement>(expression).AsQueryable();
-            return t;
+            if (typeof(TElement) == typeof(VectorSpace)) return (IQueryable<TElement>)new Query<VectorSpace>(VectorSpaces, this, expression);
             throw new ArgumentException($"{typeof(TElement).FullName} is not as a supported collection type");
         }
         public virtual object? Execute(Expression expression)

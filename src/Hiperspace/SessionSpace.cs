@@ -6,6 +6,7 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 
 namespace Hiperspace
 {
@@ -121,6 +122,35 @@ namespace Hiperspace
                 returns[c] = await reads[c];
             }
             return Yielder(returns);
+        }
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)
+        {
+            var ranks = new SortedSet<Nearest>();
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                foreach (var result in _spaces[c].Nearest(begin, end, version, space, method, limit))
+                    ranks.Add(new Nearest(result));
+            }
+            var keys = limit == 0 ? ranks : ranks.Take(limit);
+            foreach (var key in keys)
+                yield return key.ToTuple();
+        }
+        public override async Task<IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)>> NearestAsync(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)
+        {
+            var ranks = new SortedSet<Nearest>();
+            var reads = new Task<IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)>>[_spaces.Length];
+
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                reads[c] = _spaces[c].NearestAsync(begin, end, version, space, method, limit);
+            }
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                foreach (var result in await reads[c])
+                    ranks.Add(new Nearest(result));
+            }
+            var keys = limit == 0 ? ranks : ranks.Take(limit);
+            return keys.Select(key => key.ToTuple());
         }
         public override IEnumerable<(byte[] value, DateTime version)> GetVersions(byte[] key)
         {

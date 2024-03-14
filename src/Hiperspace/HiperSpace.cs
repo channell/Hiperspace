@@ -250,6 +250,31 @@ namespace Hiperspace
         }
 
         /// <summary>
+        /// Find all values of space for similarity match for AI queries
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="vector"></param>
+        /// <param name="version">datestamp of key</param>
+        /// <param name="limit">limit to the top results, or zero for all</param>
+        /// <returns></returns>
+        public virtual IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)
+        {
+            throw new NotImplementedException("This HiperSpace does not support Vector Search");
+        }
+        /// <summary>
+        /// Find all values of space for index values between the index values asyncronously
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="vector"></param>
+        /// <param name="limit">limit to the top results, or zero for all</param>
+        /// <param name="version">datestamp of key</param>
+        /// <returns></returns>
+        public virtual Task<IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)>> NearestAsync(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)
+        {
+            return Task.Run(() => Nearest(begin, end, version, space, method, limit));
+        }
+
+        /// <summary>
         /// Get a single unique value from space
         /// </summary>
         /// <param name="key"></param>

@@ -56,7 +56,7 @@ namespace Hiperspace
                                     {
                                         var result = ee.Bind(_setSpace.Space);
                                         if (result.New)
-                                            ((HashSet<TEntity>)_setSpace).Add(result.Value);
+                                            _setSpace.Cached.Add(result.Value);
                                         return result.Value;
                                     }
                                     else 

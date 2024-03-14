@@ -7,9 +7,12 @@
 // ---------------------------------------------------------------------------------------
 namespace Hiperspace
 {
+    /// <summary>
+    /// Used for AI and special search 
+    /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
-    public class VersionedAttribute : Attribute
+    public class VectorSpaceAttribute : Attribute
     {
-        public VersionedAttribute() : base() { }
+        public VectorSpaceAttribute() : base() { }
     }
 }

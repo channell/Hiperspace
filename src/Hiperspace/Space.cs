@@ -36,6 +36,15 @@ namespace Hiperspace
 #endif
             return vpl;
         }
+
+        public static byte[] VectorKeyBytes<TProto>(TProto proto, (int key, (int member, int key)[] values)[] map)
+        {
+            var bytes = KeyBytes(proto, map);
+            var result = new byte[bytes.Length + 1];
+            var span = new Span<byte>(result, 1, bytes.Length);
+            bytes.CopyTo(span);
+            return result;
+        }
         public static byte[] ValueBytes<TProto>(TProto proto, bool eof = false)
         {
             var ms = new MemoryStream();
@@ -50,6 +59,12 @@ namespace Hiperspace
             protoStream.Position = 0;
             var key = Serializer.Deserialize<TProto>(protoStream);
             return key;
+        }
+        public static TProto FromVectorKey<TProto>(byte[] bytes, (int key, (int member, int key)[] values)[] map)
+        {
+            var result = new byte[bytes.Length - 2];
+            bytes.CopyTo(result, 2);
+            return FromKey<TProto>(result, map);
         }
         public static TProto FromValue<TProto>(byte[] bytes)
         {

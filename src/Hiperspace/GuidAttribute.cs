@@ -8,8 +8,12 @@
 namespace Hiperspace
 {
     [AttributeUsage(AttributeTargets.Class)]
-    public class VersionedAttribute : Attribute
+    public class GuidAttribute : Attribute
     {
-        public VersionedAttribute() : base() { }
+        public Guid Guid {  get; init; }
+        public GuidAttribute(string value) : base() 
+        { 
+            Guid = Guid.Parse(value);
+        }
     }
 }

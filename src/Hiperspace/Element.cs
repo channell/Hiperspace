@@ -36,5 +36,16 @@ namespace Hiperspace
         {
             return Result.Ok(element);
         }
+
+        /// <summary>
+        /// Cast helper for F# code
+        /// </summary>
+        /// <typeparam name="TView">any view tyope that may be projected from the element</typeparam>
+        /// <param name="view">optional target value to drive cast</param>
+        /// <returns>the object as the view type or null</returns>
+        public TView? As<TView>(TView? view = null) where TView : Element<TView>, new()
+        {
+            return this as TView;
+        }
     }
 }

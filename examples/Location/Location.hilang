@@ -1,0 +1,20 @@
+%domain(Location);
+
+"National Country"
+entity Location.Country = Node ( SKey = SKey, Name = Code, TypeName = "Country")
+(
+    Code        : String
+)
+[
+    AirPorts    : Location.Airport (Country = self)
+];
+
+"Airport within a country"
+@Versioned
+entity Location.Airport : HasVectorSpace 
+    = Node ( SKey = SKey, Name = Code, TypeName = "Airport"),
+      Edge (From = Country, To = self, Name = Code, TypeName = "Airport")
+(
+    Country     : Location.Country,
+    Code        : String
+);

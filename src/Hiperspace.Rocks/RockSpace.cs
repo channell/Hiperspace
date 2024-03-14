@@ -7,7 +7,12 @@
 // ---------------------------------------------------------------------------------------
 using Hiperspace.Meta;
 using RocksDbSharp;
+using System;
 using System.Buffers.Binary;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Net.WebSockets;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 
 namespace Hiperspace.Rocks
@@ -208,7 +213,7 @@ namespace Hiperspace.Rocks
                 while (range.Valid())
                 {
                     var k = range.Key();
-                    if (Compare(begin, k) <= 0 && Compare(end, k) >= 0)
+                    if (Compare(end, k) >= 0)
                     {
                         var v = range.Value();
                         yield return (range.Key(), range.Value());
@@ -281,6 +286,77 @@ namespace Hiperspace.Rocks
         public override Task<IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)>> FindAsync(byte[] begin, byte[] end, DateTime? version)
         {
             return Task.Run(() => Find(begin, end, version).ToList() as IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)>);
+        }
+
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)
+        {
+            space.Float();
+            var ranks = new SortedSet<Nearest>();
+            var vbegin = new byte[begin.Length + sizeof(long) + 2];
+            var vend = new byte[end.Length + sizeof(long) + 2];
+            begin.CopyTo(new Span<byte>(vbegin, 2, begin.Length));
+            end.CopyTo(new Span<byte>(vend, 2, end.Length));
+            FF.CopyTo(new Span<byte>(vend, vend.Length - sizeof(long), sizeof(long)));
+
+            RaiseOnBeforeFind(ref vbegin, ref vend);
+            using (var iter = _db.NewIterator())
+            {
+                byte[] lastKey = Array.Empty<byte>();
+                byte[] lastValue = Array.Empty<byte>();
+                long lastVersion = 0;
+
+                var range = iter.Seek(vbegin);
+                while (range.Valid())
+                {
+                    var k = range.Key();
+                    if (Compare(k, vend) <= 0)
+                    {
+                        var keypart = new byte[k.Length - sizeof(long) - 2];
+                        var span = new Span<byte>(k, 2, k.Length - sizeof(long) - 2);
+                        span.CopyTo(keypart);
+
+                        if (lastKey == Array.Empty<byte>() || Compare(keypart, lastKey) == 0)
+                        {
+                            var ver = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(k, k.Length - sizeof(ulong), sizeof(ulong))));
+                            if ((version.HasValue && ver < version.Value.Ticks && ver > lastVersion) || (!version.HasValue && lastVersion == 0))
+                            {
+                                lastKey = keypart;
+                                lastVersion = ver;
+                                lastValue = range.Value();
+                            }
+                        }
+                        else if (lastVersion != 0)
+                        {
+                            var vec = Hiperspace.Space.FromValue<Vector>(lastValue);
+                            var distance = space.Nearest(vec, method);
+                            if (distance.HasValue)
+                                ranks.Add(new Nearest(distance.Value, lastKey));
+
+                            lastKey = keypart;
+                            lastVersion = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(k, k.Length - sizeof(ulong), sizeof(ulong))));
+                            lastValue = range.Value();
+                        }
+                        range.Next();
+                    }
+                    else
+                        break;
+                }
+                if (lastVersion != 0)
+                {
+                    var vec = Hiperspace.Space.FromValue<Vector>(lastValue);
+                    var distance = space.Nearest(vec, method);
+                    if (distance.HasValue)
+                        ranks.Add(new Nearest(distance.Value, lastKey));
+                }
+                var keys = limit == 0 ? ranks : ranks.Take(limit);
+
+                foreach (var r in keys)
+                {
+                    var res = Get(r.Key, version);
+                    yield return (r.Key, res.Item2, res.Item1, r.Distance);
+                }
+            }
+            RaiseOnAfterFind(ref begin, ref end);
         }
 
         public override byte[] Get(byte[] key)
