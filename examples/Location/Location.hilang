@@ -1,5 +1,7 @@
 %domain(Location);
 
+view Edge2 = Edge () (From : Node, To : Node, TypeName : String) { Name : String};
+
 "National Country"
 entity Location.Country = Node ( SKey = SKey, Name = Code, TypeName = "Country")
 (
@@ -13,7 +15,8 @@ entity Location.Country = Node ( SKey = SKey, Name = Code, TypeName = "Country")
 @Versioned
 entity Location.Airport : HasVectorSpace 
     = Node ( SKey = SKey, Name = Code, TypeName = "Airport"),
-      Edge (From = Country, To = self, Name = Code, TypeName = "Airport")
+      Edge (From = Country, To = self, Name = Code, TypeName = "Airport"),
+      Edge2 (From = self, To = Country, Name = Code, TypeName = "Airport-Country")
 (
     Country     : Location.Country,
     Code        : String

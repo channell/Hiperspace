@@ -133,7 +133,7 @@ entity Togaf.Business.Function : Togaf.General.Base
 [
     Children        : Togaf.Business.Function (Parent = self),
     Orchestrates    : Togaf.Business.Process (Decomposes = self),
-    Involes         : Togaf.Business.CourseOfAction (Involves = self)
+    Involves        : Togaf.Business.CourseOfAction (Involves = self)
 ];
 entity Togaf.Business.Capability : Togaf.General.Base
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-Capability"),  
@@ -350,7 +350,8 @@ entity Togaf.Service : Togaf.General.Base
     Measures        : Togaf.Business.Measure ( Tracks = self),
     Triggers        : Togaf.Business.Event ( Trigger = self),
     UsedBy          : Togaf.Business.Activity ( Uses = self),
-    Provides        : Togaf.Data.Entity(Provider = self)
+    Provides        : Togaf.Data.Entity(Provider = self),
+    ProvidedBy      : Togaf.Application.System ( Realizes = self)
 ];
 
 /* ********************************************************
@@ -424,7 +425,8 @@ entity Togaf.Application.System : Togaf.General.Base
     Platform        : Togaf.Technology.Platform
 }
 [
-    SystemUsage     : Togaf.Data.Usage (System = self)
+    SystemUsage     : Togaf.Data.Usage (System = self),
+    ImplementedBy   : Togaf.Application.Component (Implements = self)
 ];
 
 entity Togaf.Application.Component: Togaf.General.Base
@@ -438,7 +440,8 @@ entity Togaf.Application.Component: Togaf.General.Base
     Host            : Togaf.Technology.Host
 }
 [
-    ComponentUsage  : Togaf.Data.Logical (Component = self)
+    ComponentUsage  : Togaf.Data.Logical (Component = self),
+    DeployedBy      : Togaf.Application.Deployed (Deployes = self)
 ];
 
 entity Togaf.Application.Deployed : Togaf.General.Base
@@ -477,7 +480,8 @@ entity Togaf.Technology.Host : Togaf.General.Base
     Platform        : Togaf.Technology.Platform
 }
 [
-    Hosts           : Togaf.Application.Component (Host = self)
+    Hosts           : Togaf.Application.Component (Host = self),
+    Instances       : Togaf.Technology.Instance (Host = self) 
 ];
 
 entity Togaf.Technology.Instance : Togaf.General.Base

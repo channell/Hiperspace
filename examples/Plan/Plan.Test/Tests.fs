@@ -171,9 +171,7 @@ type  PlanTest (output : ITestOutputHelper) =
                     )
                 |> planSpace.TaskActuals.Bind
                 |> result
-            let mutable rs = RefSingle<Plan.Tasks.TaskActual.KeyType, Plan.Tasks.TaskActual>  ()
-            rs.Value <- actual
-            task.Actual <- rs
+            task.Actual <- actual
             actual
 
         let addTimeSheet (task : Plan.Tasks.Task) = 
@@ -190,6 +188,7 @@ type  PlanTest (output : ITestOutputHelper) =
                   )
                 |> planSpace.Timesheets.Bind
                 |> result
+            task.Resources.Refresh()
             let added = task.Resources |> List.ofSeq |> List.head |> fun r -> r.Timesheets |> List.ofSeq |> List.contains time
             //added.Should().BeTrue("added") |> ignore
             time

@@ -12,6 +12,7 @@ namespace Sparx.EA
             }
             set
             {
+                Element = value;
                 if (value != null)
                     Element = new(new() { Id = value?.Id }, value);
             }

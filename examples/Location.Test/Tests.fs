@@ -7,6 +7,8 @@ open Hiperspace
 open FluentAssertions
 open System.IO
 open Hiperspace.Rocks
+open System.Text.Json
+open System.Text.Json.Serialization
 
 [<Fact>]
 let ``Nearest test`` () =
@@ -60,6 +62,18 @@ let ``Nearest test`` () =
     let nearairport = fst (nearst.ToTuple())
 
     nearairport.Code.Should().Be("Gatwick", "Clsoest airport") |> ignore
+
+    let nodes = 
+        space.Nodes
+        |> List.ofSeq
+
+    nodes.Length.Should().Be(9, "countries + airports") |> ignore
+
+    let edges = 
+        space.Edges
+        |> List.ofSeq
+
+    edges.Length.Should().Be(10, "Country -> Airport, Airport -> Country")
 
 [<Fact>]
 let ``Nearest Rocks test`` () =
@@ -116,5 +130,16 @@ let ``Nearest Rocks test`` () =
 
     let nearairport = fst (nearst.ToTuple())
 
-    nearairport.Code.Should().Be("Gatwick", "Clsoest airport") |> ignore
+    nearairport.Code.Should().Be("Gatwick", "Closest airport") |> ignore
 
+    let nodes = 
+        space.Nodes
+        |> List.ofSeq
+
+    nodes.Length.Should().Be(9, "countries + airports") |> ignore
+
+    let edges = 
+        space.Edges
+        |> List.ofSeq
+
+    edges.Length.Should().Be(10, "Country -> Airport, Airport -> Country")

@@ -62,8 +62,9 @@ namespace Hiperspace
         }
         public static TProto FromVectorKey<TProto>(byte[] bytes, (int key, (int member, int key)[] values)[] map)
         {
-            var result = new byte[bytes.Length - 2];
-            bytes.CopyTo(result, 2);
+            var result = new byte[bytes.Length - 1];
+            var span = new Span<byte>(bytes, 1, bytes.Length - 1);
+            span.CopyTo(result);
             return FromKey<TProto>(result, map);
         }
         public static TProto FromValue<TProto>(byte[] bytes)
@@ -108,6 +109,9 @@ namespace Hiperspace
                 meta.PopIf(p);
                 switch (source[p] & btype)
                 {
+                    case 0 when p == 0:     // special case of VectorSpace keys
+                        s++; p++;
+                        break;
                     case 0: //varint
                         while ((source[p] & icont) == icont)
                         {
@@ -196,6 +200,9 @@ namespace Hiperspace
                 meta.PopIf(p);
                 switch (source[p] & btype)
                 {
+                    case 0 when p == 0:     // special case of VectorSpace keys
+                        s++; p++;
+                        break;
                     case 0: //varint
                         while ((source[p] & icont) == icont)
                         {
@@ -276,6 +283,9 @@ namespace Hiperspace
                 meta.PopIf(p);
                 switch (source[p] & btype)
                 {
+                    case 0 when p == 0:     // special case of VectorSpace keys
+                        s++; p++;
+                        break;
                     case 0: //varint
                         while ((source[p] & icont) == icont)
                         {
@@ -364,6 +374,9 @@ namespace Hiperspace
                 meta.PopIf(p);
                 switch (source[p] & btype)
                 {
+                    case 0 when p == 0:     // special case of VectorSpace keys
+                        s++; p++;
+                        break;
                     case 0: //varint
                         while ((source[p] & icont) == icont)
                         {

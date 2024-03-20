@@ -25,7 +25,7 @@ type Count () =
     [<Benchmark>]
     member _.CountRocks () =
         use space = 
-            let ssd = new RockSpace(rocks, MetaModel(), false, false)
+            let ssd = new RockSpace(rocks, MetaModel(), false)
             new SparxSpace (ssd)
         export.countrocks space 
 
@@ -66,7 +66,7 @@ type Json () =
     [<Benchmark>]
     member _.JSONRocks () =
         let space = 
-            let ssd = new RockSpace(rocks, MetaModel(), false, false)
+            let ssd = new RockSpace(rocks, MetaModel(), false)
             new SparxSpace (ssd)
         export.jsonrocks space 
 
