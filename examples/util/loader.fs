@@ -37,7 +37,7 @@ let load (space : SparxSpace) (ctx : Context) =
     log "ElementOperationPreConditions"
     query { for r in ctx.ElementOperationPreConditions.AsNoTracking() do select r } |> Seq.iter (fun r -> space.ElementOperationsPreConditionss.Bind(r, false) |> ignore)    
     log "ElementOperationPostConditions"
-    query { for r in ctx.ElementOperationPostConditions.AsNoTracking() do select r } |> Seq.iter (fun r -> space.ElementOperationsPostCondiitonss.Bind(r, false) |> ignore)    
+    query { for r in ctx.ElementOperationPostConditions.AsNoTracking() do select r } |> Seq.iter (fun r -> space.ElementOperationsPostConditionss.Bind(r, false) |> ignore)    
     log "ElementOperationParams"
     query { for r in ctx.ElementOperationParams.AsNoTracking() do select r } |> Seq.iter (fun r -> space.ElementOperationsParameterss.Bind(r, false) |> ignore)    
 //    query { for r in ctx.ElementTrxs do select r } |> Seq.iter (fun r -> space.ElementTrxs.Bind(r, false) |> ignore)    
@@ -55,14 +55,14 @@ let load (space : SparxSpace) (ctx : Context) =
     query { for r in ctx.ElementProperties.AsNoTracking() do select r } |> Seq.iter (fun r -> space.ElementPropertiess.Bind(r, false) |> ignore)    
     log "ElementProblems"
     query { for r in ctx.ElementProblems.AsNoTracking() do select r } |> Seq.iter (fun r -> space.ElementProblemss.Bind(r, false) |> ignore)    
-    log "ElementMetrics"
+    log "ElementMetrics"    
     query { for r in ctx.ElementMetrics.AsNoTracking() do select r } |> Seq.iter (fun r -> space.ElementMetricss.Bind(r, false) |> ignore)    
     log "ElementFiles"
     query { for r in ctx.ElementFiles.AsNoTracking() do select r } |> Seq.iter (fun r -> space.ElementFiless.Bind(r, false) |> ignore)
     log "RoleConstraints"
     query { for r in ctx.RoleConstraints.AsNoTracking() do select r } |> Seq.iter (fun r -> space.ConnectorRoleConstraintss.Bind(r, false) |> ignore)    
     log "ConnectorTags"
-    query { for r in ctx.ConnectorTags.AsNoTracking() do select r } |> Seq.iter (fun r -> space.ConnectorTagss.Bind(r, false) |> ignore)    
+    query { for r in ctx.ConnectorTags.AsNoTracking() do select r } |> Seq.iter (fun r -> space.ConnectorTagss.Bind(r, false) |> ignore)  
     log "ConnectorConstraints"
     query { for r in ctx.ConnectorConstraints.AsNoTracking() do select r } |> Seq.iter (fun r -> space.ConnectorConstraintss.Bind(r, false) |> ignore)    
 

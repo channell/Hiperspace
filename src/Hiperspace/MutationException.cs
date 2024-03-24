@@ -13,8 +13,14 @@ namespace Hiperspace
     /// </summary>
     public class MutationException : Exception
     {
-        public MutationException()  : base () { }
+        public MutationException() : base() { }
         public MutationException(string message) : base(message) { }
-        public MutationException(string message, Exception inner) : base(message, inner) { }  
+        public MutationException(string message, Exception inner) : base(message, inner) { }
+    }
+    public class ValueMutationException : MutationException
+    {
+        public ValueMutationException() : base() { }
+        public ValueMutationException(string type) : base($"{type} cannot be changed once bound to a Space") { }
+        public ValueMutationException(string type, Exception inner) : base($"{type} cannot be changed once bound to a Space", inner) { }
     }
 }

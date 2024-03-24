@@ -80,9 +80,6 @@ namespace Sparx
                 SetSpace<TEntity>? set,
                 JsonSerializerOptions options)
             {
-                writer.WriteStartObject();
-
-                writer.WriteEndObject();
             }
         }
     }

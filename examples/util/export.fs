@@ -132,7 +132,7 @@ let jsonrocks (space : SparxSpace) =
     log $"Json rocks"
     let id = NV 0
     query {for p in space.Packages do
-            where (p.ParentId = id)
+            where (p.Parent_Id = id)
             select p}
     |> Seq.iter (savejson "R")
 
@@ -140,37 +140,37 @@ let sqlGraph (ctx : Context) =
     log $"SQL graph"
     let withOperations (e : Element) =
         query {for o in ctx.ElementOperations.AsNoTracking() do
-                where (o.ObjectId = e.Id.Value)
+                where (o.owner_Id.Value = e.Id.Value)
                 select o}
         |> Seq.toArray
-        |> fun c -> e.DBOperations <- c
+        |> fun c -> e.Operations.UnionWith c
         e
     let withAttributes (e: Element) =
         query {for a in ctx.Attributes.AsNoTracking() do
-                where (a.ObjectId = e.Id.Value)}
+                where (a.Element_Id.Value = e.Id.Value)}
         |> Seq.toArray
-        |> fun c -> e.DBAttributes <- c
+        |> fun c -> e.Attributes.UnionWith c
         e
 
     let withElements (p : Package) =
         query {for e in ctx.Elements.AsNoTracking() do
-                where (e.PackageId = p.Id)
+                where (e.Package_Id = p.Id)
                 select e}
         |> Seq.toArray
         |> Array.map withOperations
         |> Array.map withAttributes
-        |> fun c -> p.DBContent <- c
+        |> fun c -> p.Content.UnionWith c
         p
    
     let rec withChilden (p : Package) =
 
         query {for c in ctx.Packages.AsNoTracking() do
-                where (c.ParentId = p.Id)
+                where (c.Parent_Id = p.Id)
                 select c}
         |> Seq.toArray
         |> Array.map withChilden
         |> Array.map withElements
-        |> fun c -> p.DBChildren <- c
+        |> fun c -> p.Children.UnionWith c
         p
 
     let id = NV 1

@@ -82,9 +82,6 @@ namespace Sparx
                 KeyRef<TKey,TEntity> set,
                 JsonSerializerOptions options)
             {
-                writer.WriteStartObject();
-
-                writer.WriteEndObject();
             }
         }
     }
