@@ -120,5 +120,9 @@ namespace Hiperspace
             if (left._key.CompareTo(right._key) > 0) return true;
             return false;
         }
+        /// <summary>
+        /// Helper property for F# to convert to a nullable reference
+        /// </summary>
+        public KeyRef<TKey, TEntity>? Nullable => this;
     }
 }

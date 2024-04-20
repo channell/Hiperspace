@@ -21,6 +21,10 @@ namespace Hiperspace
         public abstract bool IsSargable(TEntity item);
 
         public abstract void Bind(TEntity item);
+        public virtual (byte[], byte[], object?)? Batch(TEntity item)
+        {
+            return null;
+        }
         public abstract Task BindAsync(TEntity item);
 
         public virtual (byte[] key, byte[] value) PrepareBind(TEntity item)

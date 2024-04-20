@@ -133,12 +133,13 @@ namespace Hiperspace
                 return entities
                     .Where(e =>
                     {
-                        for (int c = 0; c < predicates.Length; c++)
+                        if (Filter(e).Fail)
                         {
-                            if (!predicates[c](e))
-                                return false;
+                            Cached.Remove(e);
+                            return false;
                         }
-                        return true;
+                        else
+                            return true;
                     });
             return entities;
         }

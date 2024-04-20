@@ -6,6 +6,7 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using ProtoBuf;
+using System;
 using System.Diagnostics.CodeAnalysis;
 
 /*view node #1
@@ -190,6 +191,18 @@ namespace Hiperspace
         public RefSet<Edge> Froms;
         public RefSet<Edge> Tos;
 
+        public IEnumerable<Edge> TosType(string typename)
+        {
+            foreach (var edge in Tos)
+                if (edge.TypeName == typename)
+                    yield return edge;
+        }
+        public IEnumerable<Edge> FromType(string typename)
+        {
+            foreach (var edge in Froms)
+                if (edge.TypeName == typename)
+                    yield return edge;
+        }
         #endregion
 
         #region Entity
@@ -241,7 +254,7 @@ namespace Hiperspace
         }
         #endregion
         #region  helpers
-        internal KeyRef<Node.KeyType, Node> self { get => new KeyRef<Node.KeyType, Node>(_key, this); }
+        public KeyRef<Node.KeyType, Node> self { get => new KeyRef<Node.KeyType, Node>(_key, this); }
 
         public static implicit operator KeyRef<KeyType, Node>([NotNull] Node other)
         {

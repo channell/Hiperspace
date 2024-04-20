@@ -1,0 +1,46 @@
+﻿/*
+-- Create a GraphDemo database
+IF NOT EXISTS (SELECT * FROM sys.databases WHERE NAME = 'graphdemo')
+    CREATE DATABASE GraphDemo;
+GO
+
+USE GraphDemo;
+GO
+
+-- Create NODE tables
+CREATE TABLE Person (
+  ID INTEGER PRIMARY KEY,
+  name VARCHAR(100)
+) AS NODE;
+
+CREATE TABLE Restaurant (
+  ID INTEGER NOT NULL,
+  name VARCHAR(100),
+  city VARCHAR(100)
+) AS NODE;
+
+CREATE TABLE City (
+  ID INTEGER PRIMARY KEY,
+  name VARCHAR(100),
+  stateName VARCHAR(100)
+) AS NODE;
+
+-- Create EDGE tables.
+CREATE TABLE likes (rating INTEGER) AS EDGE;
+CREATE TABLE friendOf AS EDGE;
+CREATE TABLE livesIn AS EDGE;
+CREATE TABLE locatedIn AS EDGE;
+*/
+entity City = Node (SKey = SKey, Name = Name, TypeName = "City") ( Id : Int32) {Name : String, State : String };
+entity Person 
+	= Node (SKey = SKey, Name = Name, TypeName = "Person"), 
+	  Edge (From = self, To = City, Name = "", TypeName = "Lives In") 
+	( Id : Int32) { Name : String, City : City } [ Friends : Friend, Likes : Likes ]; 
+entity Restaurant 
+	= Node (SKey = SKey, Name = Name, TypeName = "Restaurant"),
+	  Edge (From = self, To = City, Name = "", TypeName = "Located In") 
+	  ( Id : Int32) {Name : String, City : City };
+segment Friend 
+	= Edge (From = owner, To = Of, Name = "", TypeName = "Friend")
+	(Of : Person) {When : DateTime};
+segment Likes = Edge (From = owner, To = Restaurant, Name = "", TypeName = "Likes") (Restaurant : Restaurant) { Rating : Int32};
