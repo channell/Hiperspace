@@ -120,6 +120,7 @@ namespace Hiperspace
             {
                 if (SetSpace != null)
                 {
+                    SetSpace.Bind(item);
                     _binder(item);
                     item.Bind(SetSpace.Space);
                 }

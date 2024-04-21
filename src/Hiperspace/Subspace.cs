@@ -55,7 +55,7 @@ namespace Hiperspace
 
         public bool ISChild(SubSpace space)
         {
-            if (space == _space)
+            if (space == this)
                 return true;
             else if (_space is SubSpace subspace)
                 return subspace.ISChild(space);
