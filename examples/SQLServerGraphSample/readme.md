@@ -131,7 +131,7 @@ is equivilent to
 |Mary->Alice->John|excluded when joining 4 nodes|
 |Alice->John->Mary|excluded when joining 4 nodes|
 |Jacob->Mary->Alice->John|
-|Julie->Jacob->Mary->Alice->**John** |5th path ommited in join|
+|Julie->Jacob->Mary->Alice->**John** |5th path omitted in join|
 
-These examples use C#, but would be a more direct reporesentation with F#.
+These examples use C#, but would be a more direct representation with F#.
 Hiperspace treats the entire graph as if it was in memory
