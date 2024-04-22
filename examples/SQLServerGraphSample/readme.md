@@ -12,9 +12,9 @@ SQL/Server does not constrain the type of `Node` that can be connected with an `
 ![Model](Model.png "Title")
 
 |Name |SQL Server type | HiLang type | Note |
-|--|--|--|
-|Person  | table | entity|
-|Restaurant  | table | entity|
+|--|--|--|--|
+|Person | table | entity|
+|Restaurant | table | entity|
 |City | table | entity|
 | Likes | Edge | segment |
 |Friend| Edge | segment |
