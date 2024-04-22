@@ -60,4 +60,4 @@ was not undertaken because the size of the document exceeds storage limitations.
 
 [Sparx UML documentation](https://channell.github.io/Hiperspace/doc/)
 
-[Comparison of SQL/Server graph with Hiperspace graph](https://channell.github.io/Hiperspace/examples/SQLServerGraphSample/readme.md)
+[Comparison of SQL/Server graph with Hiperspace graph](./examples/SQLServerGraphSample/readme.md)
