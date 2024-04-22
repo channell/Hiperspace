@@ -229,12 +229,14 @@ namespace SQLServerGraphSample
                 else
                 {
                     _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} John likes (graph)");
-                    var johnNode = (Node)John;
-                    var johnkey = nvl(johnNode.self);
-                    foreach (var l in
-                        johnNode.Froms
-                        .Where(e => e.TypeName == "Likes")
+
+                    var johnNode = 
+                        dom.Nodes
+                        .Where(p => p.Name == "John")
                         .ToArray()
+                        .First();
+                    foreach (var l in
+                        johnNode.FromType("Likes")
                         .Select(e => e.To?.Value?.Name))
                     {
                         _output.WriteLine($"\t{l}");
@@ -242,8 +244,7 @@ namespace SQLServerGraphSample
 
                     _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} John's friends like (graph)");
                     foreach (var l in
-                        johnNode.Froms
-                        .Where(e => e.TypeName == "Friend")
+                        johnNode.FromType("Friend")
                         .ToArray()
                         .Aggregate(new List<Node?>(), (a, e) => { a.Add(e.To?.Value); return a; })
                         .Aggregate(new List<Edge?>(), (a, n) => { if (n != null) a.AddRange(n.Froms); return a; })
@@ -260,7 +261,6 @@ namespace SQLServerGraphSample
                         dom.Edges
                         .Where(e => e.TypeName == "Likes")
                         .ToArray()
-                        .Where(e => e.From?.Value?.Object is Person && e.To?.Value?.Object is Restaurant)
                         .Select(e => (e.From?.Value?.Object as Person, e.To?.Value?.Object as Restaurant))
                         .Where(p => p.Item1?.City == p.Item2?.City)
                         .Select(p => p.Item1)
@@ -271,7 +271,7 @@ namespace SQLServerGraphSample
                     _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} Fiend paths");
                     Func<Edge, string> fname = e => e.From?.Value?.Name ?? "";
                     var edges = dom.Edges.Where(e => e.TypeName == "Friend").ToArray();
-                    var q =
+                    foreach (var line in 
                         (from p in edges
                          join p2 in edges on p.To equals p2.From
                          join p3 in edges on p2.To equals p3.From
@@ -280,14 +280,9 @@ namespace SQLServerGraphSample
                             && p3.From != p2.From
                             && p4.From != p3.From
                             && p.From != p4.From
-                         let pname = fname(p)
-                         let pname2 = fname(p2)
-                         let pname3 = fname(p3)
-                         let pname4 = fname(p4)
-                         select $"\t{pname}->{pname2}->{pname3}->{pname4}"
-                         );
-                    foreach (var l in q)
-                        _output.WriteLine (l);
+                         select $"\t{fname(p)}->{fname(p2)}->{fname(p3)}->{fname(p4)}"
+                         ))
+                        _output.WriteLine(line);
 
                     _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} Fiend paths (recursive)");
                     foreach (var p in dom.Nodes)

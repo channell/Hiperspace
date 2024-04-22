@@ -59,3 +59,5 @@ was not undertaken because the size of the document exceeds storage limitations.
 [GridFS](https://www.mongodb.com/docs/manual/core/gridfs/)
 
 [Sparx UML documentation](https://channell.github.io/Hiperspace/doc/)
+
+[Comparison of SQL/Server graph with Hiperspace graph](https://channell.github.io/Hiperspace/examples/SQLServerGraphSample/readme.md)

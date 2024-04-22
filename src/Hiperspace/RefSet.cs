@@ -95,7 +95,7 @@ namespace Hiperspace
             foreach (var en in _cached) 
             {
                 _binder(en);
-                en.Bind(SetSpace.Space);
+                SetSpace.Bind(en);
             }
         }
         public void Unbind(SubSpace subSpace)
@@ -120,9 +120,9 @@ namespace Hiperspace
             {
                 if (SetSpace != null)
                 {
-                    SetSpace.Bind(item);
                     _binder(item);
-                    item.Bind(SetSpace.Space);
+                    SetSpace.Bind(item);
+                    _cached.Add(item);
                 }
                 else
                    _cached.Add(item);
@@ -151,57 +151,152 @@ namespace Hiperspace
 
         bool ISet<TEntity>.Add(TEntity item)
         {
-            return _cached.Add(item);
+            bool taken = false;
+            _lock.Enter(ref taken);
+            if (taken)
+            {
+                var added = _cached.Add(item);
+                _lock.Exit();
+                return added;
+            }
+            else
+                throw new LockRecursionException();
         }
 
         public void ExceptWith(IEnumerable<TEntity> other)
         {
-            _cached.ExceptWith(other);
+            bool taken = false;
+            _lock.Enter(ref taken);
+            if (taken)
+            {
+                _cached.ExceptWith(other);
+                _lock.Exit();
+            }
+            else
+                throw new LockRecursionException();
         }
 
         public void IntersectWith(IEnumerable<TEntity> other)
         {
-            _cached.IntersectWith(other);
+            bool taken = false;
+            _lock.Enter(ref taken);
+            if (taken)
+            {
+                _cached.IntersectWith(other);
+                _lock.Exit();
+            }
+            else
+                throw new LockRecursionException();
         }
 
         public bool IsProperSubsetOf(IEnumerable<TEntity> other)
         {
-            return _cached.IsProperSubsetOf(other);
+            bool taken = false;
+            _lock.Enter(ref taken);
+            if (taken)
+            {
+                var returner = _cached.IsProperSubsetOf(other);
+                _lock.Exit();
+                return returner;
+            }
+            else
+                throw new LockRecursionException();
         }
 
         public bool IsProperSupersetOf(IEnumerable<TEntity> other)
         {
-            return _cached.IsProperSupersetOf(other);
+            bool taken = false;
+            _lock.Enter(ref taken);
+            if (taken)
+            {
+                var returner = _cached.IsProperSupersetOf(other);
+                _lock.Exit();
+                return returner;
+            }
+            else
+                throw new LockRecursionException();
         }
 
         public bool IsSubsetOf(IEnumerable<TEntity> other)
         {
-            return _cached.IsSubsetOf(other);
+            bool taken = false;
+            _lock.Enter(ref taken);
+            if (taken)
+            {
+                var returner = _cached.IsSubsetOf(other);
+                _lock.Exit();
+                return returner;
+            }
+            else
+                throw new LockRecursionException();
         }
 
         public bool IsSupersetOf(IEnumerable<TEntity> other)
         {
-            return _cached.IsSupersetOf(other);
+            bool taken = false;
+            _lock.Enter(ref taken);
+            if (taken)
+            {
+                var returner = _cached.IsSupersetOf(other);
+                _lock.Exit();
+                return returner;
+            }
+            else
+                throw new LockRecursionException();
         }
 
         public bool Overlaps(IEnumerable<TEntity> other)
         {
-            return _cached.Overlaps(other);
+            bool taken = false;
+            _lock.Enter(ref taken);
+            if (taken)
+            {
+                var returner = _cached.Overlaps(other);
+                _lock.Exit();
+                return returner;
+            }
+            else
+                throw new LockRecursionException();
         }
 
         public bool SetEquals(IEnumerable<TEntity> other)
         {
-            return _cached.SetEquals(other);
+            bool taken = false;
+            _lock.Enter(ref taken);
+            if (taken)
+            {
+                var returner = _cached.SetEquals(other);
+                _lock.Exit();
+                return returner;
+            }
+            else
+                throw new LockRecursionException();
         }
 
         public void SymmetricExceptWith(IEnumerable<TEntity> other)
         {
-            _cached.SymmetricExceptWith(other);
+            bool taken = false;
+            _lock.Enter(ref taken);
+            if (taken)
+            {
+                _cached.SymmetricExceptWith(other);
+                _lock.Exit();
+            }
+            else
+                throw new LockRecursionException();
         }
 
         public void UnionWith(IEnumerable<TEntity> other)
         {
-            _cached.UnionWith(other);
+            bool taken = false;
+            _lock.Enter(ref taken);
+            if (taken)
+            {
+                _cached.UnionWith(other);
+                _lock.Exit();
+            }
+            else
+                throw new LockRecursionException();
         }
 
         public void Clear()
