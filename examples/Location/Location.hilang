@@ -3,7 +3,7 @@
 view Edge2 = Edge () (From : Node, To : Node, TypeName : String) { Name : String};
 
 "National Country"
-entity Location.Country = Node ( SKey = SKey, Name = Code, TypeName = "Country")
+entity Location.Country : HasVectorSpace = Node ( SKey = SKey, Name = Code, TypeName = "Country")
 (
     Code        : String
 )
@@ -16,8 +16,18 @@ entity Location.Country = Node ( SKey = SKey, Name = Code, TypeName = "Country")
 entity Location.Airport : HasVectorSpace 
     = Node ( SKey = SKey, Name = Code, TypeName = "Airport"),
       Edge (From = Country, To = self, Name = Code, TypeName = "Airport"),
-      Edge2 (From = self, To = Country, Name = Code, TypeName = "Airport-Country")
+      Edge2 (From = self, To = Country, Name = Code, TypeName = "Airport-Country") ,
+      VectorNode ( SKey = SKey, Vector = VectorSpace.Vector) 
 (
     Country     : Location.Country,
     Code        : String
 );
+
+"node in a graph view of data with a VectorSpace"
+view VectorNode #3
+(
+    SKey        : String    #1,
+)
+{
+    Vector       : Hiperspace.Vector
+};

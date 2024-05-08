@@ -29,13 +29,28 @@ CREATE TABLE City (
 CREATE TABLE likes (rating INTEGER) AS EDGE;
 CREATE TABLE friendOf AS EDGE;
 CREATE TABLE livesIn AS EDGE;
-CREATE TABLE locatedIn AS EDGE;
+CREATE TABLE locatedIn AS EDGE; 
 */
-entity City = Node (SKey = SKey, Name = Name, TypeName = "City") ( Id : Int32) {Name : String, State : String };
-entity Person 
+aspect Option<T> = Edge (From = owner, To = A, Name = "", TypeName = "Maybe")
+{
+	A : T
+};
+/*
+segment Has<T> = Edge (From = owner, To = A, Name = "", TypeName = "Has")
+(
+	A : T
+);
+*/
+%Xmi ("FFE837A1-5B7F-429f-AD49-0080450C1EDB");
+%Xmi ("Loc", "FFE837A1-5B7F-429f-AD49-0080450C1EDB");
+
+
+@Xmi("1d353ff9-543f-4719-9ab1-23b21d6e685d")
+entity City = Node (SKey = SKey, Name = Name, TypeName = "City") (@Xmi("932d465c-d4c2-4b10-a83d-7cbb76927921")  Id : Int32) {Name : String, State : String } [People : Person (City = self)];
+entity Person : Versioned 
 	= Node (SKey = SKey, Name = Name, TypeName = "Person"), 
 	  Edge (From = self, To = City, Name = "", TypeName = "Lives In") 
-	( Id : Int32) { Name : String, City : City } [ Friends : Friend, Likes : Likes ]; 
+	( Id : Int32) { Name : String, City : City } [ Friends : Friend, Likes : Likes, Ownes : Option<Restaurant> ]; 
 entity Restaurant 
 	= Node (SKey = SKey, Name = Name, TypeName = "Restaurant"),
 	  Edge (From = self, To = City, Name = "", TypeName = "Located In") 

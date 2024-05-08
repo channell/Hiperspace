@@ -7,13 +7,20 @@
 // ---------------------------------------------------------------------------------------
 namespace Hiperspace
 {
-    [AttributeUsage(AttributeTargets.Class)]
-    public class GuidAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property | AttributeTargets.Assembly)]
+    public class XmiAttribute : Attribute
     {
-        public Guid Guid {  get; init; }
-        public GuidAttribute(string value) : base() 
-        { 
-            Guid = Guid.Parse(value);
+        private string? _package;
+        private string _value;
+
+        public XmiAttribute(string value) : base()
+        {
+            _value = value;
+        }
+        public XmiAttribute(string package, string value) : base()
+        {
+            _package = package;
+            _value = value;
         }
     }
 }

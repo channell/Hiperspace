@@ -5,11 +5,8 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
-using System;
 using System.Buffers.Binary;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Hiperspace
 {

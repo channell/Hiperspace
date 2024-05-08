@@ -5,8 +5,10 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using System.Buffers.Binary;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading;
+using System.IO.Compression;
+using System.Runtime.CompilerServices;
 
 namespace Hiperspace
 {
@@ -15,15 +17,52 @@ namespace Hiperspace
     /// </summary>
     public class SessionSpace : HiperSpace
     {
+        /// <summary>
+        /// Rollup function to filter content
+        /// </summary>
+        /// <param name="last">the last value from store which is newer that current</param>
+        /// <param name="current">the current version</param>
+        /// <param name="final">true when this is the final version</param>
+        /// <returns></returns>
+        public delegate bool Rollup(DateTime? last, DateTime current);
+
+        public static Rollup RollUpYears(int n = 1) => (last, current) => !last.HasValue ? true : current.AddYears(n) < last.Value ? true : false;
+        public static Rollup RollUpMonths(int n = 1) => (last, current) => !last.HasValue ? true : current.AddMonths(n) < last.Value ? true : false;
+        public static Rollup RollUpDays(double n = 1.0) => (last, current) => !last.HasValue ? true : current.AddDays(n) < last.Value ? true : false;
+        public static Rollup RollUpHours(double n = 1.0) => (last, current) => !last.HasValue ? true : current.AddHours(n) < last.Value ? true : false;
+        public static Rollup RollUpMinutes(double n = 1.0) => (last, current) => !last.HasValue ? true : current.AddMinutes(n) < last.Value ? true : false;
+        public static Rollup RollUpSeconds(double n = 1.0) => (last, current) => !last.HasValue ? true : current.AddSeconds(n) < last.Value ? true : false;
+
         private HiperSpace _sessionSpace;
         private HiperSpace _durableSpace;
         private HiperSpace[] _spaces;
+        private Rollup _roller;
 
+        /// <summary>
+        /// Create a session space, that only writes additions to the backing store when the session is close
+        /// </summary>
+        /// <param name="sessionSpace">space for local session</param>
+        /// <param name="durableSpace">durable backing store</param>
         public SessionSpace([NotNull] HiperSpace sessionSpace, [NotNull] HiperSpace durableSpace)
         {
             _sessionSpace = sessionSpace;
             _durableSpace = durableSpace;
             _spaces = new[] { _sessionSpace, _durableSpace };
+            _roller = (l, c) => true;
+        }
+
+        /// <summary>
+        /// Create a session space, that only writes additions to the backing store when the session is close, 
+        /// that <b>match</b> the rollup function
+        /// </summary>
+        /// <param name="sessionSpace">space for local session</param>
+        /// <param name="durableSpace">durable backing store</param>
+        public SessionSpace([NotNull] HiperSpace sessionSpace, [NotNull] HiperSpace durableSpace, Rollup rollup)
+        {
+            _sessionSpace = sessionSpace;
+            _durableSpace = durableSpace;
+            _spaces = new[] { _sessionSpace, _durableSpace };
+            _roller = rollup;
         }
 
         protected override void Dispose(bool disposing)
@@ -37,7 +76,7 @@ namespace Hiperspace
                     {
                         using (var file = File.OpenWrite(fname))
                         {
-                            _sessionSpace.Zip(file);
+                            Zip(file);      // only zip the session
                             file.Close();
                         }
                         using (var file = File.OpenRead(fname))
@@ -56,6 +95,13 @@ namespace Hiperspace
             }
         }
 
+        /// <summary>
+        /// Abort the session, and do not write changes
+        /// </summary>
+        public void Abort ()
+        {
+            _disposedValue = true;  // prevent write to backing
+        }
 
         public override Result<byte[]> Bind(byte[] key, byte[] value, object? source)
         {
@@ -230,27 +276,101 @@ namespace Hiperspace
 
         public override IEnumerable<(byte[], byte[])> Space()
         {
-            for (int c = 0; c < _spaces.Length; c++)
+            (byte[] Key, byte[] Value)? current = null;
+            DateTime? last = null;
+            foreach (var item in _sessionSpace.Space())
             {
-                foreach (var b in _spaces[c].Space())
-                    yield return b;
+                if (item.Key.Length > sizeof(ulong) + 1 && item.Key[0] == 0)   // versioned
+                {
+                    if (current.HasValue && item.Key.Length == current.Value.Key.Length)
+                    {
+                        var curkey = new Span<byte>(current.Value.Key, 0, current.Value.Key.Length - sizeof(ulong));
+                        var key = new Span<byte>(item.Key, 0, item.Key.Length - sizeof(ulong));
+                        if (Compare(curkey, key) != 0)
+                            last = null;
+                    }
+                    var ver = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(item.Key, item.Key.Length - sizeof(ulong), sizeof(ulong))));
+                    var currentDate = new DateTime(ver);
+                    if (_roller(last, currentDate))
+                    {
+                        yield return item;
+                        last = currentDate;
+                    }
+                }
+                current = item;
             }
         }
 
-        public override async Task<IEnumerable<(byte[], byte[])>> SpaceAsync()
+        public override Task<IEnumerable<(byte[], byte[])>> SpaceAsync()
         {
-            var reads = new Task<IEnumerable<(byte[], byte[])>>[_spaces.Length];
-            var returns = new IEnumerable<(byte[], byte[])>[_spaces.Length];
+            return Task.Run (() => Space().ToList() as IEnumerable<(byte[], byte[])>);
+        }
+        /// <summary>
+        /// Transfer the content of the session space to a zip stream
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="level"></param>
+        public new void Zip(Stream stream, CompressionLevel level = CompressionLevel.Fastest)
+        {
+            using (var zip = new GZipStream(stream, level))
+            {
+                foreach (var r in Space())
+                {
+                    zip.Write(BitConverter.GetBytes(r.Item1.Length));
+                    zip.Write(r.Item1);
+                    zip.Write(BitConverter.GetBytes(r.Item2.Length));
+                    zip.Write(r.Item2);
+                }
+            }
+        }
+        /// <summary>
+        /// Transfer the entire content of the space to a zip stream async
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <param name="level"></param>
+        public new Task ZipAsync(Stream stream, CompressionLevel level = CompressionLevel.Fastest)
+        {
+            return Task.Run(() => Zip(stream, level));
+        }
 
-            for (int c = 0; c < _spaces.Length; c++)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int Compare(Span<byte> left, Span<byte> right)
+        {
+            var min = left.Length < right.Length ? left.Length : right.Length;
+            int c = 0, d = 0;
+
+            // compare 8-byte chunks
+            while ((d += sizeof(long)) < min)
             {
-                reads[c] = Task.Run(() => _spaces[c].SpaceAsync());
+                var longleft = BinaryPrimitives.ReadUInt64BigEndian(left.Slice(c, sizeof(long)));
+                var longright = BinaryPrimitives.ReadUInt64BigEndian(right.Slice(c, sizeof(long)));
+                if (longleft < longright)
+                    return -1;
+                else if (longright < longleft)
+                    return 1;
+                c = d;
             }
-            for (int c = 0; c < _spaces.Length; c++)
+            // compare 4-byte chunks
+            if (min - c > sizeof(int))
             {
-                returns[c] = await reads[c];
+                var intleft = BinaryPrimitives.ReadUInt32BigEndian(left.Slice(c, sizeof(int)));
+                var intright = BinaryPrimitives.ReadUInt32BigEndian(right.Slice(c, sizeof(int)));
+                if (intleft < intright)
+                    return -1;
+                else if (intright < intleft)
+                    return 1;
+                c += sizeof(int);
             }
-            return Yielder(returns);
+            // compare bytes
+            while (c < min)
+            {
+                if (left[c] < right[c])
+                    return -1;
+                else if (left[c] > right[c])
+                    return 1;
+                c++;
+            }
+            return left.Length < right.Length ? -1 : left.Length > right.Length ? 1 : 0;
         }
     }
 }

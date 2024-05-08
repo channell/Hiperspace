@@ -1,4 +1,5 @@
 using Domain;
+using FluentAssertions;
 using Hiperspace;
 using Hiperspace.Heap;
 using Hiperspace.Rocks;
@@ -350,6 +351,62 @@ namespace SQLServerGraphSample
                 }
             }
             return paths;
+        }
+
+        [Fact]
+        public void TestSession ()
+        {
+            using (var heap = new HeapSpace())
+            {
+                using (var durable = new DomainSpace(heap))
+                {
+                    var pk1 = new Person.KeyType { Id = 1 };
+                    var pk2 = new Person.KeyType { Id = 2 };
+                    using (var session = new SessionSpace(new HeapSpace(), heap, SessionSpace.RollUpSeconds(1)))
+                    {
+                        using (var subses = new DomainSpace(session))
+                        {
+                            for (int c = 0; c < 100; c++)
+                            {
+                                subses.Persons.Add(new Person
+                                {
+                                    Id = pk1.Id,
+                                    Name = $"Fred {c}",
+                                });
+                                subses.Persons.Add(new Person
+                                {
+                                    Id = pk2.Id,
+                                    Name = $"Jane {c}",
+                                });
+                                Thread.Sleep(10);
+                            }
+                            var fred = subses.Persons.Get(ref pk1);
+                            fred.Should().NotBeNull();
+                            if (fred != null)
+                            {
+                                var history = fred.GetVersions().ToList();
+                                history.Count.Should().Be(100);
+
+                                durable.Persons.Get(ref pk1).Should().BeNull();
+                            }
+                        }
+                    }
+                    // after
+                    var fredS = durable.Persons.Get(ref pk1);
+                    fredS.Should().NotBeNull();
+
+                    durable.Persons.Get(ref pk2).Should().NotBeNull();
+                    if (fredS != null)
+                    {
+                        var historyS = fredS.GetVersions().ToList();
+                        historyS.Count.Should().BeGreaterThan(1);
+                        foreach (var v in historyS)
+                        {
+                            _output.WriteLine($"{v.Name} {v.AsAt}");
+                        }
+                    }
+                }
+            }
         }
     }
 }

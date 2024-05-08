@@ -38,6 +38,7 @@ namespace Hiperspace
         public SetSpace<Node> Nodes { get; protected set; }
         public SetSpace<Edge> Edges { get; protected set; }
         public SetSpace<VectorSpace> VectorSpaces { get; protected set; }
+        public SetSpace<VectorNode> VectorNodes { get; protected set; }
 
 #pragma warning disable CS8618 // Nodes and Edges will be constructed from domain
         public SubSpace (HiperSpace space) : base ()
