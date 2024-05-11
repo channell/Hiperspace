@@ -19,7 +19,7 @@ using System.Runtime.CompilerServices;
 
 public class VectorNode : Element<VectorNode>
 {
-    internal KeyType _key;
+    public KeyType _key;
     internal ValueType _value;
 
     public VectorNode()
@@ -31,12 +31,12 @@ public class VectorNode : Element<VectorNode>
 
 
     }
-    internal VectorNode(KeyType key, ValueType value) : this()
+    public VectorNode(KeyType key, ValueType value) : this()
     {
         _key = key;
         _value = value;
     }
-    internal VectorNode(KeyType key) : this()
+    public VectorNode(KeyType key) : this()
     {
         _key = key;
         _value = new ValueType();

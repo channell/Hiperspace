@@ -252,12 +252,12 @@ entity Togaf.Business.Activity : Togaf.General.Base
     Originates      : Togaf.Data.Entity(Originator = self)
 ];
 
-segment Togaf.Has.Activity
-    = Edge (From = owner, To = Item, Name = Item.Name, TypeName = "AF-Has-Activity"),
-      Edge2 (From = Item, To = owner, Name = Item.Name, TypeName = "AF-Activity-For") 
-( 
+segment Togaf.Has.Activity : Many<Togaf.Business.Activity>
+    = Edge (From = owner, To = A, Name = A.Name, TypeName = "AF-Has-Activity"),
+      Edge2 (From = A, To = owner, Name = A.Name, TypeName = "AF-Activity-For") 
+/*( 
     Item            : Togaf.Business.Activity
-) 
+) */
 { 
     Comment         : String 
 };
