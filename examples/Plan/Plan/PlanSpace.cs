@@ -14,18 +14,18 @@ namespace Plan
         [
             new Horizon<Project>(i => i.Deleted == false),
             new Horizon<Tasks.Task>(p => p.Deleted == false),
-            new Horizon<Tasks.TaskResources>(p => p.Deleted == false),
+            new Horizon<Tasks.TaskResource>(p => p.Deleted == false),
 
             new Horizon<Project>(i => i.Valid == true),
             new Horizon<Tasks.Task>(p => p.Valid == true),
-            new Horizon<Tasks.TaskResources>(p => p.Valid == true),
+            new Horizon<Tasks.TaskResource>(p => p.Valid == true),
             new Horizon<Booking.Timesheet>(p => p.Valid == true),
         ];
         protected static Horizon[] _write =
         [
             new Horizon<Project>(i => i.Valid == true),
             new Horizon<Tasks.Task>(p => p.Valid == true),
-            new Horizon<Tasks.TaskResources>(p => p.Valid == true),
+            new Horizon<Tasks.TaskResource>(p => p.Valid == true),
             new Horizon<Booking.Timesheet>(p => p.Valid == true),
         ];
         private static Horizon[] _financeonly =

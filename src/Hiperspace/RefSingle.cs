@@ -39,10 +39,19 @@ namespace Hiperspace
         { 
             get
             {
-                if (_entity == null && SetSpace != null)
+                if (_entity == null)
                 {
-                    _key = _keyBuilder();
-                    _entity = SetSpace.Get<TKey>(ref _key);
+                    if (SetSpace != null)
+                    {
+                        _key = _keyBuilder();
+                        _entity = SetSpace.Get<TKey>(ref _key);
+                    }
+                    else  // enable Concrete Elements to expose TEntity rather that KeyRef<>
+                    {
+                        var entity = new TEntity();
+                        if (entity.BindKey(_key))
+                            _entity = entity;
+                    }
                 }
                 return _entity;
             }

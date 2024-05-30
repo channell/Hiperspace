@@ -29,8 +29,8 @@ namespace Hiperspace
         {
             _key = new KeyType();
             _value = new ValueType();
-            Froms = new RefSet<Edge>(() => new Edge { From = self }, item => item.From = self);
-            Tos = new RefSet<Edge>(() => new Edge { To = self }, item => item.To = self);
+            Froms = new RefSet<Edge>(() => new Edge { From = this}, item => item.From = this);
+            Tos = new RefSet<Edge>(() => new Edge { To = this}, item => item.To = this);
         }
         public Node(Node source, SubSpace? space = null) : this()
         {
@@ -253,6 +253,17 @@ namespace Hiperspace
             return (_key == other._key);
         }
         #endregion
+        public override bool BindKey<TKey>(TKey key)
+        {
+            if (key is KeyType kt)
+            {
+                _key = kt;
+                return true;
+            }
+            else
+                return false;
+        }
+
         #region  helpers
         public KeyRef<Node.KeyType, Node> self { get => new KeyRef<Node.KeyType, Node>(_key, this); }
 

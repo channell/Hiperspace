@@ -23,18 +23,9 @@ namespace Hiperspace
         public abstract void Bind(TEntity item);
         public virtual (byte[], byte[], object?)? Batch(TEntity item)
         {
-            return null;
+            throw new NotImplementedException("This IndexPath provides BatchVersion instead");
         }
         public abstract Task BindAsync(TEntity item);
-
-        public virtual (byte[] key, byte[] value) PrepareBind(TEntity item)
-        {
-            throw new NotImplementedException();
-        }
-        public virtual Task<(byte[] key, byte[] value)> PrepareBindAsync(TEntity item)
-        {
-            throw new NotImplementedException();
-        }
 
         public abstract IEnumerable<TEntity> Find(TEntity template);
         public abstract Task<IEnumerable<TEntity>> FindAsync(TEntity template);

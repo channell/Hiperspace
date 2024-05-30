@@ -31,7 +31,7 @@ let ``Nearest test`` () =
     let airport (country, code, latitude : single, longitude : single) =
         Airport
           (
-            Country = countries[country].self,
+            Country = countries[country],
             Code = code,
             VectorSpace = AirportVectorSpace
               (
@@ -56,7 +56,7 @@ let ``Nearest test`` () =
         Vector [|51.51020425941176f; -0.08595773888870796f|]
 
     let nearst = 
-        space.Airports.Nearest (Airport (Country = Country( Code = "England").self), theMonument, Vector.Method.Distance, 1)
+        space.Airports.Nearest (Airport (Country = Country( Code = "England")), theMonument, Vector.Method.Distance, 1)
         |> Seq.head
 
     let nearairport = fst (nearst.ToTuple())
@@ -99,7 +99,7 @@ let ``Nearest Rocks test`` () =
     let airport (country, code, latitude : single, longitude : single) =
         Airport
           (
-            Country = countries[country].self,
+            Country = countries[country],
             Code = code,
             VectorSpace = AirportVectorSpace
               (
@@ -124,7 +124,7 @@ let ``Nearest Rocks test`` () =
         Vector [|51.51020425941176f; -0.08595773888870796f|]
 
     let nearst = 
-        space.Airports.Nearest (Airport (Country = Country( Code = "England").self), theMonument, Vector.Method.Distance, 1)
+        space.Airports.Nearest (Airport (Country = Country( Code = "England")), theMonument, Vector.Method.Distance, 1)
         |> 
         Seq.head
 

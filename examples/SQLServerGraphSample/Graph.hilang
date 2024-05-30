@@ -46,14 +46,14 @@ segment Has<T> = Edge (From = owner, To = A, Name = "", TypeName = "Has")
 
 
 @Xmi("1d353ff9-543f-4719-9ab1-23b21d6e685d")
-entity City = Node (SKey = SKey, Name = Name, TypeName = "City") (@Xmi("932d465c-d4c2-4b10-a83d-7cbb76927921")  Id : Int32) {Name : String, State : String } [People : Person (City = self)];
+entity City = Node (SKey = SKey, Name = Name, TypeName = "City") (@Xmi("932d465c-d4c2-4b10-a83d-7cbb76927921")  Id : Int32) {Name : String, State : String } [People : Person (City = this)];
 entity Person : Versioned 
 	= Node (SKey = SKey, Name = Name, TypeName = "Person"), 
-	  Edge (From = self, To = City, Name = "", TypeName = "Lives In") 
+	  Edge (From = this, To = City, Name = "", TypeName = "Lives In") 
 	( Id : Int32) { Name : String, City : City } [ Friends : Friend, Likes : Likes, Ownes : Option<Restaurant> ]; 
 entity Restaurant 
 	= Node (SKey = SKey, Name = Name, TypeName = "Restaurant"),
-	  Edge (From = self, To = City, Name = "", TypeName = "Located In") 
+	  Edge (From = this, To = City, Name = "", TypeName = "Located In") 
 	  ( Id : Int32) {Name : String, City : City };
 segment Friend 
 	= Edge (From = owner, To = Of, Name = "", TypeName = "Friend")

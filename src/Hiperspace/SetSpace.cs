@@ -7,6 +7,7 @@
 // ---------------------------------------------------------------------------------------
 using System.Collections;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 
@@ -78,6 +79,26 @@ namespace Hiperspace
             return Bind(item, true).Ok;
         }
 
+        public bool Insert(TEntity item)
+        {
+            var current = Get(item);
+            if (current != null)
+            {
+                if (item.GetType().GetCustomAttribute<VersionedAttribute>() != null)
+                    throw new MutationException($"Cannot insert a new {item.GetType().Name}, use Update(item) instead");
+                else
+                    throw new MutationException($"Cannot insert a new {item.GetType().Name}, value already exists");
+            }
+            return Bind(item, true).Ok;
+        }
+        public bool Update(TEntity item)
+        {
+            var current = Get(item);
+            if (current == null)
+                throw new MutationException($"Cannot update a {item.GetType().Name}, use Add(item) if an existing value is not needed");
+            return Bind(item, true).Ok;
+        }
+
         public bool TryGetValue(TEntity equalValue, out TEntity actualValue)
         {
             bool taken = false;
@@ -109,23 +130,14 @@ namespace Hiperspace
 
         public abstract void UnionWith (IEnumerable<TEntity> other);
 
-        public virtual bool IsSargable(TEntity template)
-        {
-            return false;  // change to abstract in next release
-        }
+        public abstract bool IsSargable(TEntity template);
         public abstract IEnumerable<TEntity> Find(TEntity template, bool cache = true);
 
         public abstract Task<IEnumerable<TEntity>> FindAsync(TEntity template, bool cache = true);
 
-        public virtual IEnumerable<(TEntity Item, double Distance)> Nearest(TEntity template, Vector space, Vector.Method method, int limit = 0, bool cache = true)
-        {
-            throw new NotImplementedException("This SetSpace does not support Vector Search");
-        }
+        public abstract IEnumerable<(TEntity Item, double Distance)> Nearest(TEntity template, Vector space, Vector.Method method, int limit = 0, bool cache = true);
 
-        public virtual Task<IEnumerable<(TEntity Item, double Distance)>> NearestAsync(TEntity template, Vector space, Vector.Method method, int limit = 0, bool cache = true)
-        {
-            throw new NotImplementedException("This SetSpace does not support Vector Search");
-        }
+        public abstract Task<IEnumerable<(TEntity Item, double Distance)>> NearestAsync(TEntity template, Vector space, Vector.Method method, int limit = 0, bool cache = true);
 
         public IEnumerable<TEntity> Filter(IEnumerable<TEntity> entities)
         {

@@ -120,13 +120,13 @@ namespace SQLServerGraphSample
                     new() { Id = 3, Name = "Noodle Land", City_Id = 3},
                 };
 
-                var likes = new List<(Person.KeyType p, Restaurant.KeyType r, int n)>()
+                var likes = new List<(Person p, Restaurant r, int n)>()
                 {
-                    (new Person.KeyType {Id = 1}, new Restaurant.KeyType { Id = 1}, 9),
-                    (new Person.KeyType {Id = 2}, new Restaurant.KeyType { Id = 2}, 9),
-                    (new Person.KeyType {Id = 3}, new Restaurant.KeyType { Id = 3}, 9),
-                    (new Person.KeyType {Id = 4}, new Restaurant.KeyType { Id = 3}, 9),
-                    (new Person.KeyType {Id = 5}, new Restaurant.KeyType { Id = 3}, 9),
+                    (new Person {Id = 1}, new Restaurant { Id = 1}, 9),
+                    (new Person {Id = 2}, new Restaurant { Id = 2}, 9),
+                    (new Person {Id = 3}, new Restaurant { Id = 3}, 9),
+                    (new Person {Id = 4}, new Restaurant { Id = 3}, 9),
+                    (new Person {Id = 5}, new Restaurant { Id = 3}, 9),
                 };
 
                 var friends = new List<(int p, int f)>
@@ -142,8 +142,8 @@ namespace SQLServerGraphSample
                 people.ForEach(p => dom.Persons.Add(p));
                 cities.ForEach(c => dom.Citys.Add(c));
                 resteraunts.ForEach(r => dom.Restaurants.Add(r));
-                likes.ForEach(l => dom.PersonLikess.Add(new PersonLikes { owner = l.p, Restaurant = l.r, Rating = l.n }));
-                friends.ForEach(f => dom.PersonFriendss.Add(new PersonFriends { owner_Id = f.p, Of_Id = f.f }));
+                likes.ForEach(l => dom.PersonLikes.Add(new PersonLike { owner = l.p, Restaurant = l.r, Rating = l.n }));
+                friends.ForEach(f => dom.PersonFriends.Add(new PersonFriend { owner_Id = f.p, Of_Id = f.f }));
 
                 /*-- Find Restaurants that John likes
                 SELECT Restaurant.name
@@ -173,16 +173,16 @@ namespace SQLServerGraphSample
                     _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} John likes (object)");
                     foreach (var l in
                         John.Likes
-                        .Select(l => l.Restaurant?.Value?.Name))
+                        .Select(l => l.Restaurant?.Name))
                     {
                         _output.WriteLine($"\t{l}");
                     }
                     _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} John's friends like (object)");
                     foreach (var l in
                         John.Friends
-                        .Select(f => f?.Of?.Value)
-                        .Aggregate(new List<PersonLikes>(), (a, f) => { if (f?.Likes != null) a.AddRange(f.Likes); return a; })
-                        .Select(l => l.Restaurant?.Value?.Name))
+                        .Select(f => f?.Of)
+                        .Aggregate(new List<PersonLike>(), (a, f) => { if (f?.Likes != null) a.AddRange(f.Likes); return a; })
+                        .Select(l => l.Restaurant?.Name))
                     {
                         _output.WriteLine($"\t{l}");
                     }
@@ -191,14 +191,14 @@ namespace SQLServerGraphSample
                     var same = new HashSet<Person>();
                     foreach (var p in dom.Persons)
                         foreach (var l in p.Likes)
-                            if (l.Restaurant_Value?.City == p.City)
+                            if (l.Restaurant?.City == p.City)
                                 same.Add(p);
                     foreach (var p in same)
                         _output.WriteLine($"\t{p.Name}");
 
                     _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} Fiend paths (join)");
-                    Func<PersonFriends, string> fname = e => e.owner?.Value?.Name ?? "";
-                    var frields = dom.PersonFriendss.ToArray();
+                    Func<PersonFriend, string> fname = e => e.owner?.Name ?? "";
+                    var frields = dom.PersonFriends.ToArray();
                     var q =
                         (from p in frields
                          join p2 in frields on p.Of equals p2.owner
@@ -238,7 +238,7 @@ namespace SQLServerGraphSample
                         .First();
                     foreach (var l in
                         johnNode.FromType("Likes")
-                        .Select(e => e.To?.Value?.Name))
+                        .Select(e => e.To?.Name))
                     {
                         _output.WriteLine($"\t{l}");
                     }
@@ -247,10 +247,10 @@ namespace SQLServerGraphSample
                     foreach (var l in
                         johnNode.FromType("Friend")
                         .ToArray()
-                        .Aggregate(new List<Node?>(), (a, e) => { a.Add(e.To?.Value); return a; })
+                        .Aggregate(new List<Node?>(), (a, e) => { a.Add(e.To); return a; })
                         .Aggregate(new List<Edge?>(), (a, n) => { if (n != null) a.AddRange(n.Froms); return a; })
                         .Where(e => e?.TypeName == "Likes")
-                        .Select(e => e?.To?.Value?.Name))
+                        .Select(e => e?.To?.Name))
                     {
                         _output.WriteLine($"\t{l}");
                     }
@@ -262,7 +262,7 @@ namespace SQLServerGraphSample
                         dom.Edges
                         .Where(e => e.TypeName == "Likes")
                         .ToArray()
-                        .Select(e => (e.From?.Value?.Object as Person, e.To?.Value?.Object as Restaurant))
+                        .Select(e => (e.From?.Object as Person, e.To?.Object as Restaurant))
                         .Where(p => p.Item1?.City == p.Item2?.City)
                         .Select(p => p.Item1)
                         )
@@ -270,7 +270,7 @@ namespace SQLServerGraphSample
                         _output.WriteLine($"\t{l?.Name}");
                     }
                     _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} Fiend paths");
-                    Func<Edge, string> fname = e => e.From?.Value?.Name ?? "";
+                    Func<Edge, string> fname = e => e.From?.Name ?? "";
                     var edges = dom.Edges.Where(e => e.TypeName == "Friend").ToArray();
                     foreach (var line in 
                         (from p in edges
@@ -309,7 +309,7 @@ namespace SQLServerGraphSample
 
             foreach (var f in current.Friends)
             {
-                var of = f.Of?.Value;
+                var of = f.Of;
                 if (of != null && !path.Contains(of))
                 {
                     var next = Paths(of, newpath);
@@ -336,7 +336,7 @@ namespace SQLServerGraphSample
 
             foreach (var f in current.FromType("Friend"))
             {
-                var of = f.To?.Value;
+                var of = f.To;
                 if (of != null && !path.Contains(of))
                 {
                     var next = Paths(of, newpath);

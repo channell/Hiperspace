@@ -1,0 +1,49 @@
+%domain(Acc);
+
+"A Customer"
+entity Acc.Customer : Versioned
+(
+	" name  of the customer"
+	Name			: String
+)
+[
+	"Account that the customer owns"
+	Accounts		: Acc.Account
+];
+
+"An acocunt for a customer"
+segment Acc.Account : Versioned
+(
+	Title			: String
+)
+[
+	"tranasctins against the account"
+	Transactions	: Acc.Transaction,
+
+	"the last closing balance"
+	Balance			: Acc.Balance
+];
+
+" Balance is the rolled up value for the account computed for a time"
+aspect Acc.Balance : Versioned
+{
+	"DateTime of the max balance"
+	When			: DateTime,
+
+	"Current closign balance at time When"
+	Current			: Decimal
+};
+
+"a transaction against account"
+segment Acc.Transaction : Versioned
+(
+	"when the transaction was authorised"
+	At				: DateTime
+)
+{
+	"debt or credit to account, with respect to the customer position"
+	Movement		: Decimal,
+
+	"who it was paid to"
+	Payee			: String
+};

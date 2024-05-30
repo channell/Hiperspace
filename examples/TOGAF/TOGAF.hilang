@@ -32,38 +32,38 @@ type Togaf.Base
 
 segment Togaf.Has.Principle : Togaf.Base 
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-Principle"),
-      Edge (From = owner, To = self, Name = Name, TypeName = "AF-Has-Principle"),
-      Edge2 (From = self, To = owner, Name = Name, TypeName = "AF-Principle-For") ;
+      Edge (From = owner, To = this, Name = Name, TypeName = "AF-Has-Principle"),
+      Edge2 (From = this, To = owner, Name = Name, TypeName = "AF-Principle-For") ;
 
 segment Togaf.Has.Constraint : Togaf.Base  
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-Constraint"),
-      Edge (From = owner, To = self, Name = Name, TypeName = "AF-Has-Constraint"),
-      Edge2 (From = self, To = owner, Name = Name, TypeName = "AF-Constraint-For") ;
+      Edge (From = owner, To = this, Name = Name, TypeName = "AF-Has-Constraint"),
+      Edge2 (From = this, To = owner, Name = Name, TypeName = "AF-Constraint-For") ;
 
 segment Togaf.Has.Assumption : Togaf.Base 
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-Assumption"),
-      Edge (From = owner, To = self, Name = Name, TypeName = "AF-Has-Assumption") ,
-      Edge2 (From = self, To = owner, Name = Name, TypeName = "AF-Assumption-For") ;
+      Edge (From = owner, To = this, Name = Name, TypeName = "AF-Has-Assumption") ,
+      Edge2 (From = this, To = owner, Name = Name, TypeName = "AF-Assumption-For") ;
 
 segment Togaf.Has.Requirement : Togaf.Base 
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-Requirement"),
-      Edge (From = owner, To = self, Name = Name, TypeName = "AF-Has-Requirement") ,
-      Edge2 (From = self, To = owner, Name = Name, TypeName = "AF-Requirement-For") ;
+      Edge (From = owner, To = this, Name = Name, TypeName = "AF-Has-Requirement") ,
+      Edge2 (From = this, To = owner, Name = Name, TypeName = "AF-Requirement-For") ;
 
 segment Togaf.Has.Location : Togaf.Base 
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-Location"),
-      Edge (From = owner, To = self, Name = Name, TypeName = "AF-Has-Location") ,
-      Edge2 (From = self, To = owner, Name = Name, TypeName = "AF-Location-For") ;
+      Edge (From = owner, To = this, Name = Name, TypeName = "AF-Has-Location") ,
+      Edge2 (From = this, To = owner, Name = Name, TypeName = "AF-Location-For") ;
 
 segment Togaf.Has.Gap : Togaf.Base 
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-Gap"),
-      Edge (From = owner, To = self, Name = Name, TypeName = "AF-Has-Gap") ,
-      Edge2 (From = self, To = owner, Name = Name, TypeName = "AF-Gap-For") ;
+      Edge (From = owner, To = this, Name = Name, TypeName = "AF-Has-Gap") ,
+      Edge2 (From = this, To = owner, Name = Name, TypeName = "AF-Gap-For") ;
 
 segment Togaf.Has.WorkPackage : Togaf.Base 
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-WorkPackage"),
-      Edge (From = owner, To = self, Name = Name, TypeName = "AF-Has-WorkPackage") ,
-      Edge2 (From = self, To = owner, Name = Name, TypeName = "AF-WorkPackage-For") ;
+      Edge (From = owner, To = this, Name = Name, TypeName = "AF-Has-WorkPackage") ,
+      Edge2 (From = this, To = owner, Name = Name, TypeName = "AF-WorkPackage-For") ;
 
 type Togaf.General.Base : Togaf.Base, HasVectorSpace
 [
@@ -81,19 +81,20 @@ type Togaf.General.Base : Togaf.Base, HasVectorSpace
 ******************************************************** */
 entity Togaf.Organization : Togaf.Base 
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-Organization"),
-      Edge ( From = self, To = Parent, TypeName = "AF-Organization-Part"),
-      Edge2 ( From = Parent, To = self, TypeName = "AF-Organization-Include")
+      Edge ( From = this, To = Parent, TypeName = "AF-Organization-Part"),
+      Edge2 ( From = Parent, To = this, TypeName = "AF-Organization-Include")
 {
     Parent          : Togaf.Organization
 }
 [
-    Children        : Togaf.Organization ( Parent = self),
-    Motivates       : Togaf.Business.Driver (MotivatedBy = self),
-    Contains        : Togaf.Business.Actor (In = self),
-    Functions       : Togaf.Business.Function (For = self),
-    Uses            : Togaf.Business.Capability ( By = self),
-    Produces        : Togaf.Business.Product ( By = self),
-    Governs         : Togaf.Service ( OwnedBy = self)
+    Children        : Togaf.Organization ( Parent = this),
+    Motivates       : Togaf.Business.Driver (MotivatedBy = this),
+    Contains        : Togaf.Business.Actor (In = this),
+    Functions       : Togaf.Business.Function (For = this),
+    Uses            : Togaf.Business.Capability ( By = this),
+    Produces        : Togaf.Business.Product ( By = this),
+    Governs         : Togaf.Service ( OwnedBy = this),
+    SameName        : Togaf.Organization (Name = Name)
 ];
 
 /* ********************************************************
@@ -102,105 +103,105 @@ entity Togaf.Organization : Togaf.Base
 
 entity Togaf.Business.Driver : Togaf.General.Base
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-Driver"),    
-      Edge ( From = self, To = MotivatedBy, TypeName = "AF-Driver-Organization"),
-      Edge2 ( From = MotivatedBy, To = self, TypeName = "AF-Organization-Driver")
+      Edge ( From = this, To = MotivatedBy, TypeName = "AF-Driver-Organization"),
+      Edge2 ( From = MotivatedBy, To = this, TypeName = "AF-Organization-Driver")
 {
     MotivatedBy     : Togaf.Organization
 }
 [
-    Creates         : Togaf.Business.Goal ( By = self )
+    Creates         : Togaf.Business.Goal ( By = this )
 ];
 
 entity Togaf.Business.Actor : Togaf.General.Base
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-Actor"),
-      Edge (From = self, To = In, Name = Name, TypeName = "AF-Actor-Organization"),
-      Edge2 (From = In, To = self, Name = Name, TypeName = "AF-Organization-Actor") 
+      Edge (From = this, To = In, Name = Name, TypeName = "AF-Actor-Organization"),
+      Edge2 (From = In, To = this, Name = Name, TypeName = "AF-Organization-Actor") 
 {
     In              : Togaf.Organization
 }
 [
     Performs        : Togaf.Has.Activity,
-    Involved        : Togaf.Business.ValueStream (Involves = self)
+    Involved        : Togaf.Business.ValueStream (Involves = this)
 ];
 
 entity Togaf.Business.Function : Togaf.General.Base
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-Function"),  
-      Edge ( From = self, To = Parent, TypeName = "AF-Function-Part"),
-      Edge2 ( From = Parent, To = self, TypeName = "AF-Function-Include"),
-      Edge3 ( From = self, To = For, TypeName = "AF-Function-Organization"),
-      Edge4 ( From = For, To = self, TypeName = "AF-Organization-Function"),
-      Edge5 ( From = self, To = Delivers, TypeName = "AF-Function-Capability"),
-      Edge6 ( From = Delivers, To = self, TypeName = "AF-Capability-Function")
+      Edge ( From = this, To = Parent, TypeName = "AF-Function-Part"),
+      Edge2 ( From = Parent, To = this, TypeName = "AF-Function-Include"),
+      Edge3 ( From = this, To = For, TypeName = "AF-Function-Organization"),
+      Edge4 ( From = For, To = this, TypeName = "AF-Organization-Function"),
+      Edge5 ( From = this, To = Delivers, TypeName = "AF-Function-Capability"),
+      Edge6 ( From = Delivers, To = this, TypeName = "AF-Capability-Function")
 {
     For             : Togaf.Organization,
     Parent          : Togaf.Business.Function,
     Delivers        : Togaf.Business.Capability
 }
 [
-    Children        : Togaf.Business.Function (Parent = self),
-    Orchestrates    : Togaf.Business.Process (Decomposes = self),
-    Involves        : Togaf.Business.CourseOfAction (Involves = self)
+    Children        : Togaf.Business.Function (Parent = this),
+    Orchestrates    : Togaf.Business.Process (Decomposes = this),
+    Involves        : Togaf.Business.CourseOfAction (Involves = this)
 ];
 entity Togaf.Business.Capability : Togaf.General.Base
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-Capability"),  
-      Edge ( From = self, To = Parent, TypeName = "AF-Capability-Part"),
-      Edge2 ( From = Parent, To = self, TypeName = "AF-Capability-Include")
+      Edge ( From = this, To = Parent, TypeName = "AF-Capability-Part"),
+      Edge2 ( From = Parent, To = this, TypeName = "AF-Capability-Include")
 {
     By              : Togaf.Organization,
     Parent          : Togaf.Business.Capability
 }
 [
-    Children        : Togaf.Business.Capability (Parent = self),
-    Operated        : Togaf.Business.Process (Operates = self),
-    Delivered       : Togaf.Business.Function (Delivers = self),
-    EnabledBy       : Togaf.Business.ValueStream (Enables = self),
-    Related         : Togaf.Business.CourseOfAction (Enables = self)
+    Children        : Togaf.Business.Capability (Parent = this),
+    Operated        : Togaf.Business.Process (Operates = this),
+    Delivered       : Togaf.Business.Function (Delivers = this),
+    EnabledBy       : Togaf.Business.ValueStream (Enables = this),
+    Related         : Togaf.Business.CourseOfAction (Enables = this)
 ];
 
 entity Togaf.Business.Product : Togaf.General.Base
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-Product"),  
-      Edge ( From = self, To = Parent, TypeName = "AF-Product-Part"),
-      Edge2 ( From = Parent, To = self, TypeName = "AF-Product-Include"),
-      Edge3 ( From = self, To = Parent, TypeName = "AF-Organisation-Product"),
-      Edge4 ( From = Parent, To = self, TypeName = "AF-Product-Organisation")
+      Edge ( From = this, To = Parent, TypeName = "AF-Product-Part"),
+      Edge2 ( From = Parent, To = this, TypeName = "AF-Product-Include"),
+      Edge3 ( From = this, To = Parent, TypeName = "AF-Organisation-Product"),
+      Edge4 ( From = Parent, To = this, TypeName = "AF-Product-Organisation")
 {
     By              : Togaf.Organization,
     Parent          : Togaf.Business.Product
 }
 [
-    Children        : Togaf.Business.Product (Parent = self),
-    ProvidedBy      : Togaf.Business.Process (Provides = self)
+    Children        : Togaf.Business.Product (Parent = this),
+    ProvidedBy      : Togaf.Business.Process (Provides = this)
 ];
 
 entity Togaf.Business.Goal : Togaf.General.Base
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-Goal"),
-      Edge ( From = self, To = By, TypeName = "AF-Goal-Driver"),
-      Edge2 ( From = By, To = self, TypeName = "AF-Driver-Goal")
+      Edge ( From = this, To = By, TypeName = "AF-Goal-Driver"),
+      Edge2 ( From = By, To = this, TypeName = "AF-Driver-Goal")
 {
     By              : Togaf.Business.Driver 
 }
 [
-    RealizedBy      : Togaf.Business.Objective (For = self),
-    Follows         : Togaf.Business.CourseOfAction (Leads = self)
+    RealizedBy      : Togaf.Business.Objective (For = this),
+    Follows         : Togaf.Business.CourseOfAction (Leads = this)
 ];
 
 entity Togaf.Business.Objective : Togaf.General.Base
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-Objective"),
-      Edge ( From = self, To = For, TypeName = "AF-Objective-Organisation"),
-      Edge2 ( From = For, To = self, TypeName = "AF-Organisation-Objective")
+      Edge ( From = this, To = For, TypeName = "AF-Objective-Organisation"),
+      Edge2 ( From = For, To = this, TypeName = "AF-Organisation-Objective")
 {
     For             : Togaf.Business.Goal
 }
 [
-    Measured        : Togaf.Business.Measure ( For = self )
+    Measured        : Togaf.Business.Measure ( For = this )
 ];
 
 entity Togaf.Business.Measure : Togaf.General.Base
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-Measure"),
-      Edge ( From = self, To = Tracks, Name = Name, TypeName = "AF-Measure-Service"),
-      Edge2 ( From = Tracks, To = self, Name = Name, TypeName = "AF-Service-Measure"),
-      Edge3 ( From = self, To = For, Name = Name, TypeName = "AF-Measure-Objective"),
-      Edge4 ( From = For, To = self, Name = Name, TypeName = "AF-Objective-Measure")
+      Edge ( From = this, To = Tracks, Name = Name, TypeName = "AF-Measure-Service"),
+      Edge2 ( From = Tracks, To = this, Name = Name, TypeName = "AF-Service-Measure"),
+      Edge3 ( From = this, To = For, Name = Name, TypeName = "AF-Measure-Objective"),
+      Edge4 ( From = For, To = this, Name = Name, TypeName = "AF-Objective-Measure")
 {
     For             : Togaf.Business.Objective,
     Unit            : String,
@@ -212,7 +213,7 @@ entity Togaf.Business.Measure : Togaf.General.Base
 
 segment Togaf.History.Measure
     = Node ( SKey = SKey, Name = "", TypeName = "AF-Measurement"),
-      Edge (From = owner, To = self, Name = "", TypeName = "AF-Measurement")
+      Edge (From = owner, To = this, Name = "", TypeName = "AF-Measurement")
 (
     At              : DateTime
 )
@@ -229,16 +230,16 @@ enum Togaf.Business.ActivityType
 
 entity Togaf.Business.Activity : Togaf.General.Base
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-Activity"),
-      Edge ( From = self, To = By, Name = Name, TypeName = "AF-Activity-Performed"),
-      Edge2 ( From = By, To = self, Name = Name, TypeName = "AF-Performs-Activity"), 
-      Edge3 ( From = self, To = Event, Name = Name, TypeName = "AF-Activity-Event"),
-      Edge4 ( From = Event, To = self, Name = Name, TypeName = "AF-Event-Activity"), 
-      Edge5 ( From = self, To = Uses, Name = Name, TypeName = "AF-Activity-Service"),
-      Edge6 ( From = Uses, To = self, Name = Name, TypeName = "AF-BusinesService-Activity"), 
-      Edge7 ( From = self, To = After, Name = Name, TypeName = "AF-Activity-After"),
-      Edge8 ( From = After, To = self, Name = Name, TypeName = "AF-Activity-Before"),
-      Edge9 ( From = self, To = Part, Name = Name, TypeName = "AF-Activity-Process"),
-      Edge10 ( From = Part, To = self, Name = Name, TypeName = "AF-Process-Activity") 
+      Edge ( From = this, To = By, Name = Name, TypeName = "AF-Activity-Performed"),
+      Edge2 ( From = By, To = this, Name = Name, TypeName = "AF-Performs-Activity"), 
+      Edge3 ( From = this, To = Event, Name = Name, TypeName = "AF-Activity-Event"),
+      Edge4 ( From = Event, To = this, Name = Name, TypeName = "AF-Event-Activity"), 
+      Edge5 ( From = this, To = Uses, Name = Name, TypeName = "AF-Activity-Service"),
+      Edge6 ( From = Uses, To = this, Name = Name, TypeName = "AF-BusinesService-Activity"), 
+      Edge7 ( From = this, To = After, Name = Name, TypeName = "AF-Activity-After"),
+      Edge8 ( From = After, To = this, Name = Name, TypeName = "AF-Activity-Before"),
+      Edge9 ( From = this, To = Part, Name = Name, TypeName = "AF-Activity-Process"),
+      Edge10 ( From = Part, To = this, Name = Name, TypeName = "AF-Process-Activity") 
 {
     By              : Togaf.Business.Actor,
     Type            : Togaf.Business.ActivityType,
@@ -248,8 +249,8 @@ entity Togaf.Business.Activity : Togaf.General.Base
     Uses            : Togaf.Service
 }
 [
-    Before          : Togaf.Business.Activity (After = self),
-    Originates      : Togaf.Data.Entity(Originator = self)
+    Before          : Togaf.Business.Activity (After = this),
+    Originates      : Togaf.Data.Entity(Originator = this)
 ];
 
 segment Togaf.Has.Activity : Many<Togaf.Business.Activity>
@@ -271,28 +272,28 @@ enum Togaf.Business.EventType
 
 entity Togaf.Business.Event : Togaf.General.Base
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-Event"),
-      Edge ( From = self, To = Trigger, Name = Name, TypeName = "AF-Event-Service"),
-      Edge2 ( From = Trigger, To = self, Name = Name, TypeName = "AF-Service-Event")
+      Edge ( From = this, To = Trigger, Name = Name, TypeName = "AF-Event-Service"),
+      Edge2 ( From = Trigger, To = this, Name = Name, TypeName = "AF-Service-Event")
 {
     Type            : Togaf.Business.EventType,
     Trigger         : Togaf.Service
 }
 [
-    Activities      : Togaf.Business.Activity ( Event = self)
+    Activities      : Togaf.Business.Activity ( Event = this)
 ];
 
 entity Togaf.Business.Process : Togaf.General.Base
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-Process"),
-      Edge ( From = self, To = Decomposes, Name = Name, TypeName = "AF-Process-Function"),
-      Edge2 ( From = Decomposes, To = self, Name = Name, TypeName = "AF-Function-Process"), 
-      Edge3 ( From = self, To = Operates, Name = Name, TypeName = "AF-Process-Capability"), 
-      Edge4 ( From = Operates, To = self, Name = Name, TypeName = "AF-Capability-Process"), 
-      Edge5 ( From = self, To = Provides, Name = Name, TypeName = "AF-Process-Product"), 
-      Edge6 ( From = Provides, To = self, Name = Name, TypeName = "AF-Product-Process"), 
-      Edge7 ( From = self, To = Governed, Name = Name, TypeName = "AF-Process-Control"), 
-      Edge8 ( From = Governed, To = self, Name = Name, TypeName = "AF-Control-Process"), 
-      Edge9 ( From = self, To = Realizes, Name = Name, TypeName = "AF-Process-ValueStream"), 
-      Edge10 ( From = Realizes, To = self, Name = Name, TypeName = "AF-ValueStream-Process") 
+      Edge ( From = this, To = Decomposes, Name = Name, TypeName = "AF-Process-Function"),
+      Edge2 ( From = Decomposes, To = this, Name = Name, TypeName = "AF-Function-Process"), 
+      Edge3 ( From = this, To = Operates, Name = Name, TypeName = "AF-Process-Capability"), 
+      Edge4 ( From = Operates, To = this, Name = Name, TypeName = "AF-Capability-Process"), 
+      Edge5 ( From = this, To = Provides, Name = Name, TypeName = "AF-Process-Product"), 
+      Edge6 ( From = Provides, To = this, Name = Name, TypeName = "AF-Product-Process"), 
+      Edge7 ( From = this, To = Governed, Name = Name, TypeName = "AF-Process-Control"), 
+      Edge8 ( From = Governed, To = this, Name = Name, TypeName = "AF-Control-Process"), 
+      Edge9 ( From = this, To = Realizes, Name = Name, TypeName = "AF-Process-ValueStream"), 
+      Edge10 ( From = Realizes, To = this, Name = Name, TypeName = "AF-ValueStream-Process") 
 {
     Decomposes      : Togaf.Business.Function,
     Starts          : Togaf.Business.Activity,
@@ -302,30 +303,30 @@ entity Togaf.Business.Process : Togaf.General.Base
     Realizes        : Togaf.Business.ValueStream
 }
 [
-    Steps           : Togaf.Business.Activity (Part = self)
+    Steps           : Togaf.Business.Activity (Part = this)
 ];
 
 entity Togaf.Business.Control : Togaf.General.Base
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-Control"),
-      Edge ( From = self, To = PartOf, Name = Name, TypeName = "AF-Control-Part"),
-      Edge2 ( From = PartOf, To = self, Name = Name, TypeName = "AF-Control-Includes") 
+      Edge ( From = this, To = PartOf, Name = Name, TypeName = "AF-Control-Part"),
+      Edge2 ( From = PartOf, To = this, Name = Name, TypeName = "AF-Control-Includes") 
 {
     URL             : String,
     PartOf          : Togaf.Business.Control
 }
 [
-    Includes        : Togaf.Business.Control (PartOf = self),
-    Governs         : Togaf.Business.Process (Governed = self)
+    Includes        : Togaf.Business.Control (PartOf = this),
+    Governs         : Togaf.Business.Process (Governed = this)
 ];
 
 entity Togaf.Business.ValueStream : Togaf.General.Base
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-ValueStream"),
-      Edge ( From = self, To = Parent, Name = Name, TypeName = "AF-ValueStream-Part"),
-      Edge2 ( From = Parent, To = self, Name = Name, TypeName = "AF-ValueStream-Includes"), 
-      Edge3 ( From = self, To = Enables, Name = Name, TypeName = "AF-ValueStream-Capability"),
-      Edge4 ( From = Enables, To = self, Name = Name, TypeName = "AF-Capability-ValueStream"), 
-      Edge5 ( From = self, To = Involves, Name = Name, TypeName = "AF-ValueStream-Actor"),
-      Edge6 ( From = Involves, To = self, Name = Name, TypeName = "AF-Actor-ValueStream") 
+      Edge ( From = this, To = Parent, Name = Name, TypeName = "AF-ValueStream-Part"),
+      Edge2 ( From = Parent, To = this, Name = Name, TypeName = "AF-ValueStream-Includes"), 
+      Edge3 ( From = this, To = Enables, Name = Name, TypeName = "AF-ValueStream-Capability"),
+      Edge4 ( From = Enables, To = this, Name = Name, TypeName = "AF-Capability-ValueStream"), 
+      Edge5 ( From = this, To = Involves, Name = Name, TypeName = "AF-ValueStream-Actor"),
+      Edge6 ( From = Involves, To = this, Name = Name, TypeName = "AF-Actor-ValueStream") 
 {
     URL             : String,
     Parent          : Togaf.Business.ValueStream,
@@ -333,18 +334,18 @@ entity Togaf.Business.ValueStream : Togaf.General.Base
     Involves        : Togaf.Business.Actor
 }
 [
-    Children        : Togaf.Business.ValueStream (Parent = self),
-    RealizedBy      : Togaf.Business.Process (Realizes = self)
+    Children        : Togaf.Business.ValueStream (Parent = this),
+    RealizedBy      : Togaf.Business.Process (Realizes = this)
 ];
 
 entity Togaf.Business.CourseOfAction : Togaf.General.Base
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-CourseOfAction"),
-      Edge ( From = self, To = Enables, Name = Name, TypeName = "AF-CourseOfAction-Capability"),
-      Edge2 ( From = Enables, To = self, Name = Name, TypeName = "AF-Capability-CourseOfAction"), 
-      Edge3 ( From = self, To = Leads, Name = Name, TypeName = "AF-CourseOfAction-Goal"),
-      Edge4 ( From = Leads, To = self, Name = Name, TypeName = "AF-Goal-CourseOfAction"), 
-      Edge5 ( From = self, To = Leads, Name = Name, TypeName = "AF-CourseOfAction-Function"),
-      Edge6 ( From = Leads, To = self, Name = Name, TypeName = "AF-Function-CourseOfAction") 
+      Edge ( From = this, To = Enables, Name = Name, TypeName = "AF-CourseOfAction-Capability"),
+      Edge2 ( From = Enables, To = this, Name = Name, TypeName = "AF-Capability-CourseOfAction"), 
+      Edge3 ( From = this, To = Leads, Name = Name, TypeName = "AF-CourseOfAction-Goal"),
+      Edge4 ( From = Leads, To = this, Name = Name, TypeName = "AF-Goal-CourseOfAction"), 
+      Edge5 ( From = this, To = Leads, Name = Name, TypeName = "AF-CourseOfAction-Function"),
+      Edge6 ( From = Leads, To = this, Name = Name, TypeName = "AF-Function-CourseOfAction") 
 {
     URL             : String,
     Enables         : Togaf.Business.Capability,
@@ -358,17 +359,17 @@ entity Togaf.Business.CourseOfAction : Togaf.General.Base
 
 entity Togaf.Service : Togaf.General.Base 
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-Service"),
-      Edge ( From = self, To = OwnedBy, Name = Name, TypeName = "AF-Service-Organization"),
-      Edge2 ( From = OwnedBy, To = self, Name = Name, TypeName = "AF-Organization-Service")
+      Edge ( From = this, To = OwnedBy, Name = Name, TypeName = "AF-Service-Organization"),
+      Edge2 ( From = OwnedBy, To = this, Name = Name, TypeName = "AF-Organization-Service")
 {
     OwnedBy         : Togaf.Organization
 }
 [
-    Measures        : Togaf.Business.Measure ( Tracks = self),
-    Triggers        : Togaf.Business.Event ( Trigger = self),
-    UsedBy          : Togaf.Business.Activity ( Uses = self),
-    Provides        : Togaf.Data.Entity(Provider = self),
-    ProvidedBy      : Togaf.Application.System ( Realizes = self)
+    Measures        : Togaf.Business.Measure ( Tracks = this),
+    Triggers        : Togaf.Business.Event ( Trigger = this),
+    UsedBy          : Togaf.Business.Activity ( Uses = this),
+    Provides        : Togaf.Data.Entity(Provider = this),
+    ProvidedBy      : Togaf.Application.System ( Realizes = this)
 ];
 
 /* ********************************************************
@@ -377,25 +378,25 @@ entity Togaf.Service : Togaf.General.Base
 
 entity Togaf.Data.Entity: Togaf.General.Base
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-Entity"),
-      Edge ( From = self, To = Originator, Name = Name, TypeName = "AF-Entity-Activity"),
-      Edge2 ( From = Originator, To = self, Name = Name, TypeName = "AF-Activity-Entity"),
-      Edge3 ( From = self, To = Originator, Name = Name, TypeName = "AF-Entity-Activity"),
-      Edge4 ( From = Originator, To = self, Name = Name, TypeName = "AF-Activity-Entity")
+      Edge ( From = this, To = Originator, Name = Name, TypeName = "AF-Entity-Activity"),
+      Edge2 ( From = Originator, To = this, Name = Name, TypeName = "AF-Activity-Entity"),
+      Edge3 ( From = this, To = Originator, Name = Name, TypeName = "AF-Entity-Activity"),
+      Edge4 ( From = Originator, To = this, Name = Name, TypeName = "AF-Activity-Entity")
 {
     Originator      : Togaf.Business.Activity,
     Provider        : Togaf.Service
 }
 [
-    Logical         : Togaf.Data.Logical (Encapsulate = self),
-    DataUsage       : Togaf.Data.Usage (Entity = self)
+    Logical         : Togaf.Data.Logical (Encapsulate = this),
+    DataUsage       : Togaf.Data.Usage (Entity = this)
 ];
 
 entity Togaf.Data.Usage : Togaf.Base
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-DataUsage"),
-      Edge ( From = self, To = Entity, Name = Name, TypeName = "AF-DataUsage-Entity"),
-      Edge2 ( From = Entity, To = self, Name = Name, TypeName = "AF-Entity-DataUsage"),
-      Edge3 ( From = self, To = System, Name = Name, TypeName = "AF-DataUsage-System"),
-      Edge4 ( From = System, To = self, Name = Name, TypeName = "AF-System-DataUsage")
+      Edge ( From = this, To = Entity, Name = Name, TypeName = "AF-DataUsage-Entity"),
+      Edge2 ( From = Entity, To = this, Name = Name, TypeName = "AF-Entity-DataUsage"),
+      Edge3 ( From = this, To = System, Name = Name, TypeName = "AF-DataUsage-System"),
+      Edge4 ( From = System, To = this, Name = Name, TypeName = "AF-System-DataUsage")
 (
     Entity          : Togaf.Data.Entity,
     System          : Togaf.Application.System
@@ -406,24 +407,24 @@ entity Togaf.Data.Usage : Togaf.Base
 
 entity Togaf.Data.Logical : Togaf.General.Base
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-Logical"),
-      Edge ( From = self, To = Encapsulate, Name = Name, TypeName = "AF-Logical-Entity"),
-      Edge2 ( From = Encapsulate, To = self, Name = Name, TypeName = "AF-Entity-Logical"),
-      Edge3 ( From = self, To = Component, Name = Name, TypeName = "AF-Logical-Component"),
-      Edge4 ( From = Component, To = self, Name = Name, TypeName = "AF-Component-Logical")
+      Edge ( From = this, To = Encapsulate, Name = Name, TypeName = "AF-Logical-Entity"),
+      Edge2 ( From = Encapsulate, To = this, Name = Name, TypeName = "AF-Entity-Logical"),
+      Edge3 ( From = this, To = Component, Name = Name, TypeName = "AF-Logical-Component"),
+      Edge4 ( From = Component, To = this, Name = Name, TypeName = "AF-Component-Logical")
 {
     Encapsulate     : Togaf.Data.Entity,
     Component       : Togaf.Application.Component
 }
 [
-    Instantiate     : Togaf.Data.Physical (Instantiate = self)
+    Instantiate     : Togaf.Data.Physical (Instantiate = this)
 ];
 
 entity Togaf.Data.Physical : Togaf.General.Base
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-Physical"),
-      Edge ( From = self, To = Instantiate, Name = Name, TypeName = "AF-Physical-Logical"),
-      Edge2 ( From = Instantiate, To = self, Name = Name, TypeName = "AF-Logical-Physical"),
-      Edge3 ( From = self, To = Deployed, Name = Name, TypeName = "AF-Physical-Deployed"),
-      Edge4 ( From = Deployed, To = self, Name = Name, TypeName = "AF-Deployed-Physical")
+      Edge ( From = this, To = Instantiate, Name = Name, TypeName = "AF-Physical-Logical"),
+      Edge2 ( From = Instantiate, To = this, Name = Name, TypeName = "AF-Logical-Physical"),
+      Edge3 ( From = this, To = Deployed, Name = Name, TypeName = "AF-Physical-Deployed"),
+      Edge4 ( From = Deployed, To = this, Name = Name, TypeName = "AF-Deployed-Physical")
 {
     Instantiate     : Togaf.Data.Logical,
     Deployed        : Togaf.Application.Deployed
@@ -433,46 +434,46 @@ entity Togaf.Data.Physical : Togaf.General.Base
 ******************************************************** */
 entity Togaf.Application.System : Togaf.General.Base
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-System"),
-      Edge ( From = self, To = Realizes, Name = Name, TypeName = "AF-System-Service"),
-      Edge2 ( From = Realizes, To = self, Name = Name, TypeName = "AF-Service-System"),
-      Edge3 ( From = self, To = Platform, Name = Name, TypeName = "AF-System-Platform"),
-      Edge4 ( From = Platform, To = self, Name = Name, TypeName = "AF-Platform-System")
+      Edge ( From = this, To = Realizes, Name = Name, TypeName = "AF-System-Service"),
+      Edge2 ( From = Realizes, To = this, Name = Name, TypeName = "AF-Service-System"),
+      Edge3 ( From = this, To = Platform, Name = Name, TypeName = "AF-System-Platform"),
+      Edge4 ( From = Platform, To = this, Name = Name, TypeName = "AF-Platform-System")
 {
     Realizes        : Togaf.Service,
     Platform        : Togaf.Technology.Platform
 }
 [
-    SystemUsage     : Togaf.Data.Usage (System = self),
-    ImplementedBy   : Togaf.Application.Component (Implements = self)
+    SystemUsage     : Togaf.Data.Usage (System = this),
+    ImplementedBy   : Togaf.Application.Component (Implements = this)
 ];
 
 entity Togaf.Application.Component: Togaf.General.Base
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-Component"),
-      Edge ( From = self, To = Implements, Name = Name, TypeName = "AF-Component-System"),
-      Edge2 ( From = Implements, To = self, Name = Name, TypeName = "AF-System-Component"),
-      Edge3 ( From = self, To = Host, Name = Name, TypeName = "AF-Component-Host"),
-      Edge4 ( From = Host, To = self, Name = Name, TypeName = "AF-Host-Component")
+      Edge ( From = this, To = Implements, Name = Name, TypeName = "AF-Component-System"),
+      Edge2 ( From = Implements, To = this, Name = Name, TypeName = "AF-System-Component"),
+      Edge3 ( From = this, To = Host, Name = Name, TypeName = "AF-Component-Host"),
+      Edge4 ( From = Host, To = this, Name = Name, TypeName = "AF-Host-Component")
 {
     Implements      : Togaf.Application.System,
     Host            : Togaf.Technology.Host
 }
 [
-    ComponentUsage  : Togaf.Data.Logical (Component = self),
-    DeployedBy      : Togaf.Application.Deployed (Deployes = self)
+    ComponentUsage  : Togaf.Data.Logical (Component = this),
+    DeployedBy      : Togaf.Application.Deployed (Deployes = this)
 ];
 
 entity Togaf.Application.Deployed : Togaf.General.Base
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-Deployed"),
-      Edge ( From = self, To = Deployes, Name = Name, TypeName = "AF-Deployed-Component"),
-      Edge2 ( From = Deployes, To = self, Name = Name, TypeName = "AF-Component-Deployed"),
-      Edge3 ( From = self, To = Host, Name = Name, TypeName = "AF-Deployed-Host"),
-      Edge4 ( From = Host, To = self, Name = Name, TypeName = "AF-Host-Deployed")
+      Edge ( From = this, To = Deployes, Name = Name, TypeName = "AF-Deployed-Component"),
+      Edge2 ( From = Deployes, To = this, Name = Name, TypeName = "AF-Component-Deployed"),
+      Edge3 ( From = this, To = Host, Name = Name, TypeName = "AF-Deployed-Host"),
+      Edge4 ( From = Host, To = this, Name = Name, TypeName = "AF-Host-Deployed")
 {
     Deployes        : Togaf.Application.Component,
     Host            : Togaf.Technology.Instance
 }
 [
-    Usage           : Togaf.Data.Physical (Deployed = self)
+    Usage           : Togaf.Data.Physical (Deployed = this)
 ];
 
 /* ********************************************************
@@ -480,35 +481,35 @@ entity Togaf.Application.Deployed : Togaf.General.Base
 ******************************************************** */
 entity Togaf.Technology.Platform : Togaf.General.Base
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-Platform"),
-      Edge ( From = self, To = Serves, Name = Name, TypeName = "AF-Platform-Service"),
-      Edge2 ( From = Serves, To = self, Name = Name, TypeName = "AF-Service-Platform")
+      Edge ( From = this, To = Serves, Name = Name, TypeName = "AF-Platform-Service"),
+      Edge2 ( From = Serves, To = this, Name = Name, TypeName = "AF-Service-Platform")
 {
     Serves          : Togaf.Service
 }
 [
-    Hosts           : Togaf.Application.System (Platform = self),
-    Defines         : Togaf.Technology.Host (Platform = self)
+    Hosts           : Togaf.Application.System (Platform = this),
+    Defines         : Togaf.Technology.Host (Platform = this)
 ];
 
 entity Togaf.Technology.Host : Togaf.General.Base
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-Platform"),
-      Edge ( From = self, To = Platform, Name = Name, TypeName = "AF-Host-Platform"),
-      Edge2 ( From = Platform, To = self, Name = Name, TypeName = "AF-Platform-Host")
+      Edge ( From = this, To = Platform, Name = Name, TypeName = "AF-Host-Platform"),
+      Edge2 ( From = Platform, To = this, Name = Name, TypeName = "AF-Platform-Host")
 {
     Platform        : Togaf.Technology.Platform
 }
 [
-    Hosts           : Togaf.Application.Component (Host = self),
-    Instances       : Togaf.Technology.Instance (Host = self) 
+    Hosts           : Togaf.Application.Component (Host = this),
+    Instances       : Togaf.Technology.Instance (Host = this) 
 ];
 
 entity Togaf.Technology.Instance : Togaf.General.Base
     = Node ( SKey = SKey, Name = Name, TypeName = "AF-Platform"),
-      Edge ( From = self, To = Host, Name = Name, TypeName = "AF-Instance-Platform"),
-      Edge2 ( From = Host, To = self, Name = Name, TypeName = "AF-Platform-Instance")
+      Edge ( From = this, To = Host, Name = Name, TypeName = "AF-Instance-Platform"),
+      Edge2 ( From = Host, To = this, Name = Name, TypeName = "AF-Platform-Instance")
 {
     Host            : Togaf.Technology.Host
 }
 [
-    Hosts           : Togaf.Application.Deployed (Host = self)
+    Hosts           : Togaf.Application.Deployed (Host = this)
 ];

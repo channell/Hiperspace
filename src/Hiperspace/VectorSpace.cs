@@ -262,6 +262,16 @@ namespace Hiperspace
             return null;
         }
         #endregion
+        public override bool BindKey<TKey>(TKey key)
+        {
+            if (key is KeyType kt)
+            {
+                _key = kt;
+                return true;
+            }
+            else
+                return false;
+        }
     }
     #endregion
 }

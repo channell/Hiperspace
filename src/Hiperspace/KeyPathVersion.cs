@@ -21,10 +21,6 @@ namespace Hiperspace
         {
             _AsAt = AsAt;
         }
-        public virtual (byte[], byte[], DateTime, object?)? BatchVersion(TEntity item)
-        {
-            return null;
-        }
-
+        public abstract (byte[], byte[], DateTime, object?)? BatchVersion(TEntity item);
     }
 }

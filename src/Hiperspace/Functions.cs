@@ -16,7 +16,7 @@ namespace Hiperspace
             where T : INumber<T>, new()
         {
             T result = T.Zero;
-            foreach (var item in source)
+            foreach (var item in source.ToArray())
             {
                 result += func(item);
             }
@@ -28,7 +28,7 @@ namespace Hiperspace
         {
             T result = T.Zero;
             T count = T.Zero;
-            foreach (var item in source)
+            foreach (var item in source.ToArray())
             {
                 result += func(item);
                 count++;
@@ -41,7 +41,7 @@ namespace Hiperspace
         {
             bool first = true;
             T returner = T.Zero;
-            foreach (var item in source)
+            foreach (var item in source.ToArray())
             {
                 T result = func(item);
                 if (first)
@@ -62,7 +62,7 @@ namespace Hiperspace
         {
             bool first = true;
             T returner = T.Zero;
-            foreach (var item in source)
+            foreach (var item in source.ToArray())
             {
                 T result = func(item);
                 if (first)
@@ -82,7 +82,7 @@ namespace Hiperspace
             where T : INumber<T>, new()
         {
             T returner = T.Zero;
-            foreach (var item in source)
+            foreach (var item in source.ToArray())
             {
                 T result = func(item);
                 if (result != null && returner != null)

@@ -65,7 +65,7 @@ entity Plan.Project : Versioned
                   ? false : true
 }
 [
-    Tasks        : Plan.Tasks.Task (Project = self),
+    Tasks        : Plan.Tasks.Task (Project = this),
 
     PlanCost     = 0.0 + sum (Tasks.PlanCost),
     ActualCost   = 0.0 + sum (Tasks.ActualCost),
@@ -82,15 +82,15 @@ view Plan.Tasks.SubTask = Edge (From = Parent, To = Task, TypeName = "Plan-Task-
 
 "
 While the word “task” might bring about feelings of despair related to chores or undesirable actions, 
-this is usually related more so to the way you have to manage your time than the task itself.
+this is usually related more so to the way you have to manage your time than the task itthis.
 
 In this article, we’ll do a deep dive into tasks, show you the best ways to break down larger 
 projects into them, while covering efficient approaches to manage and distribute tasks.
 "
 entity Plan.Tasks.Task : Versioned
                        = Node (SKey = SKey, Name = Name, TypeName = "Plan-Task"),
-                         Edge (From = Project, To = self, TypeName = "Plan-Task", Name = Name),
-                         Plan.Tasks.SubTask (Task = self, Parent = Parent),
+                         Edge (From = Project, To = this, TypeName = "Plan-Task", Name = Name),
+                         Plan.Tasks.SubTask (Task = this, Parent = Parent),
                          BI.Item (WBS         = BIWBS, 
                                   Name        = Name,
                                   ActualCost  = ActualCost, 
@@ -119,7 +119,7 @@ entity Plan.Tasks.Task : Versioned
     Actual      : Plan.Tasks.Actual,
     After       : Plan.Tasks.TaskLink,
     Before      : Plan.Tasks.TaskLink,
-    SubTasks    : Plan.Tasks.Task (Parent = self),
+    SubTasks    : Plan.Tasks.Task (Parent = this),
     Resources   : Plan.Tasks.TaskResource,
 
     /* BI */
@@ -227,7 +227,7 @@ entity Plan.Resource : Versioned
     TimeCost  : Decimal
 }
 [
-    Booked    : Booking.Timesheet (Resource = self)
+    Booked    : Booking.Timesheet (Resource = this)
 ];
 
 /* 

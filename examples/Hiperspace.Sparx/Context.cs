@@ -64,32 +64,32 @@ namespace Sparx.EA
             
             modelBuilder.Entity<Connector>()
                 .HasMany(e => e.Links)
-                .WithOne(e => e.Connector_Value)
+                .WithOne(e => e.Connector)
                 .HasForeignKey(e => e.Connector_Id);
 
             modelBuilder.Entity<Connector>()
                 .HasMany(e => e.Tags)
-                .WithOne(e => e.owner_Value)
+                .WithOne(e => e.owner)
                 .HasForeignKey(e => e.owner_Id);
 
             modelBuilder.Entity<ElementOperations>()
                 .HasMany(e => e.Tags)
-                .WithOne(e => e.owner_Value)
+                .WithOne(e => e.owner)
                 .HasForeignKey(e => e.owner_Id);
 
             modelBuilder.Entity<Element>()
                 .HasMany(e => e.Tests)
-                .WithOne(e => e.owner_Value)
+                .WithOne(e => e.owner)
                 .HasForeignKey(e => e.owner_Id);
 
             modelBuilder.Entity<Element>()
                 .HasMany(e => e.Requirements)
-                .WithOne(e => e.owner_Value)
+                .WithOne(e => e.owner)
                 .HasForeignKey(e => e.owner_Id);
 
             modelBuilder.Entity<Connector>()
                 .HasMany(e => e.RoleConstraints)
-                .WithOne(e => e.owner_Value)
+                .WithOne(e => e.owner)
                 .HasForeignKey(e => e.owner_Id);
 
             modelBuilder.Entity<Element>()
@@ -104,53 +104,53 @@ namespace Sparx.EA
 
             modelBuilder.Entity<Element>()
                 .HasMany(e => e.Files)
-                .WithOne(e => e.owner_Value)
+                .WithOne(e => e.owner)
                 .HasForeignKey(e => e.owner_Id)
                 ;
 
             modelBuilder.Entity<Element>()
                 .HasMany(e => e.Metrics)
-                .WithOne(e => e.owner_Value)
+                .WithOne(e => e.owner)
                 .HasForeignKey(e => e.owner_Id)
                 ;
 
             modelBuilder.Entity<Element>()
                 .HasMany(e => e.Problems)
-                .WithOne(e => e.owner_Value)
+                .WithOne(e => e.owner)
                 .HasForeignKey(e => e.owner_Id)
                 ;
 
             modelBuilder.Entity<Element>()
                 .HasMany(e => e.Resources)
-                .WithOne(e => e.owner_Value)
+                .WithOne(e => e.owner)
                 .HasForeignKey(e => e.owner_Id)
                 ;
 
             modelBuilder.Entity<Element>()
                 .HasMany(e => e.Risks)
-                .WithOne(e => e.owner_Value)
+                .WithOne(e => e.owner)
                 .HasForeignKey(e => e.owner_Id)
                 ;
 
             modelBuilder.Entity<Element>()
                 .HasMany(e => e.Tests)
-                .WithOne(e => e.owner_Value)
+                .WithOne(e => e.owner)
                 .HasForeignKey(e => e.owner_Id)
                 ;
 
             modelBuilder.Entity<Element>()
                 .HasMany(e => e.Links)
-                .WithOne(e => e.Element_Value)
+                .WithOne(e => e.Element)
                 .HasForeignKey(e => e.Element_Id)
                 ;
             modelBuilder.Entity<Element>()
                 .HasMany(e => e.Scenarios)
-                .WithOne(e => e.owner_Value)
+                .WithOne(e => e.owner)
                 .HasForeignKey(e => e.owner_Id)
                 ;
             modelBuilder.Entity<Element>()
                 .HasMany(e => e.Properties)
-                .WithOne(e => e.owner_Value)
+                .WithOne(e => e.owner)
                 .HasForeignKey(e => e.owner_Id)
                 ;
             modelBuilder.Entity<ElementOperations>().Property(e => e.owner_Id).HasColumnName("Object_ID");
@@ -158,31 +158,31 @@ namespace Sparx.EA
 
             modelBuilder.Entity<ElementOperations>().Property(e => e.owner_Id).HasColumnName("Object_ID");
             modelBuilder.Entity<ElementOperations>()
-                .HasOne(e => e.owner_Value)
+                .HasOne(e => e.owner)
                 .WithMany(e => e.Operations)
                 .HasForeignKey(e => e.owner_Id);
 
             modelBuilder.Entity<ElementOperations>()
                 .HasMany(e => e.Parameters)
-                .WithOne(e => e.owner_Value)
+                .WithOne(e => e.owner)
                 .HasForeignKey(e => e.owner_Id)
                 ;
 
             modelBuilder.Entity<ElementOperations>()
                 .HasMany(e => e.PostConditions)
-                .WithOne(e => e.owner_Value)
+                .WithOne(e => e.owner)
                 .HasForeignKey(e => e.owner_Id)
                 ;
 
             modelBuilder.Entity<ElementOperations>()
                 .HasMany(e => e.PreConditions)
-                .WithOne(e => e.owner_Value)
+                .WithOne(e => e.owner)
                 .HasForeignKey(e => e.owner_Id)
                 ;
 
             modelBuilder.Entity<ElementOperations>()
                 .HasMany(e => e.Tags)
-                .WithOne(e => e.owner_Value)
+                .WithOne(e => e.owner)
                 .HasForeignKey(e => e.owner_Id)
                 ;
 

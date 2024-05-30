@@ -18,9 +18,9 @@ namespace Access.RBAC
                 throw new MutationException($"Too many concurent updates");
 
             DateTime time = AsAt;
-            if (user.Realm == null || user.Realm?.Value == null || SetSpace?.Space == null)
+            if (user.Realm == null || user.Realm == null || SetSpace?.Space == null)
                 return false;
-            using (var scope = new AccessSpace(SetSpace.Space, AccessSpace.Mode.Write, user.Realm.Value.Value))
+            using (var scope = new AccessSpace(SetSpace.Space, AccessSpace.Mode.Write, user.Realm))
             {
                 var perm = scope.UserPermissions.Get(this);
                 var usr = scope.Users.Get(user);    // might have been updated
@@ -39,7 +39,7 @@ namespace Access.RBAC
                 scope.UserPermissions.Bind(perm);
                 time = perm.AsAt;
             }
-            using (var scope = new AccessSpace(SetSpace.Space, AccessSpace.Mode.Write, user.Realm.Value.Value))
+            using (var scope = new AccessSpace(SetSpace.Space, AccessSpace.Mode.Write, user.Realm))
             {
                 var perm = scope.UserPermissions.Get(this);
                 if (perm != null && perm.AsAt > time)

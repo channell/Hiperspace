@@ -43,7 +43,7 @@ let rec dirPackage tabs  (p : Package) =
 let listing (space : SparxSpace) =
     log "Listing"
     space.Packages
-    |> Seq.filter   (fun p -> (p.Parent.Value.Key.Id.Value = 0))
+    |> Seq.filter   (fun p -> (p.Parent.Id.Value = 0))
     |> Seq.iter     (dirPackage "\t")
 
 /// graph listing
@@ -51,7 +51,7 @@ let graphListing (space : SparxSpace) =
     log "Graph list"
     let edgeListing (edges : Edge list) =
         edges 
-        |> List.iter (fun e -> let n = e.To.Value.Value
+        |> List.iter (fun e -> let n = e.To
                                printfn "\t(%s) %s (%s)" e.TypeName  n.Name n.TypeName)
 
     let listing (node : Node, edges : Edge list) =
@@ -63,12 +63,12 @@ let graphListing (space : SparxSpace) =
         query { for e in scope.Edges do
                 where (e.TypeName.StartsWith ("EA-Package")) 
                 select e}
-        |> Seq.filter   (fun e -> not (e.To.Value.Value = null))
+        |> Seq.filter   (fun e -> not (e.To = null))
         |> Seq.toList
-        |> List.map     (fun e -> ignore e.From.Value.Value     // touch references to escape scope
-                                  ignore e.To.Value.Value
+        |> List.map     (fun e -> ignore e.From     // touch references to escape scope
+                                  ignore e.To
                                   e)
-        |> List.groupBy (fun e -> e.To.Value.Value)
+        |> List.groupBy (fun e -> e.To)
     
     edges
     |> List.iter    listing
@@ -86,10 +86,10 @@ let GraphTree (space : SparxSpace) =
     let rec print tabs (visited : Set<Node>) (n : Node) =
         let printEdges tabs (visited : Set<Node>) (n : Node)  =
             let printFrom tabs (visited : Set<Node>) (e : Edge) =
-                printfn $"{tabs}Edge {{ From = {e.From.Value.Value.SKey}, To = {e.To.Value.Value.SKey}, Name = {e.Name}, TypeName = {e.TypeName}}}"
-                print ($"{tabs}\t") visited e.To.Value.Value
+                printfn $"{tabs}Edge {{ From = {e.From.SKey}, To = {e.To.SKey}, Name = {e.Name}, TypeName = {e.TypeName}}}"
+                print ($"{tabs}\t") visited e.To
             n.Froms
-            |> Seq.filter  (fun e -> not (e.From.Value.Value = null || e.To.Value.Value = null))
+            |> Seq.filter  (fun e -> not (e.From = null || e.To = null))
             |> List.ofSeq
             |> List.iter    (printFrom tabs visited)
         printfn $"{tabs}Node {{ SKey = {n.SKey}, Name = {n.Name}, TypeName = {n.TypeName} }}"
@@ -112,7 +112,7 @@ let edges (space : SparxSpace) (typename : string) =
     query { for e in space.Edges do
             where (e.TypeName.StartsWith(typename))
             select e }
-    |> Seq.iter (fun e -> printfn """"Edge", "%s", "%s", "%s", "%s", "%s" """ e.SKey e.Name e.From.Value.Key.SKey e.To.Value.Key.SKey e.TypeName)
+    |> Seq.iter (fun e -> printfn """"Edge", "%s", "%s", "%s", "%s", "%s" """ e.SKey e.Name e.From.SKey e.To.SKey e.TypeName)
 
 let savejson prefix (package : Package) = 
     log $"Saving {package.Name}"

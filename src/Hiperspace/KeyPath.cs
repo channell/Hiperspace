@@ -29,33 +29,19 @@ namespace Hiperspace
         public abstract bool IsSargable(TEntity item);
 
         public abstract bool Bind(TEntity item);
-        public virtual (byte[],byte[], object?)? Batch(TEntity item)
-        { 
-            return null;
+        public virtual (byte[], byte[], object?)? Batch(TEntity item)
+        {
+            throw new NotImplementedException("This KeyPath provides BatchVersion instead");
         }
         public abstract Task<bool> BindAsync(TEntity item);
 
-        public virtual (byte[] key, byte[] value) PrepareBind(TEntity item)
-        {
-            throw new NotImplementedException();
-        }
-        public virtual Task<(byte[] key, byte[] value)> PrepareBindAsync(TEntity item)
-        {
-            throw new NotImplementedException();
-        }
-
+ 
         public abstract TEntity? Get(ref TKey key);
         public abstract IEnumerable<TEntity> Find(TEntity template);
         public abstract Task<IEnumerable<TEntity>> FindAsync(TEntity template);
-        public virtual IEnumerable<(TEntity Item, double Distance)> Nearest(TEntity template, Vector space, Vector.Method method, int limit)
-        {
-            throw new NotImplementedException("This SetSpace does not support Vector Search");
-        }
+        public abstract IEnumerable<(TEntity Item, double Distance)> Nearest(TEntity template, Vector space, Vector.Method method, int limit);
 
-        public virtual Task<IEnumerable<(TEntity Item, double Distance)>> NearestAsync(TEntity template, Vector space, Vector.Method method, int limit)
-        {
-            throw new NotImplementedException("This SetSpace does not support Vector Search");
-        }
+        public abstract Task<IEnumerable<(TEntity Item, double Distance)>> NearestAsync(TEntity template, Vector space, Vector.Method method, int limit);
 
         /// <summary>
         /// Perform a full table scan because there are no suitable Key or Index to use

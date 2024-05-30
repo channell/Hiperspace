@@ -36,7 +36,7 @@ type RBACTest (output : ITestOutputHelper) =
         let seed = 
             Access.RBAC.User 
               (
-                Realm = realmseed.self,
+                Realm = realmseed,
                 Id = Guid.NewGuid(),
                 Name = "Admin",  
                 PublicKey = "some",
@@ -50,7 +50,7 @@ type RBACTest (output : ITestOutputHelper) =
               (
                 Name = "Access", 
                 Valid = true,
-                Author = seed.self
+                Author = seed
               )
             |> access.Realms.Bind
             |> result
@@ -60,23 +60,23 @@ type RBACTest (output : ITestOutputHelper) =
               (
                 Id = Guid.NewGuid(),
                 Name = "Administrators", 
-                Realm = realm.self, 
-                Author = seed.self,
+                Realm = realm, 
+                Author = seed,
                 Valid = true
               )
             |> access.Groups.Bind
             |> result
 
         let approval =
-            System.Collections.Generic.HashSet<RefGroup> ( seq { RefGroup ( Value = admins.self ) })
+            System.Collections.Generic.HashSet<RefGroup> ( seq { RefGroup ( Value = admins ) })
                
         let admin = 
             Access.RBAC.User 
               ( 
                 seed,
-                Realm = realm.self,
-                Group = admins.self,
-                Author = seed.self
+                Realm = realm,
+                Group = admins,
+                Author = seed
               )
             |> access.Users.Bind
             |> result
@@ -87,10 +87,10 @@ type RBACTest (output : ITestOutputHelper) =
 
         let items =
           [
-            Access.RBAC.Resource ( Subject = "RBAC-Realm", Author = admin.self, Valid = true)
-            Access.RBAC.Resource ( Subject = "RBAC-Permission", Author = admin.self, Valid = true )
-            Access.RBAC.Resource ( Subject = "RBAC-User", Author = admin.self, Valid = true )
-            Access.RBAC.Resource ( Subject = "RBAC-Group", Author = admin.self, Valid = true )
+            Access.RBAC.Resource ( Subject = "RBAC-Realm", Author = admin, Valid = true)
+            Access.RBAC.Resource ( Subject = "RBAC-Permission", Author = admin, Valid = true )
+            Access.RBAC.Resource ( Subject = "RBAC-User", Author = admin, Valid = true )
+            Access.RBAC.Resource ( Subject = "RBAC-Group", Author = admin, Valid = true )
           ]
           |> List.map access.Resources.Bind
           |> List.map result
@@ -98,12 +98,12 @@ type RBACTest (output : ITestOutputHelper) =
         let permission (item : Access.RBAC.Resource) =
             Access.RBAC.GroupPermission 
               ( 
-                Item = item.self,   
+                Item = item,   
                 Right = Access.RBAC.PermissionType.All,
-                owner = admins.self,
+                owner = admins,
                 Approval = approval,
                 Required = approval,
-                Author = admin.self,
+                Author = admin,
                 Valid = true
               )
             |> access.GroupPermissions.Bind
@@ -145,8 +145,8 @@ type RBACTest (output : ITestOutputHelper) =
               (
                 Id = Guid.NewGuid(),
                 Name = "Steve",
-                Realm = realm.self,
-                Author = admin.self,
+                Realm = realm,
+                Author = admin,
                 PublicKey = "something"
               )
             |> write.Users.Bind
@@ -159,15 +159,15 @@ type RBACTest (output : ITestOutputHelper) =
               (
                 Id = Guid.NewGuid(),
                 Name = "Jane",
-                Realm = realm.self,
-                Author = user.self,
+                Realm = realm,
+                Author = user,
                 PublicKey = "something"
               )
             |> write.Users.Bind
 
         tryAdd().Fail.Should().BeTrue("did not have permission") |> ignore
 
-        admin.Group.Value.Value.Members.Add user
+        admin.Group.Members.Add user
 
         tryAdd().Ok.Should().BeTrue("has permission") |> ignore
 
@@ -192,8 +192,8 @@ type RBACTest (output : ITestOutputHelper) =
 
         output.WriteLine ("From, To, Name, TypeName")
         edges 
-        |> List.filter  (fun e -> not(e.From.Value.Value = null || e.To.Value.Value = null))
-        |> List.iter    (fun e -> output.WriteLine ($"{e.From.Value.Value.SKey}, {e.To.Value.Value.SKey}, {e.Name}, {e.TypeName} "))
+        |> List.filter  (fun e -> not(e.From = null || e.To = null))
+        |> List.iter    (fun e -> output.WriteLine ($"{e.From.SKey}, {e.To.SKey}, {e.Name}, {e.TypeName} "))
 
     [<Fact>]
      member _.``Graph view`` () =
@@ -209,10 +209,10 @@ type RBACTest (output : ITestOutputHelper) =
         let rec print tabs (visited : Set<Node>) (n : Node) =
             let printEdges tabs (visited : Set<Node>) (n : Node)  =
                 let printFrom tabs (visited : Set<Node>) (e : Edge) =
-                    output.WriteLine ($"{tabs}Edge {{ From = {e.From.Value.Value.SKey}, To = {e.To.Value.Value.SKey}, Name = {e.Name}, TypeName = {e.TypeName}}}")
-                    print ($"{tabs}\t") visited e.To.Value.Value
+                    output.WriteLine ($"{tabs}Edge {{ From = {e.From.SKey}, To = {e.To.SKey}, Name = {e.Name}, TypeName = {e.TypeName}}}")
+                    print ($"{tabs}\t") visited e.To
                 n.Froms
-                |> Seq.filter  (fun e -> not (e.From.Value.Value = null || e.To.Value.Value = null))
+                |> Seq.filter  (fun e -> not (e.From = null || e.To = null))
                 |> List.ofSeq
                 |> List.iter    (printFrom tabs visited)
             output.WriteLine ($"{tabs}Node {{ SKey = {n.SKey}, Name = {n.Name} TypeName = {n.TypeName} }}")
@@ -227,7 +227,7 @@ type RBACTest (output : ITestOutputHelper) =
 
         use space = new AccessSpace (new Heap.HeapSpace())
 
-        let res = new RBAC.GroupPermission( owner = KeyRef<RBAC.Group.KeyType,RBAC.Group>())
+        let res = new RBAC.GroupPermission( owner = RBAC.Group())
 
         let find = space.GroupPermissions.Find(res) |> List.ofSeq;
 

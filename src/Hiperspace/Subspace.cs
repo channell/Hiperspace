@@ -121,7 +121,7 @@ namespace Hiperspace
             if (expression.Type == typeof(Node)) return new Query<Node>(Nodes, this, expression);
             if (expression.Type == typeof(Edge)) return new Query<Edge>(Edges, this, expression);
             if (expression.Type == typeof(VectorSpace)) return new Query<VectorSpace>(VectorSpaces, this, expression);
-            throw new ArgumentException($"{expression.Type.Name} is not as a suppoerted collection type");
+            throw new ArgumentException($"{expression.Type.Name} is not as a supported collection type");
         }
         public virtual IQueryable<TElement> CreateQuery<TElement>(Expression expression)
         {

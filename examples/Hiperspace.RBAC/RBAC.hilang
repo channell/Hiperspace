@@ -192,10 +192,10 @@ Group is a hierarchical organization of users or service accounts
 "
 entity Access.RBAC.Group : Access.RBAC.Principal
                            = Node  (SKey = SKey, Name = Name, TypeName = TypeName),
-                             Edge  (From = self, To = Parent, Name = Name, TypeName = TypeName),
-                             Edge2 (From = self, To = Realm, Name = Name, TypeName = "RBAC-Realm-Member"),
-                             Edge3 (From = Parent, To = self, Name = Name, TypeName = TypeName + "|From"),
-                             Edge4 (From = Realm, To = self, Name = Name, TypeName = "RBAC-Realm-Member|From") 
+                             Edge  (From = this, To = Parent, Name = Name, TypeName = TypeName),
+                             Edge2 (From = this, To = Realm, Name = Name, TypeName = "RBAC-Realm-Member"),
+                             Edge3 (From = Parent, To = this, Name = Name, TypeName = TypeName + "|From"),
+                             Edge4 (From = Realm, To = this, Name = Name, TypeName = "RBAC-Realm-Member|From") 
 (
     Id          : Guid
 )
@@ -215,10 +215,10 @@ entity Access.RBAC.Group : Access.RBAC.Principal
 }
 [
     " Join extension to all the children of this group. "
-    SubGroups   : Access.RBAC.Group (Parent = self),
+    SubGroups   : Access.RBAC.Group (Parent = this),
 
     " Users that are members of this group. "
-    Members     : Access.RBAC.User (Group = self),
+    Members     : Access.RBAC.User (Group = this),
 
     /* Validation property to check for uniqueness for permission checks. */
     Exists      : Access.RBAC.Group (Realm = Realm, Name = Name),
@@ -247,8 +247,8 @@ User is a security principal that can connect to a resource. Either a person or 
 "
 entity Access.RBAC.User : Access.RBAC.Principal
                           = Node  (SKey = SKey, Name = Name, TypeName = TypeName),
-                            Edge  (From = self, To = Group, Name = Name, TypeName = TypeName),
-                            Edge2 (From = Group, To = self, Name = Name, TypeName = TypeName + "|From")
+                            Edge  (From = this, To = Group, Name = Name, TypeName = TypeName),
+                            Edge2 (From = Group, To = this, Name = Name, TypeName = TypeName + "|From")
 (
     Id          : Guid
 )

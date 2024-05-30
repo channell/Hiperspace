@@ -17,12 +17,12 @@ namespace Access.RBAC
             get
             {
                 var groups = new HashSet<Group?>();
-                groups.Add(Group?.Value);
-                var parent = Group?.Value?.Parent?.Value;
+                groups.Add(Group);
+                var parent = Group?.Parent;
                 while (parent != null)
                 {
                     groups.Add(parent);
-                    parent = parent.Parent?.Value;
+                    parent = parent.Parent;
                 }
 
                 return groups;

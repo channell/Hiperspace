@@ -45,24 +45,24 @@ namespace Access.RBAC
         /// <param name="permission"></param>
         /// <param name="subject"></param>
         /// <returns></returns>
-        public static bool Authorised(KeyRef<User.KeyType, User>? user, PermissionType? permission, string? subject)
+        public static bool Authorised(User? user, PermissionType? permission, string? subject)
         {
             if (user == null || permission == null || subject == null)
                 return false;
-            if (user.Value.Value?.Permission == null)
+            if (user?.Permission == null)
                 return false;
 
-            foreach(var p in user.Value.Value.Permission)
+            foreach(var p in user.Permission)
             {
                 if (p.Subject == subject && (permission | p.Right) == p.Right)
                     return true;
             }
-            foreach (var role in user.Value.Value.Roles)
+            foreach (var role in user.Roles)
             {
-                if (Authorised(role.Role?.Value, permission, subject))
+                if (Authorised(role.Role, permission, subject))
                     return true;
             }
-            return Authorised(user.Value.Value.Group?.Value, permission, subject);
+            return Authorised(user.Group, permission, subject);
         }
         private static bool Authorised(Group? group, PermissionType? permission, string? subject)
         {
@@ -77,13 +77,13 @@ namespace Access.RBAC
 
             foreach (var role in group.Roles)
             {
-                if (Authorised(role.Role?.Value, permission, subject))
+                if (Authorised(role.Role, permission, subject))
                     return true;
             }
 
-            if (group.Parent != null && group.Parent?.Value != null)
+            if (group.Parent != null && group.Parent != null)
             {
-                return Authorised(group.Parent.Value.Value, permission, subject);
+                return Authorised(group.Parent, permission, subject);
             }
 
             return false;
@@ -101,28 +101,28 @@ namespace Access.RBAC
 
             return false;
         }
-        public static bool IsUserInRole(KeyRef<User.KeyType, User>? user, string? code)
+        public static bool IsUserInRole(User? user, string? code)
         {
-            if (user == null || user.Value.Value == null || code == null)
+            if (user == null || user == null || code == null)
                 return false;
 
             var userRole = new UserRoles { owner = user, Role = new Role { Code = code } };
-            if (user.Value.Value.Roles.Contains(userRole))
+            if (user.Roles.Contains(userRole))
                 return true;
 
             return false;
         }
-        internal static bool IsGroupInRole(KeyRef<Group.KeyType, Group>? group, string code)
+        internal static bool IsGroupInRole(Group? group, string code)
         {
-            if (group?.Value == null )
+            if (group == null )
                 return false;
 
             var groupRole = new GroupRoles { owner = group, Role = new Role { Code = code } };
-            if (group.Value.Value.Roles.Contains(groupRole))
+            if (group.Roles.Contains(groupRole))
                 return true;
-            if (group.Value.Value.Parent != null && group.Value.Value.Parent?.Value != null)
+            if (group.Parent != null && group.Parent != null)
             {
-                return IsGroupInRole(group.Value.Value.Parent, code);
+                return IsGroupInRole(group.Parent, code);
             }
             return false;
         }

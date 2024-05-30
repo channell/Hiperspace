@@ -12,8 +12,8 @@ open System.Text.Json.Serialization
 type  PlanTest (output : ITestOutputHelper) =
 
     do if Directory.Exists("./rockstest") then Directory.Delete("./rockstest", true) |> ignore
-//    use rocks = new Hiperspace.Rocks.RockSpace ("./rockstest")
-    let rocks = new Hiperspace.Heap.HeapSpace()
+    let rocks = new Hiperspace.Rocks.RockSpace ("./rockstest")
+//    let rocks = new Hiperspace.Heap.HeapSpace()
     let planSpace = new Plan.PlanSpace ( space = rocks, write = true)
 
     let nvl (v : 'v) = Nullable<'v> (v)
@@ -85,7 +85,7 @@ type  PlanTest (output : ITestOutputHelper) =
                         Start = nvl s,
                         End = nvl e
                       ),
-                    Parent = task.self,
+                    Parent = task,
                     Cost = 0.0m
                   )
                 |> planSpace.Tasks.Bind
@@ -97,7 +97,7 @@ type  PlanTest (output : ITestOutputHelper) =
                 |> List.map subtask
 
             let withr (t : Plan.Tasks.Task) = 
-                t.Resources.Add (Plan.Tasks.TaskResources ( Resource = res))
+                t.Resources.Add (Plan.Tasks.TaskResource ( Resource = res))
                 t
 
             task :: (subtasks |> List.map withr)
@@ -134,9 +134,11 @@ type  PlanTest (output : ITestOutputHelper) =
             |> List.sortBy      (fun i -> i.WBS)
             |> List.iter        (fun i -> output.WriteLine ($"{i.WBS},{i.TypeName},{i.Name},{i.PlanCost}, {i.ActualCost}, {i.ImpliedCost}, {i.PlanStart.Value.ToShortDateString()},{i.PlanEnd.Value.ToShortDateString()}"))
 
-            let plancost, actualCost = 
+            let exceptPlan =
                 bi
                 |> List.filter  (fun i -> not (i.TypeName = "Plan" ))
+            let plancost, actualCost = 
+                exceptPlan
                 |> List.fold    (fun (ap, aa) i -> ap + (zeronull i.PlanCost) , aa + (zeronull i.ActualCost)) (0m, 0m)
             let proj = space.Projects.Get(p)
             let pacosts = proj.ActualCost.Value
@@ -158,16 +160,16 @@ type  PlanTest (output : ITestOutputHelper) =
                     select t}
             |> List.ofSeq
 
-        let addActual (task : Plan.Tasks.Task)  = 
+        let addActual (task : Plan.Tasks.Task) plus  = 
             task.Resources.Refresh ()       // refresh triggers re-fetch for next reference
             task.Resources |> Seq.iter (fun r -> r.Timesheets.Refresh())
             let actual =
                 Plan.Tasks.TaskActual 
                     (
-                    owner = task.self,
+                    owner = task,
                     Duration = task.Duration,
                     Close = DateTime(DateTime.Now.Year, 1, 1),
-                    Cost = task.ImpliedCost
+                    Cost = task.ImpliedCost 
                     )
                 |> planSpace.TaskActuals.Bind
                 |> result
@@ -179,8 +181,8 @@ type  PlanTest (output : ITestOutputHelper) =
             let time =
                 Booking.Timesheet
                   (
-                    Resource = fred.self,
-                    Task = task.self,
+                    Resource = fred,
+                    Task = task,
                     Date = task.Duration.Value.Start.Value.AddDays(1),
                     Time = 10m,
                     Estimate = task.Duration.Value.Time.Value - 10m, 
@@ -210,8 +212,9 @@ type  PlanTest (output : ITestOutputHelper) =
         output.WriteLine($"\nBase with actual and timesheets ")
         bireport planSpace
 
-        output.WriteLine($"\nSnapshot excluding actual and timesheets - timesheets are displayed because they're eternal")
+        output.WriteLine($"\nSnapshot excluding actual and timesheets - timesheets are displayed because they're external")
         bireport snapbeforeTime
+
         output.WriteLine($"\nSnapshot excluding updated actual ")
         bireport snapbeforeupdate
 
@@ -222,10 +225,10 @@ type  PlanTest (output : ITestOutputHelper) =
         let rec print tabs (visited : Set<Node>) (n : Node) =
             let printEdges tabs (visited : Set<Node>) (n : Node)  =
                 let printFrom tabs (visited : Set<Node>) (e : Edge) =
-                    output.WriteLine ($"{tabs}Edge {{ From = {e.From.Value.Value.SKey}, To = {e.To.Value.Value.SKey}, Name = {e.Name}, TypeName = {e.TypeName}}}")
-                    print ($"{tabs}\t") visited e.To.Value.Value
+                    output.WriteLine ($"{tabs}Edge {{ From = {e.From.SKey}, To = {e.To.SKey}, Name = {e.Name}, TypeName = {e.TypeName}}}")
+                    print ($"{tabs}\t") visited e.To
                 n.Froms
-                |> Seq.filter  (fun e -> not (e.From.Value.Value = null || e.To.Value.Value = null))
+                |> Seq.filter  (fun e -> not (e.From = null || e.To = null))
                 |> List.ofSeq
                 |> List.iter    (printFrom tabs visited)
             output.WriteLine ($"{tabs}Node {{ SKey = {n.SKey}, Name = {n.Name}, TypeName = {n.TypeName} }}")
@@ -240,4 +243,9 @@ type  PlanTest (output : ITestOutputHelper) =
 
             |> Seq.head
 
+        
         print "" (Set.ofList []) node
+
+          
+
+

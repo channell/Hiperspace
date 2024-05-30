@@ -10,10 +10,12 @@ using RocksDbSharp;
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Net.WebSockets;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace Hiperspace.Rocks
 {
@@ -251,12 +253,15 @@ namespace Hiperspace.Rocks
                         if (lastKey == Array.Empty<byte>() || Compare(keypart, lastKey) == 0)
                         {
                             var ver = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(k, k.Length - sizeof(ulong), sizeof(ulong))));
-                            if ((version.HasValue && ver < version.Value.Ticks && ver > lastVersion) || (!version.HasValue && lastVersion == 0))
+                            if ((version.HasValue && ver < version.Value.Ticks) || !version.HasValue)
                             {
                                 lastKey = keypart;
                                 lastVersion = ver;
                                 lastValue = range.Value();
+                                NextKey(ref range, ref k);
                             }
+                            else
+                                range.Next();
                         }
                         else if (lastVersion != 0)
                         {
@@ -265,11 +270,14 @@ namespace Hiperspace.Rocks
                             lastKey = keypart;
                             lastVersion = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(k, k.Length - sizeof(ulong), sizeof(ulong))));
                             lastValue = range.Value();
+                            if (version.HasValue)
+                                range.Next();
+                            else
+                                NextKey(ref range, ref k);
                         }
                     }
                     else
                         break;
-                    range.Next();
                 }
                 if (lastVersion != 0 && lastValue != null)
                 {
@@ -277,6 +285,30 @@ namespace Hiperspace.Rocks
                 }
                 RaiseOnAfterFind(ref begin, ref end);
             }
+        }
+
+        /// <summary>
+        /// Seek the next key value, taking advantage of the fact that highest versions appear first in order list
+        /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void NextKey (ref Iterator range, ref byte[] key)
+        {
+            var keypart = new byte[key.Length - sizeof(long)];
+            var span = new Span<byte>(key, 0, key.Length - sizeof(long));
+            span.CopyTo(keypart);
+            int editOffset = keypart.Length - 1;
+            while (editOffset > 0)
+            {
+                if (keypart[editOffset] == 0xFF)
+                {
+                    keypart[editOffset] = 0x00;
+                    editOffset--;
+                }
+                else
+                    break;
+            }
+            keypart[editOffset]++;
+            range.Seek(keypart);
         }
 
         public override Task<IEnumerable<(byte[], byte[])>> FindAsync(byte[] begin, byte[] end)

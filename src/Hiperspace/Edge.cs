@@ -44,31 +44,31 @@ namespace Hiperspace
                 Bind(space);
         }
 
-        public KeyRef<Node.KeyType, Node>? From
+        public Node? From
         {
-            get => _key.From;
+            get => _key.From?.Value;
             set
             {
-                if (SetSpace != null) throw new Hiperspace.MutationException($"From can not be changed once bound to a Space");
+                if (SetSpace != null) throw new Hiperspace.ValueMutationException($"From");
                 _key.From = value;
             }
         }
-        public KeyRef<Node.KeyType, Node>? To
+        public Node? To
         {
-            get => _key.To;
+            get => _key.To?.Value;
             set
             {
-                if (SetSpace != null) throw new Hiperspace.MutationException($"To can not be changed once bound to a Space");
+                if (SetSpace != null) throw new Hiperspace.ValueMutationException($"To");
                 _key.To = value;
             }
         }
         public string? TypeName
         {
-            get => _value.TypeName;
+            get => _key.TypeName;
             set
             {
-                if (SetSpace != null) throw new Hiperspace.MutationException($"TypeName can not be changed once bound to a Space");
-                _value.TypeName = value;
+                if (SetSpace != null) throw new Hiperspace.ValueMutationException($"TypeName");
+                _key.TypeName = value;
             }
         }
 
@@ -77,14 +77,14 @@ namespace Hiperspace
             get => _value.Name;
             set
             {
-                if (SetSpace != null) throw new Hiperspace.MutationException($"Name can not be changed once bound to a Space");
+                if (SetSpace != null) throw new Hiperspace.ValueMutationException($"Name");
                 _value.Name = value;
             }
         }
 
         public override string SKey
         {
-            get => From?.Key.SKey + To?.Key.SKey;
+            get => From?.SKey + To?.SKey;
             set { }
         }
 
@@ -177,7 +177,10 @@ namespace Hiperspace
                 Name = item.Name;
             }
             [ProtoMember(2)] public String? Name;
-            [ProtoMember(3)] public String? TypeName;
+            public override int GetHashCode()
+            {
+                return HashCode.Combine(Name);
+            }
         }
 
         #endregion
@@ -186,16 +189,16 @@ namespace Hiperspace
         {       
             if (SetSpace != subspace.Edges)
             {
-                if (From.HasValue)
+                if (From != null)
                 {
-                    var value = From.Value;
-                    value.Bind(subspace.Nodes);
+                    var value = From;
+                    value.Bind(subspace);
                     From = value;
                 }
-                if (To.HasValue)
+                if (To != null)
                 {
-                    var value = To.Value;
-                    value.Bind(subspace.Nodes);
+                    var value = To;
+                    value.Bind(subspace);
                     To = value;
                 }
                 SetSpace = subspace.Edges;
@@ -208,8 +211,8 @@ namespace Hiperspace
         {
             if (SetSpace?.Space == subSpace)
             {
-                From?.Unbind(subSpace.Nodes);
-                To?.Unbind(subSpace.Nodes);
+                From?.Unbind(subSpace);
+                To?.Unbind(subSpace);
             }
         }
 
@@ -234,6 +237,17 @@ namespace Hiperspace
             if (ReferenceEquals(null, other))
                 return false;
             return (_key == other._key);
+        }
+
+        public override bool BindKey<TKey>(TKey key)
+        {
+            if (key is KeyType kt)
+            {
+                _key = kt;
+                return true;
+            }
+            else
+                return false;
         }
         #region  helpers
         internal KeyRef<Edge.KeyType, Edge> self { get => new KeyRef<Edge.KeyType, Edge>(_key, this); }

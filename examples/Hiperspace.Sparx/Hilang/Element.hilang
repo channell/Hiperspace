@@ -11,8 +11,8 @@ view Sparx.EA.Graph.ElementEdge = Edge (From = Element, To = Parent, TypeName = 
 @Table ( "t_object" ), Versioned
 entity Sparx.EA.Element 
     = Node (SKey = SKey, Name = Name, TypeName = "EA-" + ObjectType + "-" + Stereotype),
-      Edge (From = Package, To = self, TypeName = "EA-PackageContent", Name = Name),
-      Sparx.EA.Graph.ElementEdge (Element = self, Parent = Parent)
+      Edge (From = Package, To = this, TypeName = "EA-PackageContent", Name = Name),
+      Sparx.EA.Graph.ElementEdge (Element = this, Parent = Parent)
     #100
 (
     "Unique global key within a model"
@@ -204,13 +204,13 @@ entity Sparx.EA.Element
     Note: this will create an index (alternate key) in Connector set to navigate from Element
     "
     @NotMapped 
-    StartConnectors : Sparx.EA.Connector (StartElement = self),
+    StartConnectors : Sparx.EA.Connector (StartElement = this),
     @NotMapped 
-    EndConnectors   : Sparx.EA.Connector (EndElement = self),
+    EndConnectors   : Sparx.EA.Connector (EndElement = this),
     @NotMapped 
-    Attributes      : Sparx.EA.Attribute (Element = self),
+    Attributes      : Sparx.EA.Attribute (Element = this),
     @NotMapped 
-    Links           : Sparx.EA.DiagramObject (Element = self),
+    Links           : Sparx.EA.DiagramObject (Element = this),
     @NotMapped 
     Files           : Sparx.EA.ObjectFile,
     "Metrics is a segment of Element that can be updated without chnaging the full element"
@@ -235,5 +235,5 @@ entity Sparx.EA.Element
 */    @NotMapped 
     Operations      : Sparx.EA.Operation,
     @NotMapped 
-    Children        : Sparx.EA.Element (Parent = self)
+    Children        : Sparx.EA.Element (Parent = this)
 ];

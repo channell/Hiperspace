@@ -47,5 +47,11 @@ namespace Hiperspace
         {
             return this as TView;
         }
+        /// <summary>
+        /// Helper function for KeyRef<> to bind the key to a blank entity
+        /// </summary>
+        /// <typeparam name="TKey">type of the KeyRef key</typeparam>
+        /// <param name="key">key value help by KeyRef<></param>
+        public virtual bool BindKey<TKey>(TKey key) => false;
     }
 }

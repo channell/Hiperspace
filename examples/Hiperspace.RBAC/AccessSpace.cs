@@ -20,19 +20,19 @@ namespace Access
         private static Horizon[] Read (RBAC.Realm realm) =>
         [
             new Horizon<RBAC.Realm>(r => r.Valid == true && r.Name == realm.Name),
-            new Horizon<RBAC.UserPermission>(p => p.Valid == true && p.Approved == true && p.owner?.Key.Realm == realm.self), 
-            new Horizon<RBAC.GroupPermission>(p => p.Valid == true && p.Approved == true && p.owner?.Key.Realm == realm.self),
-            new Horizon<RBAC.User>(u => u.Valid == true && u?.Realm == realm.self),
-            new Horizon<RBAC.Group>(g => g.Valid == true && g?.Realm == realm.self),
+            new Horizon<RBAC.UserPermission>(p => p.Valid == true && p.Approved == true && p.owner?.Realm == realm), 
+            new Horizon<RBAC.GroupPermission>(p => p.Valid == true && p.Approved == true && p.owner?.Realm == realm),
+            new Horizon<RBAC.User>(u => u.Valid == true && u?.Realm == realm),
+            new Horizon<RBAC.Group>(g => g.Valid == true && g?.Realm == realm),
             new Horizon<RBAC.Resource>(i => i.Valid == true),
         ];
         private static Horizon[] Write (RBAC.Realm realm) =>
         [
             new Horizon<RBAC.Realm>(r => r.Valid == true && r == realm),
-            new Horizon<RBAC.UserPermission>(p => p.Valid == true && p.owner?.Key.Realm == realm.self),
-            new Horizon<RBAC.GroupPermission>(p => p.Valid == true && p.owner?.Key.Realm == realm.self),
-            new Horizon<RBAC.User>(u => u.Valid == true && u?.Realm == realm.self),
-            new Horizon<RBAC.Group>(g => g.Valid == true && g?.Realm == realm.self),
+            new Horizon<RBAC.UserPermission>(p => p.Valid == true && p.owner?.Realm == realm),
+            new Horizon<RBAC.GroupPermission>(p => p.Valid == true && p.owner?.Realm == realm),
+            new Horizon<RBAC.User>(u => u.Valid == true && u?.Realm == realm),
+            new Horizon<RBAC.Group>(g => g.Valid == true && g?.Realm == realm),
             new Horizon<RBAC.Resource>(i => i.Valid == true),
         ];
 
@@ -73,7 +73,7 @@ namespace Access
                         {
                             foreach (var aprove in perm.Approval)
                             {
-                                if (aprove.Value?.Value != null && groups.Contains(aprove.Value?.Value))
+                                if (aprove.Value != null && groups.Contains(aprove.Value))
                                 {
                                     result.Add(perm);
                                     break;
@@ -109,7 +109,7 @@ namespace Access
                         {
                             foreach (var aprove in perm.Approval)
                             {
-                                if (aprove.Value?.Value != null && groups.Contains(aprove.Value?.Value))
+                                if (aprove.Value != null && groups.Contains(aprove.Value))
                                 {
                                     result.Add(perm);
                                     break;
