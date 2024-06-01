@@ -29,21 +29,8 @@ namespace Acc
     {
         public void Rollup ()
         {
-            var current = 0M;
-            var when = new DateTime();
-            var space = this?.SetSpace?.Space as AccSpace;
-            if (space != null)
-            {
-                foreach (var t in space.CustomerAccountTransactions)
-                {
-                    if (t.Movement != null)
-                    {
-                        current += t.Movement.Value;
-                        if (t.AsAt > when) when = t.AsAt;
-                    }
-                }
-            }
-            this.Balance = new CustomerAccountBalance { When = when, Current = current };
+            var when = Transactions.Select(t => t.At).Max();
+            Balance = new CustomerAccountBalance { When = when, Current = this.CurrentBalance };
         }
     }
 }
