@@ -1,5 +1,9 @@
 %domain(Acc);
 
+%function ( unary, delta, Acc.Totals.Delta, Decimal);
+%function ( unary, credit, Acc.Totals.Credit, Decimal);
+%function ( unary, debit, Acc.Totals.Debit, Decimal);
+
 "A Customer"
 entity Acc.Customer : Versioned
 (
@@ -11,17 +15,41 @@ entity Acc.Customer : Versioned
 	Accounts		: Acc.Account
 ];
 
+"a transaction against account"
+segment Acc.Transaction : Versioned
+(
+	"when the transaction was authorised"
+	At				: DateTime
+)
+{
+	"debt or credit to account, with respect to the customer position"
+	Movement		: Decimal,
+	Delta			= delta(this), 
+
+	"who it was paid to"
+	Payee			: String
+}
+[
+	Debit			= debit(Movement),
+	Credit			= credit(Movement)
+];
+
 "An acocunt for a customer"
 segment Acc.Account : Versioned
 (
 	Title			: String
 )
 [
-	"tranasctins against the account"
+	"transactions against the account"
 	Transactions	: Acc.Transaction,
 
 	"the last closing balance"
-	Balance			: Acc.Balance
+	Balance			: Acc.Balance,
+
+	/* calculations */
+	CurrentBalance	= sum(Transactions.Movement),
+	Debit			= sum(Transactions.Debit),
+	Credit			= sum(Transactions.Credit)
 ];
 
 " Balance is the rolled up value for the account computed for a time"
@@ -34,16 +62,3 @@ aspect Acc.Balance : Versioned
 	Current			: Decimal
 };
 
-"a transaction against account"
-segment Acc.Transaction : Versioned
-(
-	"when the transaction was authorised"
-	At				: DateTime
-)
-{
-	"debt or credit to account, with respect to the customer position"
-	Movement		: Decimal,
-
-	"who it was paid to"
-	Payee			: String
-};

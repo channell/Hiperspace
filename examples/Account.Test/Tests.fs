@@ -26,14 +26,14 @@ type  PlanTest (output : ITestOutputHelper) =
     member _.``test acc`` () =
 
         let cust = Customer ( Name = "Fred")
-        let acc  = CustomerAccount ( Title = "Freds")
+        let acc  = CustomerAccount ( owner = cust, Title = "Freds")
         cust.Accounts.Add acc
         acc.Balance <- CustomerAccountBalance ( When = DateTime.UtcNow, Current = 0m)
 
         accSpace.Customers.Add cust |> ignore
 
         for n in [0m..4m] do
-            let tran = CustomerAccountTransaction ( At = DateTime.Now, Payee = $"Payee {n}", Movement = n )
+            let tran = CustomerAccountTransaction ( owner = acc, At = DateTime.Now, Payee = $"Payee {n}", Movement = n )
             acc.Transactions.Add tran |> ignore
             
         output.WriteLine "Name, Title, At, Movement"
@@ -61,6 +61,7 @@ type  PlanTest (output : ITestOutputHelper) =
         acc.Rollup()
         let trans = List.ofSeq accSpace.CustomerAccountTransactions
         trans.Length.Should().Be(0, "Hidden by rollup") |> ignore
+        acc.Balance.Current.Should().Be(10.05m, "include pennies") |> ignore
 
         for n in trans do
             sprintf "%s, %s, %s, %s, %M" n.owner.owner.Name n.owner.Title (n.At.Value.ToString()) n.Payee (n.Movement.Value) |> output.WriteLine
@@ -77,4 +78,5 @@ type  PlanTest (output : ITestOutputHelper) =
             sprintf "%s, %s, %s, %s, %M" n.owner.owner.Name n.owner.Title (n.At.Value.ToString()) n.Payee (n.Movement.Value) |> output.WriteLine
         let spanAcc = snap.CustomerAccounts.Get(acc)
         sprintf "prior Balance : %M" spanAcc.Balance.Current.Value |> output.WriteLine
+        spanAcc.Balance.Current.Should().Be(0m, "not rolled up") |> ignore
 

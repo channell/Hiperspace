@@ -122,10 +122,21 @@ namespace Hiperspace
                 {
                     _binder(item);
                     SetSpace.Bind(item);
-                    _cached.Add(item);
+                    if (!_cached.Add(item))
+                    {
+                        _cached.Remove(item);
+                        _cached.Add(item);
+                    }
                 }
                 else
-                   _cached.Add(item);
+                {
+                    _binder(item);
+                    if (!_cached.Add(item))
+                    {
+                        _cached.Remove(item);
+                        _cached.Add(item);
+                    }
+                }
                 _lock.Exit();
             }
             else
@@ -156,6 +167,11 @@ namespace Hiperspace
             if (taken)
             {
                 var added = _cached.Add(item);
+                if (!added)
+                {
+                    _cached.Remove(item);
+                    added = _cached.Add(item);
+                }
                 _lock.Exit();
                 return added;
             }
