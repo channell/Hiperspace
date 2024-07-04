@@ -5,10 +5,6 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Threading.Tasks.Dataflow;
-
 namespace Hiperspace.Meta
 {
     public class DependencyPath

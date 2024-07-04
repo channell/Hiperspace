@@ -6,7 +6,6 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using ProtoBuf;
-using System;
 
 namespace Hiperspace
 {
@@ -457,7 +456,6 @@ namespace Hiperspace
             byte[] bytes = new byte[source.Length];
             int s = 1;
             int p = 0;
-//            int e = source.Length - 1;
             bool searchkey = true;
             while (p < source.Length && searchkey)
             {

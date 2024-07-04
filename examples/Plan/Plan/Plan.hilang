@@ -41,6 +41,7 @@ Organize tasks on our robust Gantt, link all four types of task dependencies to 
 project plan by setting a baseline. This allows you to track your actual progress against your planned progress to 
 help you stay on track. Get started with ProjectManager today for free.
 "
+@CubeDimension  /* dimension for reporting */
 entity Plan.Project : Versioned
                     = Node (SKey = SKey, Name = Name, TypeName = "Plan"),
                       BI.Item (WBS         = WBS, 
@@ -87,6 +88,7 @@ this is usually related more so to the way you have to manage your time than the
 In this article, we’ll do a deep dive into tasks, show you the best ways to break down larger 
 projects into them, while covering efficient approaches to manage and distribute tasks.
 "
+@DeltaIndex, CubeFact, CubeDimension  /* dimensions for reporting */
 entity Plan.Tasks.Task : Versioned
                        = Node (SKey = SKey, Name = Name, TypeName = "Plan-Task"),
                          Edge (From = Project, To = this, TypeName = "Plan-Task", Name = Name),
@@ -123,20 +125,26 @@ entity Plan.Tasks.Task : Versioned
     Resources   : Plan.Tasks.TaskResource,
 
     /* BI */
+    @CubeMeasure(Aggregate.First)
     BIWBS       = Parent = null ? Project.WBS + "." + WBS : Parent.BIWBS + "." + WBS,  
     "Cost of prior tasks that can not be recovered"
+    @CubeMeasure(Aggregate.Sum)
     SunkCost    = 0.0 + sum (After.LinkCost),
     PctComplete = Actual.Duration.Time / Duration.Time,
+    @CubeMeasure(Aggregate.Sum)
     Effort      = count (Resources.Weight) * Duration.Time,
     ImpResCost  = 0.0 + sum (Resources.ImpliedCost),
+    @CubeMeasure(Aggregate.Sum)
     PlanCost    = Cost +
                   sum (SubTasks.PlanCost) +
                   sum (Resources.UseCost) + 
                   0.0 + (sum (Resources.TimeCost) * Duration.Time),
+    @CubeMeasure(Aggregate.Sum)
     ActualCost  = Cost +
                   sum (SubTasks.ActualCost) +
                   sum (Resources.UseCost) + 
                   (Actual.Cost),
+    @CubeMeasure(Aggregate.Sum)
     ImpliedCost = Cost +
                   sum (SubTasks.ImpliedCost) +
                   sum (Resources.UseCost) + 
@@ -259,6 +267,7 @@ view BI.Item    = Node (SKey = SKey, Name = Name, TypeName = "BI-Cost-" + TypeNa
 "
 Time booking by resources against 
 "
+@DeltaIndex
 entity Booking.Timesheet : Versioned
 (
     Resource    : Plan.Resource,

@@ -6,14 +6,29 @@ open System.IO
 open Hiperspace
 open FluentAssertions
 open Xunit.Abstractions
+open Hiperspace.Meta
 open System.Text.Json
 open System.Text.Json.Serialization
+
+type NodeObserver (output : ITestOutputHelper) =
+
+    interface IObserver<struct (Node * DependencyPath)> with
+        member this.OnCompleted(): unit = 
+            ignore 1
+        member this.OnError(error: exn): unit = 
+            output.WriteLine $">> ERROR: {error.Message}"
+        member this.OnNext(value: struct (Node * DependencyPath)): unit = 
+            let struct (node , source) = value
+            let path =
+                source.Path
+                |> Seq.fold (fun a i -> if a = "" then i.GetType().Name else $"{a}, {i}" ) ""
+            output.WriteLine $">> Change {node.Name} ({node.TypeName}) from {path}"
 
 type  PlanTest (output : ITestOutputHelper) =
 
     do if Directory.Exists("./rockstest") then Directory.Delete("./rockstest", true) |> ignore
-    let rocks = new Hiperspace.Rocks.RockSpace ("./rockstest")
-//    let rocks = new Hiperspace.Heap.HeapSpace()
+//    let rocks = new Hiperspace.Rocks.RockSpace ("./rockstest")
+    let rocks = new Hiperspace.Heap.HeapSpace()
     let planSpace = new Plan.PlanSpace ( space = rocks, write = true)
 
     let nvl (v : 'v) = Nullable<'v> (v)
@@ -26,6 +41,8 @@ type  PlanTest (output : ITestOutputHelper) =
 
     [<Fact>]
     member _.``test plan`` () =
+        //use subscription = planSpace.Dependencies.Subscribe<Node> (NodeObserver output)
+
         let make_resource name cost =
             Plan.Resource 
               (
@@ -245,7 +262,36 @@ type  PlanTest (output : ITestOutputHelper) =
 
         
         print "" (Set.ofList []) node
+        let sumtask (t : Plan.Tasks.Task seq) =
+            let zero = (0m, 0m, 0m, 0m, 0m)
+            let add a (v : Nullable<decimal>) = if v.HasValue then a + v.Value else a
+            t 
+            |> Seq.map      (fun i -> (i.SunkCost, i.ActualCost, i.PlanCost, i.ImpliedCost, i.Effort))
+            |> Seq.fold     (fun (asc, aac, apc, aic, ae) 
+                                 (sc,  ac,  pc,  ic,  e) 
+                              -> (add asc sc, add aac ac, add apc pc,add aic ic, add ae e)) zero
 
+        output.WriteLine($"\nBuild Cube")
+        let cubesource =
+            planSpace.Tasks
+            |> Seq.groupBy  (fun t -> t.Project)
+            |> Seq.map      (fun (p,t) -> p, sumtask t)
+        
+        let cube = 
+            let ck          (p : Plan.Project) = CubeKey ([|p.BKey|])
+            let fact        (p, (sc : decimal, ac : decimal, pc : decimal, ic : decimal, e : decimal)) = 
+                let f = Plan.Tasks.Task_Fact ()
+                f.Key <- ck p
+                f.SunkCost <- sc
+                f.ActualCost <- ac
+                f.PlanCost <- pc
+                f.ImpliedCost <- ic
+                f.Effort <- e
+                f
+            cubesource
+            |> Seq.map      fact
+        cube
+        |> Seq.iter     (fun f -> planSpace.Task_Facts.Add f |> ignore)
           
 
 

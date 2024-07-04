@@ -5,8 +5,6 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
-using System.Diagnostics.CodeAnalysis;
-
 namespace Hiperspace.Meta
 {
     public class Routes: IDisposable

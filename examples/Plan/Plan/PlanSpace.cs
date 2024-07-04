@@ -35,8 +35,8 @@ namespace Plan
         protected static Horizon[] _finance =
             _read.Union(_financeonly).ToArray();
 
-        public PlanSpace(HiperSpace space, bool write = true, DateTime? AsAt = null) 
-            : this(space, (write ? _write : _read), AsAt)
+        public PlanSpace(HiperSpace space, bool write = true, DateTime? AsAt = null, DateTime? DeltaFrom = null) 
+            : this(space, (write ? _write : _read), AsAt, DeltaFrom)
         {
         }
     }

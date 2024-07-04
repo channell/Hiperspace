@@ -106,7 +106,7 @@ namespace Access.RBAC
             if (user == null || user == null || code == null)
                 return false;
 
-            var userRole = new UserRoles { owner = user, Role = new Role { Code = code } };
+            var userRole = new UserRole { owner = user, Role = new Role { Code = code } };
             if (user.Roles.Contains(userRole))
                 return true;
 
@@ -117,7 +117,7 @@ namespace Access.RBAC
             if (group == null )
                 return false;
 
-            var groupRole = new GroupRoles { owner = group, Role = new Role { Code = code } };
+            var groupRole = new GroupRole { owner = group, Role = new Role { Code = code } };
             if (group.Roles.Contains(groupRole))
                 return true;
             if (group.Parent != null && group.Parent != null)

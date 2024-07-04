@@ -15,9 +15,5 @@ namespace Hiperspace.Meta
         {
             Model = Activator.CreateInstance(model) as MetaModel;
         }
-        public MetaDataAttribute(Type model, Type dependency)
-        {
-            Model = Activator.CreateInstance(model) as MetaModel;
-        }
     }
 }

@@ -7,7 +7,6 @@
 // ---------------------------------------------------------------------------------------
 
 using ProtoBuf;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Hiperspace.Meta
 {

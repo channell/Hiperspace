@@ -18,7 +18,7 @@ open Log
 open System.Linq
 open Hiperspace
 
-let dirOperation tabs (o : ElementOperations) =
+let dirOperation tabs (o : ElementOperation) =
     printfn "%s%s" tabs o.Name
 
 let dirAttribute tabs (a : Attribute) =
@@ -235,8 +235,6 @@ let oneVistor  (space : SparxSpace) =
                  select element}
         |>  Seq.head
         |> incl (fun e -> e.Attributes) (fun a -> ignore a.Tags )
-//        |> incl (fun e -> e.Operations) (fun o -> ignore o.Tags )
-//        |> incl (fun e -> e.Operations) (fun o -> ignore o.Parameters)
     let options = JsonSerializerOptions()
     options.ReferenceHandler <- ReferenceHandler.Preserve
     options.WriteIndented <- true

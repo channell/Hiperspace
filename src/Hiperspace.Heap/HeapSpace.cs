@@ -5,7 +5,6 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
-using System;
 using System.Buffers.Binary;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;

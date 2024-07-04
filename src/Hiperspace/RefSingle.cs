@@ -5,10 +5,7 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
-using ProtoBuf;
 using System.Collections;
-using System.Diagnostics;
-using System.Text;
 
 namespace Hiperspace
 {

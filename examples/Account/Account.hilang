@@ -1,41 +1,43 @@
 %domain(Acc);
 
-%function ( unary, delta, Acc.Totals.Delta, Decimal);
 %function ( unary, credit, Acc.Totals.Credit, Decimal);
 %function ( unary, debit, Acc.Totals.Debit, Decimal);
 
 "A Customer"
-entity Acc.Customer : Versioned
+@CubeDimension
+entity Acc.Customer : Versioned 
 (
 	" name  of the customer"
 	Name			: String
 )
 [
 	"Account that the customer owns"
-	Accounts		: Acc.Account
+	Accounts		: Acc.Account /*,
+	SameTime		: Acc.Customer (AsAt = AsAt) */
 ];
 
 "a transaction against account"
-segment Acc.Transaction : Versioned
+@DeltaIndex
+segment Acc.Transaction : Versioned 
 (
 	"when the transaction was authorised"
 	At				: DateTime
 )
 {
 	"debt or credit to account, with respect to the customer position"
-	Movement		: Decimal,
-	Delta			= delta(this), 
+	Amount			: Decimal,
 
 	"who it was paid to"
 	Payee			: String
 }
 [
-	Debit			= debit(Movement),
-	Credit			= credit(Movement)
+	Debit			= debit(Amount),
+	Credit			= credit(Amount) 
 ];
 
 "An acocunt for a customer"
-segment Acc.Account : Versioned
+@CubeFact
+segment Acc.Account : Versioned 
 (
 	Title			: String
 )
@@ -47,9 +49,12 @@ segment Acc.Account : Versioned
 	Balance			: Acc.Balance,
 
 	/* calculations */
-	CurrentBalance	= sum(Transactions.Movement),
+	@CubeMeasure(Aggregate.Sum)
+	CurrentBalance	= sum(Transactions.Amount),
 	Debit			= sum(Transactions.Debit),
-	Credit			= sum(Transactions.Credit)
+	Credit			= sum(Transactions.Credit),
+	Total			= sum(Transactions.Amount, this)
+
 ];
 
 " Balance is the rolled up value for the account computed for a time"
@@ -61,4 +66,3 @@ aspect Acc.Balance : Versioned
 	"Current closign balance at time When"
 	Current			: Decimal
 };
-

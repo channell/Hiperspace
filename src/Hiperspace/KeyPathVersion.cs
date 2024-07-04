@@ -5,7 +5,6 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
-using System.Runtime.CompilerServices;
 
 namespace Hiperspace
 {
