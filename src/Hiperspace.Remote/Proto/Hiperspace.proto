@@ -88,6 +88,13 @@ message FindVersionRequest
 	Token Token = 4;
 }
 
+message DeltaRequest 
+{
+	bytes Begin = 1;
+	google.protobuf.Timestamp Version = 3;
+	Token Token = 4;
+}
+
 message Value
 {
 	bytes Content = 1;
@@ -166,7 +173,7 @@ service HiServ
 
 	rpc FindIndex (FindRequest) returns (Values);
 	rpc FindIndexVersion (FindVersionRequest) returns (ValueVersions);
-
+	rpc Delta (DeltaRequest) returns (ValueVersions);
 	rpc UnZip (ZipStream) returns (ZipStatus);
 	rpc Zip (ZipStatus) returns (ZipStream);
 }	

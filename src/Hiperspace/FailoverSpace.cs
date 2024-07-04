@@ -7,6 +7,7 @@
 // ---------------------------------------------------------------------------------------
 using System.Buffers.Binary;
 using System.Diagnostics.CodeAnalysis;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Hiperspace
 {
@@ -312,6 +313,20 @@ namespace Hiperspace
         public override async Task<IEnumerable<(byte[], byte[])>> SpaceAsync()
         {
             return await Task.Run(() => Space());
+        }
+
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Delta(byte[] key, DateTime? version)
+        {
+            var start = DateTime.Now;
+            try
+            {
+                return _primary.Delta(key, version);
+            }
+            catch
+            {
+                Recover(start);
+                return _primary.Delta(key, version);
+            }
         }
     }
 }

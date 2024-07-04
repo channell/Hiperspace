@@ -130,7 +130,7 @@ namespace Hiperspace.Rocks
             {
                 if (v == version)
                     return Result.Skip(cur);
-                if (cur.Length > 0 && cur.SequenceEqual(value))
+                if (cur.Length > 0 && Compare(cur,value) == 0)
                     return Result.Skip(cur);    // no change to value
             }
             _db.Put(fullkey, value);
@@ -253,7 +253,7 @@ namespace Hiperspace.Rocks
                         if (lastKey == Array.Empty<byte>() || Compare(keypart, lastKey) == 0)
                         {
                             var ver = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(k, k.Length - sizeof(ulong), sizeof(ulong))));
-                            if ((version.HasValue && ver < version.Value.Ticks) || !version.HasValue)
+                            if ((version.HasValue && ver < version.Value.Ticks) || (!version.HasValue && lastVersion == 0))
                             {
                                 lastKey = keypart;
                                 lastVersion = ver;
@@ -284,6 +284,34 @@ namespace Hiperspace.Rocks
                     yield return (lastKey, new DateTime(lastVersion), lastValue);
                 }
                 RaiseOnAfterFind(ref begin, ref end);
+            }
+        }
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Delta(byte[] begin, DateTime? version)
+        {
+            var vbegin = new byte[begin.Length + sizeof(long) + 1];
+            var vend = Hiperspace.Space.DeltaKey(begin);
+
+            begin.CopyTo(new Span<byte>(vbegin, 1, begin.Length));
+            using (var iter = _db.NewIterator())
+            {
+                var range = iter.Seek(vbegin);
+                while (range.Valid())
+                {
+                    var k = range.Key();
+                    if (Compare(k, vend) <= 0)
+                    {
+                        var keypart = new byte[k.Length - sizeof(long) - 1];
+                        var span = new Span<byte>(k, 1, k.Length - sizeof(long) - 1);
+                        span.CopyTo(keypart);
+                        var ver = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(k, k.Length - sizeof(ulong), sizeof(ulong))));
+                        if ((version.HasValue && ver >= version.Value.Ticks) || !version.HasValue)
+                        {
+                            yield return (keypart, new DateTime(ver), range.Value());
+                        }
+                        range.Next();
+                    }
+                    else break;
+                }
             }
         }
 
@@ -489,6 +517,7 @@ namespace Hiperspace.Rocks
         {
             return Task.Run (() => GetVersions(key).ToList() as IEnumerable<(byte[] value, DateTime version)>);
         }
+
         protected override void Dispose(bool disposing)
         {
             if (!_disposedValue)

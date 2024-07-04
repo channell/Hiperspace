@@ -9,6 +9,7 @@ using System.Buffers.Binary;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 using System.Runtime.CompilerServices;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Hiperspace
 {
@@ -371,6 +372,15 @@ namespace Hiperspace
                 c++;
             }
             return left.Length < right.Length ? -1 : left.Length > right.Length ? 1 : 0;
+        }
+
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Delta(byte[] key, DateTime? version)
+        {
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                foreach (var b in _spaces[c].Delta(key, version))
+                    yield return b;
+            }
         }
     }
 }

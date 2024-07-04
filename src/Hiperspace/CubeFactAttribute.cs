@@ -8,11 +8,11 @@
 namespace Hiperspace
 {
     /// <summary>
-    /// Indicates that the class has multiple versions. 
+    /// Indicates that this element is a fact in a cube
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
-    public class VersionedAttribute : Attribute
+    public class CubeFactAttribute : Attribute
     {
-        public VersionedAttribute() : base() { }
+        public CubeFactAttribute() : base() { }
     }
 }

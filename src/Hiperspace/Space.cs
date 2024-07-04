@@ -446,5 +446,72 @@ namespace Hiperspace
             while (p < other.Length) other[p++] = 0xFF;
             return (bytes, other);
         }
+        /// <summary>
+        /// Get they key type from the source for detla search
+        /// </summary>
+        /// <param name="source">source stream serialised to protobuf</param>
+        /// <returns>keytype followed by 0xFF</returns>
+        public static byte[] DeltaKey(byte[] source)
+        {
+            if (source.Length == 0) return source;
+            byte[] bytes = new byte[source.Length];
+            int s = 1;
+            int p = 0;
+//            int e = source.Length - 1;
+            bool searchkey = true;
+            while (p < source.Length && searchkey)
+            {
+                switch (source[p] & btype)
+                {
+                    case 0 when p == 0:     // special case of VectorSpace keys
+                        s++; p++;
+                        break;
+                    case 0: //varint
+                        while ((source[p] & icont) == icont)
+                        {
+                            bytes[s++] = source[p++];
+                        }
+                        bytes[s++] = source[p++];
+                        // copy value
+                        while ((source[p] & icont) == icont)
+                        {
+                            bytes[s++] = source[p++];
+                        }
+                        bytes[s++] = source[p++];
+                        break;
+                    case 1: // I64
+                        var tspan = new Span<byte>(bytes, s, sizeof(Int64));
+                        var sspan = new Span<byte>(bytes, p, sizeof(Int64));
+                        sspan.CopyTo(tspan);
+                        s += sizeof(Int64);
+                        p += sizeof(Int64);
+                        break;
+                    case 2: // LEN prefixed value
+                        int id = (source[p] & ival) >> 3;
+                        int shift = 4;
+                        while ((source[p] & icont) == icont)  // copy varint
+                        {
+                            bytes[s++] = source[p++];
+                            id += (source[p] & ival) << shift;
+                            shift += 4;
+                        }
+                        bytes[s++] = source[p++];
+                        searchkey = false;
+                        break;
+                    case 5: // I32
+                        for (int c = 0; c < 5; c++)
+                        {
+                            bytes[s++] = source[p++];
+                        }
+                        break;
+                    default: // others copy
+                        bytes[s++] = source[p++];
+                        break;
+                }
+            }
+            while (s < bytes.Length) bytes[s++] = 0xFF;
+            return bytes;
+        }
+
     }
 }

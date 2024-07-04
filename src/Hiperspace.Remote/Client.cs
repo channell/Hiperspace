@@ -3,6 +3,9 @@ using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Grpc.Net.Client;
 using Hiperspace.Meta;
+using System.Runtime.CompilerServices;
+using static HiLang.Ast.Boolean;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Hiperspace.Remote
 {
@@ -888,6 +891,12 @@ namespace Hiperspace.Remote
                 }
                 _disposedValue = true;
             }
+        }
+
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Delta(byte[] key, DateTime? version)
+        {
+#warning add imple
+            throw new NotImplementedException();
         }
     }
 }

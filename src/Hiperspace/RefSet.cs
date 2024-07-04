@@ -32,10 +32,18 @@ namespace Hiperspace
         }
         public void PreBind(Func<TEntity> template, Action<TEntity> binder)
         {
-            _template = template;
-            _binder = binder;
-            _cached = new HashSet<TEntity>();
-            _filter = e => true;
+            bool taken = false;
+            _lock.Enter(ref taken);
+            if (taken)
+            {
+                _template = template;
+                _binder = binder;
+                _cached = new HashSet<TEntity>();
+                _filter = e => true;
+                _lock.Exit();
+            }
+            else
+                throw new LockRecursionException();
         }
         /// <summary>
         /// Construct a reference, including a a filter for scenario where the index to the set overlaps with 
@@ -53,35 +61,43 @@ namespace Hiperspace
         }
         public void PreBind(Func<TEntity> template, Action<TEntity> binder, Func<TEntity, bool> filter)
         {
-            _template = template;
-            _binder = binder;
-            _cached = new HashSet<TEntity>();
-            _filter = filter;
+            bool taken = false;
+            _lock.Enter(ref taken);
+            if (taken)
+            {
+                _template = template;
+                _binder = binder;
+                _cached = new HashSet<TEntity>();
+                _filter = filter;
+                _lock.Exit();
+            }
+            else
+                throw new LockRecursionException();
         }
 
         private ISet<TEntity> Lazy()
         {
-            if (_new && SetSpace != null)
+            bool taken = false;
+            _lock.Enter(ref taken);
+            if (taken)
             {
-                _new = false;
-                bool taken = false;
-                _lock.Enter(ref taken);
-                if (taken)
+                if (_new && SetSpace != null)
                 {
+                    _new = false;
                     TEntity[] result = SetSpace.Find(_template(),true).ToArray();
                     if (result != Array.Empty<TEntity>())
                     {
                         _cached.UnionWith(result.Where(_filter));
                     }
-                    _lock.Exit();
                 }
-                else
-                    throw new LockRecursionException();
+                _lock.Exit();
             }
+            else
+                throw new LockRecursionException();
             return _cached;
         }
 
-        private SpinLock _lock = new SpinLock();
+        private SpinLock _lock = new SpinLock(true);
         private volatile bool _new = true;
         private Func<TEntity> _template;
         private Action<TEntity> _binder;
@@ -91,33 +107,48 @@ namespace Hiperspace
 
         public void Bind(SetSpace<TEntity> setspace)
         {
-            SetSpace = setspace;
-            foreach (var en in _cached) 
+            bool taken = false;
+            _lock.Enter(ref taken);
+            if (taken)
             {
-                _binder(en);
-                SetSpace.Bind(en);
+                SetSpace = setspace;
+                foreach (var en in _cached)
+                {
+                    _binder(en);
+                    SetSpace.Bind(en);
+                }
+                _lock.Exit();
             }
+            else
+                throw new LockRecursionException();
         }
         public void Unbind(SubSpace subSpace)
         {
-            if (SetSpace?.Space == subSpace)
+            bool taken = false;
+            _lock.Enter(ref taken);
+            if (taken)
             {
-                foreach (var en in _cached)
+                if (SetSpace?.Space == subSpace)
                 {
-                    en.Unbind(SetSpace.Space);
+                    foreach (var en in _cached)
+                    {
+                        en.Unbind(SetSpace.Space);
+                    }
+                    SetSpace = null;
                 }
-                SetSpace = null;
+                _lock.Exit();
             }
+            else throw new LockRecursionException();
         }
         public int Count => Lazy().Count();
 
         public void Add (TEntity item)
         {
-            _new = false;
             bool taken = false;
             _lock.Enter(ref taken);
             if (taken)
             {
+                _new = false;
                 if (SetSpace != null)
                 {
                     _binder(item);

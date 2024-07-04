@@ -1,6 +1,12 @@
-﻿
+﻿// ---------------------------------------------------------------------------------------
+//                                   Hiperspace
+//                        Copyright (c) 2023, 2024 Cepheis Ltd
+//                                    www.cepheis.com
+//
+// This file is part of Hiperspace and is distributed under the GPL Open Source License. 
+// ---------------------------------------------------------------------------------------
+
 using ProtoBuf;
-using System.Diagnostics;
 
 namespace Hiperspace.Meta
 {

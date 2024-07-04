@@ -17,17 +17,26 @@ namespace Hiperspace
         protected HiperSpace _space;
         internal Horizon[]? Horizon;
         protected DateTime? _version;
+        protected DateTime? _delta;
         /// <summary>
         /// Create a subpace throught he domain space
         /// </summary>
         /// <param name="space">base space that provides the store driver</param>
         /// <param name="horizon">set of filters to limit the content rerturned or stored</param>
         /// <param name="AsAt">Timestamp that versioned elements must be before </param>
-        /// <param name="isStrict">enforce that elements must not exist before adding, and must exist prior to BindVersion</param>
-        protected SubSpace(HiperSpace space, Horizon[]? horizon, DateTime? AsAt = null) : this(space)
+        /// <param name="DeltaFrom">Timestamp that versions must be after</param>
+        protected SubSpace(HiperSpace space, Horizon[]? horizon, DateTime? AsAt = null, DateTime? DeltaFrom = null) : this(space)
         {
+            if (space is SubSpace subSpace && subSpace.Horizon != null)
+            {
+                if (horizon is null)
+                    Horizon = subSpace.Horizon;
+                else
+                    Horizon = subSpace.Horizon.Union(horizon).ToArray();
+            }
             Horizon = horizon;
             _version = AsAt;
+            _delta = DeltaFrom;
         }
         /// <summary>
         /// Get the Horizon for a type 
@@ -53,6 +62,11 @@ namespace Hiperspace
         /// <param name="skey">a base64 encoding of a key structure</param>
         /// <returns>the object from one of the setspaces in the subspace</returns>
         public abstract object? Get(string sid);
+        public virtual object? Get(CubeKey.KeyPart bkey)
+        {
+            throw new NotImplementedException ();
+        }
+
 
         public bool ISChild(SubSpace space)
         {
@@ -93,6 +107,10 @@ namespace Hiperspace
         {
             return _space.FindAsync(begin, end);
         }
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Delta(byte[] key, DateTime? version)
+        {
+            return _space.Delta(key, version);
+        }
 
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)
         {
@@ -114,6 +132,7 @@ namespace Hiperspace
         }
 
         public DateTime? AsAt => _version;
+        public DateTime? DeltaFrom => _delta;
 
         #region IQueryProvider
         public virtual IQueryable CreateQuery(Expression expression)
@@ -211,5 +230,7 @@ namespace Hiperspace
             return null;
         }
         #endregion
+        public virtual Meta.Dependencies Dependencies => new Meta.Dependencies(Array.Empty<Meta.Dependency>());
+        public virtual Meta.Routes Routes => new Meta.Routes(Array.Empty<Meta.Route>());
     }
 }

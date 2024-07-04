@@ -8,11 +8,15 @@
 namespace Hiperspace
 {
     /// <summary>
-    /// Indicates that the class has multiple versions. 
+    /// Indicates that this attribute is a dimension in a cube.  
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
-    public class VersionedAttribute : Attribute
+    public class CubeDimensionAttribute : Attribute
     {
-        public VersionedAttribute() : base() { }
+        public string? DimensionName { get; set; }  
+        public CubeDimensionAttribute(string? dimensionName = null) : base() 
+        { 
+            DimensionName = dimensionName;
+        }
     }
 }

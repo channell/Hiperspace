@@ -53,6 +53,7 @@ namespace Hiperspace.Heap
             lock (_heap)
             {
                 var node = new HeapNode(fullkey, value);
+                _heap.Remove(node);
                 _heap.Add(node);
                 RaiseOnBind(key, value, source);
                 return Result.Ok(value);
@@ -177,7 +178,7 @@ namespace Hiperspace.Heap
                     if (lastKey == Array.Empty<byte>() || Compare(keypart, lastKey) == 0 )
                     {
                         var ver = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(row.Key, row.Key.Length - sizeof(ulong), sizeof(ulong))));
-                        if ((version.HasValue && ver <= version.Value.Ticks && ver > lastVersion) || (!version.HasValue && lastVersion == 0))
+                        if ((version.HasValue && ver < version.Value.Ticks) || (!version.HasValue && lastVersion == 0))
                         {
                             lastKey = keypart;
                             lastVersion = ver;
@@ -186,20 +187,20 @@ namespace Hiperspace.Heap
                     }
                     else if (lastVersion != 0)
                     {
-                        yield return (lastKey, new DateTime(lastVersion), lastValue);
+                        if (lastValue != null)
+                            yield return (lastKey, new DateTime(lastVersion), lastValue);
                         lastKey = keypart;
                         lastVersion = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(row.Key, row.Key.Length - sizeof(ulong), sizeof(ulong))));
                         lastValue = row.Value;
                     }
                 }
             }
-            if (lastVersion != 0)
+            if (lastVersion != 0 && lastValue != null)
             {
                 yield return (lastKey, new DateTime(lastVersion), lastValue);
             }
             RaiseOnAfterFind(ref begin, ref end);
         }
-
 
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)
         {
@@ -274,6 +275,40 @@ namespace Hiperspace.Heap
             }
 
             RaiseOnAfterFind(ref begin, ref end);
+        }
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Delta(byte[] begin, DateTime? version)
+        {
+            var vbegin = new byte[begin.Length + sizeof(long) + 1];
+            var vend = Hiperspace.Space.DeltaKey(begin);
+
+            begin.CopyTo(new Span<byte>(vbegin, 1, begin.Length));
+
+            (byte[] Key, byte[] Value)[] cursor;
+
+            lock (_heap)
+            {
+                var beginnode = new HeapNode(vbegin, Array.Empty<byte>());
+                var endnode = new HeapNode(vend, Array.Empty<byte>());
+                cursor =
+                    _heap
+                    .GetViewBetween(beginnode, endnode)
+                    .Select(n => (n.Key, n.Value))
+                    .ToArray();
+            }
+            foreach (var row in cursor)
+            {
+                if (Compare(row.Key, vbegin) >= 0 && Compare(row.Key, vend) <= 0)
+                {
+                    var keypart = new byte[row.Key.Length - sizeof(long) - 1];
+                    var span = new Span<byte>(row.Key, 1, row.Key.Length - sizeof(long) - 1);
+                    span.CopyTo(keypart);
+                    var ver = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(row.Key, row.Key.Length - sizeof(ulong), sizeof(ulong))));
+                    if ((version.HasValue && ver >= version.Value.Ticks) || !version.HasValue)
+                    {
+                        yield return (keypart, new DateTime(ver), row.Value);
+                    }
+                }
+            }
         }
 
         public override Task<IEnumerable<(byte[], byte[])>> FindAsync(byte[] begin, byte[] end)

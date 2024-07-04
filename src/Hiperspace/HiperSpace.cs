@@ -7,6 +7,7 @@
 // ---------------------------------------------------------------------------------------
 using System;
 using System.IO.Compression;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Hiperspace
 {
@@ -197,6 +198,25 @@ namespace Hiperspace
         public abstract Task<IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)>> FindAsync(byte[] begin, byte[] end, DateTime? version);
 
         /// <summary>
+        /// Find keys in a delta index that are greater than the value provided
+        /// </summary>
+        /// <param name="key">the start value for delta search </param>
+        /// <param name="version">version stamp or null for latest</param>
+        /// <returns></returns>
+        public abstract IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Delta(byte[] key, DateTime? version);
+
+        /// <summary>
+        /// Find keys in a delta index that are greater than the value provided asyncronously
+        /// </summary>
+        /// <param name="key">the start value for delta search </param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        public Task<IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)>> DeltaAsync(byte[] begin, DateTime? version)
+        {
+            return Task.Run(() => Delta(begin, version));  
+        }
+
+        /// <summary>
         /// Find all values of space for index values between the index values
         /// </summary>
         /// <param name="begin"></param>
@@ -222,6 +242,21 @@ namespace Hiperspace
         public virtual IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindIndex(byte[] begin, byte[] end, DateTime? version)
         {
             foreach (var inx in Find(begin, end, version))
+            {
+                var value = Get(inx.Value, version);
+                yield return (inx.Value, value.version, value.Value);
+            }
+        }
+        /// <summary>
+        /// Find all values of space for index values between the index values
+        /// </summary>
+        /// <param name="begin"></param>
+        /// <param name="end"></param>
+        /// <param name="version">version stamp or null for latest</param>
+        /// <returns></returns>
+        public virtual IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindDelta(byte[] begin, DateTime? version, DateTime? DeltaFrom)
+        {
+            foreach (var inx in Delta(begin, DeltaFrom))
             {
                 var value = Get(inx.Value, version);
                 yield return (inx.Value, value.version, value.Value);
@@ -312,7 +347,6 @@ namespace Hiperspace
         /// <param name="key"></param>
         /// <returns></returns>
         public abstract Task<IEnumerable<(byte[] value, DateTime version)>> GetVersionsAsync(byte[] key);
-
         #endregion
 
         /// <summary>

@@ -8,6 +8,7 @@
 using ProtoBuf;
 using System.Collections;
 using System.Diagnostics;
+using System.Text;
 
 namespace Hiperspace
 {
@@ -30,6 +31,22 @@ namespace Hiperspace
         {
             _keyBuilder = keyBuilder;
             _binder = binder;
+        }
+
+        public RefSingle(RefSingle<TKey, TEntity> current, TEntity value)
+        {
+            _key = current._key;
+            _keyBuilder = current._keyBuilder;
+            _binder = current._binder;
+            SetSpace = current.SetSpace;
+            Value = value;
+
+        }
+        public RefSingle<TKey, TEntity> Replace(TEntity? value)
+        {
+            if (value != null)
+                return new RefSingle<TKey, TEntity>(this, value);
+            return this;
         }
 
         private TEntity? _entity;
@@ -96,6 +113,8 @@ namespace Hiperspace
         {
             if (SetSpace?.Space == subSpace)
             {
+                if (_entity != null && _entity?.SetSpace?.Space == subSpace)
+                    _entity.Unbind(subSpace);
                 SetSpace = null;
             }
         }

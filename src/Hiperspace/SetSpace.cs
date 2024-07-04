@@ -13,21 +13,29 @@ using System.Runtime.Serialization;
 
 namespace Hiperspace
 {
-    public abstract class SetSpace<TEntity> : ISet<TEntity>, IOrderedQueryable<TEntity> //HashSet<TEntity>
+    public abstract class SetSpace<TEntity> : ISet<TEntity>, IOrderedQueryable<TEntity> 
         where TEntity : Element<TEntity>, new()
     {
         public HashSet<TEntity> Cached = new HashSet<TEntity>();
 
         public delegate void Bound (TEntity entity);
+        public delegate void Dependency((TEntity target, Meta.DependencyPath sender) value);
         /// <summary>
         /// Event to capture Bind Events
         /// </summary>
         public event Bound? OnBind;
+        public event Dependency? OnDependency;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected void RaiseOnbind(TEntity entity)
         {
             OnBind?.Invoke(entity);
+            OnDependency?.Invoke((entity, new Meta.DependencyPath(entity)));
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void RaiseOnDependency((TEntity target, Meta.DependencyPath sender) value)
+        {
+            OnDependency?.Invoke((value.target, value.sender));
         }
 
         protected Func<TEntity,bool>[]? predicates;
@@ -35,7 +43,7 @@ namespace Hiperspace
         public SetSpace(SubSpace space, IQueryProvider provider) 
         {
             Space = space;
-            Provider = provider;
+//            Provider = provider;
             if (space.Horizon != null)
                 predicates = space.Horizon
                     .Where(h => h.Type == typeof(TEntity))
@@ -61,7 +69,6 @@ namespace Hiperspace
                 {
                     Cached.Add(item);
                     _lock.Exit();
-                    RaiseOnbind(item);
                     return Result.Ok(item);
                 }
                 else
@@ -72,6 +79,24 @@ namespace Hiperspace
             }
             else
                 throw new LockRecursionException();
+        }
+        public Result<TEntity> BatchBind(TEntity item, bool cache, (byte[] key, byte[] value, object? source)[] batch)
+        {
+            var result = Space.BatchBind(batch);
+            if (result.Any(b => b.Fail))
+                return Result.Fail(item);
+            else
+            {
+                if (cache)
+                {
+                    Cached.Remove(item);
+                    Cached.Add(item);
+                    RaiseOnbind(item);
+                    return Result.Ok(item);
+                }
+                RaiseOnbind(item);
+                return Result.Ok(item);
+            }
         }
 
         public bool Add(TEntity item)
@@ -96,6 +121,14 @@ namespace Hiperspace
             var current = Get(item);
             if (current == null)
                 throw new MutationException($"Cannot update a {item.GetType().Name}, use Add(item) if an existing value is not needed");
+            return Bind(item, true).Ok;
+        }
+        public virtual bool Delete(TEntity item)
+        {
+            var current = Get(item);
+            if (current == null)
+                throw new MutationException($"Cannot delete {item.GetType().Name}, a vlaue was not found");
+
             return Bind(item, true).Ok;
         }
 
@@ -170,7 +203,7 @@ namespace Hiperspace
                     });
             return entities;
         }
-        public Result<TEntity> Filter(TEntity entity)
+        public virtual Result<TEntity> Filter(TEntity entity)
         {
             if (predicates != null)
             {
@@ -277,7 +310,7 @@ namespace Hiperspace
 
         Expression IQueryable.Expression => Expression.Constant(this);
 
-        public IQueryProvider Provider { get; init; }
+        public IQueryProvider Provider => new Query<TEntity>(this, null);
 
         public int Count => Cached.Count;
 
@@ -289,12 +322,13 @@ namespace Hiperspace
         where TEntity : ElementVersion<TEntity>, new()
     {
         protected DateTime? _AsAt;
-        protected bool _isStrict;
-        public SetSpaceVersion(SubSpace space, IQueryProvider provider, DateTime? AsAt = null, bool isStrict = false) : base(space, provider) 
+        protected DateTime? _DeltaFrom;
+        public SetSpaceVersion(SubSpace space, IQueryProvider provider, DateTime? AsAt = null, DateTime? DeltaFrom = null) : base(space, provider) 
         { 
             _AsAt = AsAt;
-            _isStrict = isStrict;
+            _DeltaFrom = DeltaFrom;
         }
+        public DateTime? DeltaFrom => _DeltaFrom;
 
         public override Result<TEntity> Bind(TEntity item, bool cache = true)
         {
@@ -305,20 +339,16 @@ namespace Hiperspace
                 TEntity? res;
                 if (Cached.TryGetValue(item, out res))
                 {
-                    if (_isStrict)
-                    {
-                        _lock.Exit();
-                        return Result.Skip(res);
-                    }
-                    else
-                        base.Remove(res);
+                    base.Remove(res);
+                    Cached.Add(item);
+                    _lock.Exit();
+                    return Result.Ok(item);
                 }
 
                 if (cache && Filter(item).Ok)
                 {
                     Cached.Add(item);
                     _lock.Exit();
-                    RaiseOnbind(item);
                     return Result.Ok(item);
                 }
                 else
@@ -329,6 +359,24 @@ namespace Hiperspace
             }
             else
                 throw new LockRecursionException();
+        }
+        public Result<TEntity> BatchBind(TEntity item, bool cache, (byte[] key, byte[] value, DateTime version, object? source)[] batch)
+        {
+            var result = Space.BatchBind(batch);
+            if (result.Any(b => b.Fail))
+                return Result.Fail(item);
+            else
+            {
+                if (cache)
+                {
+                    Cached.Remove(item);
+                    Cached.Add(item);
+                    RaiseOnbind(item);
+                    return Result.Ok(item);
+                }
+                RaiseOnbind(item);
+                return Result.Ok(item);
+            }
         }
         public new bool Add(TEntity item)
         {
@@ -343,18 +391,17 @@ namespace Hiperspace
             {
                 TEntity? res;
                 if (base.TryGetValue(item, out res))
+                { 
                     base.Remove(res);
-                else if (_isStrict)
-                {
+                    base.Add(item);
                     _lock.Exit();
-                    return Result.Skip(res);
+                    return Result.Ok(item);
                 }
 
                 if (!cache || Filter(item).Ok)
                 {
                     base.Add(item);
                     _lock.Exit();
-                    RaiseOnbind(item);
                     return Result.Ok(item);
                 }
                 else
@@ -365,6 +412,19 @@ namespace Hiperspace
             }
             else
                 throw new LockRecursionException();
+        }
+        public virtual TEntity? Get(TEntity template, DateTime? version)
+        {
+            if (!version.HasValue)
+                return Get(template);
+
+            template.Bind(this.Space);
+            foreach (var item in template.GetVersions())
+            {
+                if (item.AsAt <= version)
+                    return item;
+            }
+            return null;
         }
     }
 }

@@ -6,6 +6,7 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using System.Diagnostics.CodeAnalysis;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Hiperspace
 {
@@ -225,5 +226,13 @@ namespace Hiperspace
             return Yielder(returns);
         }
 
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Delta(byte[] key, DateTime? version)
+        {
+            for (int c = 0; c < _read.Length; c++)
+            {
+                foreach (var b in _read[c].Delta(key, version))
+                    yield return b;
+            }
+        }
     }
 }

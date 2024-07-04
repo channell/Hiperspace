@@ -8,11 +8,11 @@
 namespace Hiperspace
 {
     /// <summary>
-    /// Indicates that the class has multiple versions. 
+    /// Indicates that the class includes an index by AsAt date for delta filtering
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
-    public class VersionedAttribute : Attribute
+    public class DeltaIndexAttribute : Attribute
     {
-        public VersionedAttribute() : base() { }
+        public DeltaIndexAttribute() : base() { }
     }
 }
