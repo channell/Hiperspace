@@ -1,16 +1,18 @@
-﻿%domain(Access);
+﻿
+%domain(Access);
 
+/*
+    Additional functions specirtfic to the domain and implemented in the target language
+*/
 %function (unary, approved, Access.RBAC.Functions.Approved, Boolean);
 %function (unary, authorised, Access.RBAC.Functions.Authorised, Boolean);
 %function (set, empty, Access.RBAC.Functions.Empty, Boolean);
 
+" Optional note "
 aspect Note
 {
     Text : String
 };
-
-/* helper type to add Versioned attribute and Deleted value */
-@Versioned type Versioned { "Flag for read horizon filter to hide when true" Deleted = false };
 
 /* Helper to enable a set of references in a set */
 value Ref<T>
@@ -21,34 +23,9 @@ value Ref<T>
 /*
     Additional Edge definitions
 */
-/*@Guid("F526699A-CECB-4EC8-994D-4680961F4C51")*/
-view Edge2 = Edge ()  
-(
-    From        : Node,
-    To          : Node,
-    TypeName    : String
-)
-{
-    Name        : String
-};
-view Edge3 = Edge ()  
-(
-    From        : Node,
-    To          : Node,
-    TypeName    : String
-)
-{
-    Name        : String
-};
-view Edge4 = Edge ()  
-(
-    From        : Node,
-    To          : Node,
-    TypeName    : String
-)
-{
-    Name        : String
-};
+view Edge2 : Edge = Edge ();
+view Edge3 : Edge = Edge ();
+view Edge4 : Edge = Edge ();
 
 /* addin for Permissioned elements */
 type Access.RBAC.Permissioned 
@@ -57,7 +34,9 @@ type Access.RBAC.Permissioned
 }
 [
     ValidAuthor = Author = null ? false : true,
-    ErrorAuthor = ValidAuthor = false ? "Missing user, " : ""
+    ErrorAuthor = ValidAuthor = false ? "Missing user, " : "",
+    " Index to permissioned entities "
+    ByAuthor    : Access.RBAC.User (Author = Author)
 ];
 
 "Permission enum can be checked with a bitwise and"
@@ -78,7 +57,7 @@ It gives you the ability to protect a resource with a defined Access constraint
 and then define the user roles that can access the protected resource.
 "
 entity Access.RBAC.Realm : Access.RBAC.Permissioned
-                           = Node ( SKey = SKey, Name = Name, TypeName = "RBAC-Realm")    
+                         = Node ( SKey = SKey, Name = Name, TypeName = "RBAC-Realm")    
 (
     Name        : String
 )
@@ -103,8 +82,7 @@ entity Access.RBAC.Realm : Access.RBAC.Permissioned
                   (Author = null ? "Invalid Author, " : "") +
                   (CanCreate = false ? "not authorised " : ""),
 
-    Note : Note
-
+    Note        : Note
 ];
 
 "
@@ -138,12 +116,13 @@ type Access.RBAC.Principal : Versioned, Access.RBAC.Permissioned
                   (Name = null ? "Name Is null, " : "") + 
                   (ValidAuthor = false ? "Author invalid, " : "")
 ];
+
 "
 A permission granted to a group user or role on a resource, typically an entity in hiperspace database. 
 "
 segment Access.RBAC.Permission : Versioned, Access.RBAC.Permissioned 
-                                 = Edge  (From = owner, To = Item, Name = Item.Subject, TypeName = TypeName),
-                                   Edge2 (From = Item, To = owner, Name = Item.Subject, TypeName = TypeName + "|From")
+                               = Edge  (From = owner, To = Item, Name = Item.Subject, TypeName = TypeName),
+                                 Edge2 (From = Item, To = owner, Name = Item.Subject, TypeName = TypeName + "|From")
 (
     " Identify all the resource item. "
     Item        : Access.RBAC.Resource,
@@ -191,11 +170,11 @@ segment Access.RBAC.Permission : Versioned, Access.RBAC.Permissioned
 Group is a hierarchical organization of users or service accounts
 "
 entity Access.RBAC.Group : Access.RBAC.Principal
-                           = Node  (SKey = SKey, Name = Name, TypeName = TypeName),
-                             Edge  (From = this, To = Parent, Name = Name, TypeName = TypeName),
-                             Edge2 (From = this, To = Realm, Name = Name, TypeName = "RBAC-Realm-Member"),
-                             Edge3 (From = Parent, To = this, Name = Name, TypeName = TypeName + "|From"),
-                             Edge4 (From = Realm, To = this, Name = Name, TypeName = "RBAC-Realm-Member|From") 
+                         = Node  (SKey = SKey, Name = Name, TypeName = TypeName),
+                           Edge  (From = this, To = Parent, Name = Name, TypeName = TypeName),
+                           Edge2 (From = this, To = Realm, Name = Name, TypeName = "RBAC-Realm-Member"),
+                           Edge3 (From = Parent, To = this, Name = Name, TypeName = TypeName + "|From"),
+                           Edge4 (From = Realm, To = this, Name = Name, TypeName = "RBAC-Realm-Member|From") 
 (
     Id          : Guid
 )
@@ -246,9 +225,9 @@ entity Access.RBAC.Group : Access.RBAC.Principal
 User is a security principal that can connect to a resource. Either a person or a service account. 
 "
 entity Access.RBAC.User : Access.RBAC.Principal
-                          = Node  (SKey = SKey, Name = Name, TypeName = TypeName),
-                            Edge  (From = this, To = Group, Name = Name, TypeName = TypeName),
-                            Edge2 (From = Group, To = this, Name = Name, TypeName = TypeName + "|From")
+                        = Node  (SKey = SKey, Name = Name, TypeName = TypeName),
+                          Edge  (From = this, To = Group, Name = Name, TypeName = TypeName),
+                          Edge2 (From = Group, To = this, Name = Name, TypeName = TypeName + "|From")
 (
     Id          : Guid
 )
@@ -358,8 +337,7 @@ segment Access.RBAC.RoleMember : Versioned, Access.RBAC.Permissioned
                   (Role = null ? "Invalid Role, " : "") +
                   (CanUpdate = false ? "Can not update, " : "") +
                   (CanDelete = false ? "Can not delete, " : "")
-]
-;
+];
 
 "
 A resource is a subject where permissions can be granted to create, update, delete, or a combination of all
