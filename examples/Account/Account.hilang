@@ -7,60 +7,67 @@
 @CubeDimension
 entity Acc.Customer : Versioned 
 (
-	" name  of the customer"
-	Name			: String
+    " name  of the customer"
+    Name            : String
 )
+{
+    Address         : String,
+    SSN             : String
+}
 [
-	"Account that the customer owns"
-	Accounts		: Acc.Account 
+    "Account that the customer owns"
+    Accounts        : Acc.Account 
 ];
 
 "a transaction against account"
 @DeltaIndex
 segment Acc.Transaction : Versioned 
 (
-	"when the transaction was authorised"
-	At				: DateTime
+    "when the transaction was authorised"
+    At              : DateTime
 )
 {
-	"debt or credit to account, with respect to the customer position"
-	Amount			: Decimal,
+    "debt or credit to account, with respect to the customer position"
+    Amount          : Decimal,
 
-	"who it was paid to"
-	Payee			: String
+    "who it was paid to"
+    Payee           : String
 }
 [
-	Debit			= debit(Amount),
-	Credit			= credit(Amount) 
+    Debit           = debit(Amount),
+    Credit          = credit(Amount) 
 ];
 
 "An Account for a customer"
 @CubeFact
 segment Acc.Account : Versioned 
 (
-	Title			: String
+    Title           : String
 )
+{
+    Opened          : DateTime,
+    Closed          : DateTime
+}
 [
-	"transactions against the account"
-	Transactions	: Acc.Transaction,
+    "transactions against the account"
+    Transactions    : Acc.Transaction,
 
-	"the last closing balance"
-	Balance			: Acc.Balance,
+    "the last closing balance"
+    Balance         : Acc.Balance,
 
-	/* calculations */
-	@CubeMeasure(Aggregate.Sum)
-	CurrentBalance	= sum(Transactions.Amount),
-	Debit			= sum(Transactions.Debit),
-	Credit			= sum(Transactions.Credit),
-	Total			= sum(Transactions.Amount)
+    /* calculations */
+    @CubeMeasure(Aggregate.Sum)
+    CurrentBalance  = sum(Transactions.Amount),
+    Debit           = sum(Transactions.Debit),
+    Credit          = sum(Transactions.Credit),
 ];
 
 " Balance is the rolled up value for the account computed for a time"
 aspect Acc.Balance : Versioned
 {
-	"DateTime of the max balance"
-	When			: DateTime,
+    "DateTime of the max balance"
+    When            : DateTime,
 
-	"Current closign balance at time When"
-	Current			: Decimal
+    "Current closign balance at time When"
+    Current         : Decimal
 };
