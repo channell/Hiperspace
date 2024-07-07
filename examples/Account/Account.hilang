@@ -12,8 +12,7 @@ entity Acc.Customer : Versioned
 )
 [
 	"Account that the customer owns"
-	Accounts		: Acc.Account /*,
-	SameTime		: Acc.Customer (AsAt = AsAt) */
+	Accounts		: Acc.Account 
 ];
 
 "a transaction against account"
@@ -35,7 +34,7 @@ segment Acc.Transaction : Versioned
 	Credit			= credit(Amount) 
 ];
 
-"An acocunt for a customer"
+"An Account for a customer"
 @CubeFact
 segment Acc.Account : Versioned 
 (
@@ -53,8 +52,7 @@ segment Acc.Account : Versioned
 	CurrentBalance	= sum(Transactions.Amount),
 	Debit			= sum(Transactions.Debit),
 	Credit			= sum(Transactions.Credit),
-	Total			= sum(Transactions.Amount, this)
-
+	Total			= sum(Transactions.Amount)
 ];
 
 " Balance is the rolled up value for the account computed for a time"
