@@ -1,0 +1,89 @@
+%domain(QL);
+
+/*
+    Functions to create QLNet objects
+*/
+%function(unary, makeBusinessDayConvention, QL.Helper.BusinessDayConvention, QLNet.BusinessDayConvention);
+%function(unary, makeCalendar, QL.Helper.Calendar, QLNet.Calendar);
+%function(unary, makeCurve, QL.Helper.FlatForward, QLNet.Handle<QLNet.YieldTermStructure>);
+%function(unary, makeDayCounter, QL.Helper.DayCounter, QLNet.DayCounter);
+%function(unary, makeEngine, QL.Helper.Engine, QLNet.IPricingEngine);
+%function(unary, makeFixedRateBond, QL.Helper.FixedRateBond, QLNet.FixedRateBond);
+%function(unary, makeInstrument, QL.Helper.Make, QLNet.Instrument);
+%function(unary, makePeriod, QL.Helper.Period, QLNet.Period);
+%function(unary, makeRule, QL.Helper.DateRule, QLNet.DateGeneration.Rule);
+%function(unary, makeSchedule, QL.Helper.Schedule, QLNet.Schedule);
+%function(unary, NPV, QL.Helper.NPV, Double);
+%function(unary, CASH, QL.Helper.CASH, Double);
+
+/*    
+    Reference to QLNet types 
+*/
+type QLNet.ActualActual.Convention;
+type QLNet.ActualActual;
+type QLNet.BusinessDayConvention;
+type QLNet.Calendar;
+type QLNet.CashFlow;
+type QLNet.DateGeneration.Rule;
+type QLNet.DayCounter;
+type QLNet.FixedRateBond;
+type QLNet.Handle<QLNet.YieldTermStructure>;
+type QLNet.IPricingEngine;
+type QLNet.Period;
+type QLNet.Schedule;
+type QLNet.YieldTermStructure;
+
+"values for FixedRateBond"
+type QL.Values.FixedRateBond 
+{
+    Convention      : String,    
+    Calendar        : String,
+    Effective       : DateTime,
+    Maturity        : DateTime,
+    FaceAmount      : Double,
+    SettlementDays  : Int32,
+    DayCount        : String,
+    Coupons         : List<Double>,
+    Rate            : Double,
+    Engine          : String,
+};
+
+"Calcualtion view for a fixed rate bond"
+view QL.FixedRateBond : QL.Values.FixedRateBond = QL.Instrument()
+(
+    SKey            : String
+)
+[
+    _DayCount       = makeDayCounter (DayCount),
+    _Calendar       = makeCalendar (Calendar),
+    _ZERO           = "ZERO",
+    _rule           = makeRule (_ZERO),
+    _M              = "M",
+    _MP             = makePeriod(_M),
+    _Convention     = makeBusinessDayConvention(Convention),
+    _Schedule       = makeSchedule (Effective, Maturity, _MP, _Calendar, _Convention, _rule),
+    _Yield          = makeCurve (Effective, Rate, _DayCount),
+    _Engine         = makeEngine (Engine, _Yield),
+    @Once           /* Calculated once, and value cached for use by other functions */
+    Bond            = makeFixedRateBond(SettlementDays, FaceAmount, _Schedule, Coupons, _DayCount),
+    NPV             = NPV(Bond),
+    CASH            = CASH(Bond)
+];
+
+"Base view that all Instrument types can be converted to"
+view QL.Instrument
+(
+    SKey            : String
+)
+{
+    NPV             : Double,
+    CASH            : Double
+};
+
+"A Fixed rate bond stored in hiperspace"
+@CubeFact
+entity QL.FixedRate : QL.Values.FixedRateBond = QL.FixedRateBond()  /* NB Inherits properties from view, and exports for aggregation */
+(
+    Mnmonic         : String
+);
+
