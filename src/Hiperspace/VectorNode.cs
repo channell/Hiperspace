@@ -23,6 +23,11 @@ namespace Hiperspace
     {
         public KeyType _key;
         internal ValueType _value;
+        static VectorNode()
+        {
+            Space.Prepare<KeyType>();
+            Space.Prepare<ValueType>();
+        }
 
         public VectorNode()
         {

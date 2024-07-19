@@ -1,0 +1,43 @@
+%domain (Cousins);
+
+%function (unary, relation, Cousins.Helper.Relations, List<Path>);  
+
+view Edge2 : Edge = Edge();
+view Edge3 : Edge = Edge();
+view Edge4 : Edge = Edge();
+
+enum Cousins.Gender
+{
+    Female #1,
+    Male #2
+};
+
+entity Cousins.Person
+    = Node (),
+      Edge  (From = this,   To = Mother, Name = Name, TypeName = "Mother"),
+      Edge2 (From = this,   To = Father, Name = Name, TypeName = "Father"),
+      Edge3 (From = Father, To = this,   Name = Name, TypeName = "Child"),
+      Edge4 (From = Mother, To = this,   Name = Name, TypeName = "Child")
+(
+    Name        : String
+)
+{
+    Gender      : Cousins.Gender,
+
+    Mother      : Cousins.Person,
+    Father      : Cousins.Person
+}
+[
+    TypeName    = "Person",
+
+    FatherChild : Cousins.Person (Father = this),
+    MotherChild : Cousins.Person (Mother = this),
+    @Once
+    Relatives   = relation (this)
+];
+
+entity Cousins.Path : Edge = Edge ()
+{
+    Edge        : Edge,
+    Source      : Cousins.Path,
+};

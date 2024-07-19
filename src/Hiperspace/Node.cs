@@ -7,7 +7,9 @@
 // ---------------------------------------------------------------------------------------
 using ProtoBuf;
 using System;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection.Metadata.Ecma335;
 
 /*view node #1
 (
@@ -24,6 +26,11 @@ namespace Hiperspace
     {
         public KeyType _key;
         internal ValueType _value;
+        static Node ()
+        {
+            Space.Prepare<KeyType>();
+            Space.Prepare<ValueType>();
+        }
 
         public Node()
         {
@@ -74,10 +81,23 @@ namespace Hiperspace
             }
         }
 
+        private WeakReference? _Object;
         /// <summary>
-        /// Get the underlying object from hiperspace
+        /// Get the underlying object from hiperspace and cache it
         /// </summary>
-        public object? Object => SetSpace?.Space?.Get(SKey);
+        /// <remarks>
+        /// The object reference is hot held to allow Nodes to be extracted without 
+        /// pinning the the source in memory. Not needed for most Graph use-cases 
+        /// </remarks>
+        public object? Object
+        {
+            get
+            {
+                if (_Object == null || _Object.Target == null)
+                    _Object = new WeakReference(SetSpace?.Space?.Get(SKey));
+                return _Object.Target;
+            }
+        }
 
         /// <summary>
         /// Get all the properties of the underlying object
@@ -246,6 +266,12 @@ namespace Hiperspace
             else
                 return 0;
         }
+        public override bool Equals(Object? other)
+        {
+            if (other == null) return false;
+            if (other is Node) return Equals((Node)other);
+            return false;
+        }
         public override bool Equals(Node? other)
         {
             if (ReferenceEquals(null, other))
@@ -276,6 +302,24 @@ namespace Hiperspace
             if (!ReferenceEquals(null, other))
                 return other.self;
             return null;
+        }
+        public static bool operator ==(Node? left, Node? right)
+        {
+            if (ReferenceEquals(null, left) && ReferenceEquals(null, right))
+                return true;
+            else if (ReferenceEquals(null, left) || ReferenceEquals(null, right))
+                return false;
+            else
+                return left.Equals(right);
+        }
+        public static bool operator !=(Node? left, Node? right)
+        {
+            if (ReferenceEquals(null, left) && ReferenceEquals(null, right))
+                return false;
+            else if (ReferenceEquals(null, left) || ReferenceEquals(null, right))
+                return true;
+            else
+                return !left.Equals(right);
         }
         #endregion
 

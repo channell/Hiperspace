@@ -70,7 +70,8 @@ namespace Hiperspace
 
             for (int c = 0; c < _read.Length; c++)
             {
-                reads[c] = Task.Run(() => _read[c].FindAsync(begin, end));
+                var read = _read[c]; // avoid lambda capture of c rather than space
+                reads[c] = Task.Run(() => read.FindAsync(begin, end));
             }
             for (int c = 0; c < _read.Length; c++)
             {
@@ -85,7 +86,8 @@ namespace Hiperspace
 
             for (int c = 0; c < _read.Length; c++)
             {
-                reads[c] = Task.Run(() => _read[c].FindAsync(begin, end, version));
+                var read = _read[c]; // avoid lambda capture of c rather than space
+                reads[c] = Task.Run(() => read.FindAsync(begin, end, version));
             }
             for (int c = 0; c < _read.Length; c++)
             {
@@ -140,7 +142,8 @@ namespace Hiperspace
 
             for (int c = 0; c < _read.Length; c++)
             {
-                reads[c] = Task.Run(() => _read[c].GetVersions(key));
+                var read = _read[c]; // avoid lambda capture of c rather than space
+                reads[c] = Task.Run(() => read.GetVersions(key));
             }
             for (int c = 0; c < _read.Length; c++)
             {
@@ -216,7 +219,8 @@ namespace Hiperspace
 
             for (int c = 0; c < _read.Length; c++)
             {
-                reads[c] = Task.Run(() => _read[c].SpaceAsync());
+                var read = _read[c]; // avoid lambda capture of c rather than space
+                reads[c] = Task.Run(() => read.SpaceAsync());
             }
             for (int c = 0; c < _read.Length; c++)
             {

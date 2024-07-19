@@ -329,7 +329,7 @@ namespace Hiperspace.Heap
         public override (byte[], DateTime) Get(byte[] key, DateTime? version)
         {
             RaiseOnBeforeGet(ref key);
-            var (_,d,v) = Find(key,key,version).LastOrDefault();
+            var (_,d,v) = Find(key,key,version).FirstOrDefault();
             RaiseOnAfterGet(ref key, ref v);
             return (v, d);
         }

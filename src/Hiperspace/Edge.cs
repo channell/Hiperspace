@@ -6,6 +6,7 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using ProtoBuf;
+using System;
 using System.Diagnostics.CodeAnalysis;
 
 /*
@@ -26,6 +27,11 @@ namespace Hiperspace
     {
         public KeyType _key;
         internal ValueType _value;
+        static Edge()
+        {
+            Space.Prepare<KeyType>();
+            Space.Prepare<ValueType>();
+        }
 
         public Edge ()
         {
@@ -232,6 +238,12 @@ namespace Hiperspace
             else
                 return 0;
         }
+        public override bool Equals(Object? other)
+        {
+            if (other == null) return false;
+            if (other is Edge) return Equals((Edge)other);
+            return false;
+        }
         public override bool Equals(Edge? other)
         {
             if (ReferenceEquals(null, other))
@@ -261,6 +273,24 @@ namespace Hiperspace
             if (!ReferenceEquals(null, other))
                 return other.self;
             return null;
+        }
+        public static bool operator ==(Edge? left, Edge? right)
+        {
+            if (ReferenceEquals(null, left) && ReferenceEquals(null, right))
+                return true;
+            else if (ReferenceEquals(null, left) || ReferenceEquals(null, right))
+                return false;
+            else
+                return left.Equals(right);
+        }
+        public static bool operator !=(Edge? left, Edge? right)
+        {
+            if (ReferenceEquals(null, left) && ReferenceEquals(null, right))
+                return false;
+            else if (ReferenceEquals(null, left) || ReferenceEquals(null, right))
+                return true;
+            else
+                return !left.Equals(right);
         }
         #endregion
     }

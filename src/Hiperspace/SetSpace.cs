@@ -12,7 +12,7 @@ using System.Runtime.CompilerServices;
 
 namespace Hiperspace
 {
-    public abstract class SetSpace<TEntity> : ISet<TEntity>, IOrderedQueryable<TEntity> 
+    public abstract class SetSpace<TEntity> : ISet<TEntity>, IOrderedQueryable<TEntity>, IEnumerable<TEntity> 
         where TEntity : Element<TEntity>, new()
     {
         public HashSet<TEntity> Cached = new HashSet<TEntity>();
@@ -88,8 +88,16 @@ namespace Hiperspace
             {
                 if (cache)
                 {
-                    Cached.Remove(item);
-                    Cached.Add(item);
+                    bool taken = false;
+                    _lock.Enter(ref taken);
+                    if (taken)
+                    {
+                        Cached.Remove(item);
+                        Cached.Add(item);
+                        _lock.Exit();
+                    }
+                    else
+                        throw new LockRecursionException();
                     RaiseOnbind(item);
                     return Result.Ok(item);
                 }

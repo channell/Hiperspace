@@ -11,6 +11,20 @@ namespace Hiperspace
 {
     public static class Space
     {
+        private static SpinLock _lock = new SpinLock();
+        public static void Prepare<TProto> ()
+        {
+            bool taken = false;
+            _lock.Enter(ref taken);
+            if (taken)
+            {
+                Serializer.PrepareSerializer<TProto>();
+                _lock.Exit();
+            }
+            else
+                throw new LockRecursionException();
+        }
+
         public static ValueTuple<byte[], byte[]> FindBytes(byte[] source, (int key, (int member, int key)[] values)[] map)
         {
             var find = Vpl2f(source, map);
