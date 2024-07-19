@@ -83,13 +83,13 @@ The advantgage of the Hiperspace graph view are
 * Transative relations are projected as needd
 
 |Person|Father|Mother|
-|-|-|
+|-|-|-|
 |Lucy|John|Mary|
 
 is projected as graph edges
 
 |From|Edge|To|
-|-|-|
+|-|-|-|
 |Lucy|Father|John|
 |Lucy|Mother|Mary|
 |John|Child|Lucy|
@@ -98,7 +98,7 @@ is projected as graph edges
 and transitively infered to 
 
 |From|Edge|To|
-|-|-|
+|-|-|-|
 |Lucy|Brother|Mark|
 |Lucy|Cousin|Rob|
 |Lucy|Father|John|
@@ -125,5 +125,3 @@ and transitively infered to
 |Mark|Sister|Lucy|
 |Mary|Child|Lucy|
 |Rob|Cousin|Lucy|
-
-
