@@ -25,85 +25,80 @@ Hiperspace makes it easier to resolve the conflict of ancestoral or cousins view
 * Node traversal in Hiperspace is very quick and performed in parallel for views (like Node)
 * HiLang models allow extensions to be added: [Helper](./Helper.cs) add graph search
 
-## Ancestor Graph
+### Model
 
-|From| Relation|To|
-|-|-|-|
-|Adam (Person) |has Father to| Jack (Person)|
-|Liz (Person) |has Father to| Adam (Person)|
-|Lucy (Person) |has Father to| John (Person)|
-|Mark (Person) |has Father to| John (Person)|
-|Rob (Person) |has Father to| Burt (Person)|
-|Jack (Person) |has Child to| Adam (Person)|
-|Adam (Person) |has Child to| Liz (Person)|
-|John (Person) |has Child to| Lucy (Person)|
-|John (Person) |has Child to| Mark (Person)|
-|Burt (Person) |has Child to| Rob (Person)|
-|Jane (Person) |has Child to| Burt (Person)|
-|Eve (Person) |has Child to| Jack (Person)|
-|Eve (Person) |has Child to| Jane (Person)|
-|Mary (Person) |has Child to| Lucy (Person)|
-|Mary (Person) |has Child to| Mark (Person)|
-|Jane (Person) |has Child to| Mary (Person)|
-|Burt (Person) |has Mother to| Jane (Person)|
-|Jack (Person) |has Mother to| Eve (Person)|
-|Jane (Person) |has Mother to| Eve (Person)|
-|Lucy (Person) |has Mother to| Mary (Person)|
-|Mark (Person) |has Mother to| Mary (Person)|
-|Mary (Person) |has Mother to| Jane (Person)|
+The ancestoral model can be expressed in HiLang as an Entity `Person` witha `Father` and `Mother` reference.
+The person provides the `Node` view and four `Edge` views for graph traversal.  For this sample the key is just `Name`.
 
-## Infered Relations
+```
+entity Cousins.Person
+    = Node (),
+      Edge  (From = this,   To = Mother, Name = Name, TypeName = "Mother"),
+      Edge2 (From = this,   To = Father, Name = Name, TypeName = "Father"),
+      Edge3 (From = Father, To = this,   Name = Name, TypeName = "Child"),
+      Edge4 (From = Mother, To = this,   Name = Name, TypeName = "Child")
+(
+    Name        : String
+)
+{
+    Gender      : Cousins.Gender,
 
-|From| Relation | To|
-|-|-|-|
-|Adam|Aunt|Jane|
-|Adam|Child|Liz|
-|Adam|Cousin|Mary|
-|Adam|Cousin|Burt|
-|Adam|Father|Jack|
-|Adam|GrandMother|Eve|
-|Adam|relation|Liz|
-|Adam|relation|Rob|
-|Adam|relation|Mark|
-|Adam|relation|Jack|
-|Adam|relation|John|
-|Adam|relation|Lucy|
-|Burt|Child|Rob|
-|Burt|Cousin|Adam|
-|Burt|GrandMother|Eve|
-|Burt|Mother|Jane|
-|Burt|Niece|Lucy|
-|Burt|Sister|Mary|
-|Burt|Uncle|Jack|
-|Eve|Child|Jack|
-|Eve|Child|Jane|
-|Jack|Child|Adam|
-|Jack|Graet-Nephew|Rob|
-|Jack|Great-Niece|Lucy|
-|Jack|Mother|Eve|
-|Jack|Nephew|Burt|
-|Jack|Niece|Mary|
-|Jack|Sister|Jane|
-|Jane|Brother|Jack|
-|Jane|Child|Burt|
-|Jane|Child|Mary|
-|Jane|Great-Niece|Liz|
-|Jane|Mother|Eve|
-|Jane|Nephew|Adam|
+    Mother      : Cousins.Person,
+    Father      : Cousins.Person
+}
+[
+    TypeName    = "Person",
+
+    FatherChild : Cousins.Person (Father = this),
+    MotherChild : Cousins.Person (Mother = this),
+    @Once
+    Relatives   = relation (this)
+];
+```
+
+The graph above is loaded inot Hiperspace in the [Test cases](./Test.cs). In this example there are no Horizon constraints, 
+parents do not need to be loaded first `Mother = new Person {Name "Eve"}` provides the reference to a parent that will be lazy 
+loaded when referenced
+```
+    new Person {Name = "Eve", Gender = Gender.Female },
+    new Person {Name = "Jane", Gender = Gender.Female, Mother = new Person {Name = "Eve" }},
+    new Person {Name = "Jack", Gender = Gender.Male, Mother = new Person {Name = "Eve" }},
+    new Person {Name = "Adam", Gender = Gender.Male, Father = new Person {Name = "Jack" }},
+    new Person {Name = "Liz", Gender = Gender.Female, Father = new Person {Name = "Adam" }},
+    new Person {Name = "Mary", Gender = Gender.Female, Mother = new Person {Name = "Jane" }},
+    new Person {Name = "Burt", Gender = Gender.Male, Mother= new Person {Name = "Jane" }},
+    new Person {Name = "Rob", Gender = Gender.Male, Father = new Person {Name = "Burt" }},
+    new Person {Name = "John", Gender = Gender.Male},
+    new Person {Name = "Lucy", Gender = Gender.Female, Father = new Person {Name = "John" }, Mother = new Person {Name = "Mary" } },
+    new Person {Name = "Mark", Gender = Gender.Male, Father = new Person {Name = "John" }, Mother = new Person {Name = "Mary"} },
+```
+
+**11** row of data becomes **22** Edges when viewed as a graph. The code `Relatives = relation (this)` uses a native C# function to 
+provide the **106** infered relations that would be unmaintainable if stored in a graph database.
+
+The advantgage of the Hiperspace graph view are
+
+* Only the source data is stored and changed, with Edges projected as needed
+* Edge projections are loaded in parallel and cached in the Session 
+* Transative relations are projected as needd
+
+|Person|Father|Mother|
+|-|-|
+|Lucy|John|Mary|
+
+is projected as graph edges
+
+|From|Edge|To|
+|-|-|
+|Lucy|Father|John|
+|Lucy|Mother|Mary|
 |John|Child|Lucy|
-|John|Child|Mark|
-|John|Parents|Mary|
-|Liz|Father|Adam|
-|Liz|Grandfather|Jack|
-|Liz|Great-Aunt|Jane|
-|Liz|Great-GrandMother|Eve|
-|Liz|relation|Mark|
-|Liz|relation|Mary|
-|Liz|relation|Adam|
-|Liz|relation|Burt|
-|Liz|relation|John|
-|Liz|Second-Cousin|Rob|
-|Liz|Second-Cousin|Lucy|
+|Mary|Child|Lucy|
+
+and transitively infered to 
+
+|From|Edge|To|
+|-|-|
 |Lucy|Brother|Mark|
 |Lucy|Cousin|Rob|
 |Lucy|Father|John|
@@ -122,43 +117,13 @@ Hiperspace makes it easier to resolve the conflict of ancestoral or cousins view
 |Lucy|relation|John|
 |Lucy|Second-Cousin|Liz|
 |Lucy|Uncle|Burt|
-|Mark|Cousin|Rob|
-|Mark|Father|John|
-|Mark|GrandMother|Jane|
-|Mark|Great-GrandMother|Eve|
-|Mark|Great-Uncle|Jack|
-|Mark|Mother|Mary|
-|Mark|relation|Eve|
-|Mark|relation|Liz|
-|Mark|relation|Rob|
-|Mark|relation|Mary|
-|Mark|relation|Adam|
-|Mark|relation|Burt|
-|Mark|relation|Jack|
-|Mark|relation|Jane|
-|Mark|relation|John|
-|Mark|Second-Cousin|Liz|
+|Adam|relation|Lucy|
+|Burt|Niece|Lucy|
+|Jack|Great-Niece|Lucy|
+|John|Child|Lucy|
+|Liz|Second-Cousin|Lucy|
 |Mark|Sister|Lucy|
-|Mark|Uncle|Burt|
-|Mary|Brother|Burt|
 |Mary|Child|Lucy|
-|Mary|Child|Mark|
-|Mary|Cousin|Adam|
-|Mary|GrandMother|Eve|
-|Mary|Mother|Jane|
-|Mary|Nephew|Rob|
-|Mary|Parents|John|
-|Mary|relation|Liz|
-|Mary|relation|Jane|
-|Mary|Uncle|Jack|
-|Rob|Aunt|Mary|
 |Rob|Cousin|Lucy|
-|Rob|Father|Burt|
-|Rob|GrandMother|Jane|
-|Rob|Great-GrandMother|Eve|
-|Rob|Great-Uncle|Jack|
-|Rob|relation|Mark|
-|Rob|relation|Adam|
-|Rob|relation|Burt|
-|Rob|relation|John|
-|Rob|Second-Cousin|Liz|
+
+

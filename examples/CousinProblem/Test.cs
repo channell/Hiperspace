@@ -64,24 +64,11 @@ namespace Cousins
         {
             using (var space = new CousinsSpace(_space))
             {
-                _space.OnBind += _space_OnBind;
-                _space.OnBeforeFind += _space_OnBeforeFind;
-
                 var lines= space.Edge2s.Find(new Edge2 { From = new Person { Name = "Jack" }, TypeName = "Father" }).ToList();
                 lines.ForEach(e => _output.WriteLine($"{e.From?.Name} ({e.From?.TypeName}) has {e.TypeName} to {e.To?.Name} ({e.To?.TypeName})"));
                 lines.Should().NotBeEmpty();
                 lines.Count.Should().Be(1);
             }
-        }
-
-        private void _space_OnBeforeFind(ref byte[] begin, ref byte[] end)
-        {
-            _output.WriteLine($"{begin} {end}");
-        }
-
-        private void _space_OnBind(byte[] key, byte[] value, object? entity)
-        {
-            _output.WriteLine($"{entity}");
         }
 
         [Fact]

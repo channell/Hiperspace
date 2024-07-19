@@ -6,6 +6,11 @@ namespace Cousins
 {
     internal static class Helper
     {
+        /// <summary>
+        /// Entry function of HiLang model
+        /// </summary>
+        /// <param name="person"></param>
+        /// <returns></returns>
         internal static List<Path> Relations(Person person)
         {
             Node node = person;
@@ -219,7 +224,7 @@ namespace Cousins
             },
             new Transform
             {
-                Infered = "Graet-Nephew",
+                Infered = "Great-Nephew",
                 Path = new string[][]
                 {
                     new [] {"Father", "Mother"},
