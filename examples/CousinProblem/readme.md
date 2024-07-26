@@ -31,28 +31,28 @@ The ancestoral model can be expressed in HiLang as an Entity `Person` witha `Fat
 The person provides the `Node` view and four `Edge` views for graph traversal.  For this sample the key is just `Name`.
 
 ```
-entity Cousins.Person
-    = Node (),
-      Edge  (From = this,   To = Mother, Name = Name, TypeName = "Mother"),
-      Edge2 (From = this,   To = Father, Name = Name, TypeName = "Father"),
-      Edge3 (From = Father, To = this,   Name = Name, TypeName = "Child"),
-      Edge4 (From = Mother, To = this,   Name = Name, TypeName = "Child")
-(
-    Name        : String
+entity Cousins.Person                                                       /* define Persion                       */
+    = Node (),                                                              /* Person has a Node View               */
+      Edge  (From = this,   To = Mother, Name = Name, TypeName = "Mother"), /* Person provides Edge to Mother       */
+      Edge2 (From = this,   To = Father, Name = Name, TypeName = "Father"), /* Person provides Edge to Father       */
+      Edge3 (From = Father, To = this,   Name = Name, TypeName = "Child"),  /* Person provides Edge from Father     */
+      Edge4 (From = Mother, To = this,   Name = Name, TypeName = "Child")   /* Person provides Edge from Mother     */
+(                                                                           /* Keys                                 */
+    Name        : String                                                    /* Person has Name as key               */
 )
-{
-    Gender      : Cousins.Gender,
+{                                                                           /* Values                               */
+    Gender      : Cousins.Gender,                                           /* Person has Gender {}Female, Male     */
 
-    Mother      : Cousins.Person,
-    Father      : Cousins.Person
+    Mother      : Cousins.Person,                                           /* Person has reference to Mother       */
+    Father      : Cousins.Person                                            /* Person has reference to Father       */
 }
-[
-    TypeName    = "Person",
+[                                                                           /* Extent properties not stored         */
+    TypeName    = "Person",                                                 /* TypeName for Node View               */
 
-    FatherChild : Cousins.Person (Father = this),
-    MotherChild : Cousins.Person (Mother = this),
+    FatherChild : Cousins.Person (Father = this),                           /* navigation to children               */
+    MotherChild : Cousins.Person (Mother = this),                           /* navigation to children               */
     @Once
-    Relatives   = relation (this)
+    Relatives   = relation (this)                                           /* function to navigate to all relatives*/
 ];
 ```
 

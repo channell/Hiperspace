@@ -11,85 +11,85 @@ namespace Hiperspace
 {
     public static class Functions
     {
-        public static T Sum<T, S>(RefSet<S> source, Func<S, T> func)
-            where S : Element<S>, new()
+        public static T Sum<T, S>(IEnumerable<S>? source, Func<S, T> func)
             where T : INumber<T>, new()
         {
             T result = T.Zero;
-            foreach (var item in source.ToArray())
-            {
-                result += func(item);
-            }
+            if (source != null)
+                foreach (var item in source.ToArray())
+                {
+                    result += func(item);
+                }
             return result;
         }
-        public static T Avg<T, S>(RefSet<S> source, Func<S, T> func)
-            where S : Element<S>, new()
+        public static T Avg<T, S>(IEnumerable<S>? source, Func<S, T> func)
             where T : INumber<T>, new()
         {
             T result = T.Zero;
             T count = T.Zero;
-            foreach (var item in source.ToArray())
-            {
-                result += func(item);
-                count++;
-            }
+            if (source != null)
+                foreach (var item in source.ToArray())
+                {
+                    result += func(item);
+                    count++;
+                }
             return result / count;
         }
-        public static T Max<T, S>(RefSet<S> source, Func<S, T> func)
-            where S : Element<S>, new()
+        public static T Max<T, S>(IEnumerable<S>? source, Func<S, T> func)
             where T : INumber<T>, new()
         {
             bool first = true;
             T returner = T.Zero;
-            foreach (var item in source.ToArray())
-            {
-                T result = func(item);
-                if (first)
+            if (source != null)
+                foreach (var item in source.ToArray())
                 {
-                    first = false;
-                    returner = result;
+                    T result = func(item);
+                    if (first)
+                    {
+                        first = false;
+                        returner = result;
+                    }
+                    else
+                    {
+                        returner = T.Max(result, returner);
+                    }
                 }
-                else
-                {
-                    returner = T.Max(result, returner);
-                }
-            }
             return returner;
         }
-        public static T Min<T, S>(RefSet<S> source, Func<S, T> func)
-            where S : Element<S>, new()
+        public static T Min<T, S>(IEnumerable<S>? source, Func<S, T> func)
             where T : INumber<T>, new()
         {
             bool first = true;
             T returner = T.Zero;
-            foreach (var item in source.ToArray())
-            {
-                T result = func(item);
-                if (first)
+            if (source != null)
+                foreach (var item in source.ToArray())
                 {
-                    first = false;
-                    returner = result;
+                    T result = func(item);
+                    if (first)
+                    {
+                        first = false;
+                        returner = result;
+                    }
+                    else
+                    {
+                        returner = T.Min(result, returner);
+                    }
                 }
-                else
-                {
-                    returner = T.Min(result, returner);
-                }
-            }
             return returner;
         }
-        public static T Count<T, S>(RefSet<S> source, Func<S, T> func)
-            where S : Element<S>, new()
+        public static T Count<T, S>(IEnumerable<S>? source, Func<S, T> func)
             where T : INumber<T>, new()
         {
             T returner = T.Zero;
-            foreach (var item in source.ToArray())
-            {
-                T result = func(item);
-                if (result != null && returner != null)
+            if (source != null)
+                foreach (var item in source.ToArray())
                 {
-                    returner = returner + T.One;
+                    T result = func(item);
+                    if (result != null && returner != null)
+                    {
+                        returner = returner + T.One;
+                    }
                 }
-            }
             return returner ?? T.Zero;
         }
         public static T DeltaSum<T, S>(RefSet<S> source, Func<S, T> func)

@@ -36,11 +36,17 @@ namespace Hiperspace
             _lock.Enter(ref taken);
             if (taken)
             {
-                _template = template;
-                _binder = binder;
-                _cached = new HashSet<TEntity>();
-                _filter = e => true;
-                _lock.Exit();
+                try
+                {
+                    _template = template;
+                    _binder = binder;
+                    _cached = new HashSet<TEntity>();
+                    _filter = e => true;
+                }
+                finally
+                {
+                    _lock.Exit();
+                }
             }
             else
                 throw new LockRecursionException();
@@ -65,11 +71,17 @@ namespace Hiperspace
             _lock.Enter(ref taken);
             if (taken)
             {
-                _template = template;
-                _binder = binder;
-                _cached = new HashSet<TEntity>();
-                _filter = filter;
-                _lock.Exit();
+                try
+                {
+                    _template = template;
+                    _binder = binder;
+                    _cached = new HashSet<TEntity>();
+                    _filter = filter;
+                }
+                finally
+                {
+                    _lock.Exit();
+                }
             }
             else
                 throw new LockRecursionException();
@@ -81,16 +93,22 @@ namespace Hiperspace
             _lock.Enter(ref taken);
             if (taken)
             {
-                if (_new && SetSpace != null)
+                try
                 {
-                    _new = false;
-                    TEntity[] result = SetSpace.Find(_template(),true).ToArray();
-                    if (result != Array.Empty<TEntity>())
+                    if (_new && SetSpace != null)
                     {
-                        _cached.UnionWith(result.Where(_filter));
+                        _new = false;
+                        TEntity[] result = SetSpace.Find(_template(), true).ToArray();
+                        if (result != Array.Empty<TEntity>())
+                        {
+                            _cached.UnionWith(result.Where(_filter));
+                        }
                     }
                 }
-                _lock.Exit();
+                finally
+                {
+                    _lock.Exit();
+                }
             }
             else
                 throw new LockRecursionException();
@@ -111,13 +129,19 @@ namespace Hiperspace
             _lock.Enter(ref taken);
             if (taken)
             {
-                SetSpace = setspace;
-                foreach (var en in _cached)
+                try
                 {
-                    _binder(en);
-                    SetSpace.Bind(en);
+                    SetSpace = setspace;
+                    foreach (var en in _cached)
+                    {
+                        _binder(en);
+                        SetSpace.Bind(en);
+                    }
                 }
-                _lock.Exit();
+                finally
+                {
+                    _lock.Exit();
+                }
             }
             else
                 throw new LockRecursionException();
@@ -128,15 +152,21 @@ namespace Hiperspace
             _lock.Enter(ref taken);
             if (taken)
             {
-                if (SetSpace?.Space == subSpace)
+                try
                 {
-                    foreach (var en in _cached)
+                    if (SetSpace?.Space == subSpace)
                     {
-                        en.Unbind(SetSpace.Space);
+                        foreach (var en in _cached)
+                        {
+                            en.Unbind(SetSpace.Space);
+                        }
+                        SetSpace = null;
                     }
-                    SetSpace = null;
                 }
-                _lock.Exit();
+                finally
+                {
+                    _lock.Exit();
+                }
             }
             else throw new LockRecursionException();
         }
@@ -148,27 +178,33 @@ namespace Hiperspace
             _lock.Enter(ref taken);
             if (taken)
             {
-                _new = false;
-                if (SetSpace != null)
+                try
                 {
-                    _binder(item);
-                    SetSpace.Bind(item);
-                    if (!_cached.Add(item))
+                    _new = false;
+                    if (SetSpace != null)
                     {
-                        _cached.Remove(item);
-                        _cached.Add(item);
+                        _binder(item);
+                        SetSpace.Bind(item);
+                        if (!_cached.Add(item))
+                        {
+                            _cached.Remove(item);
+                            _cached.Add(item);
+                        }
+                    }
+                    else
+                    {
+                        _binder(item);
+                        if (!_cached.Add(item))
+                        {
+                            _cached.Remove(item);
+                            _cached.Add(item);
+                        }
                     }
                 }
-                else
+                finally
                 {
-                    _binder(item);
-                    if (!_cached.Add(item))
-                    {
-                        _cached.Remove(item);
-                        _cached.Add(item);
-                    }
+                    _lock.Exit();
                 }
-                _lock.Exit();
             }
             else
                 throw new LockRecursionException();
@@ -197,13 +233,20 @@ namespace Hiperspace
             _lock.Enter(ref taken);
             if (taken)
             {
-                var added = _cached.Add(item);
-                if (!added)
+                bool added;
+                try
                 {
-                    _cached.Remove(item);
                     added = _cached.Add(item);
+                    if (!added)
+                    {
+                        _cached.Remove(item);
+                        added = _cached.Add(item);
+                    }
                 }
-                _lock.Exit();
+                finally
+                {
+                    _lock.Exit();
+                }
                 return added;
             }
             else
@@ -216,8 +259,14 @@ namespace Hiperspace
             _lock.Enter(ref taken);
             if (taken)
             {
-                _cached.ExceptWith(other);
-                _lock.Exit();
+                try
+                {
+                    _cached.ExceptWith(other);
+                }
+                finally
+                {
+                    _lock.Exit();
+                }
             }
             else
                 throw new LockRecursionException();
@@ -229,8 +278,14 @@ namespace Hiperspace
             _lock.Enter(ref taken);
             if (taken)
             {
-                _cached.IntersectWith(other);
-                _lock.Exit();
+                try
+                {
+                    _cached.IntersectWith(other);
+                }
+                finally
+                {
+                    _lock.Exit();
+                }
             }
             else
                 throw new LockRecursionException();
@@ -242,8 +297,15 @@ namespace Hiperspace
             _lock.Enter(ref taken);
             if (taken)
             {
-                var returner = _cached.IsProperSubsetOf(other);
-                _lock.Exit();
+                bool returner;
+                try
+                {
+                    returner = _cached.IsProperSubsetOf(other);
+                }
+                finally
+                {
+                    _lock.Exit();
+                }
                 return returner;
             }
             else
@@ -256,8 +318,15 @@ namespace Hiperspace
             _lock.Enter(ref taken);
             if (taken)
             {
-                var returner = _cached.IsProperSupersetOf(other);
-                _lock.Exit();
+                bool returner;
+                try
+                {
+                    returner = _cached.IsProperSupersetOf(other);
+                }
+                finally
+                {
+                    _lock.Exit();
+                }
                 return returner;
             }
             else
@@ -270,8 +339,15 @@ namespace Hiperspace
             _lock.Enter(ref taken);
             if (taken)
             {
-                var returner = _cached.IsSubsetOf(other);
-                _lock.Exit();
+                bool returner;
+                try
+                {
+                    returner = _cached.IsSubsetOf(other);
+                }
+                finally
+                {
+                    _lock.Exit();
+                }
                 return returner;
             }
             else
@@ -284,8 +360,15 @@ namespace Hiperspace
             _lock.Enter(ref taken);
             if (taken)
             {
-                var returner = _cached.IsSupersetOf(other);
-                _lock.Exit();
+                bool returner;
+                try
+                {
+                    returner = _cached.IsSupersetOf(other);
+                }
+                finally
+                {
+                    _lock.Exit();
+                }
                 return returner;
             }
             else
@@ -298,8 +381,15 @@ namespace Hiperspace
             _lock.Enter(ref taken);
             if (taken)
             {
-                var returner = _cached.Overlaps(other);
-                _lock.Exit();
+                bool returner;
+                try
+                {
+                    returner = _cached.Overlaps(other);
+                }
+                finally
+                {
+                    _lock.Exit();
+                }
                 return returner;
             }
             else
@@ -312,8 +402,15 @@ namespace Hiperspace
             _lock.Enter(ref taken);
             if (taken)
             {
-                var returner = _cached.SetEquals(other);
-                _lock.Exit();
+                bool returner;
+                try
+                {
+                    returner = _cached.SetEquals(other);
+                }
+                finally
+                {
+                    _lock.Exit();
+                }
                 return returner;
             }
             else
@@ -326,8 +423,14 @@ namespace Hiperspace
             _lock.Enter(ref taken);
             if (taken)
             {
-                _cached.SymmetricExceptWith(other);
-                _lock.Exit();
+                try
+                {
+                    _cached.SymmetricExceptWith(other);
+                }
+                finally
+                {
+                    _lock.Exit();
+                }
             }
             else
                 throw new LockRecursionException();
@@ -339,8 +442,14 @@ namespace Hiperspace
             _lock.Enter(ref taken);
             if (taken)
             {
-                _cached.UnionWith(other);
-                _lock.Exit();
+                try
+                {
+                    _cached.UnionWith(other);
+                }
+                finally
+                {
+                    _lock.Exit();
+                }
             }
             else
                 throw new LockRecursionException();

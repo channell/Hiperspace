@@ -18,8 +18,14 @@ namespace Hiperspace
             _lock.Enter(ref taken);
             if (taken)
             {
-                Serializer.PrepareSerializer<TProto>();
-                _lock.Exit();
+                try
+                {
+                    Serializer.PrepareSerializer<TProto>();
+                }
+                finally
+                {
+                    _lock.Exit();
+                }
             }
             else
                 throw new LockRecursionException();

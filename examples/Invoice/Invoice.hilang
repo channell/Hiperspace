@@ -1,0 +1,170 @@
+﻿%domain (ERP);
+
+entity ERP.Location.Address : Versioned
+(
+    Id              : Int32
+)
+{
+    Street          : String,
+    Town            : String,
+    City            : String,
+    County          : String,
+    Country         : ERP.Location.Country,
+    PostalCode      : String
+}
+[
+];
+entity ERP.Location.Country : Versioned
+(
+    Id              : Int16
+)
+{
+    Name            : String,
+    ShippingCharge  : Decimal,
+}
+[
+];
+
+entity ERP.Location.Store : ERP.Location.Address
+[
+    StoreSales      : ERP.Sales.Order (Store = this)
+];
+
+entity ERP.Finance.Tarrif
+(
+    From            : ERP.Location.Country,
+    To              : ERP.Location.Country
+)
+{
+    Tax             : ERP.Finance.Tax
+};
+
+entity ERP.Finance.Tax : Versioned
+(
+    Id              : Int16
+)
+{
+    Name            : String,
+    Rate            : Decimal
+};
+
+entity ERP.Finance.Shipping : Versioned
+(
+    From            : ERP.Location.Country,
+    To              : ERP.Location.Country
+)
+{
+    Fee             : Decimal
+};
+
+entity ERP.Products.Product : Versioned
+(
+    Id              : Int32
+)
+{
+    Name            : String,
+    Tax             : ERP.Finance.Tax,
+    Supplier        : ERP.Client.Customer,
+    Shipping        : Decimal
+}
+[
+    Price           : ERP.Products.Price
+];
+
+aspect ERP.Products.Price : Versioned
+{
+    Name            : String,
+    Sell            : Decimal,
+    Buy             : Decimal
+};
+
+entity ERP.Client.Customer : Versioned
+(
+    Id              : Int32
+)
+{
+    Name            : String,
+    BillTo          : ERP.Location.Address,
+    ShipTo          : ERP.Location.Address
+}
+[
+    Invoices        : ERP.Sales.Order  (Customer = this)
+];
+
+entity ERP.Sales.Salesperson
+(
+    Id              : Int16
+)
+{
+    Name            : String,
+    CommissionRate  : Decimal
+}
+[
+    Sales           : ERP.Sales.Order (Salesperson = this)
+];
+
+value ERP.Sales.OrderLine
+(
+    LineNumber      : Int16
+)
+{
+    Product         : ERP.Products.Product,
+    Units           : Decimal
+}
+[
+    Price           = Product.Price.Sell * Units,
+    Cost            = (Product.Price.Buy * Units) + Product.Shipping,
+    Shipping        = Product.Shipping,
+    Tax             = Product.Tax.Rate * Units
+];
+
+entity ERP.Sales.Order : Versioned
+(
+    OrderNumber     : Int32
+)
+{
+    Customer        : ERP.Client.Customer,
+    Store           : ERP.Location.Store,
+    Salesperson     : ERP.Sales.Salesperson,
+    Lines           : Set <ERP.Sales.OrderLine>
+}
+[
+    StoreCountry    = Store.Country,
+    BillCountry     = Customer.BillTo.Country,
+    ShipCountry     = Customer.ShipTo.Country,
+    Tariff          : ERP.Finance.Tarrif (From = StoreCountry, To = BillCountry),
+    Shipping        : ERP.Finance.Shipping (From = StoreCountry, To = ShipCountry),
+
+    Total           = sum (Lines.Price),
+    ShippingCost    = Shipping = null ? sum (Lines.Shipping) : sum (Lines.Shipping) + max (Shipping.Fee),
+    SalesTax        = sum (Lines.Tax),
+    TariffTax       = Tariff = null ? 0.0 : max(Tariff.Tax.Rate) * Total,
+
+    Bill            = Total + ShippingCost + SalesTax + TariffTax,
+
+    Cost            = sum (Lines.Cost),
+    Profit          = 0.0 + Total - Cost,
+
+    Commission      = Salesperson = null ? 0.0 : Profit * Salesperson.CommissionRate,
+
+    Invoice         : ERP.Sales.Invoice 
+];
+
+aspect ERP.Sales.Invoice 
+{
+    Customer        : ERP.Client.Customer,
+    Store           : ERP.Location.Store,
+    Salesperson     : ERP.Sales.Salesperson,
+    Lines           : Set<ERP.Sales.OrderLine>,
+
+    Total           : Decimal,
+    ShippingCost    : Decimal,
+    SalesTax        : Decimal,
+    TariffTax       : Decimal,
+    Cost            : Decimal,
+    Profit          : Decimal,
+    Commission      : Decimal
+} 
+[
+    Bill            = 0.0 + Total + ShippingCost + SalesTax + TariffTax
+];

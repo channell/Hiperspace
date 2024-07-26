@@ -57,23 +57,27 @@ namespace Hiperspace
             _lock.Enter(ref taken);
             if (taken)
             {
-                TEntity? res;
-                if (Cached.TryGetValue(item, out res))
+                try
                 {
-                    _lock.Exit();
-                    return Result.Skip(res);
-                }
+                    TEntity? res;
+                    if (Cached.TryGetValue(item, out res))
+                    {
+                        return Result.Skip(res);
+                    }
 
-                if (!cache || Filter(item).Ok)
-                {
-                    Cached.Add(item);
-                    _lock.Exit();
-                    return Result.Ok(item);
+                    if (!cache || Filter(item).Ok)
+                    {
+                        Cached.Add(item);
+                        return Result.Ok(item);
+                    }
+                    else
+                    {
+                        return Result.Fail(item, "Filtered by Horizon");
+                    }
                 }
-                else
+                finally
                 {
                     _lock.Exit();
-                    return Result.Fail(item, "Filtered by Horizon");
                 }
             }
             else
@@ -92,9 +96,15 @@ namespace Hiperspace
                     _lock.Enter(ref taken);
                     if (taken)
                     {
-                        Cached.Remove(item);
-                        Cached.Add(item);
-                        _lock.Exit();
+                        try
+                        {
+                            Cached.Remove(item);
+                            Cached.Add(item);
+                        }
+                        finally
+                        {
+                            _lock.Exit();
+                        }
                     }
                     else
                         throw new LockRecursionException();
@@ -145,18 +155,23 @@ namespace Hiperspace
             _lock.Enter(ref taken);
             if (taken)
             {
-                TEntity? res;
-                if (Cached.TryGetValue(equalValue, out res))
+                try
                 {
-                    actualValue = res;
-                    _lock.Exit();
-                    return true;
+                    TEntity? res;
+                    if (Cached.TryGetValue(equalValue, out res))
+                    {
+                        actualValue = res;
+                        return true;
+                    }
+                    else
+                    {
+                        actualValue = equalValue;
+                        return false;
+                    }
                 }
-                else
+                finally
                 {
-                    actualValue = equalValue;
                     _lock.Exit();
-                    return false;
                 }
             }
             else
@@ -343,25 +358,29 @@ namespace Hiperspace
             _lock.Enter(ref taken);
             if (taken)
             {
-                TEntity? res;
-                if (Cached.TryGetValue(item, out res))
+                try
                 {
-                    base.Remove(res);
-                    Cached.Add(item);
-                    _lock.Exit();
-                    return Result.Ok(item);
-                }
+                    TEntity? res;
+                    if (Cached.TryGetValue(item, out res))
+                    {
+                        base.Remove(res);
+                        Cached.Add(item);
+                        return Result.Ok(item);
+                    }
 
-                if (cache && Filter(item).Ok)
-                {
-                    Cached.Add(item);
-                    _lock.Exit();
-                    return Result.Ok(item);
+                    if (cache && Filter(item).Ok)
+                    {
+                        Cached.Add(item);
+                        return Result.Ok(item);
+                    }
+                    else
+                    {
+                        return Result.Fail(item, "Filtered by Horizon");
+                    }
                 }
-                else
+                finally
                 {
                     _lock.Exit();
-                    return Result.Fail(item, "Filtered by Horizon");
                 }
             }
             else
@@ -369,21 +388,35 @@ namespace Hiperspace
         }
         public Result<TEntity> BatchBind(TEntity item, bool cache, (byte[] key, byte[] value, DateTime version, object? source)[] batch)
         {
-            var result = Space.BatchBind(batch);
-            if (result.Any(b => b.Fail))
-                return Result.Fail(item);
-            else
+            bool taken = false;
+            _lock.Enter(ref taken);
+            if (taken)
             {
-                if (cache)
+                try
                 {
-                    Cached.Remove(item);
-                    Cached.Add(item);
-                    RaiseOnbind(item);
-                    return Result.Ok(item);
+                    var result = Space.BatchBind(batch);
+                    if (result.Any(b => b.Fail))
+                        return Result.Fail(item);
+                    else
+                    {
+                        if (cache)
+                        {
+                            Cached.Remove(item);
+                            Cached.Add(item);
+                            RaiseOnbind(item);
+                            return Result.Ok(item);
+                        }
+                        RaiseOnbind(item);
+                        return Result.Ok(item);
+                    }
                 }
-                RaiseOnbind(item);
-                return Result.Ok(item);
+                finally
+                {
+                    _lock.Exit();
+                }
             }
+            else 
+                throw new LockRecursionException();
         }
         public new bool Add(TEntity item)
         {
@@ -396,25 +429,29 @@ namespace Hiperspace
             _lock.Enter(ref taken);
             if (taken)
             {
-                TEntity? res;
-                if (base.TryGetValue(item, out res))
-                { 
-                    base.Remove(res);
-                    base.Add(item);
-                    _lock.Exit();
-                    return Result.Ok(item);
-                }
+                try
+                {
+                    TEntity? res;
+                    if (base.TryGetValue(item, out res))
+                    {
+                        base.Remove(res);
+                        base.Add(item);
+                        return Result.Ok(item);
+                    }
 
-                if (!cache || Filter(item).Ok)
-                {
-                    base.Add(item);
-                    _lock.Exit();
-                    return Result.Ok(item);
+                    if (!cache || Filter(item).Ok)
+                    {
+                        base.Add(item);
+                        return Result.Ok(item);
+                    }
+                    else
+                    {
+                        return Result.Fail(item, "Filtered by Horizon");
+                    }
                 }
-                else
+                finally
                 {
                     _lock.Exit();
-                    return Result.Fail(item, "Filtered by Horizon");
                 }
             }
             else
