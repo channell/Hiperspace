@@ -1,4 +1,6 @@
 ﻿%domain (ERP);
+%function (unary, changed, ERP.ERPFunctions.Changed, Boolean);
+%function (unary, changedLines, ERP.ERPFunctions.ChangedLines, Boolean);
 
 entity ERP.Location.Address : Versioned
 (
@@ -10,10 +12,10 @@ entity ERP.Location.Address : Versioned
     City            : String,
     County          : String,
     Country         : ERP.Location.Country,
-    PostalCode      : String
-}
-[
-];
+    PostalCode      : String,
+    Valid           = Country = null || PostalCode = null ? false : true
+};
+
 entity ERP.Location.Country : Versioned
 (
     Id              : Int16
@@ -21,9 +23,8 @@ entity ERP.Location.Country : Versioned
 {
     Name            : String,
     ShippingCharge  : Decimal,
-}
-[
-];
+    Valid           = Name = null ? false : true
+};
 
 entity ERP.Location.Store : ERP.Location.Address
 [
@@ -36,7 +37,8 @@ entity ERP.Finance.Tarrif
     To              : ERP.Location.Country
 )
 {
-    Tax             : ERP.Finance.Tax
+    Tax             : ERP.Finance.Tax,
+    Valid           = From = null || To = null || Tax = null ? false : true
 };
 
 entity ERP.Finance.Tax : Versioned
@@ -45,7 +47,8 @@ entity ERP.Finance.Tax : Versioned
 )
 {
     Name            : String,
-    Rate            : Decimal
+    Rate            : Decimal,
+    Valid           = Name = null || Rate = null ? false : true
 };
 
 entity ERP.Finance.Shipping : Versioned
@@ -54,7 +57,8 @@ entity ERP.Finance.Shipping : Versioned
     To              : ERP.Location.Country
 )
 {
-    Fee             : Decimal
+    Fee             : Decimal,
+    Valid           = From = null || To = null || Fee = null ? false : true
 };
 
 entity ERP.Products.Product : Versioned
@@ -65,7 +69,8 @@ entity ERP.Products.Product : Versioned
     Name            : String,
     Tax             : ERP.Finance.Tax,
     Supplier        : ERP.Client.Customer,
-    Shipping        : Decimal
+    Shipping        : Decimal,
+    Valid           = Name = null ||Tax = null || Supplier = null || Shipping = null ? false : true
 }
 [
     Price           : ERP.Products.Price
@@ -75,7 +80,8 @@ aspect ERP.Products.Price : Versioned
 {
     Name            : String,
     Sell            : Decimal,
-    Buy             : Decimal
+    Buy             : Decimal,
+    Valid           = Name = null || Sell = null || Buy = null ? false : true
 };
 
 entity ERP.Client.Customer : Versioned
@@ -85,10 +91,11 @@ entity ERP.Client.Customer : Versioned
 {
     Name            : String,
     BillTo          : ERP.Location.Address,
-    ShipTo          : ERP.Location.Address
+    ShipTo          : ERP.Location.Address,
+    Valid           = Name = null || BillTo = null || BillTo.Valid = false || ShipTo = null || ShipTo.Valid = false ? false : true
 }
 [
-    Invoices        : ERP.Sales.Order  (Customer = this)
+    CustomerOrders  : ERP.Sales.Order  (Customer = this)
 ];
 
 entity ERP.Sales.Salesperson
@@ -97,7 +104,8 @@ entity ERP.Sales.Salesperson
 )
 {
     Name            : String,
-    CommissionRate  : Decimal
+    CommissionRate  = 0.0,
+    Valid           = Name = null ? false : true
 }
 [
     Sales           : ERP.Sales.Order (Salesperson = this)
@@ -109,7 +117,8 @@ value ERP.Sales.OrderLine
 )
 {
     Product         : ERP.Products.Product,
-    Units           : Decimal
+    Units           : Decimal,
+    Valid           = Product = null || Units = null ? false : true
 }
 [
     Price           = Product.Price.Sell * Units,
@@ -126,14 +135,18 @@ entity ERP.Sales.Order : Versioned
     Customer        : ERP.Client.Customer,
     Store           : ERP.Location.Store,
     Salesperson     : ERP.Sales.Salesperson,
-    Lines           : Set <ERP.Sales.OrderLine>
+    Lines           : Set <ERP.Sales.OrderLine>,
+    Invoiced        = Invoice = null ? true : false,
+    _changeStore    = changed(Store) = true && Invoiced = true ? true : false,
+    _changeLines    = changedLines(this) = true && Invoiced = true ? true : false,
+    Valid           = Customer = null || Customer.Valid = false || changed(Customer) = true ||
+                      Store = null || Store.Valid = null || _changeStore = true ||
+                      count(Lines.LineNumber) = 0 || _changeLines = true
+                      ? false : true
 }
 [
-    StoreCountry    = Store.Country,
-    BillCountry     = Customer.BillTo.Country,
-    ShipCountry     = Customer.ShipTo.Country,
-    Tariff          : ERP.Finance.Tarrif (From = StoreCountry, To = BillCountry),
-    Shipping        : ERP.Finance.Shipping (From = StoreCountry, To = ShipCountry),
+    Tariff          : ERP.Finance.Tarrif (From = Store.Country, To = Customer.BillTo.Country),
+    Shipping        : ERP.Finance.Shipping (From = Store.Country, To = Customer.ShipTo.Country),
 
     Total           = sum (Lines.Price),
     ShippingCost    = Shipping = null ? sum (Lines.Shipping) : sum (Lines.Shipping) + max (Shipping.Fee),
@@ -149,14 +162,12 @@ entity ERP.Sales.Order : Versioned
 
     Invoice         : ERP.Sales.Invoice 
 ];
-
+"
+    Frozen value of order 
+"
 aspect ERP.Sales.Invoice 
 {
-    Customer        : ERP.Client.Customer,
-    Store           : ERP.Location.Store,
-    Salesperson     : ERP.Sales.Salesperson,
-    Lines           : Set<ERP.Sales.OrderLine>,
-
+    TaxDate         : DateTime,
     Total           : Decimal,
     ShippingCost    : Decimal,
     SalesTax        : Decimal,
