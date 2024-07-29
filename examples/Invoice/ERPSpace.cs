@@ -12,7 +12,7 @@ namespace ERP
         {
             new Horizon<Address>        (i => i.Valid == true),
             new Horizon<Country>        (i => i.Valid == true),
-            new Horizon<Tarrif>         (i => i.Valid == true),
+            new Horizon<Tarriff>        (i => i.Valid == true),
             new Horizon<Tax>            (i => i.Valid == true),
             new Horizon<Shipping>       (i => i.Valid == true),
             new Horizon<Product>        (i => i.Valid == true),

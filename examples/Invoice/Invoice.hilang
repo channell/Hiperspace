@@ -2,7 +2,16 @@
 %function (unary, changed, ERP.ERPFunctions.Changed, Boolean);
 %function (unary, changedLines, ERP.ERPFunctions.ChangedLines, Boolean);
 
+view Edge2 : Edge = Edge();
+view Edge3 : Edge = Edge();
+view Edge4 : Edge = Edge();
+view Edge5 : Edge = Edge();
+view Edge6 : Edge = Edge();
+
 entity ERP.Location.Address : Versioned
+    = Node  (Name = "{ Street: '" + Street + "', PostalCode: '" + PostalCode + "'}", TypeName = "Address", SKey = SKey),
+      Edge  (From = this, To = Country, TypeName = "Address-Country")
+
 (
     Id              : Int32
 )
@@ -17,6 +26,7 @@ entity ERP.Location.Address : Versioned
 };
 
 entity ERP.Location.Country : Versioned
+    = Node  (Name = Name, SKey = SKey, TypeName = "Country")
 (
     Id              : Int16
 )
@@ -27,11 +37,16 @@ entity ERP.Location.Country : Versioned
 };
 
 entity ERP.Location.Store : ERP.Location.Address
+{
+    Name            : String
+}
 [
     StoreSales      : ERP.Sales.Order (Store = this)
 ];
 
-entity ERP.Finance.Tarrif
+entity ERP.Finance.Tarriff : Versioned
+    = Node  (Name = From.Name + " to " + To.Name, SKey = SKey, TypeName = "Tarriff"),
+      Edge  (From = From, To = To, TypeName = "Tarriff")
 (
     From            : ERP.Location.Country,
     To              : ERP.Location.Country
@@ -52,6 +67,8 @@ entity ERP.Finance.Tax : Versioned
 };
 
 entity ERP.Finance.Shipping : Versioned
+    = Node  (Name = From.Name + " to " + To.Name, SKey = SKey, TypeName = "Shipping"),
+      Edge  (From = From, To = To, TypeName = "Shipping")
 (
     From            : ERP.Location.Country,
     To              : ERP.Location.Country
@@ -62,6 +79,7 @@ entity ERP.Finance.Shipping : Versioned
 };
 
 entity ERP.Products.Product : Versioned
+    = Node  (Name = Name, SKey = SKey, TypeName = "Product")
 (
     Id              : Int32
 )
@@ -85,6 +103,9 @@ aspect ERP.Products.Price : Versioned
 };
 
 entity ERP.Client.Customer : Versioned
+    = Node  (Name = Name, SKey = SKey, TypeName = "Customer"),
+      Edge  (From = this, To = BillTo, TypeName = "BillTo"),
+      Edge2 (From = this, To = ShipTo, TypeName = "BillTo")
 (
     Id              : Int32
 )
@@ -99,6 +120,7 @@ entity ERP.Client.Customer : Versioned
 ];
 
 entity ERP.Sales.Salesperson
+    = Node  (Name = Name, SKey = SKey, TypeName = "Salesperson")
 (
     Id              : Int16
 )
@@ -127,7 +149,18 @@ value ERP.Sales.OrderLine
     Tax             = Product.Tax.Rate * Units
 ];
 
+"
+    An order placed by a customer for delivery
+    <remarks>the store and customer can not be changed once it has been invoiced </remarks>
+"
 entity ERP.Sales.Order : Versioned
+    = Node  (Name = "", SKey = SKey, TypeName = "Order"),
+      Edge  (From = this,        To = Customer,    TypeName = "Order-Customer"),
+      Edge2 (From = Customer,    To = this,        TypeName = "Customer-Order"),
+      Edge3 (From = this,        To = Store,       TypeName = "Order-Store"),
+      Edge4 (From = Store,       To = this,        TypeName = "Store-Order"),
+      Edge5 (From = this,        To = Salesperson, TypeName = "Order-Sales"),
+      Edge6 (From = Salesperson, To = this,        TypeName = "Sales-Order")
 (
     OrderNumber     : Int32
 )
@@ -135,37 +168,55 @@ entity ERP.Sales.Order : Versioned
     Customer        : ERP.Client.Customer,
     Store           : ERP.Location.Store,
     Salesperson     : ERP.Sales.Salesperson,
+
+    "all the order lines included in the order"
     Lines           : Set <ERP.Sales.OrderLine>,
-    Invoiced        = Invoice = null ? true : false,
-    _changeStore    = changed(Store) = true && Invoiced = true ? true : false,
-    _changeLines    = changedLines(this) = true && Invoiced = true ? true : false,
-    Valid           = Customer = null || Customer.Valid = false || changed(Customer) = true ||
-                      Store = null || Store.Valid = null || _changeStore = true ||
+    Valid           = Customer = null || changed(Customer) = true ||
+                      Store = null || _changeStore = true ||
                       count(Lines.LineNumber) = 0 || _changeLines = true
                       ? false : true
 }
 [
-    Tariff          : ERP.Finance.Tarrif (From = Store.Country, To = Customer.BillTo.Country),
+    Invoiced        = Invoice = null ? true : false,
+    _changeStore    = changed(Store) = true && Invoiced = true ? true : false,
+    _changeLines    = changedLines(this) = true && Invoiced = true ? true : false,
+
+    "optional tarriff for this order - ommision implies tarriff free trade"
+    Tariff          : ERP.Finance.Tarriff (From = Store.Country, To = Customer.BillTo.Country),
+
+    "optional internnational shipping sharges "
     Shipping        : ERP.Finance.Shipping (From = Store.Country, To = Customer.ShipTo.Country),
 
+    "total value of the order for all lines"
     Total           = sum (Lines.Price),
+
+    "Shipping cost can only be calculated once we know if the order is international"
     ShippingCost    = Shipping = null ? sum (Lines.Shipping) : sum (Lines.Shipping) + max (Shipping.Fee),
+
     SalesTax        = sum (Lines.Tax),
     TariffTax       = Tariff = null ? 0.0 : max(Tariff.Tax.Rate) * Total,
 
+    "Bill price sent to the customer"
     Bill            = Total + ShippingCost + SalesTax + TariffTax,
 
+    "The cost of sourcing the products for the order"
     Cost            = sum (Lines.Cost),
-    Profit          = 0.0 + Total - Cost,
 
     Commission      = Salesperson = null ? 0.0 : Profit * Salesperson.CommissionRate,
 
+    "Gross profit from order, less costs and Commission"
+    Profit          = 0.0 + Total - Cost - Commission,
+
+    "the optional invoice aspect with coists and tax frozen "
     Invoice         : ERP.Sales.Invoice 
 ];
 "
     Frozen value of order 
 "
 aspect ERP.Sales.Invoice 
+    = Node  (Name = "", SKey = SKey, TypeName = "Invoice"),
+      Edge  (From = this,   To = owner, TypeName = "Invoice"),
+      Edge2 (From = owner,  To = this,  TypeName = "Invoiced")
 {
     TaxDate         : DateTime,
     Total           : Decimal,
