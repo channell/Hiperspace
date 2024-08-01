@@ -20,11 +20,11 @@ namespace Access
         private static Horizon[] Read (RBAC.Realm realm) =>
         [
             new Horizon<RBAC.Realm>(r => r.Valid == true && r.Name == realm.Name),
-            new Horizon<RBAC.UserPermission>(p => p.Valid == true && p.Approved == true && p.owner?.Realm == realm), 
-            new Horizon<RBAC.GroupPermission>(p => p.Valid == true && p.Approved == true && p.owner?.Realm == realm),
-            new Horizon<RBAC.User>(u => u.Valid == true && u?.Realm == realm),
-            new Horizon<RBAC.Group>(g => g.Valid == true && g?.Realm == realm),
-            new Horizon<RBAC.Resource>(i => i.Valid == true),
+            new Horizon<RBAC.UserPermission>(p => p.Valid == true && p.Deleted == false && p.Approved == true && p.owner?.Realm == realm), 
+            new Horizon<RBAC.GroupPermission>(p => p.Valid == true && p.Deleted == false && p.Approved == true && p.owner?.Realm == realm),
+            new Horizon<RBAC.User>(u => u.Valid == true && u.Deleted == false && u?.Realm == realm),
+            new Horizon<RBAC.Group>(g => g.Valid == true && g.Deleted == false && g?.Realm == realm),
+            new Horizon<RBAC.Resource>(i => i.Valid == true && i.Deleted == false),
         ];
         private static Horizon[] Write (RBAC.Realm realm) =>
         [
