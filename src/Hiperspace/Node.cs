@@ -58,7 +58,7 @@ namespace Hiperspace
             get => _key.SKey;
             set
             {
-                if (SetSpace != null) throw new Hiperspace.MutationException($"SKey can not be changed once bound to a Space");
+                if (SetSpace != null && _key.SKey != value) throw new Hiperspace.MutationException($"SKey can not be changed once bound to a Space");
                 _key.SKey = value;
             }
         }
@@ -67,7 +67,7 @@ namespace Hiperspace
             get => _value.Name;
             set
             {
-                if (SetSpace != null) throw new Hiperspace.MutationException($"Name can not be changed once bound to a Space");
+                if (SetSpace != null && _value.Name != value) throw new Hiperspace.MutationException($"Name can not be changed once bound to a Space");
                 _value.Name = value;
             }
         }
@@ -76,7 +76,7 @@ namespace Hiperspace
             get => _value.TypeName;
             set
             {
-                if (SetSpace != null) throw new Hiperspace.MutationException($"TypeName can not be changed once bound to a Space");
+                if (SetSpace != null && _value.TypeName != value) throw new Hiperspace.MutationException($"TypeName can not be changed once bound to a Space");
                 _value.TypeName = value;
             }
         }

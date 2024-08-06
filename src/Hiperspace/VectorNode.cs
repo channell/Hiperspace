@@ -68,7 +68,7 @@ namespace Hiperspace
             }
             set
             {
-                if (SetSpace != null) throw new Hiperspace.ValueMutationException("SKey");
+                if (SetSpace != null && _key.SKey != value) throw new Hiperspace.ValueMutationException("SKey");
                 _key.SKey = value;
             }
         }
@@ -85,7 +85,7 @@ namespace Hiperspace
             }
             set
             {
-                if (SetSpace != null) throw new Hiperspace.ValueMutationException($"Vector");
+                if (SetSpace != null && _value.Vector != value) throw new Hiperspace.ValueMutationException($"Vector");
                 _value.Vector = value;
             }
         }

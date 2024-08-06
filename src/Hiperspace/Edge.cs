@@ -55,7 +55,7 @@ namespace Hiperspace
             get => _key.From?.Value;
             set
             {
-                if (SetSpace != null) throw new Hiperspace.ValueMutationException($"From");
+                if (SetSpace != null && _key.From != value) throw new Hiperspace.ValueMutationException($"From");
                 _key.From = value;
             }
         }
@@ -64,7 +64,7 @@ namespace Hiperspace
             get => _key.To?.Value;
             set
             {
-                if (SetSpace != null) throw new Hiperspace.ValueMutationException($"To");
+                if (SetSpace != null && _key.To != value) throw new Hiperspace.ValueMutationException($"To");
                 _key.To = value;
             }
         }
@@ -73,7 +73,7 @@ namespace Hiperspace
             get => _key.TypeName;
             set
             {
-                if (SetSpace != null) throw new Hiperspace.ValueMutationException($"TypeName");
+                if (SetSpace != null && _key.TypeName != value) throw new Hiperspace.ValueMutationException($"TypeName");
                 _key.TypeName = value;
             }
         }
@@ -83,7 +83,7 @@ namespace Hiperspace
             get => _value.Name;
             set
             {
-                if (SetSpace != null) throw new Hiperspace.ValueMutationException($"Name");
+                if (SetSpace != null && _value.Name != value) throw new Hiperspace.ValueMutationException($"Name");
                 _value.Name = value;
             }
         }
@@ -192,7 +192,7 @@ namespace Hiperspace
         #endregion
 
         public override Result<Edge> Bind(SubSpace subspace)
-        {       
+        {
             if (SetSpace != subspace.Edges)
             {
                 if (From != null)
