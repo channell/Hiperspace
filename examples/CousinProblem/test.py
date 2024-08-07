@@ -71,3 +71,8 @@ print ("\nImplied relations\n")
 for e in each(space.Edges) :
     if not (e.From == None or e.To == None) :
         print ("{fromS} -- {typename} --> {toS}".format(fromS = e.From.Name, toS = e.To.Name, typename = e.TypeName ))
+
+print ("\nJust Lucy\n")
+for e in each(space.Edges) :
+    if not (e.From == None or e.To == None) and e.From.Name == 'Lucy' :
+        print ("{fromS} -- {typename} --> {toS}".format(fromS = e.From.Name, toS = e.To.Name, typename = e.TypeName ))
