@@ -95,6 +95,43 @@ is projected as graph edges
 |John|Child|Lucy|
 |Mary|Child|Lucy|
 
+```mermaid
+flowchart TD 
+    UgYKBEFkYW0("Adam (Person)")
+    UgYKBEJ1cnQ("Burt (Person)")
+    UgUKA0V2ZQ("Eve (Person)")
+    UgYKBEphY2s("Jack (Person)")
+    UgYKBEphbmU("Jane (Person)")
+    UgYKBEpvaG4("John (Person)")
+    UgUKA0xpeg("Liz (Person)")
+    UgYKBEx1Y3k("Lucy (Person)")
+    UgYKBE1hcms("Mark (Person)")
+    UgYKBE1hcnk("Mary (Person)")
+    UgUKA1JvYg("Rob (Person)")
+
+    UgYKBEFkYW0 -- Father --> UgYKBEphY2s
+    UgUKA0xpeg -- Father --> UgYKBEFkYW0
+    UgYKBEx1Y3k -- Father --> UgYKBEpvaG4
+    UgYKBE1hcms -- Father --> UgYKBEpvaG4
+    UgUKA1JvYg -- Father --> UgYKBEJ1cnQ
+    UgYKBEphY2s -- Child --> UgYKBEFkYW0
+    UgYKBEFkYW0 -- Child --> UgUKA0xpeg
+    UgYKBEpvaG4 -- Child --> UgYKBEx1Y3k
+    UgYKBEpvaG4 -- Child --> UgYKBE1hcms
+    UgYKBEJ1cnQ -- Child --> UgUKA1JvYg
+    UgYKBEphbmU -- Child --> UgYKBEJ1cnQ
+    UgUKA0V2ZQ -- Child --> UgYKBEphY2s
+    UgUKA0V2ZQ -- Child --> UgYKBEphbmU
+    UgYKBE1hcnk -- Child --> UgYKBEx1Y3k
+    UgYKBE1hcnk -- Child --> UgYKBE1hcms
+    UgYKBEphbmU -- Child --> UgYKBE1hcnk
+    UgYKBEJ1cnQ -- Mother --> UgYKBEphbmU
+    UgYKBEphY2s -- Mother --> UgUKA0V2ZQ
+    UgYKBEphbmU -- Mother --> UgUKA0V2ZQ
+    UgYKBEx1Y3k -- Mother --> UgYKBE1hcnk
+    UgYKBE1hcms -- Mother --> UgYKBE1hcnk
+    UgYKBE1hcnk -- Mother --> UgYKBEphbmU
+```
 and transitively infered to 
 
 |From|Edge|To|
@@ -125,3 +162,91 @@ and transitively infered to
 |Mark|Sister|Lucy|
 |Mary|Child|Lucy|
 |Rob|Cousin|Lucy|
+
+```mermaid
+flowchart TD 
+    UgYKBEFkYW0("Adam (Person)")
+    UgYKBEJ1cnQ("Burt (Person)")
+    UgUKA0V2ZQ("Eve (Person)")
+    UgYKBEphY2s("Jack (Person)")
+    UgYKBEphbmU("Jane (Person)")
+    UgYKBEpvaG4("John (Person)")
+    UgUKA0xpeg("Liz (Person)")
+    UgYKBEx1Y3k("Lucy (Person)")
+    UgYKBE1hcms("Mark (Person)")
+    UgYKBE1hcnk("Mary (Person)")
+    UgUKA1JvYg("Rob (Person)")
+
+    UgYKBEFkYW0 -- Father --> UgYKBEphY2s
+    UgUKA0xpeg -- Father --> UgYKBEFkYW0
+    UgYKBEx1Y3k -- Father --> UgYKBEpvaG4
+    UgYKBE1hcms -- Father --> UgYKBEpvaG4
+    UgUKA1JvYg -- Father --> UgYKBEJ1cnQ
+    UgYKBEphY2s -- Child --> UgYKBEFkYW0
+    UgYKBEFkYW0 -- Child --> UgUKA0xpeg
+    UgYKBEpvaG4 -- Child --> UgYKBEx1Y3k
+    UgYKBEpvaG4 -- Child --> UgYKBE1hcms
+    UgYKBEJ1cnQ -- Child --> UgUKA1JvYg
+    UgYKBEphbmU -- Child --> UgYKBEJ1cnQ
+    UgUKA0V2ZQ -- Child --> UgYKBEphY2s
+    UgUKA0V2ZQ -- Child --> UgYKBEphbmU
+    UgYKBE1hcnk -- Child --> UgYKBEx1Y3k
+    UgYKBE1hcnk -- Child --> UgYKBE1hcms
+    UgYKBEphbmU -- Child --> UgYKBE1hcnk
+    UgYKBEJ1cnQ -- Mother --> UgYKBEphbmU
+    UgYKBEphY2s -- Mother --> UgUKA0V2ZQ
+    UgYKBEphbmU -- Mother --> UgUKA0V2ZQ
+    UgYKBEx1Y3k -- Mother --> UgYKBE1hcnk
+    UgYKBE1hcms -- Mother --> UgYKBE1hcnk
+    UgYKBE1hcnk -- Mother --> UgYKBEphbmU
+    UgUKA0xpeg .- Great-GrandMother .-> UgUKA0V2ZQ
+    UgUKA0xpeg .- Second-Cousin .-> UgUKA1JvYg
+    UgUKA0xpeg .- Grandfather .-> UgYKBEphY2s
+    UgUKA0xpeg .- Great-Aunt .-> UgYKBEphbmU
+    UgUKA0xpeg .- Second-Cousin .-> UgYKBEx1Y3k
+    UgUKA1JvYg .- Great-GrandMother .-> UgUKA0V2ZQ
+    UgUKA1JvYg .- Second-Cousin .-> UgUKA0xpeg
+    UgUKA1JvYg .- Aunt .-> UgYKBE1hcnk
+    UgUKA1JvYg .- Great-Uncle .-> UgYKBEphY2s
+    UgUKA1JvYg .- GrandMother .-> UgYKBEphbmU
+    UgUKA1JvYg .- Cousin .-> UgYKBEx1Y3k
+    UgYKBE1hcms .- Great-GrandMother .-> UgUKA0V2ZQ
+    UgYKBE1hcms .- Second-Cousin .-> UgUKA0xpeg
+    UgYKBE1hcms .- Cousin .-> UgUKA1JvYg
+    UgYKBE1hcms .- Uncle .-> UgYKBEJ1cnQ
+    UgYKBE1hcms .- Great-Uncle .-> UgYKBEphY2s
+    UgYKBE1hcms .- GrandMother .-> UgYKBEphbmU
+    UgYKBE1hcms .- Sister .-> UgYKBEx1Y3k
+    UgYKBE1hcnk .- GrandMother .-> UgUKA0V2ZQ
+    UgYKBE1hcnk .- Nephew .-> UgUKA1JvYg
+    UgYKBE1hcnk .- Cousin .-> UgYKBEFkYW0
+    UgYKBE1hcnk .- Brother .-> UgYKBEJ1cnQ
+    UgYKBE1hcnk .- Uncle .-> UgYKBEphY2s
+    UgYKBE1hcnk .- Parents .-> UgYKBEpvaG4
+    UgYKBEFkYW0 .- GrandMother .-> UgUKA0V2ZQ
+    UgYKBEFkYW0 .- Cousin .-> UgYKBE1hcnk
+    UgYKBEFkYW0 .- Cousin .-> UgYKBEJ1cnQ
+    UgYKBEFkYW0 .- Aunt .-> UgYKBEphbmU
+    UgYKBEJ1cnQ .- GrandMother .-> UgUKA0V2ZQ
+    UgYKBEJ1cnQ .- Sister .-> UgYKBE1hcnk
+    UgYKBEJ1cnQ .- Cousin .-> UgYKBEFkYW0
+    UgYKBEJ1cnQ .- Uncle .-> UgYKBEphY2s
+    UgYKBEJ1cnQ .- Niece .-> UgYKBEx1Y3k
+    UgYKBEphY2s .- Great-Nephew .-> UgUKA1JvYg
+    UgYKBEphY2s .- Niece .-> UgYKBE1hcnk
+    UgYKBEphY2s .- Nephew .-> UgYKBEJ1cnQ
+    UgYKBEphY2s .- Sister .-> UgYKBEphbmU
+    UgYKBEphY2s .- Great-Niece .-> UgYKBEx1Y3k
+    UgYKBEphbmU .- Great-Niece .-> UgUKA0xpeg
+    UgYKBEphbmU .- Nephew .-> UgYKBEFkYW0
+    UgYKBEphbmU .- Brother .-> UgYKBEphY2s
+    UgYKBEpvaG4 .- Parents .-> UgYKBE1hcnk
+    UgYKBEx1Y3k .- Great-GrandMother .-> UgUKA0V2ZQ
+    UgYKBEx1Y3k .- Second-Cousin .-> UgUKA0xpeg
+    UgYKBEx1Y3k .- Cousin .-> UgUKA1JvYg
+    UgYKBEx1Y3k .- Brother .-> UgYKBE1hcms
+    UgYKBEx1Y3k .- Uncle .-> UgYKBEJ1cnQ
+    UgYKBEx1Y3k .- Great-Uncle .-> UgYKBEphY2s
+    UgYKBEx1Y3k .- GrandMother .-> UgYKBEphbmU
+```
+
