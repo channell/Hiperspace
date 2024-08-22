@@ -82,7 +82,7 @@ namespace Cousins
                      select e
                     ).ToList();
 
-                lines.ForEach(e => _output.WriteLine($"{e.From.Name} ({e.From.TypeName}) has {e.TypeName} to {e.To.Name} ({e.To.TypeName})"));
+                lines.ForEach(e => _output.WriteLine($"{e.From?.Name} ({e.From?.TypeName}) has {e.TypeName} to {e.To?.Name} ({e.To?.TypeName})"));
                 lines.Should().NotBeEmpty();
                 lines.Count.Should().Be(22);
             }
