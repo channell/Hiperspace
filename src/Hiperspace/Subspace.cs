@@ -34,7 +34,10 @@ namespace Hiperspace
                 else
                     Horizon = subSpace.Horizon.Union(horizon).ToArray();
             }
-            Horizon = horizon;
+            else
+            { 
+                Horizon = horizon; 
+            }
             _version = AsAt;
             _delta = DeltaFrom;
         }

@@ -1,5 +1,6 @@
 ﻿using FluentAssertions.Execution;
 using Hiperspace;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,10 +12,25 @@ namespace Cousins;
 
 public partial class CousinsSpace
 {
-    public CousinsSpace(string Role, HiperSpace space, DateTime? AsAt = null, DateTime? DeltaFrom = null) : this(space, null, AsAt, DeltaFrom)
+    private static SortedDictionary<string, Horizon[]> Roles = new()
+    {
+        {
+            "", new Horizon[] // default role
+            {
+                new Horizon<Person> (p => p.Deleted == false),
+            }
+        },
+        {
+            "WRITE", new Horizon[]
+            {
+            }
+        }
+    };
+
+    public CousinsSpace(string Role, HiperSpace space, DateTime? AsAt = null, DateTime? DeltaFrom = null) : this(space, Roles[Role ?? ""], AsAt, DeltaFrom)
     {
         // bootstrap
-        var sample = Persons.ToArray().FirstOrDefault();
+        var sample = Persons.Find(new Person { }).FirstOrDefault();
         if (sample == null)
         {
             var tree = new List<Person>

@@ -323,7 +323,10 @@ namespace Hiperspace
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IEnumerable)Cached).GetEnumerator();
+            foreach (var item in Find(new TEntity()))
+            {
+                yield return item;
+            }
         }
 
         public static Expression<Predicate<TEntity>> True = f => true;

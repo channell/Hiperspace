@@ -9,7 +9,7 @@ using System.Collections;
 
 namespace Hiperspace
 {
-    public class RefSet<TEntity> : ISet<TEntity>, ICollection<TEntity>
+    public class RefSet<TEntity> : ISet<TEntity>, ICollection<TEntity>, ICollection
         where TEntity : Element<TEntity>, new()
     {
         protected HashSet<TEntity> _cached;
@@ -462,7 +462,15 @@ namespace Hiperspace
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return ((IEnumerable)_cached).GetEnumerator();
+            return Lazy().GetEnumerator();
         }
+
+        public void CopyTo(Array array, int index)
+        {
+            throw new NotImplementedException();
+        }
+        public bool IsSynchronized => true;
+
+        public object SyncRoot => _cached;
     }
 }
