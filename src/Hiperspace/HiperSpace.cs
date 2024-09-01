@@ -51,6 +51,7 @@ namespace Hiperspace
             if (OnAfterFind != null)
                 OnAfterFind(ref key, ref value);
         }
+
         public HiperSpace() 
         {
         }
@@ -74,7 +75,19 @@ namespace Hiperspace
         /// <returns>a result struct that indicates success, ignore, or fail </returns>
         public abstract Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, object? source = null);
         /// <summary>
+        /// Bind a key/value pair to the space, passing in the source object, if the driver can use additional metadata (e.g. EFCore)
+        /// </summary>
+        /// <param name="key">serialised key</param>
+        /// <param name="value">serialised value</param>
+        /// <param name="source">original object</param>
+        /// <returns>a result struct that indicates success, ignore, or fail </returns>
+        public virtual Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
+        {
+            return Bind(key, value, version, source);
+        }
+        /// <summary>
         /// Bind a key/value pair to the space asyncronously, passing in the source object, if the driver can use additional metadata (e.g. EFCore)
+        /// including optimistic concurrency control, with a default implementation of lockless concurrency
         /// </summary>
         /// <param name="key">serialised key</param>
         /// <param name="value">serialised value</param>
@@ -89,6 +102,19 @@ namespace Hiperspace
         /// <param name="source">original object</param>
         /// <returns>a result struct that indicates success, ignore, or fail </returns>
         public abstract Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, object? source = null);
+
+        /// <summary>
+        /// Bind a key/value pair to the space asyncronously, passing in the source object, if the driver can use additional metadata (e.g. EFCore)
+        /// including optimistic concurrency control, with a default implementation of lockless concurrency
+        /// </summary>
+        /// <param name="key">serialised key</param>
+        /// <param name="value">serialised value</param>
+        /// <param name="source">original object</param>
+        /// <returns>a result struct that indicates success, ignore, or fail </returns>
+        public virtual Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
+        {
+            return BindAsync(key, value, version, source);
+        }
 
         /// <summary>
         /// Bind a batch of values for server single trip
@@ -108,6 +134,9 @@ namespace Hiperspace
                     Result.Status.Skip => Result.Skip((batch[c].key, value.Value)),
                     _ => Result.Fail((batch[c].key, value.Value), value.Reason)
                 };
+                // do not apply index updates if the main value has failed
+                if (value.Status == Result.Status.Fail) 
+                    return result;
             }
             return result;
         }
@@ -123,6 +152,27 @@ namespace Hiperspace
             for (int c = 0; c < batch.Length; c++)
             {
                 var value = Bind(batch[c].key, batch[c].value, batch[c].version, batch[c].source);
+                result[c] = value.Status switch
+                {
+                    Result.Status.Ok => Result.Ok((batch[c].key, value.Value)),
+                    Result.Status.Skip => Result.Skip((batch[c].key, value.Value)),
+                    _ => Result.Fail((batch[c].key, value.Value), value.Reason)
+                };
+            }
+            return result;
+        }
+        /// <summary>
+        /// Bind a batch of values for server single trip
+        /// </summary>
+        /// <param name="batch">array of request</param>
+        /// <returns>array of results</returns>
+        public virtual Result<(byte[] Key, byte[] Value)>[] BatchBind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)
+        {
+            var result = new Result<(byte[] Key, byte[] Value)>[batch.Length];
+
+            for (int c = 0; c < batch.Length; c++)
+            {
+                var value = Bind(batch[c].key, batch[c].value, batch[c].version, batch[c].priorVersion, batch[c].source);
                 result[c] = value.Status switch
                 {
                     Result.Status.Ok => Result.Ok((batch[c].key, value.Value)),
@@ -152,15 +202,21 @@ namespace Hiperspace
         {
             return await Task.Run(() => BatchBind(batch));
         }
+        public virtual async Task<Result<(byte[] Key, byte[] Value)>[]> BatchBindAsync((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)
+        {
+            return await Task.Run(() => BatchBind(batch));
+        }
 
         /// <summary>
         /// Enumeration of raw values for transfer
         /// </summary>
+        /// <remarks>will be protected in a future release</remarks>
         /// <returns>content of space</returns>
         public abstract IEnumerable<(byte[] Key, byte[] Value)> Space();
         /// <summary>
         /// Async Enumeration of raw values for transfer
         /// </summary>
+        /// <remarks>will be protected in a future release</remarks>
         /// <returns>content of space</returns>
         public abstract Task<IEnumerable<(byte[] Key, byte[] Value)>> SpaceAsync();
 

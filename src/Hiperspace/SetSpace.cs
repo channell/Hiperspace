@@ -36,6 +36,12 @@ namespace Hiperspace
         {
             OnDependency?.Invoke((value.target, value.sender));
         }
+        
+        public void ForwardEventsFrom (SetSpace<TEntity> source)
+        {
+            if (OnBind !=null) source.OnBind += RaiseOnbind;
+            if (OnDependency != null) source.OnDependency += RaiseOnDependency;
+        }
 
         protected Func<TEntity,bool>[]? predicates;
         public SubSpace Space { get; set; }
@@ -418,7 +424,39 @@ namespace Hiperspace
                     _lock.Exit();
                 }
             }
-            else 
+            else
+                throw new LockRecursionException();
+        }
+        public Result<TEntity> BatchBind(TEntity item, bool cache, (byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)
+        {
+            bool taken = false;
+            _lock.Enter(ref taken);
+            if (taken)
+            {
+                try
+                {
+                    var result = Space.BatchBind(batch);
+                    if (result.Any(b => b.Fail))
+                        return Result.Fail(item);
+                    else
+                    {
+                        if (cache)
+                        {
+                            Cached.Remove(item);
+                            Cached.Add(item);
+                            RaiseOnbind(item);
+                            return Result.Ok(item);
+                        }
+                        RaiseOnbind(item);
+                        return Result.Ok(item);
+                    }
+                }
+                finally
+                {
+                    _lock.Exit();
+                }
+            }
+            else
                 throw new LockRecursionException();
         }
         public new bool Add(TEntity item)

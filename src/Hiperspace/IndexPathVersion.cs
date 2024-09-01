@@ -19,6 +19,20 @@ namespace Hiperspace
             _DeltaFrom = DeltaFrom;
         }
         public abstract (byte[], byte[], DateTime, object?)? BatchVersion(TEntity item);
+
+        /// <summary>
+        /// not overridable, since index may not change when the main value does, and can not be used for optimistic concurrency control
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public (byte[], byte[], DateTime, DateTime?, object?)? BatchLockedVersion(TEntity item)
+        {
+            var nonlocked = BatchVersion(item);
+            if (nonlocked.HasValue)
+                return (nonlocked.Value.Item1, nonlocked.Value.Item2, nonlocked.Value.Item3, null, nonlocked.Value.Item4);
+            return null;
+        }
+
     }
     public abstract class DeltaIndexPathVersion<TEntity, TKey> : IndexPathVersion<TEntity, TKey> 
     where TEntity : ElementVersion<TEntity>, new()

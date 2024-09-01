@@ -59,6 +59,13 @@ namespace Hiperspace
                 _key.From = value;
             }
         }
+        public string? From_SKey
+        {
+            get
+            {
+                return _key.From?.Key.SKey;
+            }
+        }
         public Node? To
         {
             get => _key.To?.Value;
@@ -66,6 +73,13 @@ namespace Hiperspace
             {
                 if (SetSpace != null && _key.To != value) throw new Hiperspace.ValueMutationException($"To");
                 _key.To = value;
+            }
+        }
+        public string? To_SKey
+        {
+            get
+            {
+                return _key.To?.Key.SKey;
             }
         }
         public string? TypeName

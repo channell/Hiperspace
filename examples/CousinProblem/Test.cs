@@ -125,8 +125,10 @@ namespace Cousins
             {
                 using (var space = new CousinsSpace(temp))
                 {
+                    var all = (from p in space.Persons select p).ToList();
+                    var fall = space.Persons.Find(new Person { }).ToList();
                     var infered =
-                        (from i in (from p in space.Persons select p)
+                        (from i in (from p in space.Persons select p).ToList()
                          select i.Relatives
                         )
                         .ToList();

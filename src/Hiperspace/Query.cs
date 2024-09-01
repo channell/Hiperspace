@@ -63,6 +63,23 @@ namespace Hiperspace
                         return result.Where(func);
                     }
                 }
+                if (typeof(TEntity).IsSubclassOf(typeof(Element<TEntity>)))
+                {
+                    return result
+                        .Select(e =>
+                        {
+                            if (e is Element<TEntity> ee)
+                            {
+                                var result = ee.Bind(_setSpace.Space);
+                                if (result.New)
+                                    _setSpace.Cached.Add(result.Value);
+                                return result.Value;
+                            }
+                            else
+                                return e;
+                        });
+                }
+
                 return result;
             }
             else

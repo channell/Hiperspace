@@ -249,7 +249,7 @@ namespace Hiperspace
 
         #endregion
         #region  helpers
-        public KeyRef<VectorSpace.KeyType, VectorSpace> self { get => new KeyRef<VectorSpace.KeyType, VectorSpace>(_key, this); }
+        internal KeyRef<VectorSpace.KeyType, VectorSpace> self { get => new KeyRef<VectorSpace.KeyType, VectorSpace>(_key, this); }
 
         public static implicit operator KeyRef<KeyType, VectorSpace>([NotNull] VectorSpace other)
         {

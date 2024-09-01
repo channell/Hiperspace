@@ -34,7 +34,11 @@ namespace Hiperspace
             var partition = key.GetHashCode() % (_spaces.Length);
             return _spaces[partition].Bind(key, value, version, source);
         }
-
+        public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
+        {
+            var partition = key.GetHashCode() % (_spaces.Length);
+            return _spaces[partition].Bind(key, value, source);
+        }
 
         public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, object? source)
         {
@@ -42,6 +46,11 @@ namespace Hiperspace
             return _spaces[partition].BindAsync(key, value, source);
         }
         public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, object? source = null)
+        {
+            var partition = key.GetHashCode() % (_spaces.Length);
+            return _spaces[partition].BindAsync(key, value, version, source);
+        }
+        public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
         {
             var partition = key.GetHashCode() % (_spaces.Length);
             return _spaces[partition].BindAsync(key, value, version, source);

@@ -26,6 +26,13 @@ namespace Hiperspace
             _DeltaFrom = DeltaFrom;
         }
         public abstract (byte[], byte[], DateTime, object?)? BatchVersion(TEntity item);
+        public virtual (byte[], byte[], DateTime, DateTime?, object?)? BatchLockedVersion(TEntity item)
+        {
+            var nonlocked = BatchVersion(item);
+            if (nonlocked.HasValue)
+                return (nonlocked.Value.Item1, nonlocked.Value.Item2, nonlocked.Value.Item3, null, nonlocked.Value.Item4);
+            return null;
+        }
         public virtual TEntity? Get(ref TKey key, DateTime? version)
         {
             if (!version.HasValue)

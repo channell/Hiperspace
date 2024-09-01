@@ -112,6 +112,10 @@ namespace Hiperspace
         {
             return _sessionSpace.Bind(key, value, version, source);
         }
+        public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
+        {
+            return _sessionSpace.Bind(key, value, version, priorVersion, source);
+        }
 
         public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, object? source)
         {
@@ -120,6 +124,10 @@ namespace Hiperspace
         public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, object? source = null)
         {
             return _sessionSpace.BindAsync(key, value, version, source);
+        }
+        public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
+        {
+            return _sessionSpace.BindAsync(key, value, version, priorVersion, source);
         }
 
         public override IEnumerable<(byte[], byte[])> Find(byte[] begin, byte[] end)

@@ -166,7 +166,42 @@ namespace Hiperspace
                 return _primary.Bind(key, value, version, source);
             }
         }
-
+        public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
+        {
+            var start = DateTime.Now;
+            Task.Run(() =>
+            {
+                var tasks = new Task[_spaces.Length];
+                for (int c = 0; c < _spaces.Length; c++)
+                {
+                    tasks[c] = _spaces[c].space.BindAsync(key, value, version, priorVersion, source);
+                }
+                for (int c = 0; c < tasks.Length; c++)
+                {
+                    tasks[c].Wait();
+                    if (tasks[c].IsCompleted && _spaces[c].fault.HasValue)
+                    {
+                        Sync(c);
+                    }
+                    else if (!_spaces[c].fault.HasValue)
+                    {
+                        lock (_spaces)
+                        {
+                            _spaces[c].fault = start;
+                        }
+                    }
+                }
+            });
+            try
+            {
+                return _primary.Bind(key, value, version, source);
+            }
+            catch
+            {
+                Recover(start);
+                return _primary.Bind(key, value, version, source);
+            }
+        }
 
         public override async Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, object? source)
         {
@@ -175,6 +210,10 @@ namespace Hiperspace
         public override async Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, object? source = null)
         {
             return await Task.Run(() => Bind(key, value, version, source));
+        }
+        public override async Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
+        {
+            return await Task.Run(() => Bind(key, value, version, priorVersion, source));
         }
 
         public override IEnumerable<(byte[], byte[])> Find(byte[] begin, byte[] end)

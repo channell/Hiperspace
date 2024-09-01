@@ -6,10 +6,8 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using ProtoBuf;
-using System;
-using System.Diagnostics;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection.Metadata.Ecma335;
 
 /*view node #1
 (
@@ -22,6 +20,7 @@ using System.Reflection.Metadata.Ecma335;
 */
 namespace Hiperspace
 {
+
     public class Node : Element<Node>
     {
         public KeyType _key;
@@ -102,6 +101,7 @@ namespace Hiperspace
         /// <summary>
         /// Get all the properties of the underlying object
         /// </summary>
+        [NotMapped]
         public (string,object?)[]? Properties 
         {
             get
@@ -291,7 +291,7 @@ namespace Hiperspace
         }
 
         #region  helpers
-        public KeyRef<Node.KeyType, Node> self { get => new KeyRef<Node.KeyType, Node>(_key, this); }
+        internal KeyRef<Node.KeyType, Node> self { get => new KeyRef<Node.KeyType, Node>(_key, this); }
 
         public static implicit operator KeyRef<KeyType, Node>([NotNull] Node other)
         {

@@ -94,12 +94,12 @@ namespace Sparx.EA
 
             modelBuilder.Entity<Element>()
                 .HasMany(e => e.StartConnectors)
-                .WithOne(e => e.StartElement_Value)
+                .WithOne(e => e.StartElement)
                 .HasForeignKey(e => e.StartElement_Id);
 
             modelBuilder.Entity<Element>()
                 .HasMany(e => e.EndConnectors)
-                .WithOne(e => e.EndElement_Value)
+                .WithOne(e => e.EndElement)
                 .HasForeignKey(e => e.EndElement_Id);
 
             modelBuilder.Entity<Element>()

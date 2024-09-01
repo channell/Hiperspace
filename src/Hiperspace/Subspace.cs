@@ -41,6 +41,12 @@ namespace Hiperspace
             _version = AsAt;
             _delta = DeltaFrom;
         }
+
+        private void SubSpace_OnAfterGet(ref byte[] key, ref byte[] value)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Get the Horizon for a type 
         /// </summary>
@@ -69,8 +75,6 @@ namespace Hiperspace
         {
             throw new NotImplementedException ();
         }
-
-
         public bool ISChild(SubSpace space)
         {
             if (space == this)
@@ -86,7 +90,7 @@ namespace Hiperspace
             return _space.Bind(key, value, source);
         }
 
-        public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, object? source = null)    
+        public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, object? source = null)
         {
             return _space.BindAsync(key, value, source);
         }
@@ -169,6 +173,14 @@ namespace Hiperspace
         public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, object? source = null)
         {
             return _space.BindAsync(key, value, version, source);
+        }
+        public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
+        {
+            return _space.Bind(key, value, version, priorVersion, source);
+        }
+        public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
+        {
+            return _space.BindAsync(key, value, version, priorVersion, source);
         }
 
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Find(byte[] begin, byte[] end, DateTime? version)

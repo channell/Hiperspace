@@ -221,12 +221,6 @@ namespace Hiperspace
         #region Entity
         public override Result<VectorNode> Bind(SubSpace subspace)
         {
-            if (SetSpace != subspace.VectorNodes)
-            {
-                SetSpace = subspace.VectorNodes;
-                var result = SetSpace.Bind(this);
-                return result;
-            }
             return Result.Skip(this);
         }
         public override void Unbind(SubSpace subSpace)
@@ -265,7 +259,7 @@ namespace Hiperspace
 
         #endregion
         #region  helpers
-        public KeyRef<VectorNode.KeyType, VectorNode> self { get => new KeyRef<VectorNode.KeyType, VectorNode>(_key, this); }
+        internal KeyRef<VectorNode.KeyType, VectorNode> self { get => new KeyRef<VectorNode.KeyType, VectorNode>(_key, this); }
 
         public static implicit operator KeyRef<KeyType, VectorNode>([NotNull] VectorNode other)
         {
