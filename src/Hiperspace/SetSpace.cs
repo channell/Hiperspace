@@ -55,39 +55,32 @@ namespace Hiperspace
                     .Select(i=> ((Horizon<TEntity>)i).Predicate)
                     .ToArray();
         }
-        protected SpinLock _lock = new SpinLock();
+#if NET9_0_OR_GREATER
+        protected readonly System.Threading.Lock _lock = new();
+#else 
+        protected readonly object _lock = new();
+#endif
 
         public virtual Result<TEntity> Bind(TEntity item, bool cache = true)
         {
-            bool taken = false;
-            _lock.Enter(ref taken);
-            if (taken)
+            lock (_lock)
             {
-                try
+                TEntity? res;
+                if (Cached.TryGetValue(item, out res))
                 {
-                    TEntity? res;
-                    if (Cached.TryGetValue(item, out res))
-                    {
-                        return Result.Skip(res);
-                    }
-
-                    if (!cache || Filter(item).Ok)
-                    {
-                        Cached.Add(item);
-                        return Result.Ok(item);
-                    }
-                    else
-                    {
-                        return Result.Fail(item, "Filtered by Horizon");
-                    }
+                    return Result.Skip(res);
                 }
-                finally
+
+                if (!cache || Filter(item).Ok)
                 {
-                    _lock.Exit();
+                    Cached.Add(item);
+                    return Result.Ok(item);
+                }
+                else
+                {
+                    return Result.Fail(item, "Filtered by Horizon");
                 }
             }
-            else
-                throw new LockRecursionException();
         }
         public Result<TEntity> BatchBind(TEntity item, bool cache, (byte[] key, byte[] value, object? source)[] batch)
         {
@@ -98,23 +91,12 @@ namespace Hiperspace
             {
                 if (cache)
                 {
-                    bool taken = false;
-                    _lock.Enter(ref taken);
-                    if (taken)
+                    lock (_lock)
                     {
-                        try
-                        {
-                            Cached.Remove(item);
-                            Cached.Add(item);
-                        }
-                        finally
-                        {
-                            _lock.Exit();
-                        }
+                        Cached.Remove(item);
+                        Cached.Add(item);
+                        RaiseOnbind(item);
                     }
-                    else
-                        throw new LockRecursionException();
-                    RaiseOnbind(item);
                     return Result.Ok(item);
                 }
                 RaiseOnbind(item);
@@ -157,31 +139,20 @@ namespace Hiperspace
 
         public bool TryGetValue(TEntity equalValue, out TEntity actualValue)
         {
-            bool taken = false;
-            _lock.Enter(ref taken);
-            if (taken)
+            lock (_lock)
             {
-                try
+                TEntity? res;
+                if (Cached.TryGetValue(equalValue, out res))
                 {
-                    TEntity? res;
-                    if (Cached.TryGetValue(equalValue, out res))
-                    {
-                        actualValue = res;
-                        return true;
-                    }
-                    else
-                    {
-                        actualValue = equalValue;
-                        return false;
-                    }
+                    actualValue = res;
+                    return true;
                 }
-                finally
+                else
                 {
-                    _lock.Exit();
+                    actualValue = equalValue;
+                    return false;
                 }
             }
-            else
-                throw new LockRecursionException();
         }
 
         #region entity functions
@@ -354,8 +325,8 @@ namespace Hiperspace
     {
         protected DateTime? _AsAt;
         protected DateTime? _DeltaFrom;
-        public SetSpaceVersion(SubSpace space, IQueryProvider provider, DateTime? AsAt = null, DateTime? DeltaFrom = null) : base(space, provider) 
-        { 
+        public SetSpaceVersion(SubSpace space, IQueryProvider provider, DateTime? AsAt = null, DateTime? DeltaFrom = null) : base(space, provider)
+        {
             _AsAt = AsAt;
             _DeltaFrom = DeltaFrom;
         }
@@ -363,101 +334,68 @@ namespace Hiperspace
 
         public override Result<TEntity> Bind(TEntity item, bool cache = true)
         {
-            bool taken = false;
-            _lock.Enter(ref taken);
-            if (taken)
+            lock (_lock)
             {
-                try
+                TEntity? res;
+                if (Cached.TryGetValue(item, out res))
                 {
-                    TEntity? res;
-                    if (Cached.TryGetValue(item, out res))
-                    {
-                        base.Remove(res);
-                        Cached.Add(item);
-                        return Result.Ok(item);
-                    }
-
-                    if (cache && Filter(item).Ok)
-                    {
-                        Cached.Add(item);
-                        return Result.Ok(item);
-                    }
-                    else
-                    {
-                        return Result.Fail(item, "Filtered by Horizon");
-                    }
+                    base.Remove(res);
+                    Cached.Add(item);
+                    return Result.Ok(item);
                 }
-                finally
+
+                if (cache && Filter(item).Ok)
                 {
-                    _lock.Exit();
+                    Cached.Add(item);
+                    return Result.Ok(item);
+                }
+                else
+                {
+                    return Result.Fail(item, "Filtered by Horizon");
                 }
             }
-            else
-                throw new LockRecursionException();
         }
         public Result<TEntity> BatchBind(TEntity item, bool cache, (byte[] key, byte[] value, DateTime version, object? source)[] batch)
         {
-            bool taken = false;
-            _lock.Enter(ref taken);
-            if (taken)
+            lock (_lock)
             {
-                try
+                var result = Space.BatchBind(batch);
+                if (result.Any(b => b.Fail))
+                    return Result.Fail(item);
+                else
                 {
-                    var result = Space.BatchBind(batch);
-                    if (result.Any(b => b.Fail))
-                        return Result.Fail(item);
-                    else
+                    if (cache)
                     {
-                        if (cache)
-                        {
-                            Cached.Remove(item);
-                            Cached.Add(item);
-                            RaiseOnbind(item);
-                            return Result.Ok(item);
-                        }
+                        Cached.Remove(item);
+                        Cached.Add(item);
                         RaiseOnbind(item);
                         return Result.Ok(item);
                     }
-                }
-                finally
-                {
-                    _lock.Exit();
+                    RaiseOnbind(item);
+                    return Result.Ok(item);
                 }
             }
-            else
-                throw new LockRecursionException();
         }
         public Result<TEntity> BatchBind(TEntity item, bool cache, (byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)
         {
-            bool taken = false;
-            _lock.Enter(ref taken);
-            if (taken)
+            lock (_lock)
             {
-                try
+                var result = Space.BatchBind(batch);
+                if (result.Any(b => b.Fail))
+                    return Result.Fail(item);
+                else
                 {
-                    var result = Space.BatchBind(batch);
-                    if (result.Any(b => b.Fail))
-                        return Result.Fail(item);
-                    else
+                    if (cache)
                     {
-                        if (cache)
-                        {
-                            Cached.Remove(item);
-                            Cached.Add(item);
-                            RaiseOnbind(item);
-                            return Result.Ok(item);
-                        }
+                        Cached.Remove(item);
+                        Cached.Add(item);
                         RaiseOnbind(item);
                         return Result.Ok(item);
                     }
-                }
-                finally
-                {
-                    _lock.Exit();
+                    RaiseOnbind(item);
+                    return Result.Ok(item);
                 }
             }
-            else
-                throw new LockRecursionException();
         }
         public new bool Add(TEntity item)
         {
@@ -466,37 +404,26 @@ namespace Hiperspace
 
         public virtual Result<TEntity> BindVersion(TEntity item, bool cache = true)
         {
-            bool taken = false;
-            _lock.Enter(ref taken);
-            if (taken)
+            lock (_lock)
             {
-                try
+                TEntity? res;
+                if (base.TryGetValue(item, out res))
                 {
-                    TEntity? res;
-                    if (base.TryGetValue(item, out res))
-                    {
-                        base.Remove(res);
-                        base.Add(item);
-                        return Result.Ok(item);
-                    }
-
-                    if (!cache || Filter(item).Ok)
-                    {
-                        base.Add(item);
-                        return Result.Ok(item);
-                    }
-                    else
-                    {
-                        return Result.Fail(item, "Filtered by Horizon");
-                    }
+                    base.Remove(res);
+                    base.Add(item);
+                    return Result.Ok(item);
                 }
-                finally
+
+                if (!cache || Filter(item).Ok)
                 {
-                    _lock.Exit();
+                    base.Add(item);
+                    return Result.Ok(item);
+                }
+                else
+                {
+                    return Result.Fail(item, "Filtered by Horizon");
                 }
             }
-            else
-                throw new LockRecursionException();
         }
         public virtual TEntity? Get(TEntity template, DateTime? version)
         {
