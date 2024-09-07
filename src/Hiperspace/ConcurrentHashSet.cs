@@ -7,7 +7,7 @@ namespace Hiperspace
     /// <summary>
     /// Represents a thread-safe collection of unique elements.
     /// locks are applied at the segment level, allowing for concurrent operations (add, remove, replace) on different segments.
-    /// chained operations only lock the curent segment
+    /// chained operations only lock the curent segment. Set level operations during enumeration are defered to enumeration has completed
     /// </summary>
     /// <typeparam name="T">The type of elements in the set.</typeparam>
     public class ConcurrentHashSet<T> : ISet<T> where T : class
