@@ -6,6 +6,7 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
 
 namespace Hiperspace
 {
@@ -213,5 +214,14 @@ namespace Hiperspace
                     yield return b;
             }
         }
+        public override IEnumerable<Horizon> GetHorizons()
+        {
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                foreach (var h in _spaces[c].GetHorizons())
+                    yield return h;
+            }
+        }
+
     }
 }

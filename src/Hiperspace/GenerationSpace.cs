@@ -245,5 +245,13 @@ namespace Hiperspace
                     yield return b;
             }
         }
+        public override IEnumerable<Horizon> GetHorizons()
+        {
+            for (int c = 0; c < _read.Length; c++)
+            {
+                foreach (var h in _read[c].GetHorizons())
+                    yield return h;
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 using Domain;
 using FluentAssertions;
+using HiLang.CSGen;
 using Hiperspace;
 using Hiperspace.Heap;
 using Hiperspace.Rocks;
@@ -74,37 +75,34 @@ namespace SQLServerGraphSample
                  , ((SELECT $NODE_ID FROM Person WHERE ID = 5), (SELECT $NODE_ID FROM Person WHERE ID = 4));
         */
 
-        [Theory]
+        private RockSpace Rocks (string fn)
+        {
+            if (!Directory.Exists("./rockstest")) Directory.CreateDirectory($"./rockstest");
+            if (Directory.Exists(fn)) Directory.Delete(fn, true);
+            if (!Directory.Exists(fn)) Directory.CreateDirectory(fn);
+            return new RockSpace(fn);
+        }
+
+            [Theory]
         [InlineData("Rocks", "Relation")]
         [InlineData("Rocks", "Graph")]
         [InlineData("Heap", "Relation")]
         [InlineData("Heap", "Graph")]
         public void Test1(string store, string kind)
         {
-            HiperSpace space;
-            var fn = DateTime.Now.Ticks.ToString();
-            if (store == "Rocks")
+            var fn = $"./rockstest/{kind}{DateTime.Now.Ticks.ToString()}";
+            using (HiperSpace space = store == "Rocks" ? Rocks(fn) : new HeapSpace())
             {
-                if (!Directory.Exists("./rockstest")) Directory.CreateDirectory("./rockstest");
-                if (Directory.Exists($"./rockstest/{fn}")) Directory.Delete($"./rockstest/{fn}", true);
-                if (!Directory.Exists(fn)) Directory.CreateDirectory(fn);
-                space = new RockSpace(fn);
-            }
-            else
-            {
-                space = new HeapSpace();
-            }
-
-            using (var dom = new DomainSpace(space))
-            {
-                var cities = new List<City>()
+                using (var dom = new DomainSpace(space))
+                {
+                    var cities = new List<City>()
                 {
                     new City { Id = 1, Name = "Bellevue", State = "WA" },
                     new City { Id = 2, Name = "Seattle", State = "WA" },
                     new City { Id = 3, Name = "Redmond", State = "WA" }
                 };
 
-                var people = new List<Person>()
+                    var people = new List<Person>()
                 {
                     new() { Id = 1, Name = "John", City_Id = 1},
                     new() { Id = 2, Name = "Mary", City_Id = 2},
@@ -113,14 +111,14 @@ namespace SQLServerGraphSample
                     new() { Id = 5, Name = "Julie",City_Id = 1},
                 };
 
-                var resteraunts = new List<Restaurant>()
+                    var resteraunts = new List<Restaurant>()
                 {
                     new() { Id = 1, Name = "Taco Bell", City_Id = 1},
                     new() { Id = 2, Name = "Ginger and Spice", City_Id = 2},
                     new() { Id = 3, Name = "Noodle Land", City_Id = 3},
                 };
 
-                var likes = new List<(Person p, Restaurant r, int n)>()
+                    var likes = new List<(Person p, Restaurant r, int n)>()
                 {
                     (new Person {Id = 1}, new Restaurant { Id = 1}, 9),
                     (new Person {Id = 2}, new Restaurant { Id = 2}, 9),
@@ -129,7 +127,7 @@ namespace SQLServerGraphSample
                     (new Person {Id = 5}, new Restaurant { Id = 3}, 9),
                 };
 
-                var friends = new List<(int p, int f)>
+                    var friends = new List<(int p, int f)>
                 {
                     (1,2),
                     (2,3),
@@ -138,167 +136,168 @@ namespace SQLServerGraphSample
                     (5,4),
                 };
 
-                // add to Hiperspace
-                people.ForEach(p => dom.Persons.Add(p));
-                cities.ForEach(c => dom.Citys.Add(c));
-                resteraunts.ForEach(r => dom.Restaurants.Add(r));
-                likes.ForEach(l => dom.PersonLikes.Add(new PersonLike { owner = l.p, Restaurant = l.r, Rating = l.n }));
-                friends.ForEach(f => dom.PersonFriends.Add(new PersonFriend { owner_Id = f.p, Of_Id = f.f }));
+                    // add to Hiperspace
+                    people.ForEach(p => dom.Persons.Add(p));
+                    cities.ForEach(c => dom.Citys.Add(c));
+                    resteraunts.ForEach(r => dom.Restaurants.Add(r));
+                    likes.ForEach(l => dom.PersonLikes.Add(new PersonLike { owner = l.p, Restaurant = l.r, Rating = l.n }));
+                    friends.ForEach(f => dom.PersonFriends.Add(new PersonFriend { owner_Id = f.p, Of_Id = f.f }));
 
-                /*-- Find Restaurants that John likes
-                SELECT Restaurant.name
-                FROM Person, likes, Restaurant
-                WHERE MATCH (Person-(likes)->Restaurant)
-                AND Person.name = 'John';
+                    /*-- Find Restaurants that John likes
+                    SELECT Restaurant.name
+                    FROM Person, likes, Restaurant
+                    WHERE MATCH (Person-(likes)->Restaurant)
+                    AND Person.name = 'John';
 
-                -- Find Restaurants that John's friends like
-                SELECT Restaurant.name
-                FROM Person person1, Person person2, likes, friendOf, Restaurant
-                WHERE MATCH(person1-(friendOf)->person2-(likes)->Restaurant)
-                AND person1.name='John';
+                    -- Find Restaurants that John's friends like
+                    SELECT Restaurant.name
+                    FROM Person person1, Person person2, likes, friendOf, Restaurant
+                    WHERE MATCH(person1-(friendOf)->person2-(likes)->Restaurant)
+                    AND person1.name='John';
 
-                -- Find people who like a restaurant in the same city they live in
-                SELECT Person.name
-                FROM Person, likes, Restaurant, livesIn, City, locatedIn
-                WHERE MATCH (Person-(likes)->Restaurant-(locatedIn)->City AND Person-(livesIn)->City);*/
+                    -- Find people who like a restaurant in the same city they live in
+                    SELECT Person.name
+                    FROM Person, likes, Restaurant, livesIn, City, locatedIn
+                    WHERE MATCH (Person-(likes)->Restaurant-(locatedIn)->City AND Person-(livesIn)->City);*/
 
-                var John = 
-                    dom.Persons
-                    .Where(p => p.Name == "John")
-                    .ToArray()
-                    .First();
-
-                if (kind == "Relation")
-                {
-                    _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} John likes (object)");
-                    foreach (var l in
-                        John.Likes
-                        .Select(l => l.Restaurant?.Name))
-                    {
-                        _output.WriteLine($"\t{l}");
-                    }
-                    _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} John's friends like (object)");
-                    foreach (var l in
-                        John.Friends
-                        .Select(f => f?.Of)
-                        .Aggregate(new List<PersonLike>(), (a, f) => { if (f?.Likes != null) a.AddRange(f.Likes); return a; })
-                        .Select(l => l.Restaurant?.Name))
-                    {
-                        _output.WriteLine($"\t{l}");
-                    }
-
-                    _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} Likes local restaurant (object)");
-                    var same = new HashSet<Person>();
-                    foreach (var p in dom.Persons)
-                        foreach (var l in p.Likes)
-                            if (l.Restaurant?.City == p.City)
-                                same.Add(p);
-                    foreach (var p in same)
-                        _output.WriteLine($"\t{p.Name}");
-
-                    _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} Fiend paths (join)");
-                    Func<PersonFriend, string> fname = e => e.owner?.Name ?? "";
-                    var frields = dom.PersonFriends.ToArray();
-                    var q =
-                        (from p in frields
-                         join p2 in frields on p.Of equals p2.owner
-                         join p3 in frields on p2.Of equals p3.owner
-                         join p4 in frields on p3.Of equals p4.owner
-                         where p2.owner != p.owner
-                            && p3.owner != p2.owner
-                            && p4.owner != p3.owner
-                            && p.owner != p4.owner
-                         let pname = fname(p)
-                         let pname2 = fname(p2)
-                         let pname3 = fname(p3)
-                         let pname4 = fname(p4)
-                         select $"\t{pname}->{pname2}->{pname3}->{pname4}"
-                         );
-                    foreach (var l in q)
-                        _output.WriteLine(l);
-
-                    _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} Fiend paths (recursive)");
-                    foreach (var p in dom.Persons)
-                        foreach (var path in Paths(p) ?? ImmutableList<ImmutableList<Person>>.Empty)
-                        {
-                            var sb = new StringBuilder();
-                            foreach (var point in path ?? ImmutableList<Person>.Empty)
-                                sb.Append($"->{point.Name}");
-                            _output.WriteLine($"\t{sb.ToString().Substring(2)}");
-                        }
-                }
-                else
-                {
-                    _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} John likes (graph)");
-
-                    var johnNode = 
-                        dom.Nodes
+                    var John =
+                        dom.Persons
                         .Where(p => p.Name == "John")
                         .ToArray()
                         .First();
-                    foreach (var l in
-                        johnNode.FromType("Likes")
-                        .Select(e => e.To?.Name))
-                    {
-                        _output.WriteLine($"\t{l}");
-                    }
 
-                    _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} John's friends like (graph)");
-                    foreach (var l in
-                        johnNode.FromType("Friend")
-                        .ToArray()
-                        .Aggregate(new List<Node?>(), (a, e) => { a.Add(e.To); return a; })
-                        .Aggregate(new List<Edge?>(), (a, n) => { if (n != null) a.AddRange(n.Froms); return a; })
-                        .Where(e => e?.TypeName == "Likes")
-                        .Select(e => e?.To?.Name))
+                    if (kind == "Relation")
                     {
-                        _output.WriteLine($"\t{l}");
-                    }
-
-                    Func<Node, Person?> pn = n => n.Object as Person;
-                    Func<Node, Restaurant?> rn = n => n.Object as Restaurant;
-                    _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} Likes local restaurant (graph)");
-                    foreach (var l in
-                        dom.Edges
-                        .Where(e => e.TypeName == "Likes")
-                        .ToArray()
-                        .Select(e => (e.From?.Object as Person, e.To?.Object as Restaurant))
-                        .Where(p => p.Item1?.City == p.Item2?.City)
-                        .Select(p => p.Item1)
-                        )
-                    {
-                        _output.WriteLine($"\t{l?.Name}");
-                    }
-                    _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} Fiend paths");
-                    Func<Edge, string> fname = e => e.From?.Name ?? "";
-                    var edges = dom.Edges.Where(e => e.TypeName == "Friend").ToArray();
-                    foreach (var line in 
-                        (from p in edges
-                         join p2 in edges on p.To equals p2.From
-                         join p3 in edges on p2.To equals p3.From
-                         join p4 in edges on p3.To equals p4.From
-                         where p2.From != p.From
-                            && p3.From != p2.From
-                            && p4.From != p3.From
-                            && p.From != p4.From
-                         select $"\t{fname(p)}->{fname(p2)}->{fname(p3)}->{fname(p4)}"
-                         ))
-                        _output.WriteLine(line);
-
-                    _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} Fiend paths (recursive)");
-                    foreach (var p in dom.Nodes)
-                        foreach (var path in Paths(p) ?? ImmutableList<ImmutableList<Node>>.Empty)
+                        _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} John likes (object)");
+                        foreach (var l in
+                            John.Likes
+                            .Select(l => l.Restaurant?.Name))
                         {
-                            var sb = new StringBuilder();
-                            foreach (var point in path ?? ImmutableList<Node>.Empty)
-                                sb.Append($"->{point.Name}");
-                            _output.WriteLine($"\t{sb.ToString().Substring(2)}");
+                            _output.WriteLine($"\t{l}");
+                        }
+                        _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} John's friends like (object)");
+                        foreach (var l in
+                            John.Friends
+                            .Select(f => f?.Of)
+                            .Aggregate(new List<PersonLike>(), (a, f) => { if (f?.Likes != null) a.AddRange(f.Likes); return a; })
+                            .Select(l => l.Restaurant?.Name))
+                        {
+                            _output.WriteLine($"\t{l}");
                         }
 
-                    if (Directory.Exists($"./rockstest/{fn}")) Directory.Delete($"./rockstest/{fn}", true);
+                        _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} Likes local restaurant (object)");
+                        var same = new HashSet<Person>();
+                        foreach (var p in dom.Persons)
+                            foreach (var l in p.Likes)
+                                if (l.Restaurant?.City == p.City)
+                                    same.Add(p);
+                        foreach (var p in same)
+                            _output.WriteLine($"\t{p.Name}");
+
+                        _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} Fiend paths (join)");
+                        Func<PersonFriend, string> fname = e => e.owner?.Name ?? "";
+                        var frields = dom.PersonFriends.ToArray();
+                        var q =
+                            (from p in frields
+                             join p2 in frields on p.Of equals p2.owner
+                             join p3 in frields on p2.Of equals p3.owner
+                             join p4 in frields on p3.Of equals p4.owner
+                             where p2.owner != p.owner
+                                && p3.owner != p2.owner
+                                && p4.owner != p3.owner
+                                && p.owner != p4.owner
+                             let pname = fname(p)
+                             let pname2 = fname(p2)
+                             let pname3 = fname(p3)
+                             let pname4 = fname(p4)
+                             select $"\t{pname}->{pname2}->{pname3}->{pname4}"
+                             );
+                        foreach (var l in q)
+                            _output.WriteLine(l);
+
+                        _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} Fiend paths (recursive)");
+                        foreach (var p in dom.Persons)
+                            foreach (var path in Paths(p) ?? ImmutableList<ImmutableList<Person>>.Empty)
+                            {
+                                var sb = new StringBuilder();
+                                foreach (var point in path ?? ImmutableList<Person>.Empty)
+                                    sb.Append($"->{point.Name}");
+                                _output.WriteLine($"\t{sb.ToString().Substring(2)}");
+                            }
+                    }
+                    else
+                    {
+                        _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} John likes (graph)");
+
+                        var johnNode =
+                            dom.Nodes
+                            .Where(p => p.Name == "John")
+                            .ToArray()
+                            .First();
+                        foreach (var l in
+                            johnNode.FromType("Likes")
+                            .Select(e => e.To?.Name))
+                        {
+                            _output.WriteLine($"\t{l}");
+                        }
+
+                        _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} John's friends like (graph)");
+                        foreach (var l in
+                            johnNode.FromType("Friend")
+                            .ToArray()
+                            .Aggregate(new List<Node?>(), (a, e) => { a.Add(e.To); return a; })
+                            .Aggregate(new List<Edge?>(), (a, n) => { if (n != null) a.AddRange(n.Froms); return a; })
+                            .Where(e => e?.TypeName == "Likes")
+                            .Select(e => e?.To?.Name))
+                        {
+                            _output.WriteLine($"\t{l}");
+                        }
+
+                        Func<Node, Person?> pn = n => n.Object as Person;
+                        Func<Node, Restaurant?> rn = n => n.Object as Restaurant;
+                        _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} Likes local restaurant (graph)");
+                        foreach (var l in
+                            dom.Edges
+                            .Where(e => e.TypeName == "Likes")
+                            .ToArray()
+                            .Select(e => (e.From?.Object as Person, e.To?.Object as Restaurant))
+                            .Where(p => p.Item1?.City == p.Item2?.City)
+                            .Select(p => p.Item1)
+                            )
+                        {
+                            _output.WriteLine($"\t{l?.Name}");
+                        }
+                        _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} Fiend paths");
+                        Func<Edge, string> fname = e => e.From?.Name ?? "";
+                        var edges = dom.Edges.Where(e => e.TypeName == "Friend").ToArray();
+                        foreach (var line in
+                            (from p in edges
+                             join p2 in edges on p.To equals p2.From
+                             join p3 in edges on p2.To equals p3.From
+                             join p4 in edges on p3.To equals p4.From
+                             where p2.From != p.From
+                                && p3.From != p2.From
+                                && p4.From != p3.From
+                                && p.From != p4.From
+                             select $"\t{fname(p)}->{fname(p2)}->{fname(p3)}->{fname(p4)}"
+                             ))
+                            _output.WriteLine(line);
+
+                        _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} Fiend paths (recursive)");
+                        foreach (var p in dom.Nodes)
+                            foreach (var path in Paths(p) ?? ImmutableList<ImmutableList<Node>>.Empty)
+                            {
+                                var sb = new StringBuilder();
+                                foreach (var point in path ?? ImmutableList<Node>.Empty)
+                                    sb.Append($"->{point.Name}");
+                                _output.WriteLine($"\t{sb.ToString().Substring(2)}");
+                            }
+
+                    }
+                    _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} End");
                 }
-                _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} End");
             }
+            if (Directory.Exists(fn)) Directory.Delete(fn, true);
         }
         private static ImmutableList<ImmutableList<Person>> Paths(Person current, ImmutableList<Person>? path = null)
         {

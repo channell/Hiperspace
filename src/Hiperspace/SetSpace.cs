@@ -12,12 +12,14 @@ using System.Runtime.CompilerServices;
 
 namespace Hiperspace
 {
-    public abstract class SetSpace<TEntity> : ISet<TEntity>, IOrderedQueryable<TEntity>, IEnumerable<TEntity> 
+    public abstract class SetSpace<TEntity> : ISet<TEntity>, IOrderedQueryable<TEntity>, IEnumerable<TEntity>
         where TEntity : Element<TEntity>, new()
     {
-        public HashSet<TEntity> Cached = new HashSet<TEntity>();
 
-        public delegate void Bound (TEntity entity);
+        public ConcurrentHashSet<TEntity> Cached = new ConcurrentHashSet<TEntity>();
+        public HashSet<TEntity> oldCached = new HashSet<TEntity>();
+
+        public delegate void Bound(TEntity entity);
         public delegate void Dependency((TEntity target, Meta.DependencyPath sender) value);
         /// <summary>
         /// Event to capture Bind Events
@@ -36,51 +38,43 @@ namespace Hiperspace
         {
             OnDependency?.Invoke((value.target, value.sender));
         }
-        
-        public void ForwardEventsFrom (SetSpace<TEntity> source)
+
+        public void ForwardEventsFrom(SetSpace<TEntity> source)
         {
-            if (OnBind !=null) source.OnBind += RaiseOnbind;
+            if (OnBind != null) source.OnBind += RaiseOnbind;
             if (OnDependency != null) source.OnDependency += RaiseOnDependency;
         }
 
-        protected Func<TEntity,bool>[]? predicates;
+        protected Func<TEntity, bool>[]? predicates;
         public SubSpace Space { get; set; }
-        public SetSpace(SubSpace space, IQueryProvider provider) 
+        public SetSpace(SubSpace space, IQueryProvider provider)
         {
             Space = space;
-//            Provider = provider;
+            //            Provider = provider;
             if (space.Horizon != null)
                 predicates = space.Horizon
                     .Where(h => h.Type == typeof(TEntity))
-                    .Select(i=> ((Horizon<TEntity>)i).Predicate)
+                    .Select(i => ((Horizon<TEntity>)i).Predicate)
                     .ToArray();
         }
-#if NET9_0_OR_GREATER
-        protected readonly System.Threading.Lock _lock = new();
-#else 
-        protected readonly object _lock = new();
-#endif
+        protected SpinLock _lock = new SpinLock();
 
         public virtual Result<TEntity> Bind(TEntity item, bool cache = true)
         {
-            lock (_lock)
-            {
-                TEntity? res;
-                if (Cached.TryGetValue(item, out res))
-                {
-                    return Result.Skip(res);
-                }
+            var filtered = Filter(item);
+            if (filtered.Fail)
+                return filtered;
 
-                if (!cache || Filter(item).Ok)
-                {
-                    Cached.Add(item);
-                    return Result.Ok(item);
-                }
-                else
-                {
-                    return Result.Fail(item, "Filtered by Horizon");
-                }
+            TEntity? res;
+            if (Cached.TryGetValue(item, out res))
+            {
+                return Result.Skip(res);
             }
+            if (cache)
+            {
+                Cached.Add(item);
+            }
+            return Result.Ok(item);
         }
         public Result<TEntity> BatchBind(TEntity item, bool cache, (byte[] key, byte[] value, object? source)[] batch)
         {
@@ -91,13 +85,7 @@ namespace Hiperspace
             {
                 if (cache)
                 {
-                    lock (_lock)
-                    {
-                        Cached.Remove(item);
-                        Cached.Add(item);
-                        RaiseOnbind(item);
-                    }
-                    return Result.Ok(item);
+                    Cached.Replace(item);
                 }
                 RaiseOnbind(item);
                 return Result.Ok(item);
@@ -130,29 +118,14 @@ namespace Hiperspace
         }
         public virtual bool Delete(TEntity item)
         {
-            var current = Get(item);
-            if (current == null)
-                throw new MutationException($"Cannot delete {item.GetType().Name}, a vlaue was not found");
-
-            return Bind(item, true).Ok;
+            throw new MutationException($"Cannot delete {item.GetType().Name}, a non versioned element");
         }
 
         public bool TryGetValue(TEntity equalValue, out TEntity actualValue)
         {
-            lock (_lock)
-            {
-                TEntity? res;
-                if (Cached.TryGetValue(equalValue, out res))
-                {
-                    actualValue = res;
-                    return true;
-                }
-                else
-                {
-                    actualValue = equalValue;
-                    return false;
-                }
-            }
+#pragma warning disable CS8601 // Possible null reference assignment.
+            return Cached.TryGetValue(equalValue, out actualValue);
+#pragma warning restore CS8601 // Possible null reference assignment.
         }
 
         #region entity functions
@@ -160,7 +133,7 @@ namespace Hiperspace
 
         public abstract Task<Result<TEntity>> BindAsync(TEntity item, bool cache = true);
 
-        public abstract void UnionWith (IEnumerable<TEntity> other);
+        public abstract void UnionWith(IEnumerable<TEntity> other);
 
         public abstract bool IsSargable(TEntity template);
         public abstract IEnumerable<TEntity> Find(TEntity template, bool cache = true);
@@ -334,68 +307,52 @@ namespace Hiperspace
 
         public override Result<TEntity> Bind(TEntity item, bool cache = true)
         {
-            lock (_lock)
+            TEntity? res;
+            var filtered = Filter(item);
+            if (filtered.Fail)
+                return filtered;
+            if (Cached.TryGetValue(item, out res))
             {
-                TEntity? res;
-                if (Cached.TryGetValue(item, out res))
-                {
-                    base.Remove(res);
+                Cached.Remove(res);
+                if (cache)
                     Cached.Add(item);
-                    return Result.Ok(item);
-                }
-
-                if (cache && Filter(item).Ok)
-                {
-                    Cached.Add(item);
-                    return Result.Ok(item);
-                }
-                else
-                {
-                    return Result.Fail(item, "Filtered by Horizon");
-                }
+                return Result.Ok(item);
             }
+            if (cache)
+            {
+                Cached.Add(item);
+            }
+            return Result.Ok(item);
         }
         public Result<TEntity> BatchBind(TEntity item, bool cache, (byte[] key, byte[] value, DateTime version, object? source)[] batch)
         {
-            lock (_lock)
+            var result = Space.BatchBind(batch);
+            if (result.Any(b => b.Fail))
+                return Result.Fail(item);
+            if (cache)
             {
-                var result = Space.BatchBind(batch);
-                if (result.Any(b => b.Fail))
-                    return Result.Fail(item);
-                else
-                {
-                    if (cache)
-                    {
-                        Cached.Remove(item);
-                        Cached.Add(item);
-                        RaiseOnbind(item);
-                        return Result.Ok(item);
-                    }
-                    RaiseOnbind(item);
-                    return Result.Ok(item);
-                }
+                Cached.Remove(item);
+                Cached.Add(item);
+                RaiseOnbind(item);
+                return Result.Ok(item);
             }
+            RaiseOnbind(item);
+            return Result.Ok(item);
         }
         public Result<TEntity> BatchBind(TEntity item, bool cache, (byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)
         {
-            lock (_lock)
+            var result = Space.BatchBind(batch);
+            if (result.Any(b => b.Fail))
+                return Result.Fail(item);
+            if (cache)
             {
-                var result = Space.BatchBind(batch);
-                if (result.Any(b => b.Fail))
-                    return Result.Fail(item);
-                else
-                {
-                    if (cache)
-                    {
-                        Cached.Remove(item);
-                        Cached.Add(item);
-                        RaiseOnbind(item);
-                        return Result.Ok(item);
-                    }
-                    RaiseOnbind(item);
-                    return Result.Ok(item);
-                }
+                Cached.Remove(item);
+                Cached.Add(item);
+                RaiseOnbind(item);
+                return Result.Ok(item);
             }
+            RaiseOnbind(item);
+            return Result.Ok(item);
         }
         public new bool Add(TEntity item)
         {
@@ -404,26 +361,19 @@ namespace Hiperspace
 
         public virtual Result<TEntity> BindVersion(TEntity item, bool cache = true)
         {
-            lock (_lock)
+            TEntity? res;
+            var filtered = Filter(item);
+            if (filtered.Fail)
+                return filtered;
+            if (Cached.TryGetValue(item, out res))
             {
-                TEntity? res;
-                if (base.TryGetValue(item, out res))
-                {
-                    base.Remove(res);
-                    base.Add(item);
-                    return Result.Ok(item);
-                }
-
-                if (!cache || Filter(item).Ok)
-                {
-                    base.Add(item);
-                    return Result.Ok(item);
-                }
-                else
-                {
-                    return Result.Fail(item, "Filtered by Horizon");
-                }
+                Cached.Remove(res);
             }
+            if (cache)
+            {
+                Cached.Add(item);
+            }
+            return Result.Ok(item);
         }
         public virtual TEntity? Get(TEntity template, DateTime? version)
         {
@@ -437,6 +387,21 @@ namespace Hiperspace
                     return item;
             }
             return null;
+        }
+        public override bool Delete(TEntity item)
+        {
+            var current = Get(item);
+            if (current == null)
+            {
+                if (item.GetType().GetCustomAttribute<VersionedAttribute>() != null)
+                {
+                    item.GetType().GetProperty("Deleted")?.SetValue(item, true);
+                    return Bind(item, true).Ok;
+                }
+                else
+                    throw new MutationException($"Cannot insert a new {item.GetType().Name}, value already exists");
+            }
+            throw new MutationException($"Cannot delete {item.GetType().Name}, a value was not found");
         }
     }
 }

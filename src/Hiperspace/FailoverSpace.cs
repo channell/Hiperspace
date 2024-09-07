@@ -366,5 +366,13 @@ namespace Hiperspace
                 return _primary.Delta(key, version);
             }
         }
+        public override IEnumerable<Horizon> GetHorizons()
+        {
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                foreach (var h in _spaces[c].space.GetHorizons())
+                    yield return h;
+            }
+        }
     }
 }

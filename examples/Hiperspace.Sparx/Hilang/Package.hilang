@@ -2,7 +2,7 @@
 entity Sparx.EA.Package = Node (SKey = SKey, Name = Name, TypeName = "EA-Package"),
                           Edge (From = Parent, To = this, TypeName = "EA-PackageChild")    
 (
-    @KeyAttribute, Column ( "Package_ID" ), DatabaseGenerated ( DatabaseGeneratedOption.Identity )
+    @Key, Column ( "Package_ID" ), DatabaseGenerated ( DatabaseGeneratedOption.Identity )
     Id : Int32
 )
 {
@@ -67,4 +67,6 @@ entity Sparx.EA.Package = Node (SKey = SKey, Name = Name, TypeName = "EA-Package
     Diagrams    : Sparx.EA.Diagram (Package = this),
     Content     : Sparx.EA.Element (Package = this),
     Children    : Sparx.EA.Package (Parent  = this),
+    @NotMapped
+    Loaded      : Sparx.Load.Tracking
 ];

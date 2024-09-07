@@ -27,12 +27,13 @@ namespace Hiperspace
         /// <param name="DeltaFrom">Timestamp that versions must be after</param>
         protected SubSpace(HiperSpace space, Horizon[]? horizon, DateTime? AsAt = null, DateTime? DeltaFrom = null) : this(space)
         {
-            if (space is SubSpace subSpace && subSpace.Horizon != null)
+            var baseHorizon = space.GetHorizons().ToArray();
+            if (baseHorizon != null && baseHorizon != Array.Empty<Horizon>())
             {
                 if (horizon is null)
-                    Horizon = subSpace.Horizon;
+                    Horizon = baseHorizon;
                 else
-                    Horizon = subSpace.Horizon.Union(horizon).ToArray();
+                    Horizon = baseHorizon.Union(horizon).ToArray();
             }
             else
             { 

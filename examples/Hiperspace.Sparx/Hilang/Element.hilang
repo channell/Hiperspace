@@ -16,16 +16,15 @@ entity Sparx.EA.Element
     #100
 (
     "Unique global key within a model"
-    @KeyAttribute, Column ( "Object_ID" ),DatabaseGenerated ( DatabaseGeneratedOption.Identity )
+    @Key, Column ( "Object_ID" ),DatabaseGenerated ( DatabaseGeneratedOption.Identity )
     Id : Int32 #1
 )
 {
     "GUID is used form XMI export/import to identify an elements independent of the database it is currently stored in"
     @StringLength ( 40 ), Column ( "ea_guid" )
     GUID : String,
-    @NotMapped , JsonIgnore
     Package : Sparx.EA.Package,
-    @NotMapped , JsonIgnore
+
     Parent : Sparx.EA.Element,
 
     "UML type of the element" 
@@ -33,7 +32,6 @@ entity Sparx.EA.Element
     ObjectType : String
 ,
     "composite disgram that explains the element"
-    @NotMapped , JsonIgnore
     Diagram     : Sparx.EA.Diagram
 ,
     "Name of the element displayed without parameters"
@@ -178,11 +176,11 @@ entity Sparx.EA.Element
     ActionFlags : String
 ,
     "witin a sparx database this is seperate table, but here it is a set fo values for demonstration"
-    @NotMapped 
+    @NotMapped
     Efforts : Set<Sparx.EA.ObjectEffort>
 ,
     "witin a sparx database this is seperate table, but here it is a set fo values for demonstration"
-    @NotMapped 
+    @NotMapped
     Constraints : Set<Sparx.EA.ObjectConstraint>
 ,
     "
@@ -235,5 +233,7 @@ entity Sparx.EA.Element
 */    @NotMapped 
     Operations      : Sparx.EA.Operation,
     @NotMapped 
-    Children        : Sparx.EA.Element (Parent = this)
+    Children        : Sparx.EA.Element (Parent = this),
+    @NotMapped
+    Loaded          : Sparx.Load.Tracking
 ];

@@ -7,17 +7,27 @@
 // ---------------------------------------------------------------------------------------
 module loader
 
+open System
 open Sparx
 open Sparx.EA
 open Microsoft.EntityFrameworkCore;
 open Log
     
 let load (space : SparxSpace) (ctx : Context) = 
+
+    let mdl = ctx.Model
+    mdl.GetEntityTypes()
+    |> Seq.iter (fun r -> printfn "%A" r.Name
+                          r.GetProperties()
+                          |> Seq.iter (fun p -> printfn "\t%A" p ))
+
     log "Loading"
+    let start = DateTime.Now    
+    let loading = Sparx.Load.Tracking (When = start)
     log "Package"
-    query { for r in ctx.Packages.AsNoTracking() do select r } |> Seq.iter (fun r -> space.Packages.Bind(r, false) |> ignore)    
+    query { for r in ctx.Packages.AsNoTracking() do select r } |> Seq.iter (fun r -> space.Packages.Bind(r, false).Value.Loaded <- loading.As r.Loaded)   
     log "Elements"
-    query { for r in ctx.Elements.AsNoTracking() do select r } |> Seq.iter (fun r -> space.EAElements.Bind(r, false) |> ignore)    
+    query { for r in ctx.Elements.AsNoTracking() do select r } |> Seq.iter (fun r -> space.EAElements.Bind(r, false).Value.Loaded <- loading.As r.Loaded)    
     log "Resources"
     query { for r in ctx.Resources.AsNoTracking() do select r } |> Seq.iter (fun r -> space.Resources.Bind(r, false) |> ignore)    
     log "Diagrams"

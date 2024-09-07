@@ -14,12 +14,6 @@ enum ResponseState
 	Error = 4;	// another error (not related to comunication) has occured
 }
 
-enum HiperDrive
-{
-	Rocks = 0;
-	Remote = 1;
-}
-
 message Token
 {
 	bytes TokenId = 1;
@@ -30,10 +24,8 @@ message OpenRequest
 	Token Token = 1;
 	string Path = 2;
 	bytes MetaModel = 3;
-	HiperDrive Driver = 4;
 	bool Compression = 5;
 	bool Read = 8;
-	string Realm = 6;
 	string UserName = 7;
 }
 
@@ -48,7 +40,8 @@ message BindVersionRequest
 	bytes Key = 1;
 	bytes Value = 2;
 	google.protobuf.Timestamp Version = 3;
-	Token Token = 4;
+	google.protobuf.Timestamp AsWas = 4;
+	Token Token = 5;
 }
 
 message BatchBindRequest
@@ -153,9 +146,44 @@ message ZipStatus
 	Token Token = 3;
 }
 
+message Vector 
+{
+	repeated int32 UInts = 1;
+	repeated float Floats = 2;
+}
+
+message VectorRequest
+{
+	enum MethodType
+	{
+		Distance = 0;
+		Dot = 1;
+		Cosine = 2;
+	}
+	bytes Begin = 1;
+	bytes End = 2;
+	google.protobuf.Timestamp Version = 3;
+	Vector Space = 4;
+	MethodType Method = 5;
+	int32 Limit = 6;
+}
+
+message VectorReponse
+{
+	bytes Key = 1;
+	google.protobuf.Timestamp AsAt = 2;
+	bytes Value = 3;
+	double Distance = 4;
+}
+
+message VectorResponses
+{
+	repeated VectorReponse Value = 1;
+}
+
 // Provides a remote interface to a hiperspace driver
 // for authorised users
-service HiServ
+service RemoteServer
 {
 	rpc Open (OpenRequest) returns (Token);
 	rpc Close (Token) returns (Token);
@@ -174,6 +202,7 @@ service HiServ
 	rpc FindIndex (FindRequest) returns (Values);
 	rpc FindIndexVersion (FindVersionRequest) returns (ValueVersions);
 	rpc Delta (DeltaRequest) returns (ValueVersions);
+	rpc Nearest (VectorRequest) returns (VectorResponses);
 	rpc UnZip (ZipStream) returns (ZipStatus);
 	rpc Zip (ZipStatus) returns (ZipStream);
 }	

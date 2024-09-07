@@ -517,8 +517,20 @@ namespace Hiperspace.Rocks
             {
                 if (disposing)
                 {
-                    _db.Flush(new FlushOptions());
-                    _db.Dispose();
+                    try
+                    {
+                        _db.Flush(new FlushOptions());
+                        _db.Dispose();
+                    }
+                    catch 
+                    {
+                        try
+                        {
+                            Thread.Sleep(1000);     // allow time for async Flush flush
+                            _db.Dispose();
+                        }
+                        catch { }
+                    } 
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer

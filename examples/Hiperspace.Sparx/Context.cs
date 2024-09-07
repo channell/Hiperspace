@@ -60,7 +60,15 @@ namespace Sparx.EA
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Element>().Property(e => e.Parent_Id).HasColumnName("ParentID");
+            modelBuilder.Entity<Package>()
+                .HasKey(e => e.Id)
+                ;
+            modelBuilder.Ignore<ElementLoaded>();
+            modelBuilder.Ignore<PackageLoaded>();
+
+            modelBuilder.Entity<Element>()
+                .Property(e => e.Parent_Id)
+                .HasColumnName("ParentID");
             
             modelBuilder.Entity<Connector>()
                 .HasMany(e => e.Links)
@@ -153,10 +161,18 @@ namespace Sparx.EA
                 .WithOne(e => e.owner)
                 .HasForeignKey(e => e.owner_Id)
                 ;
-            modelBuilder.Entity<ElementOperation>().Property(e => e.owner_Id).HasColumnName("Object_ID");
-            modelBuilder.Entity<ElementOperation>().Property(e => e.Id).HasColumnName("OperationID").HasAnnotation("DatabaseGenerated", DatabaseGeneratedOption.Identity);
+            modelBuilder.Entity<ElementOperation>()
+                .Property(e => e.owner_Id)
+                .HasColumnName("Object_ID");
 
-            modelBuilder.Entity<ElementOperation>().Property(e => e.owner_Id).HasColumnName("Object_ID");
+            modelBuilder.Entity<ElementOperation>()
+                .Property(e => e.Id)
+                .HasColumnName("OperationID")
+                .HasAnnotation("DatabaseGenerated", DatabaseGeneratedOption.Identity);
+
+            modelBuilder.Entity<ElementOperation>()
+                .Property(e => e.owner_Id)
+                .HasColumnName("Object_ID");
             modelBuilder.Entity<ElementOperation>()
                 .HasOne(e => e.owner)
                 .WithMany(e => e.Operations)
@@ -186,181 +202,285 @@ namespace Sparx.EA
                 .HasForeignKey(e => e.owner_Id)
                 ;
 
-            modelBuilder.Entity<Attribute>().Property(e => e.Element_Id).HasColumnName("Object_ID");
+            modelBuilder.Entity<Attribute>()
+                .Property(e => e.Element_Id)
+                .HasColumnName("Object_ID");
+
             modelBuilder.Entity<Attribute>()
                 .Ignore(t => t.AsAt)
+                .Ignore(t => t.AsWas)
                 .Ignore(t => t.Deleted)
                 ;
+
             modelBuilder.Entity<Element>()
                 .Ignore(t => t.AsAt)
+                .Ignore(t => t.AsWas)
                 .Ignore(t => t.Deleted)
                 ;
 
-
-            modelBuilder.Entity<Connector>().Property(e => e.StartElement_Id).HasColumnName("Start_Object_ID");
-            modelBuilder.Entity<Connector>().Property(e => e.EndElement_Id).HasColumnName("End_Object_ID");
+            modelBuilder.Entity<Connector>()
+                .Property(e => e.StartElement_Id)
+                .HasColumnName("Start_Object_ID")
+                ;
+            modelBuilder.Entity<Connector>()
+                .Property(e => e.EndElement_Id)
+                .HasColumnName("End_Object_ID")
+                ;
             modelBuilder.Entity<Connector>()
                 .Ignore(t => t.AsAt)
+                .Ignore(t => t.AsWas)
                 .Ignore(t => t.Deleted)
                 ;
             modelBuilder.Entity<Diagram>()
                 .Ignore(t => t.AsAt)
+                .Ignore(t => t.AsWas)
                 .Ignore(t => t.Deleted)
                 ;
 
-            modelBuilder.Entity<DiagramLink>().Property(e => e.Connector_Id).HasColumnName("ConnectorID");
-            modelBuilder.Entity<DiagramLink>().Property(e => e.Diagram_Id).HasColumnName("DiagramID");
+            modelBuilder.Entity<DiagramLink>()
+                .Property(e => e.Connector_Id)
+                .HasColumnName("ConnectorID")
+                ;
+            modelBuilder.Entity<DiagramLink>()
+                .Property(e => e.Diagram_Id)
+                .HasColumnName("DiagramID")
+                ;
             modelBuilder.Entity<DiagramLink>()
                 .Ignore(t => t.AsAt)
+                .Ignore(t => t.AsWas)
                 .Ignore(t => t.Deleted)
                 ;
             modelBuilder.Entity<DiagramObject>()
                 .HasKey(e => e.Id);
 
-            modelBuilder.Entity<DiagramObject>().Property(e => e.Element_Id).HasColumnName("Object_ID");
-            modelBuilder.Entity<DiagramObject>().Property(e => e.Id).HasColumnName("Instance_ID");
+            modelBuilder.Entity<DiagramObject>()
+                .Property(e => e.Element_Id)
+                .HasColumnName("Object_ID")
+                ;
+            modelBuilder.Entity<DiagramObject>()
+                .Property(e => e.Id)
+                .HasColumnName("Instance_ID")
+                ;
             modelBuilder.Entity<DiagramObject>()
                 .Ignore(t => t.AsAt)
+                .Ignore(t => t.AsWas)
                 .Ignore(t => t.Deleted)
                 ;
             modelBuilder.Entity<Package>()
                 .Ignore(t => t.AsAt)
+                .Ignore(t => t.AsWas)
                 .Ignore(t => t.Deleted)
                 ;
 
             modelBuilder.Entity<ConnectorConstraint>()
                 .HasKey(e => new { e.owner_Id, e.Constraint });
 
-            modelBuilder.Entity<ConnectorConstraint>().Property(e => e.owner_Id).HasColumnName("ConnectorID");
+            modelBuilder.Entity<ConnectorConstraint>()
+                .Property(e => e.owner_Id)
+                .HasColumnName("ConnectorID")
+                ;
             modelBuilder.Entity<ConnectorConstraint>()
                 .Ignore(t => t.AsAt)
+                .Ignore(t => t.AsWas)
                 .Ignore(t => t.Deleted)
                 ;
-            modelBuilder.Entity<ConnectorTag>().Property(e => e.owner_Id).HasColumnName("ElementID");
-            modelBuilder.Entity<ConnectorTag>().Property(e => e.PropertyId).HasColumnName("PropertyID");
+            modelBuilder.Entity<ConnectorTag>()
+                .Property(e => e.owner_Id)
+                .HasColumnName("ElementID")
+                ;
+            modelBuilder.Entity<ConnectorTag>()
+                .Property(e => e.PropertyId)
+                .HasColumnName("PropertyID")
+                ;
             modelBuilder.Entity<ConnectorTag>()
                 .Ignore(t => t.AsAt)
+                .Ignore(t => t.AsWas)
                 .Ignore(t => t.Deleted)
                 ;
 
             modelBuilder.Entity<ConnectorRoleConstraint>()
                 .HasKey(e => new { e.owner_Id, e.Constraint, e.ConnectorEnd, e.ConstraintType});
 
-            modelBuilder.Entity<ConnectorRoleConstraint>().Property(e => e.owner_Id).HasColumnName("ConnectorID");
+            modelBuilder.Entity<ConnectorRoleConstraint>()
+                .Property(e => e.owner_Id)
+                .HasColumnName("ConnectorID")
+                ;
             modelBuilder.Entity<ConnectorRoleConstraint>()
                 .Ignore(t => t.AsAt)
+                .Ignore(t => t.AsWas)
                 .Ignore(t => t.Deleted)
                 ;
 
             modelBuilder.Entity<ElementFile>()
                 .HasKey(e => new { e.owner_Id, e.FileName});
-            modelBuilder.Entity<ElementFile>().Property(e => e.owner_Id).HasColumnName("Object_ID");
+            modelBuilder.Entity<ElementFile>()
+                .Property(e => e.owner_Id)
+                .HasColumnName("Object_ID");
 
             modelBuilder.Entity<ElementFile>()
                 .Ignore(t => t.AsAt)
+                .Ignore(t => t.AsWas)
                 .Ignore(t => t.Deleted)
                 ;
-            modelBuilder.Entity<ElementMetric>().Property(e => e.owner_Id).HasColumnName("Object_ID");
+            modelBuilder.Entity<ElementMetric>()
+                .Property(e => e.owner_Id)
+                .HasColumnName("Object_ID")
+                ;
             modelBuilder.Entity<ElementMetric>()
                 .HasKey(e => new { e.owner_Id, e.Metric });
 
             modelBuilder.Entity<ElementMetric>()
                 .Ignore(t => t.AsAt)
+                .Ignore(t => t.AsWas)
                 .Ignore(t => t.Deleted)
                 ;
 
-            modelBuilder.Entity<ElementOperation>().Property(e => e.owner_Id).HasColumnName("Object_ID");
+            modelBuilder.Entity<ElementOperation>()
+                .Property(e => e.owner_Id)
+                .HasColumnName("Object_ID")
+                ;
             modelBuilder.Entity<ElementOperation>()
                 .HasKey(e => e.Id);
 
             modelBuilder.Entity<ElementOperation>()
                 .Ignore(t => t.AsAt)
+                .Ignore(t => t.AsWas)
                 .Ignore(t => t.Deleted)
                 ;
-            modelBuilder.Entity<ElementOperationParameter>().Property(e => e.owner_Id).HasColumnName("OperationID");
+            modelBuilder.Entity<ElementOperationParameter>()
+                .Property(e => e.owner_Id)
+                .HasColumnName("OperationID")
+                ;
             modelBuilder.Entity<ElementOperationParameter>()
                 .HasKey(e => new { e.owner_Id, e.Name });
 
             modelBuilder.Entity<ElementOperationParameter>()
                 .Ignore(t => t.AsAt)
+                .Ignore(t => t.AsWas)
                 .Ignore(t => t.Deleted)
                 ;
-            modelBuilder.Entity<ElementOperationPostCondition>().Property(e => e.owner_Id).HasColumnName("OperationID");
+            modelBuilder.Entity<ElementOperationPostCondition>()
+                .Property(e => e.owner_Id)
+                .HasColumnName("OperationID")
+                ;
             modelBuilder.Entity<ElementOperationPostCondition>()
                 .HasKey(e => new { e.owner_Id, e.PostCondition });
 
             modelBuilder.Entity<ElementOperationPostCondition>()
                 .Ignore(t => t.AsAt)
+                .Ignore(t => t.AsWas)
                 .Ignore(t => t.Deleted)
                 ;
-            modelBuilder.Entity<ElementOperationPreCondition>().Property(e => e.owner_Id).HasColumnName("OperationID");
+            modelBuilder.Entity<ElementOperationPreCondition>()
+                .Property(e => e.owner_Id)
+                .HasColumnName("OperationID")
+                ;
             modelBuilder.Entity<ElementOperationPreCondition>()
                 .HasKey(e => new { e.owner_Id, e.PreCondition });
 
             modelBuilder.Entity<ElementOperationPreCondition>()
                 .Ignore(t => t.AsAt)
+                .Ignore(t => t.AsWas)
                 .Ignore(t => t.Deleted)
                 ;
-            modelBuilder.Entity<ElementOperationTag>().Property(e => e.owner_Id).HasColumnName("ElementID");
-            modelBuilder.Entity<ElementOperationTag>().Property(e => e.Id).HasColumnName("PropertyID");
+            modelBuilder.Entity<ElementOperationTag>()
+                .Property(e => e.owner_Id)
+                .HasColumnName("ElementID")
+                ;
+            modelBuilder.Entity<ElementOperationTag>()
+                .Property(e => e.Id)
+                .HasColumnName("PropertyID")
+                ;
             modelBuilder.Entity<ElementOperationTag>()
                 .HasKey(e => e.Id);
 
             modelBuilder.Entity<ElementOperationTag>()
                 .Ignore(t => t.AsAt)
+                .Ignore(t => t.AsWas)
                 .Ignore(t => t.Deleted)
                 ;
-            modelBuilder.Entity<ElementProblem>().Property(e => e.owner_Id).HasColumnName("Object_ID");
+            modelBuilder.Entity<ElementProblem>()
+                .Property(e => e.owner_Id)
+                .HasColumnName("Object_ID")
+                ;
             modelBuilder.Entity<ElementProblem>()
                 .HasKey(e => new { e.owner_Id, e.Problem, e.ProblemType });
 
             modelBuilder.Entity<ElementProblem>()
                 .Ignore(t => t.AsAt)
+                .Ignore(t => t.AsWas)
                 .Ignore(t => t.Deleted)
                 ;
-            modelBuilder.Entity<ElementPropertie>().Property(e => e.owner_Id).HasColumnName("Object_ID");
+            modelBuilder.Entity<ElementPropertie>()
+                .Property(e => e.owner_Id)
+                .HasColumnName("Object_ID")
+                ;
             modelBuilder.Entity<ElementPropertie>()
                 .Ignore(t => t.AsAt)
+                .Ignore(t => t.AsWas)
                 .Ignore(t => t.Deleted)
                 ;
-            modelBuilder.Entity<ElementRequirement>().Property(e => e.owner_Id).HasColumnName("Object_ID");
+            modelBuilder.Entity<ElementRequirement>()
+                .Property(e => e.owner_Id)
+                .HasColumnName("Object_ID")
+                ;
             modelBuilder.Entity<ElementRequirement>()
                 .Ignore(t => t.AsAt)
+                .Ignore(t => t.AsWas)
                 .Ignore(t => t.Deleted)
                 ;
 
-            modelBuilder.Entity<ElementResource>().Property(e => e.owner_Id).HasColumnName("Object_ID");
-            modelBuilder.Entity<ElementResource>().Property(e => e.Resource_Name).HasColumnName("Resource");
+            modelBuilder.Entity<ElementResource>()
+                .Property(e => e.owner_Id)
+                .HasColumnName("Object_ID")
+                ;
+            modelBuilder.Entity<ElementResource>()
+                .Property(e => e.Resource_Name)
+                .HasColumnName("Resource")
+                ;
             modelBuilder.Entity<ElementResource>()
                 .HasKey(e => new { e.owner_Id, e.Resource_Name });
 
             modelBuilder.Entity<ElementResource>()
                 .Ignore(t => t.AsAt)
+                .Ignore(t => t.AsWas)
                 .Ignore(t => t.Deleted)
                 ;
 
-            modelBuilder.Entity<ElementRisk>().Property(e => e.owner_Id).HasColumnName("Object_ID");
+            modelBuilder.Entity<ElementRisk>()
+                .Property(e => e.owner_Id)
+                .HasColumnName("Object_ID")
+                ;
             modelBuilder.Entity<ElementRisk>()
                 .HasKey(e => new { e.owner_Id, e.Risk });
 
             modelBuilder.Entity<ElementRisk>()
                 .Ignore(t => t.AsAt)
+                .Ignore(t => t.AsWas)
                 .Ignore(t => t.Deleted)
                 ;
-            modelBuilder.Entity<ElementScenario>().Property(e => e.owner_Id).HasColumnName("Object_ID");
+            modelBuilder.Entity<ElementScenario>()
+                .Property(e => e.owner_Id)
+                .HasColumnName("Object_ID")
+                ;
             modelBuilder.Entity<ElementScenario>()
                 .HasKey(e => new { e.owner_Id, e.Scenario });
 
             modelBuilder.Entity<ElementScenario>()
                 .Ignore(t => t.AsAt)
+                .Ignore(t => t.AsWas)
                 .Ignore(t => t.Deleted)
                 ;
-            modelBuilder.Entity<ElementTest>().Property(e => e.owner_Id).HasColumnName("Object_ID");
+            modelBuilder.Entity<ElementTest>()
+                .Property(e => e.owner_Id)
+                .HasColumnName("Object_ID")
+                ;
             modelBuilder.Entity<ElementTest>()
                 .HasKey(e => new { e.owner_Id, e.Test, e.TestClass });
 
             modelBuilder.Entity<ElementTest>()
                 .Ignore(t => t.AsAt)
+                .Ignore(t => t.AsWas)
                 .Ignore(t => t.Deleted)
                 ;
         }

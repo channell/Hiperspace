@@ -521,5 +521,16 @@ namespace Hiperspace
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
+
+        /// <summary>
+        /// Get the horizons for the space, and every space that it uses.
+        /// This is useful for domain SubSpaces that are opened with a SessionSpace that batched updates to 
+        /// an underlying domain SubSpace
+        /// </summary>
+        /// <returns></returns>
+        public virtual IEnumerable<Horizon> GetHorizons()
+        {
+            return Enumerable.Empty<Horizon>();
+        }
     }
 }

@@ -3,33 +3,28 @@ using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Grpc.Net.Client;
 using Hiperspace.Meta;
-using System.Runtime.CompilerServices;
-using static HiLang.Ast.Boolean;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Hiperspace.Remote
 {
-    public class Client : HiperSpace
+    public class RemoteSpace : HiperSpace
     {
         private GrpcChannel _channel;
-        private HiServ.HiServClient _service;
+        private RemoteServer.RemoteServerClient _service;
 
         private string _name;
         private MetaModel? _model;
-        private HiperDrive _drive;
         private string _address;
         private string _realm;
         private string _user;
         private Token? _sessionToken;
         private Guid _token;
         private bool _read;
-        public Client(string name, MetaModel? model, HiperDrive hiperDrive, string address, string realm, string user, Guid token, bool read = false)
+        public RemoteSpace(string name, MetaModel? model, string address, string realm, string user, Guid token, bool read = false)
         {
             _channel = GrpcChannel.ForAddress(address);
-            _service = new HiServ.HiServClient(_channel);
+            _service = new RemoteServer.RemoteServerClient(_channel);
             _name = name;
             _model = model;
-            _drive = hiperDrive;
             _address = address;
             _realm = realm;
             _user = user;
@@ -58,8 +53,6 @@ namespace Hiperspace.Remote
                             false => ByteString.CopyFrom(Array.Empty<byte>())
                         },
                         Read = _read,
-                        Driver = _drive,
-                        Realm = _realm,
                         UserName = _user,
                     });
             }
