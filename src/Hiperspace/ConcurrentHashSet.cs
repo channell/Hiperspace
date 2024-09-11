@@ -520,12 +520,13 @@ namespace Hiperspace
                     }
                     else
                     {
-                        return GetNext().Remove(item);
+                        return GetNext().Replace(item);
                     }
                 }
                 else
                 {
-                    return _segment.Remove(item);
+                    _segment.Remove(item);
+                    return _segment.Add(item);
                 }
             }
             finally

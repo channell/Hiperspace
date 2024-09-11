@@ -401,6 +401,92 @@ namespace Hiperspace
         /// <param name="key"></param>
         /// <returns></returns>
         public abstract Task<IEnumerable<(byte[] value, DateTime version)>> GetVersionsAsync(byte[] key);
+
+        /// <summary>
+        /// Default implementation to get the first item from a setspace
+        /// </summary>
+        /// <param name="begin"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        public virtual (byte[] Key, byte[] Value) GetFirst(byte[] begin, byte[] end)
+        {
+            return Find(begin, end).FirstOrDefault();
+        }
+        /// <summary>
+        /// Get the first item asynchronously. 
+        /// </summary>
+        /// <param name="begin"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        public virtual Task<(byte[] Key, byte[] Value)> GetFirstAsync(byte[] begin, byte[] end)
+        {
+            return FindAsync(begin, end).ContinueWith(t => t.Result.FirstOrDefault());
+        }
+        /// <summary>
+        /// Get the last item from a set space. 
+        /// </summary>
+        /// <param name="begin"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        public virtual (byte[] Key, byte[] Value) GetLast(byte[] begin, byte[] end)
+        {
+            return Find(begin, end).LastOrDefault();
+        }
+        /// <summary>
+        /// Get the last item asynchronously.   
+        /// </summary>
+        /// <param name="begin"></param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        public virtual Task<(byte[] Key, byte[] Value)> GetLastAsync(byte[] begin, byte[] end)
+        {
+            return FindAsync(begin, end).ContinueWith(t => t.Result.LastOrDefault());
+        }
+        /// <summary>
+        /// Get the first item that is before the specified version date. 
+        /// </summary>
+        /// <param name="begin"></param>
+        /// <param name="end"></param>
+        /// <param name="version"></param>
+        /// <returns></returns>
+        public virtual (byte[] Key, DateTime AsAt, byte[] Value) GetFirst(byte[] begin, byte[] end, DateTime version)
+        {
+            return Find(begin, end, version).FirstOrDefault();
+        }
+        /// <summary>
+        /// Get the first version item asynchronously. 
+        /// </summary>
+        /// <param name="begin"></param>
+        /// <param name="end"></param>
+        /// <param name="version"></param>
+        /// <returns></returns>
+        public virtual Task<(byte[] Key, DateTime AsAt, byte[] Value)> GetFirstAsync(byte[] begin, byte[] end, DateTime version)
+        {
+            return FindAsync(begin, end, version).ContinueWith(t => t.Result.FirstOrDefault());
+        }
+        /// <summary>
+        /// Get the last item that matches that's on or before the specified version date.
+        /// </summary>
+        /// <param name="begin"></param>
+        /// <param name="end"></param>
+        /// <param name="version"></param>
+        /// <returns></returns>
+        public virtual (byte[] Key, DateTime AsAt, byte[] Value) GetLast(byte[] begin, byte[] end, DateTime version)
+        {
+            return Find(begin, end, version).LastOrDefault();
+        }
+        /// <summary>
+        /// Get the last version asynchronously. 
+        /// </summary>
+        /// <param name="begin"></param>
+        /// <param name="end"></param>
+        /// <param name="version"></param>
+        /// <returns></returns>
+        public virtual Task<(byte[] Key, DateTime AsAt, byte[] Value)> GetLastAsync(byte[] begin, byte[] end, DateTime version)
+        {
+            return FindAsync(begin, end, version).ContinueWith(t => t.Result.LastOrDefault());
+        }
+
         #endregion
 
         /// <summary>

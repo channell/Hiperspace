@@ -290,6 +290,23 @@ namespace Hiperspace
         public int Count => Cached.Count;
 
         public bool IsReadOnly => false;
+
+        public virtual TEntity? GetFirst()
+        {
+            return Find(new TEntity()).FirstOrDefault();
+        }
+        public virtual Task<TEntity?> GetFirstAsync()
+        {
+            return FindAsync(new TEntity()).ContinueWith(t => t.Result.FirstOrDefault());
+        }
+        public virtual TEntity? GetLast()
+        {
+            return Find(new TEntity()).FirstOrDefault();
+        }
+        public virtual Task<TEntity?> GetLastAsync()
+        {
+            return FindAsync(new TEntity()).ContinueWith(t => t.Result.FirstOrDefault());
+        }
         #endregion
     }
 

@@ -5,6 +5,7 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using System.Diagnostics;
 using System.Numerics;
 
 namespace Hiperspace
@@ -196,6 +197,25 @@ namespace Hiperspace
             else if (source != null) 
                 return Sum(source, func);
             return T.Zero;
+        }
+
+        public static T? First<T>(SetSpace<T> source)
+            where T : Element<T>, new()
+        {
+            if (source != null)
+            {
+                return source.GetFirst();
+            }
+            return null;
+        }
+        public static T? Last<T>(SetSpace<T> source)
+            where T : Element<T>, new()
+        {
+            if (source != null)
+            {
+                return source.GetLast();
+            }
+            return null;
         }
     }
 }
