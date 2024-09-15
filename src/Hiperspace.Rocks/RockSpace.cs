@@ -18,6 +18,7 @@ namespace Hiperspace.Rocks
     public class RockSpace : HiperSpace
     {
         private RocksDb _db;
+        private bool _readonly;
         /// <summary>
         /// Create a HiperSpace using the RocksDB provider 
         /// </summary>
@@ -28,7 +29,8 @@ namespace Hiperspace.Rocks
         /// </param>
         /// <param name="compress">attempt to open store with compression when metamodel provided</param>
         public RockSpace(string path, MetaModel? metaModel = null, bool compress = false, bool read = false)
-        { 
+        {
+            _readonly = read;
             try
             {
                 _db = Open(path, metaModel, metaModel != null ? compress : false, read);
@@ -519,7 +521,8 @@ namespace Hiperspace.Rocks
                 {
                     try
                     {
-                        _db.Flush(new FlushOptions());
+                        if (!_readonly)
+                            _db.Flush(new FlushOptions());
                         _db.Dispose();
                     }
                     catch 

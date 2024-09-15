@@ -449,7 +449,7 @@ namespace Hiperspace
         /// <param name="end"></param>
         /// <param name="version"></param>
         /// <returns></returns>
-        public virtual (byte[] Key, DateTime AsAt, byte[] Value) GetFirst(byte[] begin, byte[] end, DateTime version)
+        public virtual (byte[] Key, DateTime AsAt, byte[] Value) GetFirst(byte[] begin, byte[] end, DateTime? version)
         {
             return Find(begin, end, version).FirstOrDefault();
         }
@@ -460,7 +460,7 @@ namespace Hiperspace
         /// <param name="end"></param>
         /// <param name="version"></param>
         /// <returns></returns>
-        public virtual Task<(byte[] Key, DateTime AsAt, byte[] Value)> GetFirstAsync(byte[] begin, byte[] end, DateTime version)
+        public virtual Task<(byte[] Key, DateTime AsAt, byte[] Value)> GetFirstAsync(byte[] begin, byte[] end, DateTime? version)
         {
             return FindAsync(begin, end, version).ContinueWith(t => t.Result.FirstOrDefault());
         }
@@ -471,7 +471,7 @@ namespace Hiperspace
         /// <param name="end"></param>
         /// <param name="version"></param>
         /// <returns></returns>
-        public virtual (byte[] Key, DateTime AsAt, byte[] Value) GetLast(byte[] begin, byte[] end, DateTime version)
+        public virtual (byte[] Key, DateTime AsAt, byte[] Value) GetLast(byte[] begin, byte[] end, DateTime? version)
         {
             return Find(begin, end, version).LastOrDefault();
         }
@@ -482,7 +482,7 @@ namespace Hiperspace
         /// <param name="end"></param>
         /// <param name="version"></param>
         /// <returns></returns>
-        public virtual Task<(byte[] Key, DateTime AsAt, byte[] Value)> GetLastAsync(byte[] begin, byte[] end, DateTime version)
+        public virtual Task<(byte[] Key, DateTime AsAt, byte[] Value)> GetLastAsync(byte[] begin, byte[] end, DateTime? version)
         {
             return FindAsync(begin, end, version).ContinueWith(t => t.Result.LastOrDefault());
         }

@@ -9,38 +9,7 @@
     <Description>Hiperspace heap store for testing purposes</Description>
     <Copyright>Cepheis Ltd</Copyright>
     <PackageReleaseNotes>
-      ## ConcurentHashSet
-      The hash map for set spaces has been updated to use concurrent hash map.
-      This is needed for two scenarios
-      1. Horizons filter cause additional elements to be loaded in a set space while it is being enumerated.
-      2. Parallel scan for Node and Edge cause references to be loaded in thread order.
-
-      This implementation of Concurent HashSet:
-      * Provides locking around HashSet functions (using low-contention Spin Locks)
-      * One or more HashSet segments that are locked for read while enumeration functions are running
-      * Add / Remove / Replace / UnionAll operations are performed on the next segment to avoid mutation during enumeration
-      * Any additions made (to next segment) are merged when the last enumeration has completed
-      * Whole-set functions are deferred until enumerations has completed
-
-      ## RockSpace disposal
-      Internally the RocksDB Flush function uses async-io, that under heavy load can complete before pending IO, which blocks disposal of the connection. The RocksSpace driver has been updated to retry disposal to allow async IO to complete
-
-      ## HiperSpace GetHorizons() function
-      A common loading scenario is to use a SessionSpace to batch a set of additions to a domain space
-
-      ```
-      public void LoadingFunction (DomainSpace domain)
-      {
-      using (var session = new SessionSpace (new HeapSpace(), domain, SessionSpace.RollUpSeconds(1))))
-      using (var loader = new DomainSpace(session))
-      {
-      ... load actions
-      }
-      }
-      ```
-
-      The `GetHorizons()` function allows `loader` to apply any domain Horizon filters.  This is especially useful in server configurations where role-based access control is applied to the source source transparently to the local function.
-
+      Change RockSpace to record read-only parameter and suppress Flush on dispose to avoid Native exception
     </PackageReleaseNotes>
     <PackageLicenseExpression>GPL-2.0-or-later</PackageLicenseExpression>
 	<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
