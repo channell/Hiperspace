@@ -9,7 +9,87 @@
     <Description>Hiperspace heap store for testing purposes</Description>
     <Copyright>Cepheis Ltd</Copyright>
     <PackageReleaseNotes>
-      Change RockSpace to record read-only parameter and suppress Flush on dispose to avoid Native exception
+      ## Overview
+      This release provides an overhaul of the LINQ integration, to provide the query execution plaform for **Hiperspace.SQL** SQL query execution against data held in Hiperspace.   The change introduces support for joins that were not previously supported without intermediate code.
+
+      Hiperspace deos not normaly *need* join support because related elements can be retrived through properties transparently without need for additional queries to the store, but are needed to export data to  [Apache Parquet](https://parquet.apache.org/) and[DuckDB](https://duckdb.org/) (for analysis using [jupyter Notebooks](https://jupyter.org/)).  While these tools are excellent for adhoc analysis, they don't have the full point-in-time view that is a available from Subspaces of Hiperspace.
+
+
+      -----
+
+
+      ## Query Provider
+      SubSpace has always supported LINQ expressions from C# and F# (and VB.Net if anyone is still using it), and the queries translated to Domain Space Find requests.  Find searches use the best (*rule based optimiser*) access path to retrieve elements either by key or a sympathetic index.
+      ```
+      var lucy = from p in space.Persons
+      where p.Name == "Lucy"
+      select p;
+      // is the same as the direct query
+      var lucy = space.Persons.Find(new Person { Name = "Lucy" });
+      ```
+
+      The new query provider supports the full range of SQL-like queries with multiple *from* sources and *joins* (including composite keys), *group by*, *order by* and stream aggregates.
+
+      ```
+      foreach (var j in from p in space.Persons
+      join f in space.Persons on p.Father!.Name equals f.Name
+      join m in space.Persons on p.Mother!.Name equals m.Name
+      where p.Name == lucy
+      select new { p, f, m })
+      {
+      _output.WriteLine($"{j.p.Name} () has father {j.f.Name} and mother {j.m.Name}");
+      }
+      // is equvilent to
+
+      foreach (var p in space.Persons.Find(new Person { Name = lucy }))
+      {
+      foreach (var f in space.Persons.Find(new Person { Name = p.Father?.Name }))
+      {
+      foreach (var m in space.Persons.Find(new Person { Name = p.Mother?.Name }))
+      {
+      _output.WriteLine($"{p.Name} has father {f.Name} and mother {m.Name}");
+      }
+      }
+      }
+      // this could also be queried directly using Hiperspace native navigation
+      foreach (var p in space.Persons.Find(new Person { Name = lucy }))
+      {
+      _output.WriteLine($"{p.Name} has father {p.Father!.Name} and mother {p.Mother!.Name}");
+      }
+      ```
+
+      The advatage of supporting the full range of LINQ expressions is that it is directly eqivilent to SQL, and so provides the basis for a SQL interpreter and external tool integration
+
+
+      -----
+
+      ## Query Explain
+      The new `QueryExplain` class provides SQL Explain functionality to review execution plans for queries
+
+      ```
+      _output.WriteLine($"{new QueryExplain(join.Expression)}");
+      // outputs
+      Query
+      Select value(Hiperspace.SetJoin`3[&lt;&gt;f__AnonymousType2`2[&lt;&gt;f__AnonymousType1`2[Cousins.Person,Cousins.Person],Cousins.Person],&lt;&gt;f__AnonymousType1`2[Cousins.Person,Cousins.Person],Cousins.Person]).Where(&lt;&gt;h__TransparentIdentifier1 =&gt; (&lt;&gt;h__TransparentIdentifier1.&lt;&gt;h__TransparentIdentifier0.p.Name == value(Cousins.Test+&lt;&gt;c__DisplayClass11_0).lucy)).Select(&lt;&gt;h__TransparentIdentifier1 =&gt; new &lt;&gt;f__AnonymousType3`3(p = &lt;&gt;h__TransparentIdentifier1.&lt;&gt;h__TransparentIdentifier0.p, f = &lt;&gt;h__TransparentIdentifier1.&lt;&gt;h__TransparentIdentifier0.f, m = &lt;&gt;h__TransparentIdentifier1.m))
+      Where value(Hiperspace.SetJoin`3[&lt;&gt;f__AnonymousType2`2[&lt;&gt;f__AnonymousType1`2[Cousins.Person,Cousins.Person],Cousins.Person],&lt;&gt;f__AnonymousType1`2[Cousins.Person,Cousins.Person],Cousins.Person]).Where(&lt;&gt;h__TransparentIdentifier1 =&gt; (&lt;&gt;h__TransparentIdentifier1.&lt;&gt;h__TransparentIdentifier0.p.Name == value(Cousins.Test+&lt;&gt;c__DisplayClass11_0).lucy))
+      Nested Loop on (.p.Mother.Name = m.Name)
+      Nested Loop on (.Father.Name = f.Name)
+      Key PersonKeyPath as p
+      Person (Name=Lucy, TypeName=Person, SKey=UgYKBEx1Y3k=)
+      Key PersonKeyPath as f
+      Person (Name=left.Name, TypeName=Person, SKey=UgA=)
+      Key PersonKeyPath as m
+      Person (Name=left.Name, TypeName=Person, SKey=UgA=)
+
+      ```
+      In this example the LINQ expression and nested data access is output.  Because the query included a predicate on the key of the first set, the access is via *Key* with the related value provided through to subsequent joins
+
+      ### SetSpace Explain
+      To support `QueryExplain`, an additional function has been added to `SetSpace&lt;&gt;` to retrieve the access path { 'Key', 'Index', 'Scan' } that is used to retrieve data from Hiperspace
+
+      ## IAsyncEnumerable&lt;_&gt;
+
+      [IAsyncEnumerable](https://learn.microsoft.com/en-us/archive/msdn-magazine/2019/november/csharp-iterating-with-async-enumerables-in-csharp-8) is a new feature of .NET 8 that allows asyncronous functiuons that return an enumerable to do so without creating temporary lists.  This capability is used by LINQ, so introduced as a breaking change to the Hiperspace interface with this release.
     </PackageReleaseNotes>
     <PackageLicenseExpression>GPL-2.0-or-later</PackageLicenseExpression>
 	<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>

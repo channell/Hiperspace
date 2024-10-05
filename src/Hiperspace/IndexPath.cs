@@ -28,6 +28,6 @@ namespace Hiperspace
         public abstract Task BindAsync(TEntity item);
 
         public abstract IEnumerable<TEntity> Find(TEntity template);
-        public abstract Task<IEnumerable<TEntity>> FindAsync(TEntity template);
+        public abstract IAsyncEnumerable<TEntity> FindAsync(TEntity template, CancellationToken cancellation = default);
     }
 }

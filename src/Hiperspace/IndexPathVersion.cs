@@ -42,9 +42,9 @@ namespace Hiperspace
         {
         }
         public abstract IEnumerable<TEntity> Delta(TEntity template);
-        public Task<IEnumerable<TEntity>> DeltaAsync(TEntity template)
+        public IAsyncEnumerable<TEntity> DeltaAsync(TEntity template)
         {
-            return Task.Run(() => Delta(template));
+            return Delta(template).ToAsyncEnumerable();
         }
     }
 }

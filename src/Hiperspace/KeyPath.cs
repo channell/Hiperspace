@@ -38,10 +38,10 @@ namespace Hiperspace
  
         public abstract TEntity? Get(ref TKey key);
         public abstract IEnumerable<TEntity> Find(TEntity template);
-        public abstract Task<IEnumerable<TEntity>> FindAsync(TEntity template);
+        public abstract IAsyncEnumerable<TEntity> FindAsync(TEntity template, CancellationToken cancellation = default);
         public abstract IEnumerable<(TEntity Item, double Distance)> Nearest(TEntity template, Vector space, Vector.Method method, int limit);
 
-        public abstract Task<IEnumerable<(TEntity Item, double Distance)>> NearestAsync(TEntity template, Vector space, Vector.Method method, int limit);
+        public abstract IAsyncEnumerable<(TEntity Item, double Distance)> NearestAsync(TEntity template, Vector space, Vector.Method method, int limit, CancellationToken cancellation = default);
 
         /// <summary>
         /// Perform a full table scan because there are no suitable Key or Index to use
@@ -57,9 +57,9 @@ namespace Hiperspace
         /// </summary>
         /// <param name="template">empty structure</param>
         /// <returns>every instance of TEntity in the hiperspace</returns>
-        public virtual Task<IEnumerable<TEntity>> ScanAsync(TEntity template)
+        public virtual IAsyncEnumerable<TEntity> ScanAsync(TEntity template, CancellationToken cancellationToken = default)
         {
-            return FindAsync(template);
+            return Scan(template).ToAsyncEnumerable(cancellationToken);
         }
     }
 }
