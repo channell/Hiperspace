@@ -66,13 +66,13 @@ namespace Access
                         .FindAsync(new RBAC.UserPermission { Approved = false });
 
                     var groups = user.Groups;
-                    foreach (var perm in (await tasks).Where(p => p.Approved == false))
+                    await foreach (var perm in tasks)
                     {
-                        if (perm.Approval != null)
+                        if (perm.Approval != null && perm.Approved == false)
                         {
-                            foreach (var aprove in perm.Approval)
+                            foreach (var approve in perm.Approval)
                             {
-                                if (aprove.Value != null && groups.Contains(aprove.Value))
+                                if (approve.Value != null && groups.Contains(approve.Value))
                                 {
                                     result.Add(perm);
                                     break;
@@ -102,13 +102,13 @@ namespace Access
                         .FindAsync(new RBAC.GroupPermission { Approved = false });
 
                     var groups = user.Groups;
-                    foreach (var perm in (await tasks).Where(p => p.Approved == false))
+                    await foreach (var perm in tasks)
                     {
-                        if (perm.Approval != null)
+                        if (perm.Approval != null && perm.Approved == false)
                         {
-                            foreach (var aprove in perm.Approval)
+                            foreach (var approve in perm.Approval)
                             {
-                                if (aprove.Value != null && groups.Contains(aprove.Value))
+                                if (approve.Value != null && groups.Contains(approve.Value))
                                 {
                                     result.Add(perm);
                                     break;

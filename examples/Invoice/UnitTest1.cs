@@ -59,10 +59,10 @@ namespace Invoice
             {
                 var cust = read.Customers.Where (c => c.Id == 3).FirstOrDefault();
                 cust.Should().NotBeNull("NatWest was added");
-                cust.Name.Should().Be("NatWest", because: "added");
-                cust.ShipTo.Country.Name.Should().Be("United Kingdom", because: "Country was referenced");
-                cust.ShipTo.PostalCode.Should().Be("EC2M 4AA");
-                cust.BillTo.PostalCode.Should().Be("EC2M 4AA");
+                cust!.Name.Should().Be("NatWest", because: "added");
+                cust!.ShipTo!.Country!.Name.Should().Be("United Kingdom", because: "Country was referenced");
+                cust!.ShipTo!.PostalCode.Should().Be("EC2M 4AA");
+                cust!.BillTo!.PostalCode.Should().Be("EC2M 4AA");
             }
         }
         [Fact, Priority(2)]
@@ -101,8 +101,8 @@ namespace Invoice
                 var prod = read.Products.Where(p => p.Id == 4).First();
                 var tax = read.Taxs.Where(p => p.Id == 5).First();
                 prod.Tax.Should().NotBeNull().And.Be(tax);
-                prod.Tax.Name.Should().Be("Standard VAT");
-                prod.Price.Buy.Should().Be(500m);
+                prod.Tax!.Name.Should().Be("Standard VAT");
+                prod.Price!.Buy.Should().Be(500m);
                 prod.Price.Sell.Should().Be(1_000m);
 
                 read.ProductPrices.Update (new ProductPrice(prod.Price)
@@ -113,7 +113,7 @@ namespace Invoice
                 using (var fresh = new ERPSpace(read))
                 {
                     var inflated = fresh.Products.Where(p => p.Id == 4).First().Price;
-                    inflated.Buy.Should().Be(700m);
+                    inflated!.Buy.Should().Be(700m);
                     inflated.GetVersions().Count().Should().Be(2);
 
                     using (var snap = new ERPSpace(_space, inflated.GetVersions().First().AsAt))
@@ -144,7 +144,7 @@ namespace Invoice
             using (var read = new ERPSpace(_space))
             {
                 var country = read.Stores.Get(new Store { Id = 1 }).Country;
-                country.Name.Should().Be("United Kingdom", because: "was lazy loaded");
+                country!.Name.Should().Be("United Kingdom", because: "was lazy loaded");
             }
         }
         [Fact, Priority(2)]
@@ -187,9 +187,9 @@ namespace Invoice
             using (var read = new ERPSpace(_space))
             {
                 var order = read.Orders.Get(new ERP.Sales.Order{ OrderNumber = 42 });
-                order.Salesperson.Name.Should().Be("Karl");
-                order.Customer.Name.Should().Be("NatWest");
-                order.Store.Name.Should().Be("Bishopsgate");
+                order!.Salesperson!.Name.Should().Be("Karl");
+                order!.Customer!.Name.Should().Be("NatWest");
+                order!.Store!.Name.Should().Be("Bishopsgate");
             }
         }
     }
