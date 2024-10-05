@@ -375,7 +375,7 @@ namespace Hiperspace
         /// <summary>
         /// For scan, we are only intereted in the first field
         /// </summary>
-        /// <param name="source">source stream serialised to protobuf</param>
+        /// <param name="source">source stream serialized to protobuf</param>
         /// <param name="metadata">metadata for nested fields</param>
         /// <returns>scan range to first buffer</returns>
         public static (byte[] begin, byte[] end) Vpl2s(byte[] source, (int key, (int member, int key)[] values)[] metadata)
@@ -468,7 +468,7 @@ namespace Hiperspace
         /// <summary>
         /// Get they key type from the source for detla search
         /// </summary>
-        /// <param name="source">source stream serialised to protobuf</param>
+        /// <param name="source">source stream serialized to protobuf</param>
         /// <returns>keytype followed by 0xFF</returns>
         public static byte[] DeltaKey(byte[] source)
         {

@@ -12,12 +12,10 @@ using System.Runtime.CompilerServices;
 
 namespace Hiperspace
 {
-    public abstract class SetSpace<TEntity> : ISet<TEntity>, IOrderedQueryable<TEntity>, IEnumerable<TEntity>
+    public abstract class SetSpace<TEntity> : ISet<TEntity>, IOrderedQueryable<TEntity>, IEnumerable<TEntity>, ISetSpace
         where TEntity : Element<TEntity>, new()
     {
-
         public ConcurrentHashSet<TEntity> Cached = new ConcurrentHashSet<TEntity>();
-        public HashSet<TEntity> oldCached = new HashSet<TEntity>();
 
         public delegate void Bound(TEntity entity);
         public delegate void Dependency((TEntity target, Meta.DependencyPath sender) value);
@@ -50,7 +48,7 @@ namespace Hiperspace
         public SetSpace(SubSpace space, IQueryProvider provider)
         {
             Space = space;
-            //            Provider = provider;
+            Provider = provider ?? throw new ArgumentNullException(nameof(provider));
             if (space.Horizon != null)
                 predicates = space.Horizon
                     .Where(h => h.Type == typeof(TEntity))
@@ -123,13 +121,12 @@ namespace Hiperspace
 
         public bool TryGetValue(TEntity equalValue, out TEntity actualValue)
         {
-#pragma warning disable CS8601 // Possible null reference assignment.
-            return Cached.TryGetValue(equalValue, out actualValue);
-#pragma warning restore CS8601 // Possible null reference assignment.
+            return Cached.TryGetValue(equalValue, out actualValue!);
         }
 
         #region entity functions
         public abstract TEntity? Get(TEntity template);
+        public abstract Task<TEntity?> GetAsync(TEntity template);
 
         public abstract Task<Result<TEntity>> BindAsync(TEntity item, bool cache = true);
 
@@ -138,11 +135,11 @@ namespace Hiperspace
         public abstract bool IsSargable(TEntity template);
         public abstract IEnumerable<TEntity> Find(TEntity template, bool cache = true);
 
-        public abstract Task<IEnumerable<TEntity>> FindAsync(TEntity template, bool cache = true);
+        public abstract IAsyncEnumerable<TEntity> FindAsync(TEntity template, bool cache = true, CancellationToken cancellationToken = default);
 
         public abstract IEnumerable<(TEntity Item, double Distance)> Nearest(TEntity template, Vector space, Vector.Method method, int limit = 0, bool cache = true);
 
-        public abstract Task<IEnumerable<(TEntity Item, double Distance)>> NearestAsync(TEntity template, Vector space, Vector.Method method, int limit = 0, bool cache = true);
+        public abstract IAsyncEnumerable<(TEntity Item, double Distance)> NearestAsync(TEntity template, Vector space, Vector.Method method, int limit = 0, bool cache = true, CancellationToken cancellation = default);
 
         public IEnumerable<TEntity> Filter(IEnumerable<TEntity> entities)
         {
@@ -281,11 +278,11 @@ namespace Hiperspace
 
         public static Expression<Predicate<TEntity>> True = f => true;
 
-        Type IQueryable.ElementType => typeof(TEntity);
+        public Type ElementType => typeof(TEntity);
 
-        Expression IQueryable.Expression => Expression.Constant(this);
+        public Expression Expression => Expression.Constant(this);
 
-        public IQueryProvider Provider => new Query<TEntity>(this, null);
+        public IQueryProvider Provider { get; set; } // => new Query<TEntity>(this, null);
 
         public int Count => Cached.Count;
 
@@ -297,7 +294,7 @@ namespace Hiperspace
         }
         public virtual Task<TEntity?> GetFirstAsync()
         {
-            return FindAsync(new TEntity()).ContinueWith(t => t.Result.FirstOrDefault());
+            return Task.Run(() => GetFirst());
         }
         public virtual TEntity? GetLast()
         {
@@ -305,8 +302,22 @@ namespace Hiperspace
         }
         public virtual Task<TEntity?> GetLastAsync()
         {
-            return FindAsync(new TEntity()).ContinueWith(t => t.Result.FirstOrDefault());
+            return Task.Run(() => GetLast());
         }
+
+        public ISetQuery SetQuery()
+        {
+            return new SetQuery<TEntity>(this, Provider, new TEntity());
+        }
+
+        public abstract (string?, string?) Explain(TEntity template);
+        public (string?, string?) Explain(object template)
+        {
+            if (template is TEntity entity)
+                return Explain(entity);
+            return (null, null);
+        }
+
         #endregion
     }
 

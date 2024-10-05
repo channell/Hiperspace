@@ -146,6 +146,44 @@ namespace Hiperspace.Remote
                 throw;
             }
         }
+        public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
+        {
+            try
+            {
+                var result =
+                    _service
+                    .BindVersion(
+                        new BindVersionRequest
+                        {
+                            Key = ByteString.CopyFrom(key),
+                            Value = ByteString.CopyFrom(value),
+                            Version = Timestamp.FromDateTime(version.ToUniversalTime()),
+                            Token = _sessionToken
+                        });
+                switch (result.State)
+                {
+                    case ResponseState.Ok: return Result.Ok(result.Content.ToArray());
+                    case ResponseState.Skip: return Result.Skip(result.Content.ToArray());
+                    default: return Result.Fail(result.Content.ToArray());
+                }
+            }
+            catch (RpcException ex)
+            {
+                switch (ex.StatusCode)
+                {
+                    case StatusCode.FailedPrecondition:
+                        Open();
+                        return Bind(key, value, version, source);
+
+                    case StatusCode.DataLoss:
+                        throw new IOException(ex.Message);
+
+                    case StatusCode.Internal:
+                        throw new Exception(ex.Message);
+                }
+                throw;
+            }
+        }
 
         public override async Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, object? source = null)
         {
@@ -472,72 +510,41 @@ namespace Hiperspace.Remote
             }
         }
 
-        public override async Task<IEnumerable<(byte[] Key, byte[] Value)>> FindAsync(byte[] begin, byte[] end)
+        public override async IAsyncEnumerable<(byte[] Key, byte[] Value)> FindAsync(byte[] begin, byte[] end, CancellationToken cancellationToken = default)
         {
-            try
-            {
-                var result = await
-                    _service
-                    .FindAsync(
-                        new FindRequest
-                        {
-                            Begin = ByteString.CopyFrom(begin),
-                            End = ByteString.CopyFrom(end),
-                            Token = _sessionToken
-                        });
-                return result.Content.Select(r => (r.Key.ToArray(), r.Value.ToArray()));
-            }
-            catch (RpcException ex)
-            {
-                switch (ex.StatusCode)
+            var result = await 
+            _service
+            .FindAsync(
+                new FindRequest
                 {
-                    case StatusCode.FailedPrecondition:
-                        Open();
-                        return await FindAsync(begin, end);
+                    Begin = ByteString.CopyFrom(begin),
+                    End = ByteString.CopyFrom(end),
+                    Token = _sessionToken
+                });
 
-                    case StatusCode.DataLoss:
-                        throw new IOException(ex.Message);
-
-                    case StatusCode.Internal:
-                        throw new Exception(ex.Message);
-                }
-                throw;
+            foreach (var r in result.Content)
+            {
+                yield return (r.Key.ToArray(), r.Value.ToArray());
             }
         }
 
-        public override async Task<IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)>> FindAsync(byte[] begin, byte[] end, DateTime? version)
+        public override async IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindAsync(byte[] begin, byte[] end, DateTime? version, CancellationToken cancellationToken = default)
         {
-            try
+            var result = await
+                _service
+                .FindVersionAsync(
+                    new FindVersionRequest
+                    {
+                        Begin = ByteString.CopyFrom(begin),
+                        End = ByteString.CopyFrom(end),
+                        Version = version.HasValue
+                                    ? Timestamp.FromDateTime(version.Value.ToUniversalTime())
+                                    : null,
+                        Token = _sessionToken
+                    });
+            foreach (var r in result.Content)
             {
-                var result = await
-                    _service
-                    .FindVersionAsync(
-                        new FindVersionRequest
-                        {
-                            Begin = ByteString.CopyFrom(begin),
-                            End = ByteString.CopyFrom(end),
-                            Version = version.HasValue
-                                      ? Timestamp.FromDateTime(version.Value.ToUniversalTime())
-                                      : null,
-                            Token = _sessionToken
-                        });
-                return result.Content.Select(r => (r.Key.ToArray(), r.Version.ToDateTime().ToUniversalTime(), r.Value.ToArray()));
-            }
-            catch (RpcException ex)
-            {
-                switch (ex.StatusCode)
-                {
-                    case StatusCode.FailedPrecondition:
-                        Open();
-                        return await FindAsync(begin, end, version);
-
-                    case StatusCode.DataLoss:
-                        throw new IOException(ex.Message);
-
-                    case StatusCode.Internal:
-                        throw new Exception(ex.Message);
-                }
-                throw;
+                yield return (r.Key.ToArray(), r.Version.ToDateTime().ToUniversalTime(), r.Value.ToArray());
             }
         }
 
@@ -701,32 +708,16 @@ namespace Hiperspace.Remote
             }
         }
 
-        public override async Task<IEnumerable<(byte[] value, DateTime version)>> GetVersionsAsync(byte[] key)
+        public override async IAsyncEnumerable<(byte[] value, DateTime version)> GetVersionsAsync(byte[] key, CancellationToken cancellationToken = default)
         {
-            try
+            var result = await _service.GetVersionsAsync(new KeyRequest
             {
-                var result = await _service.GetVersionsAsync(new KeyRequest
-                {
-                    Key = ByteString.CopyFrom(key),
-                    Token = _sessionToken
-                });
-                return result.Content.Select(r => (r.Content.ToByteArray(), r.Version.ToDateTime().ToUniversalTime()));
-            }
-            catch (RpcException ex)
+                Key = ByteString.CopyFrom(key),
+                Token = _sessionToken
+            });
+            foreach (var r in result.Content)
             {
-                switch (ex.StatusCode)
-                {
-                    case StatusCode.FailedPrecondition:
-                        Open();
-                        return await GetVersionsAsync(key);
-
-                    case StatusCode.DataLoss:
-                        throw new IOException(ex.Message);
-
-                    case StatusCode.Internal:
-                        throw new Exception(ex.Message);
-                }
-                throw;
+                yield return (r.Content.ToByteArray(), r.Version.ToDateTime().ToUniversalTime());
             }
         }
 
@@ -797,71 +788,39 @@ namespace Hiperspace.Remote
                 throw;
             }
         }
-        public override async Task<IEnumerable<(byte[] Key, byte[] Value)>> FindIndexAsync(byte[] begin, byte[] end)
+        public override async IAsyncEnumerable<(byte[] Key, byte[] Value)> FindIndexAsync(byte[] begin, byte[] end, CancellationToken cancellationToken = default)
         {
-            try
+            var result = await
+                _service
+                .FindIndexAsync(
+                    new FindRequest
+                    {
+                        Begin = ByteString.CopyFrom(begin),
+                        End = ByteString.CopyFrom(end),
+                        Token = _sessionToken
+                    });
+            foreach (var r in result.Content)
             {
-                var result = await
-                    _service
-                    .FindIndexAsync(
-                        new FindRequest
-                        {
-                            Begin = ByteString.CopyFrom(begin),
-                            End = ByteString.CopyFrom(end),
-                            Token = _sessionToken
-                        });
-                return result.Content.Select(r => (r.Key.ToArray(), r.Value.ToArray()));
-            }
-            catch (RpcException ex)
-            {
-                switch (ex.StatusCode)
-                {
-                    case StatusCode.FailedPrecondition:
-                        Open();
-                        return await FindIndexAsync(begin, end);
-
-                    case StatusCode.DataLoss:
-                        throw new IOException(ex.Message);
-
-                    case StatusCode.Internal:
-                        throw new Exception(ex.Message);
-                }
-                throw;
+                yield return (r.Key.ToArray(), r.Value.ToArray());
             }
         }
-        public override async Task<IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)>> FindIndexAsync(byte[] begin, byte[] end, DateTime? version)
+        public override async IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindIndexAsync(byte[] begin, byte[] end, DateTime? version, CancellationToken cancellationToken = default)
         {
-            try
+            var result = await
+                _service
+                .FindIndexVersionAsync(
+                    new FindVersionRequest
+                    {
+                        Begin = ByteString.CopyFrom(begin),
+                        End = ByteString.CopyFrom(end),
+                        Version = version.HasValue
+                                    ? Timestamp.FromDateTime(version.Value.ToUniversalTime())
+                                    : null,
+                        Token = _sessionToken
+                    });
+            foreach (var r in result.Content)
             {
-                var result = await
-                    _service
-                    .FindIndexVersionAsync(
-                        new FindVersionRequest
-                        {
-                            Begin = ByteString.CopyFrom(begin),
-                            End = ByteString.CopyFrom(end),
-                            Version = version.HasValue
-                                      ? Timestamp.FromDateTime(version.Value.ToUniversalTime())
-                                      : null,
-                            Token = _sessionToken
-                        });
-                return result.Content.Select(r => (r.Key.ToArray(), r.Version.ToDateTime().ToUniversalTime(), r.Value.ToArray()));
-            }
-            catch (RpcException ex)
-            {
-                switch (ex.StatusCode)
-                {
-                    case StatusCode.FailedPrecondition:
-                        Open();
-                        return await FindIndexAsync(begin, end, version);
-
-                    case StatusCode.DataLoss:
-                        throw new IOException(ex.Message);
-
-                    case StatusCode.Internal:
-                        throw new Exception(ex.Message);
-                }
-                throw;
+                yield return (r.Key.ToArray(), r.Version.ToDateTime().ToUniversalTime(), r.Value.ToArray());
             }
         }
 
@@ -870,7 +829,7 @@ namespace Hiperspace.Remote
             throw new NotImplementedException();
         }
 
-        public override Task<IEnumerable<(byte[] Key, byte[] Value)>> SpaceAsync()
+        public override IAsyncEnumerable<(byte[] Key, byte[] Value)> SpaceAsync(CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException();
         }

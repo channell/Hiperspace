@@ -6,7 +6,6 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using ProtoBuf;
-using System;
 using System.Diagnostics.CodeAnalysis;
 
 /*

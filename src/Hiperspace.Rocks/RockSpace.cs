@@ -132,6 +132,31 @@ namespace Hiperspace.Rocks
             RaiseOnBind(key, value, source);
             return Result.Ok(value);
         }
+        public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
+        {
+            var fullkey = new byte[key.Length + sizeof(long) + 1];
+            key.CopyTo(fullkey, 1);
+            var toend = ulong.MaxValue - (ulong)version.Ticks;
+            BinaryPrimitives.WriteUInt64BigEndian(new Span<byte>(fullkey, fullkey.Length - sizeof(long), sizeof(long)), toend);
+
+            var (cur, v) = Get(key, version);
+            if (cur != null)
+            {
+                if (v == version)
+                    return Result.Skip(cur);
+                if (cur.Length > 0 && Compare(cur, value) == 0)
+                    return Result.Skip(cur);    // no change to value
+                if (priorVersion.HasValue && v > priorVersion)
+                {
+                    return Result.Fail(cur, "Version is not the latest");
+                }
+            }
+            _db.Put(fullkey, value);
+            RaiseOnBind(key, value, source);
+            return Result.Ok(value);
+
+        }
+
 
         public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, object? source)
         {
@@ -155,12 +180,9 @@ namespace Hiperspace.Rocks
             }
         }
 
-        public override Task<IEnumerable<(byte[], byte[])>> SpaceAsync()
+        public override IAsyncEnumerable<(byte[], byte[])> SpaceAsync(CancellationToken cancellationToken = default)
         {
-            return Task.Run(() =>
-            {
-                return Space().ToList() as IEnumerable<(byte[], byte[])>;
-            });
+            return Space().ToAsyncEnumerable(cancellationToken);
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static int Compare(Span<byte> left, Span<byte> right)
@@ -334,13 +356,13 @@ namespace Hiperspace.Rocks
             range.Seek(keypart);
         }
 
-        public override Task<IEnumerable<(byte[], byte[])>> FindAsync(byte[] begin, byte[] end)
+        public override IAsyncEnumerable<(byte[], byte[])> FindAsync(byte[] begin, byte[] end, CancellationToken cancellationToken = default)
         {
-            return Task.Run(() => Find(begin, end).ToList() as IEnumerable<(byte[], byte[])>);
+            return Find(begin, end).ToAsyncEnumerable(cancellationToken);
         }
-        public override Task<IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)>> FindAsync(byte[] begin, byte[] end, DateTime? version)
+        public override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindAsync(byte[] begin, byte[] end, DateTime? version, CancellationToken cancellationToken = default)
         {
-            return Task.Run(() => Find(begin, end, version).ToList() as IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)>);
+            return Find(begin, end, version).ToAsyncEnumerable(cancellationToken);
         }
 
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)
@@ -508,9 +530,9 @@ namespace Hiperspace.Rocks
             }
         }
 
-        public override Task<IEnumerable<(byte[] value, DateTime version)>> GetVersionsAsync(byte[] key)
+        public override IAsyncEnumerable<(byte[] value, DateTime version)> GetVersionsAsync(byte[] key, CancellationToken cancellationToken = default)
         {
-            return Task.Run (() => GetVersions(key).ToList() as IEnumerable<(byte[] value, DateTime version)>);
+            return GetVersions(key).ToAsyncEnumerable(cancellationToken);
         }
 
         protected override void Dispose(bool disposing)
@@ -536,8 +558,6 @@ namespace Hiperspace.Rocks
                     } 
                 }
 
-                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // TODO: set large fields to null
                 _disposedValue = true;
             }
         }

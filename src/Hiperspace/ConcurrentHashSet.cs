@@ -1,4 +1,11 @@
-﻿using System.Collections;
+﻿// ---------------------------------------------------------------------------------------
+//                                   Hiperspace
+//                        Copyright (c) 2024 Cepheis Ltd
+//                                    www.cepheis.com
+//
+// This file is part of Hiperspace and is distributed under the GPL Open Source License. 
+// ---------------------------------------------------------------------------------------
+using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
@@ -7,7 +14,7 @@ namespace Hiperspace
     /// <summary>
     /// Represents a thread-safe collection of unique elements.
     /// locks are applied at the segment level, allowing for concurrent operations (add, remove, replace) on different segments.
-    /// chained operations only lock the curent segment. Set level operations during enumeration are defered to enumeration has completed
+    /// chained operations only lock the current segment. Set level operations during enumeration are deferred to enumeration has completed
     /// </summary>
     /// <typeparam name="T">The type of elements in the set.</typeparam>
     public class ConcurrentHashSet<T> : ISet<T> where T : class
@@ -221,7 +228,7 @@ namespace Hiperspace
         {
             Interlocked.Increment(ref SetSemaphore);
             bool taken = false;
-            Lock.Enter(ref taken);  // wait for concurent operations to complete
+            Lock.Enter(ref taken);  // wait for concurrent operations to complete
             Lock.Exit();
             try
             {

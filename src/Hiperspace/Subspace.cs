@@ -6,6 +6,7 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using System.Linq.Expressions;
+using System.Text;
 
 namespace Hiperspace
 {
@@ -19,10 +20,10 @@ namespace Hiperspace
         protected DateTime? _version;
         protected DateTime? _delta;
         /// <summary>
-        /// Create a subpace throught he domain space
+        /// Create a subpace through the domain space
         /// </summary>
         /// <param name="space">base space that provides the store driver</param>
-        /// <param name="horizon">set of filters to limit the content rerturned or stored</param>
+        /// <param name="horizon">set of filters to limit the content returned or stored</param>
         /// <param name="AsAt">Timestamp that versioned elements must be before </param>
         /// <param name="DeltaFrom">Timestamp that versions must be after</param>
         protected SubSpace(HiperSpace space, Horizon[]? horizon, DateTime? AsAt = null, DateTime? DeltaFrom = null) : this(space)
@@ -101,9 +102,9 @@ namespace Hiperspace
             return _space.Space();
         }
 
-        public override Task<IEnumerable<(byte[], byte[])>> SpaceAsync()
+        public override IAsyncEnumerable<(byte[], byte[])> SpaceAsync(CancellationToken cancellationToken = default)
         {
-            return _space.SpaceAsync();
+            return _space.SpaceAsync(cancellationToken);
         }
 
         public override IEnumerable<(byte[], byte[])> Find(byte[] begin, byte[] end)
@@ -111,9 +112,9 @@ namespace Hiperspace
             return _space.Find(begin, end);
         }
 
-        public override Task<IEnumerable<(byte[], byte[])>> FindAsync(byte[] begin, byte[] end)
+        public override IAsyncEnumerable<(byte[], byte[])> FindAsync(byte[] begin, byte[] end, CancellationToken cancellationToken = default)
         {
-            return _space.FindAsync(begin, end);
+            return _space.FindAsync(begin, end, cancellationToken);
         }
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Delta(byte[] key, DateTime? version)
         {
@@ -124,9 +125,9 @@ namespace Hiperspace
         {
             return _space.Nearest(begin, end, version, space, method, limit);
         }
-        public override Task<IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)>> NearestAsync(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)
+        public override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> NearestAsync(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0, CancellationToken cancellationToken = default)
         {
-            return base.NearestAsync(begin, end, version, space, method, limit);
+            return _space.NearestAsync(begin, end, version, space, method, limit, cancellationToken);
         }
 
         public override byte[] Get(byte[] key)
@@ -145,25 +146,24 @@ namespace Hiperspace
         #region IQueryProvider
         public virtual IQueryable CreateQuery(Expression expression)
         {
-            if (expression.Type == typeof(Node)) return new Query<Node>(Nodes, this, expression);
-            if (expression.Type == typeof(Edge)) return new Query<Edge>(Edges, this, expression);
-            if (expression.Type == typeof(VectorSpace)) return new Query<VectorSpace>(VectorSpaces, this, expression);
-            throw new ArgumentException($"{expression.Type.Name} is not as a supported collection type");
+            return new JoinQuery<object>(this, expression);
         }
         public virtual IQueryable<TElement> CreateQuery<TElement>(Expression expression)
         {
-            if (typeof(TElement) == typeof(Node)) return (IQueryable<TElement>)new Query<Node>(Nodes, this, expression);
-            if (typeof(TElement) == typeof(Edge)) return (IQueryable<TElement>)new Query<Edge>(Edges, this, expression);
-            if (typeof(TElement) == typeof(VectorSpace)) return (IQueryable<TElement>)new Query<VectorSpace>(VectorSpaces, this, expression);
-            throw new ArgumentException($"{typeof(TElement).FullName} is not as a supported collection type");
+            return new JoinQuery<TElement>(this, expression);
         }
         public virtual object? Execute(Expression expression)
         {
-            throw new NotImplementedException();
+            return Execute<object> (expression);
         }
         public virtual TResult Execute<TResult>(Expression expression)
         {
-            throw new NotImplementedException(); 
+            var runner = new QueryRunner();
+            var run = runner.Visit(expression);
+            var lambda = Expression.Lambda(run);
+            var compiled = lambda.Compile();
+            var result = compiled.DynamicInvoke();
+            return (TResult)result!;
         }
 
         public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, object? source = null)
@@ -189,9 +189,9 @@ namespace Hiperspace
             return _space.Find(begin, end, version ?? _version);
         }
 
-        public override Task<IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)>> FindAsync(byte[] begin, byte[] end, DateTime? version)
+        public override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindAsync(byte[] begin, byte[] end, DateTime? version, CancellationToken cancellationToken = default)
         {
-            return _space.FindAsync(begin, end, version ?? _version);
+            return _space.FindAsync(begin, end, version ?? _version, cancellationToken);
         }
 
         public override (byte[], DateTime) Get(byte[] key, DateTime? version)
@@ -209,9 +209,9 @@ namespace Hiperspace
             return _space.GetVersions(key);
         }
 
-        public override Task<IEnumerable<(byte[] value, DateTime version)>> GetVersionsAsync(byte[] key)
+        public override IAsyncEnumerable<(byte[] value, DateTime version)> GetVersionsAsync(byte[] key, CancellationToken cancellationToken = default)
         {
-            return _space.GetVersionsAsync(key);
+            return _space.GetVersionsAsync(key, cancellationToken);
         }
 
         public override IEnumerable<(byte[] Key, byte[] Value)> FindIndex(byte[] begin, byte[] end)
@@ -222,9 +222,9 @@ namespace Hiperspace
         {
             return _space.FindIndex(begin, end, version);
         }
-        public override Task<IEnumerable<(byte[] Key, byte[] Value)>> FindIndexAsync(byte[] begin, byte[] end)
+        public override IAsyncEnumerable<(byte[] Key, byte[] Value)> FindIndexAsync(byte[] begin, byte[] end, CancellationToken cancellationToken = default)
         {
-            return _space.FindIndexAsync(begin, end);
+            return _space.FindIndexAsync(begin, end, cancellationToken);
         }
         public override int GetHashCode()
         {

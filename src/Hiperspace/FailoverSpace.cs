@@ -244,13 +244,13 @@ namespace Hiperspace
         }
 
 
-        public override async Task<IEnumerable<(byte[], byte[])>> FindAsync(byte[] begin, byte[] end)
+        public override IAsyncEnumerable<(byte[], byte[])> FindAsync(byte[] begin, byte[] end, CancellationToken cancellationToken = default)
         {
-            return await Task.Run(() => Find(begin, end));
+            return Find(begin, end).ToAsyncEnumerable(cancellationToken);
         }
-        public async override Task<IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)>> FindAsync(byte[] begin, byte[] end, DateTime? version)
+        public override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindAsync(byte[] begin, byte[] end, DateTime? version, CancellationToken cancellationToken = default)
         {
-            return await Task.Run(() => Find(begin, end, version));
+            return Find(begin, end, version).ToAsyncEnumerable(cancellationToken);
         }
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)
         {
@@ -265,9 +265,9 @@ namespace Hiperspace
                 return _primary.Nearest(begin, end, version, space, method, limit);
             }
         }
-        public override async Task<IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)>> NearestAsync(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)
+        public override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> NearestAsync(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0, CancellationToken cancellationToken = default)
         {
-            return await Task.Run(() => Nearest (begin, end, version, space, method, limit));
+            return Nearest (begin, end, version, space, method, limit).ToAsyncEnumerable();
         }
 
         public override IEnumerable<(byte[] value, DateTime version)> GetVersions(byte[] key)
@@ -284,9 +284,9 @@ namespace Hiperspace
             }
         }
 
-        public async override Task<IEnumerable<(byte[] value, DateTime version)>> GetVersionsAsync(byte[] key)
+        public override IAsyncEnumerable<(byte[] value, DateTime version)> GetVersionsAsync(byte[] key, CancellationToken cancellationToken = default)
         {
-            return await Task.Run(() => GetVersions(key));
+            return GetVersions(key).ToAsyncEnumerable(cancellationToken);
         }
 
         private IEnumerable<T> Yielder<T>([NotNull] IEnumerable<T>[] values)
@@ -348,9 +348,9 @@ namespace Hiperspace
             }
         }
 
-        public override async Task<IEnumerable<(byte[], byte[])>> SpaceAsync()
+        public override IAsyncEnumerable<(byte[], byte[])> SpaceAsync(CancellationToken cancellationToken = default)
         {
-            return await Task.Run(() => Space());
+            return Space().ToAsyncEnumerable(cancellationToken);
         }
 
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Delta(byte[] key, DateTime? version)

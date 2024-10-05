@@ -3,9 +3,9 @@
 
 %function (unary, relation, Cousins.Helper.Relations, List<Path>);  
 
-view Edge2 : Edge = Edge() #11;
-view Edge3 : Edge = Edge() #12;
-view Edge4 : Edge = Edge() #13;
+view Cousins.Edge2 : Edge = Edge() #11;
+view Cousins.Edge3 : Edge = Edge() #12;
+view Cousins.Edge4 : Edge = Edge() #13;
 
 enum Cousins.Gender
 {
@@ -14,11 +14,11 @@ enum Cousins.Gender
 };
 
 entity Cousins.Person : Versioned
-    = Node (),
-      Edge  (From = this,   To = Mother, Name = Name, TypeName = "Mother"),
-      Edge2 (From = this,   To = Father, Name = Name, TypeName = "Father"),
-      Edge3 (From = Father, To = this,   Name = Name, TypeName = "Child"),
-      Edge4 (From = Mother, To = this,   Name = Name, TypeName = "Child")
+    = Node          (),
+      Edge          (From = this,   To = Mother, Name = Name, TypeName = "Mother"),
+      Cousins.Edge2 (From = this,   To = Father, Name = Name, TypeName = "Father"),
+      Cousins.Edge3 (From = Father, To = this,   Name = Name, TypeName = "Child"),
+      Cousins.Edge4 (From = Mother, To = this,   Name = Name, TypeName = "Child")
       #10
 (
     Name        : String #1

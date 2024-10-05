@@ -58,6 +58,35 @@ namespace Hiperspace.Heap
                 return Result.Ok(value);
             }
         }
+        public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
+        {
+            var fullkey = new byte[key.Length + sizeof(long) + 1];
+            key.CopyTo(fullkey, 1);
+            var toend = ulong.MaxValue - (ulong)version.Ticks;
+            BinaryPrimitives.WriteUInt64BigEndian(new Span<byte>(fullkey, fullkey.Length - sizeof(long), sizeof(long)), toend);
+
+            var (cur, v) = Get(key, version);
+            if (cur != null)
+            {
+                if (v == version)
+                    return Result.Skip(cur);
+                if (Compare(cur, value) == 0)
+                    return Result.Skip(cur);    // no change to value
+                if (priorVersion.HasValue && v > priorVersion)
+                {
+                    return Result.Fail(cur, "Version is not the latest");
+                }
+            }
+
+            lock (_heap)
+            {
+                var node = new HeapNode(fullkey, value);
+                _heap.Remove(node);
+                _heap.Add(node);
+                RaiseOnBind(key, value, source);
+                return Result.Ok(value);
+            }
+        }
 
         public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, object? source)
         {
@@ -76,12 +105,9 @@ namespace Hiperspace.Heap
             }
         }
 
-        public override Task<IEnumerable<(byte[], byte[])>> SpaceAsync()
+        public override IAsyncEnumerable<(byte[], byte[])> SpaceAsync(CancellationToken cancellationToken = default)
         {
-            return Task.Run(() =>
-            {
-                return _heap.Select(n => (n.Key, n.Value));
-            });
+            return Space().ToAsyncEnumerable();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -310,13 +336,14 @@ namespace Hiperspace.Heap
             }
         }
 
-        public override Task<IEnumerable<(byte[], byte[])>> FindAsync(byte[] begin, byte[] end)
+
+        public override IAsyncEnumerable<(byte[], byte[])> FindAsync(byte[] begin, byte[] end, CancellationToken cancellationToken = default)
         {
-            return Task.Run (() => Find (begin, end));
+            return Find(begin, end).ToAsyncEnumerable();
         }
-        public override Task<IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)>> FindAsync(byte[] begin, byte[] end, DateTime? version)
+        public override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindAsync(byte[] begin, byte[] end, DateTime? version, CancellationToken cancellationToken = default)
         {
-            return Task.Run(() => Find(begin, end, version).ToList() as IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)>);
+            return Find(begin, end, version).ToAsyncEnumerable();
         }
 
         public override byte[] Get(byte[] key)
@@ -384,9 +411,9 @@ namespace Hiperspace.Heap
                 }
             }
         }
-        public override Task<IEnumerable<(byte[] value, DateTime version)>> GetVersionsAsync(byte[] key)
+        public override IAsyncEnumerable<(byte[] value, DateTime version)> GetVersionsAsync(byte[] key, CancellationToken cancellationToken = default)
         {
-            return Task.Run(() => GetVersions(key).ToList() as IEnumerable<(byte[], DateTime)>);
+            return GetVersions(key).ToAsyncEnumerable(cancellationToken);
         }
 
         #region node
@@ -477,13 +504,6 @@ namespace Hiperspace.Heap
         {
             if (!_disposedValue)
             {
-                if (disposing)
-                {
-                    // TODO: dispose managed state (managed objects)
-                }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // TODO: set large fields to null
                 _disposedValue = true;
             }
         }

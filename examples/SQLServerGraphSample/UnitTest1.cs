@@ -215,6 +215,26 @@ namespace SQLServerGraphSample
                         foreach (var l in q)
                             _output.WriteLine(l);
 
+                        var q2 = from p in dom.PersonFriends
+                                 join p2 in dom.PersonFriends on p.Of equals p2.owner
+                                 join p3 in dom.PersonFriends on p2.Of equals p3.owner
+                                 join p4 in dom.PersonFriends on p3.Of equals p4.owner
+                                 where p2.owner != p.owner
+                                    && p3.owner != p2.owner
+                                    && p4.owner != p3.owner
+                                    && p.owner != p4.owner
+                                 let pname = fname(p)
+                                 let pname2 = fname(p2)
+                                 let pname3 = fname(p3)
+                                 let pname4 = fname(p4)
+                                 select $"\t{pname}->{pname2}->{pname3}->{pname4}";
+
+                        _output.WriteLine($"{new QueryExplain(q2.Expression)}");
+
+                        foreach (var l in q)
+                            _output.WriteLine(l);
+
+
                         _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} Fiend paths (recursive)");
                         foreach (var p in dom.Persons)
                             foreach (var path in Paths(p) ?? ImmutableList<ImmutableList<Person>>.Empty)
@@ -282,6 +302,7 @@ namespace SQLServerGraphSample
                              select $"\t{fname(p)}->{fname(p2)}->{fname(p3)}->{fname(p4)}"
                              ))
                             _output.WriteLine(line);
+
 
                         _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} Fiend paths (recursive)");
                         foreach (var p in dom.Nodes)

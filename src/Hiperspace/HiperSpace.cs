@@ -6,6 +6,7 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using System.IO.Compression;
+using System.Runtime.CompilerServices;
 
 namespace Hiperspace
 {
@@ -61,54 +62,52 @@ namespace Hiperspace
         /// <summary>
         /// Bind a key/value pair to the space, passing in the source object, if the driver can use additional metadata (e.g. EFCore)
         /// </summary>
-        /// <param name="key">serialised key</param>
-        /// <param name="value">serialised value</param>
+        /// <param name="key">serialized key</param>
+        /// <param name="value">serialized value</param>
         /// <param name="source">original object</param>
         /// <returns>a result struct that indicates success, ignore, or fail </returns>
         public abstract Result<byte[]> Bind(byte[] key, byte[] value, object? source = null);
         /// <summary>
         /// Bind a key/value pair to the space, passing in the source object, if the driver can use additional metadata (e.g. EFCore)
         /// </summary>
-        /// <param name="key">serialised key</param>
-        /// <param name="value">serialised value</param>
+        /// <param name="key">serialized key</param>
+        /// <param name="value">serialized value</param>
         /// <param name="source">original object</param>
         /// <returns>a result struct that indicates success, ignore, or fail </returns>
         public abstract Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, object? source = null);
         /// <summary>
         /// Bind a key/value pair to the space, passing in the source object, if the driver can use additional metadata (e.g. EFCore)
         /// </summary>
-        /// <param name="key">serialised key</param>
-        /// <param name="value">serialised value</param>
+        /// <param name="key">serialized key</param>
+        /// <param name="value">serialized value</param>
         /// <param name="source">original object</param>
         /// <returns>a result struct that indicates success, ignore, or fail </returns>
-        public virtual Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
-        {
-            return Bind(key, value, version, source);
-        }
+        public abstract Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null);
+
         /// <summary>
-        /// Bind a key/value pair to the space asyncronously, passing in the source object, if the driver can use additional metadata (e.g. EFCore)
+        /// Bind a key/value pair to the space asynchronously, passing in the source object, if the driver can use additional metadata (e.g. EFCore)
         /// including optimistic concurrency control, with a default implementation of lockless concurrency
         /// </summary>
-        /// <param name="key">serialised key</param>
-        /// <param name="value">serialised value</param>
+        /// <param name="key">serialized key</param>
+        /// <param name="value">serialized value</param>
         /// <param name="source">original object</param>
         /// <returns>a result struct that indicates success, ignore, or fail </returns>
         public abstract Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, object? source = null);
         /// <summary>
-        /// Bind a key/value pair to the space asyncronously, passing in the source object, if the driver can use additional metadata (e.g. EFCore)
+        /// Bind a key/value pair to the space asynchronously, passing in the source object, if the driver can use additional metadata (e.g. EFCore)
         /// </summary>
-        /// <param name="key">serialised key</param>
-        /// <param name="value">serialised value</param>
+        /// <param name="key">serialized key</param>
+        /// <param name="value">serialized value</param>
         /// <param name="source">original object</param>
         /// <returns>a result struct that indicates success, ignore, or fail </returns>
         public abstract Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, object? source = null);
 
         /// <summary>
-        /// Bind a key/value pair to the space asyncronously, passing in the source object, if the driver can use additional metadata (e.g. EFCore)
+        /// Bind a key/value pair to the space asynchronously, passing in the source object, if the driver can use additional metadata (e.g. EFCore)
         /// including optimistic concurrency control, with a default implementation of lockless concurrency
         /// </summary>
-        /// <param name="key">serialised key</param>
-        /// <param name="value">serialised value</param>
+        /// <param name="key">serialized key</param>
+        /// <param name="value">serialized value</param>
         /// <param name="source">original object</param>
         /// <returns>a result struct that indicates success, ignore, or fail </returns>
         public virtual Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
@@ -218,7 +217,7 @@ namespace Hiperspace
         /// </summary>
         /// <remarks>will be protected in a future release</remarks>
         /// <returns>content of space</returns>
-        public abstract Task<IEnumerable<(byte[] Key, byte[] Value)>> SpaceAsync();
+        public abstract IAsyncEnumerable<(byte[] Key, byte[] Value)> SpaceAsync(CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Find all values of space between the key values
@@ -236,20 +235,20 @@ namespace Hiperspace
         /// <returns></returns>
         public abstract IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Find(byte[] begin, byte[] end, DateTime? version);
         /// <summary>
-        /// Find all values of space between the key values asyncronously
+        /// Find all values of space between the key values asynchronously
         /// </summary>
         /// <param name="begin"></param>
         /// <param name="end"></param>
         /// <returns></returns>
-        public abstract Task<IEnumerable<(byte[] Key, byte[] Value)>> FindAsync(byte[] begin, byte[] end);
+        public abstract IAsyncEnumerable<(byte[] Key, byte[] Value)> FindAsync(byte[] begin, byte[] end, CancellationToken cancellationToken = default);
         /// <summary>
-        /// Find all values of space between the key values asyncronously
+        /// Find all values of space between the key values asynchronously
         /// </summary>
         /// <param name="begin"></param>
         /// <param name="end"></param>
         /// <param name="version">version stamp or null for latest</param>
         /// <returns></returns>
-        public abstract Task<IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)>> FindAsync(byte[] begin, byte[] end, DateTime? version);
+        public abstract IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindAsync(byte[] begin, byte[] end, DateTime? version, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Find keys in a delta index that are greater than the value provided
@@ -260,14 +259,14 @@ namespace Hiperspace
         public abstract IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Delta(byte[] key, DateTime? version);
 
         /// <summary>
-        /// Find keys in a delta index that are greater than the value provided asyncronously
+        /// Find keys in a delta index that are greater than the value provided asynchronously
         /// </summary>
         /// <param name="key">the start value for delta search </param>
         /// <param name="end"></param>
         /// <returns></returns>
-        public Task<IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)>> DeltaAsync(byte[] begin, DateTime? version)
+        public IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> DeltaAsync(byte[] begin, DateTime? version, CancellationToken cancellationToken = default)
         {
-            return Task.Run(() => Delta(begin, version));  
+            return Delta(begin, version).ToAsyncEnumerable(cancellationToken);  
         }
 
         /// <summary>
@@ -317,25 +316,25 @@ namespace Hiperspace
             }
         }
         /// <summary>
-        /// Find all values of space for index values between the index values asyncronously
+        /// Find all values of space for index values between the index values asynchronously
         /// </summary>
         /// <param name="begin"></param>
         /// <param name="end"></param>
         /// <returns></returns>
-        public virtual Task<IEnumerable<(byte[] Key, byte[] Value)>> FindIndexAsync(byte[] begin, byte[] end)
+        public virtual IAsyncEnumerable<(byte[] Key, byte[] Value)> FindIndexAsync(byte[] begin, byte[] end, CancellationToken cancellationToken = default)
         {
-            return Task.Run(() => FindIndex (begin, end));
+            return FindIndex (begin, end).ToAsyncEnumerable(cancellationToken);
         }
         /// <summary>
-        /// Find all values of space for index values between the index values asyncronously
+        /// Find all values of space for index values between the index values asynchronously
         /// </summary>
         /// <param name="begin"></param>
         /// <param name="end"></param>
         /// <param name="version">version stamp or null for latest</param>
         /// <returns></returns>
-        public virtual Task<IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)>> FindIndexAsync(byte[] begin, byte[] end, DateTime? version)
+        public virtual IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindIndexAsync(byte[] begin, byte[] end, DateTime? version, CancellationToken cancellationToken = default)
         {
-            return Task.Run(() => FindIndex(begin, end, version));
+            return FindIndex(begin, end, version).ToAsyncEnumerable(cancellationToken);
         }
 
         /// <summary>
@@ -351,16 +350,16 @@ namespace Hiperspace
             throw new NotImplementedException("This HiperSpace does not support Vector Search");
         }
         /// <summary>
-        /// Find all values of space for index values between the index values asyncronously
+        /// Find all values of space for index values between the index values asynchronously
         /// </summary>
         /// <param name="key"></param>
         /// <param name="vector"></param>
         /// <param name="limit">limit to the top results, or zero for all</param>
         /// <param name="version">datestamp of key</param>
         /// <returns></returns>
-        public virtual Task<IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)>> NearestAsync(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)
+        public virtual IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> NearestAsync(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0, CancellationToken cancellationToken = default)
         {
-            return Task.Run(() => Nearest(begin, end, version, space, method, limit));
+            return Nearest(begin, end, version, space, method, limit).ToAsyncEnumerable(cancellationToken);
         }
 
         /// <summary>
@@ -400,7 +399,7 @@ namespace Hiperspace
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public abstract Task<IEnumerable<(byte[] value, DateTime version)>> GetVersionsAsync(byte[] key);
+        public abstract IAsyncEnumerable<(byte[] value, DateTime version)> GetVersionsAsync(byte[] key, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Default implementation to get the first item from a setspace
@@ -420,7 +419,7 @@ namespace Hiperspace
         /// <returns></returns>
         public virtual Task<(byte[] Key, byte[] Value)> GetFirstAsync(byte[] begin, byte[] end)
         {
-            return FindAsync(begin, end).ContinueWith(t => t.Result.FirstOrDefault());
+            return Task.Run(() => GetFirst(begin, end));
         }
         /// <summary>
         /// Get the last item from a set space. 
@@ -440,7 +439,7 @@ namespace Hiperspace
         /// <returns></returns>
         public virtual Task<(byte[] Key, byte[] Value)> GetLastAsync(byte[] begin, byte[] end)
         {
-            return FindAsync(begin, end).ContinueWith(t => t.Result.LastOrDefault());
+            return Task.Run(() => GetLast(begin, end));
         }
         /// <summary>
         /// Get the first item that is before the specified version date. 
@@ -462,7 +461,7 @@ namespace Hiperspace
         /// <returns></returns>
         public virtual Task<(byte[] Key, DateTime AsAt, byte[] Value)> GetFirstAsync(byte[] begin, byte[] end, DateTime? version)
         {
-            return FindAsync(begin, end, version).ContinueWith(t => t.Result.FirstOrDefault());
+            return Task.Run(() => GetFirst(begin, end, version));
         }
         /// <summary>
         /// Get the last item that matches that's on or before the specified version date.
@@ -484,7 +483,7 @@ namespace Hiperspace
         /// <returns></returns>
         public virtual Task<(byte[] Key, DateTime AsAt, byte[] Value)> GetLastAsync(byte[] begin, byte[] end, DateTime? version)
         {
-            return FindAsync(begin, end, version).ContinueWith(t => t.Result.LastOrDefault());
+            return Task.Run(() => GetLast(begin, end, version));
         }
 
         #endregion
@@ -581,29 +580,16 @@ namespace Hiperspace
         /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!_disposedValue)
-            {
-                if (disposing)
-                {
-                    // TODO: dispose managed state (managed objects)
-                }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
-                // TODO: set large fields to null
-                _disposedValue = true;
-            }
+            _disposedValue = true;
         }
 
-        // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
         ~HiperSpace()
         {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
         }
 
         public void Dispose()
         {
-            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }

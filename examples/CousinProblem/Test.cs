@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Hiperspace;
 using Hiperspace.Heap;
 using Xunit;
 using Xunit.Abstractions;
@@ -146,6 +147,32 @@ namespace Cousins
                     for (var i = 0; i < edges.Length; i++)
                     {
                         _output.WriteLine($"{edges[i].From?.Name} has a {edges[i].TypeName} named {edges[i].To?.Name}");
+                    }
+                }
+            }
+        }
+        public static T NVL<T>(T? t) where T : struct { return t ?? default(T); }
+        public static T NVL<T>(T? t) where T : class { return t!;}
+        [Fact]
+        public void TestJoin()
+        {
+            var lucy = "Lucy";
+            using (var temp = new GenerationSpace(new HiperSpace[] { new HeapSpace(), _space }))
+            {
+                using (var space = new CousinsSpace(temp))
+                {
+                    var join =
+                        from p in space.Persons
+                        join f in space.Persons on p.Father!.Name equals f.Name
+                        join m in space.Persons on p.Mother!.Name equals m.Name
+                        where p.Name == lucy
+                        select new { p, f, m };
+
+                    _output.WriteLine($"{new QueryExplain(join.Expression)}");
+
+                    foreach (var j in join)
+                    {
+                        _output.WriteLine($"{j.p.Name} () has father {j.f.Name} and mother {j.m.Name}");
                     }
                 }
             }
