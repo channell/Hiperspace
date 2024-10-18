@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 
 namespace Togaf
 {
+    class ΣxecSQLPlan
+    {
+    }
+
     public partial class TogafSpace
     {
         private static SortedDictionary<string, Horizon[]> Roles = new()

@@ -15,12 +15,13 @@ let markdown (source : IDictionary<string, obj array> array) =
     let asMarkDown (source : IDictionary<string, obj array>) = 
         let asArray = 
             source
-            |> Seq.map  (fun kv -> (kv.Key, kv.Value |> Array.map (fun i -> i.ToString())))
+            |> Seq.map  (fun kv -> (kv.Key, kv.Value |> Array.map (fun i -> if i <> null then i.ToString() else "")))
             |> Array.ofSeq
 
         let colwidths =
             asArray 
-            |> Array.map (fun (k,v) -> v |> Array.fold (fun a i -> if i.Length > a then i.Length else a) 0)
+            |> Array.map    (fun (k,v) -> v |> Array.fold (fun a i -> if i.Length > a then i.Length else a) 0)
+            |> Array.mapi   (fun n i -> if i < (fst asArray[n]).Length then (fst asArray[n]).Length else i)
 
         let collength =
             asArray 
@@ -34,7 +35,7 @@ let markdown (source : IDictionary<string, obj array> array) =
         sb.AppendLine("|") |> ignore
 
         for r in 0..(collength - 1) do
-            for c in 0..(colwidths.Length) do
+            for c in 0..(colwidths.Length - 1) do
                 sb.Append("|") |> ignore
                 let i = (snd asArray[c])[r]
                 sb.Append(i) |> ignore
@@ -330,8 +331,8 @@ type  PlanTest (output : ITestOutputHelper) =
         let j = JsonSerializer.Serialize(cube)
         let engine = new SQL.Engine (planSpace)
 
-        let dict = engine.Execute "SELECT * FROM SCHEMA_TABLES" null
-        let BI = engine.Execute "SELECT * FROM Items" null
+        let dict = engine.Execute ("SELECT * FROM SCHEMA_TABLES", null)
+        let BI = engine.Execute ("SELECT WBS, TypeName, ActualStart, ActualTime, PlanStart , PlanTime, ImpliedCost, PlanCost FROM Items order by WBS", null)
         output.WriteLine((markdown BI))
 
 
