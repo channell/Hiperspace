@@ -14,7 +14,7 @@ namespace Hiperspace
     /// Represents a join query in the Hiperspace framework.
     /// </summary>
     /// <typeparam name="T">The type of the elements in the query result.</typeparam>
-    public class JoinQuery<T> : IQueryable<T>
+    public class JoinQuery<T> : IOrderedQueryable<T>
     {
         private readonly Expression _expression;
         private readonly IQueryProvider _provider;
