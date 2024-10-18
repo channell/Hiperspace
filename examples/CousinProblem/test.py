@@ -1,3 +1,4 @@
+# 
 from pythonnet import load
 load ("coreclr")
 import os, sys
@@ -6,15 +7,31 @@ sys.path.append("/dev/source/repos/HiperspaceHub/examples/CousinProblem/bin/Debu
 import clr
 clr.AddReference("Hiperspace")
 clr.AddReference("Hiperspace.Heap")
+clr.AddReference("Hiperspace.SQL")
 clr.AddReference("CousinProblem")
 
 from Hiperspace.Heap import HeapSpace
 from Cousins import CousinsSpace
 from Cousins import Person
 from Cousins import Gender
+from Hiperspace.SQL import Engine
 
+from System.Collections.Generic import Dictionary
+from System import String
+from System import Object
 driver = HeapSpace()
 space = CousinsSpace (driver)
+sql = Engine (space)
+
+query = """
+select * from SCHEMA_TABLES;
+select * from SCHEMA_COLUMNS;
+select * from SCHEMA_PROPERTIES;
+"""
+
+pams = { "name" : "Lucy" }
+
+sql.Execute (query, [("name", "Lucy")])
 
 # person helper
 def person (name, gender, mother, father) :

@@ -9,6 +9,40 @@ open Xunit.Abstractions
 open Hiperspace.Meta
 open System.Text.Json
 open System.Text.Json.Serialization
+open System.Collections.Generic
+
+let markdown (source : IDictionary<string, obj array> array) =
+    let asMarkDown (source : IDictionary<string, obj array>) = 
+        let asArray = 
+            source
+            |> Seq.map  (fun kv -> (kv.Key, kv.Value |> Array.map (fun i -> i.ToString())))
+            |> Array.ofSeq
+
+        let colwidths =
+            asArray 
+            |> Array.map (fun (k,v) -> v |> Array.fold (fun a i -> if i.Length > a then i.Length else a) 0)
+
+        let collength =
+            asArray 
+            |> Array.fold (fun a (k,v) -> if a = 0 then v.Length elif a > v.Length then a else v.Length) 0
+
+        let sb = System.Text.StringBuilder()
+
+        asArray |> Array.iteri      (fun n (k,v) -> sb.Append("|").Append(k).Append(' ', colwidths[n] - k.Length) |> ignore)
+        sb.AppendLine("|") |> ignore
+        colwidths |> Array.iter     (fun i -> sb.Append("|").Append('-', i) |> ignore)
+        sb.AppendLine("|") |> ignore
+
+        for r in 0..(collength - 1) do
+            for c in 0..(colwidths.Length) do
+                sb.Append("|") |> ignore
+                let i = (snd asArray[c])[r]
+                sb.Append(i) |> ignore
+                sb.Append(' ', (colwidths[c] - i.Length)) |> ignore
+            sb.AppendLine("|") |> ignore
+
+        sb.ToString()
+    source |> Array.fold (fun a i -> a + asMarkDown i) ""
 
 type NodeObserver (output : ITestOutputHelper) =
 
@@ -292,6 +326,16 @@ type  PlanTest (output : ITestOutputHelper) =
             |> Seq.map      fact
         cube
         |> Seq.iter     (fun f -> planSpace.Task_Facts.Add f |> ignore)
+
+        let j = JsonSerializer.Serialize(cube)
+        let engine = new SQL.Engine (planSpace)
+
+        let dict = engine.Execute "SELECT * FROM SCHEMA_TABLES" null
+        let BI = engine.Execute "SELECT * FROM Items" null
+        output.WriteLine((markdown BI))
+
+
+
           
 
 
