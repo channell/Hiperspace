@@ -1,0 +1,128 @@
+﻿// Hiperspace SQL lexer
+{
+
+module Hiperspace.SQL.Lexer
+
+open FSharp.Text.Lexing
+open System
+open Hiperspace.SQL.Parser
+
+exception SyntaxError of string
+
+let lexeme = LexBuffer<_>.LexemeString
+
+let newline (lexbuf: LexBuffer<_>) = 
+  lexbuf.EndPos <- lexbuf.EndPos.NextLine
+
+let keywords =   
+    [   
+        "and",      AND
+        "as",       AS
+        "asc",      ASC
+        "average",  AVG
+        "between",  BETWEEN
+        "by",       BY
+        "count",    COUNT
+        "desc",     DESC
+        "distinct", DISTINCT
+        "exists",   EXISTS
+        "false",    FALSE
+        "from",     FROM
+        "group",    GROUP
+        "having",   HAVING
+        "in",       IN
+        "join",     JOIN
+        "like",     LIKE
+        "limit",    LIMIT
+        "max",      MAX
+        "min",      MIN
+        "not",      NOT
+        "null",     NULL
+        "on",       ON
+        "or",       OR
+        "order",    ORDER
+        "select",   SELECT
+        "sum",      SUM
+        "true",     TRUE
+        "union",    UNION
+        "where",    WHERE
+    ] 
+    |> Map.ofList  
+}
+
+let isnull          = ['I''i']['S''s'][' ''\t']*['N''n']['U''u']['L''l']['L''l']
+let isnotNull       = ['I''i']['S''s'][' ''\t']*['N''n']['O''o']['T''t'][' ''\t']*['N''n']['U''u']['L''l']['L''l']
+let inselect        = ['I''i']['N''n'][' ''\t']*'('[' ''\t']*['S''s']['E''e']['L''l']['E''e']['C''c']['T''t']
+let notexists	    = ['N''n']['O''o']['T''t'][' ''\t']*['E''e']['X''x']['I''i']['S''s']['T''t']['S''s']
+let int             = ['-' '+']? ['0'-'9']+
+let digit           = ['0'-'9']
+let frac            = '.' digit*
+let exp             = ['E' 'e'] ['-' '+']? digit+
+let decimal         = '-'? digit* frac? 
+let float           = '-'? digit* frac? exp
+let char            = ['A'-'Z' 'a'-'z']*
+let identifier      = char(char|digit|'_')*
+let white           = [' ' '\t']+
+let newline         = '\r' | '\n' | "\r\n"
+
+rule read =
+  parse
+  | isnull          { ISNULL }
+  | isnotNull       { ISNOTNULL }
+  | inselect        { INSELECT }
+  | notexists       { NOTEXISTS }
+  | white           { read lexbuf }
+  | newline         { newline lexbuf; read lexbuf }
+  | int             { INT (int (lexeme lexbuf)) }
+  | float           { FLOAT (float (lexeme lexbuf)) }
+  | '\''            { read_string "" false lexbuf } 
+  | '('             { OPEN_BRACKET }
+  | ')'             { CLOSE_BRACKET }
+  | '.'             { DOT }
+  | ','             { COMMA }
+  | ';'             { SEMI }
+  | ':'             { COLON }
+  | '='             { EQUAL }
+  | '*'             { STAR }
+  | '+'             { PLUS }
+  | '-'             { MINUS }
+  | '/'             { SLASH }
+  | '%'             { PERCENT }
+  | '<'             { LESS }
+  | '>'             { GREATER }
+  | "<="            { LESS_EQUAL }
+  | ">="            { GREATER_EQUAL }
+  | "!="            { NOT_EQUAL }
+  | "<>"            { NOT_EQUAL }
+  | "||"            { CONCAT }
+  | '\''            { read_string "" false lexbuf } 
+  | '"'             { read_id_string "" false lexbuf } 
+  | "/*"            { comments 0 lexbuf }
+  | ".*"            { DOTSTAR }
+  | identifier      { match keywords.TryFind((LexBuffer<_>.LexemeString lexbuf).ToLower()) with
+                      | Some(token) -> token
+                      | None -> ID(LexBuffer<_>.LexemeString lexbuf)}  
+  | eof             { EOF }
+  | _               { raise (Exception (sprintf "SyntaxError: Unexpected char: '%s' Line: %d Column: %d" (lexeme lexbuf) (lexbuf.StartPos.Line+1) (lexbuf.StartPos.Column+1))) }
+
+and read_string str ignorequote =
+  parse
+  | '\''          { if ignorequote then (read_string (str+"\\\"") false lexbuf) else STRING (str) }
+  | newline       { newline lexbuf; read_string str false lexbuf}
+  | _             { read_string (str+(lexeme lexbuf)) false lexbuf }
+  | eof           { raise (Exception ("String is not terminated")) }
+
+and read_id_string str ignorequote =
+  parse
+  | '"'           { if ignorequote then (read_string (str+"\\\"") false lexbuf) else ID (str) }
+  | newline       { newline lexbuf; read_id_string str false lexbuf}
+  | _             { read_id_string (str+(lexeme lexbuf)) false lexbuf }
+  | eof           { raise (Exception ("String is not terminated")) }
+
+and comments level = 
+  parse
+  | "*/"          { if level = 0 then read lexbuf
+                    else comments (level-1) lexbuf }
+  | "/*"          { comments (level+1) lexbuf }
+  | newline       { newline lexbuf; comments level lexbuf}
+  | _             { comments level lexbuf }

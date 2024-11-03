@@ -1,0 +1,99 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Hiperspace SQL query engine</Title>
+    <Company>Cephies Ltd</Company>
+    <Description># Hiperspace.SQL
+Hiperspace.SQL is a full SQL query engine for Hiperspace, supporting the full range of joins, aggregations, and subqueries.
+
+Hiperspace.SQL provides the same query functionality as a .NET client can use with LINQ queries, but without the need to write code in C#/F#
+
+Hiperspace fully supports point-in-time "time travel" queries that are not possible with Python Data-Frames or DuckDB
+
+## Features
+- Hiperspace.SQL is not limited to queries of columns within a table, but supports the full navigation of properties of Hiperspace elements
+- Where a column is a complex object it is returned as a JSON object
+- Executing a batch of SQL statements return columnar data frames (dictionary of column-name and array of values)
+- Explain SQL returns the execution plan, detailing the SetSPaces accessed and keys used for search (Key, Index, Scan)
+- The Parquet method returns a Parquet file that can be used with any Apache Parquet library, or added to DuckDB OLAP store
+</Description>
+    <Copyright>Cepheis Ltd (C) 2024</Copyright>
+    <PackageProjectUrl>https://www.cepheis.com/hiperspace/SQL</PackageProjectUrl>
+    <PackageIcon>Hiper.png</PackageIcon>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
+    <RepositoryUrl>https://cephei.visualstudio.com/Hiperspace/_git/Hiperspace?path=/Hiperspace.SQL</RepositoryUrl>
+    <PackageTags>SQL Hiperspace</PackageTags>
+    <PackageReleaseNotes>Added support for joins on dictionary tables, and additional validation of join conditions </PackageReleaseNotes>
+    <PackageLicenseFile>licence.txt</PackageLicenseFile>
+    <Authors>Stephen Channell</Authors>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <WarningsAsErrors>3239;$(WarningsAsErrors);3391</WarningsAsErrors>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <WarningsAsErrors>3239;$(WarningsAsErrors);3391</WarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\HiLang\licence.txt">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\Hiper.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="readme.md">
+      <PackagePath>\</PackagePath>
+      <Pack>True</Pack>
+    </None>
+    <Compile Include="Util.fs" />
+    <Content Include="version.json" />
+    <Compile Include="Prepare.fs" />
+    <Compile Include="Ast.fs" />
+    <Compile Include="Dynamic.fs" />
+    <FsYacc Include="Parser.fsy">
+      <OtherFlags>--module Hiperspace.SQL.Parser</OtherFlags>
+    </FsYacc>
+    <FsLex Include="Lex.fsl">
+      <OtherFlags>--unicode</OtherFlags>
+    </FsLex>
+    <None Include="Parser.fsy" />
+    <None Include="Lex.fsl" />
+    <Compile Include="Parser.fs" />
+    <Compile Include="Lex.fs" />
+    <Compile Include="Resolution.fs" />
+    <Compile Include="Validation.fs" />
+    <Compile Include="Translation.fs" />
+    <Compile Include="Engine.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FSharp.Compiler.Service" Version="43.8.401" />
+    <PackageReference Include="FsLexYacc" Version="11.3.0">
+      <!--<PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>build; analyzers; buildtransitive</IncludeAssets>-->
+    </PackageReference>
+    <PackageReference Include="Hiperspace" Version="1.3.3" />
+    <PackageReference Include="Microsoft.CodeAnalysis" Version="4.11.0" />
+    <PackageReference Include="Parquet.Net" Version="5.0.1" />
+    <PackageReference Include="Nerdbank.GitVersioning" Version="3.6.146">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="System.CodeDom" Version="8.0.0" />
+    <PackageReference Include="System.Linq.Queryable" Version="4.3.0" />
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="FSharp.Core" Version="8.0.401" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,333 @@
+﻿%{
+
+open Hiperspace.SQL.Ast
+
+let Pos (parseState : FSharp.Text.Parsing.IParseState) = 
+  let (startPos, endPos) = parseState.ResultRange
+  {
+    sl = startPos.pos_lnum + 1
+    sc = startPos.pos_cnum - startPos.pos_bol + 1
+    el = endPos.pos_lnum + 1
+    ec = endPos.pos_cnum - endPos.pos_bol + 1
+  }  
+ 
+%}
+
+%start start 
+
+%token AND
+%token AS
+%token ASC
+%token AVG
+%token BETWEEN
+%token BY
+%token CONCAT
+%token COUNT
+%token DESC
+%token DISTINCT
+%token DOTSTAR
+%token EXISTS
+%token FALSE
+%token FROM
+%token GROUP
+%token HAVING
+%token IN
+%token ISNOTNULL
+%token ISNULL
+%token JOIN
+%token LIKE
+%token LIMIT
+%token MAX
+%token MIN
+%token NOT
+%token NOTEXISTS
+%token NULL
+%token ON
+%token OR
+%token ORDER
+%token SELECT
+%token SUM
+%token TRUE
+%token UNION
+%token WHERE
+
+%token <int> INT
+%token <float> FLOAT
+%token <decimal> DECIMAL
+%token <string> ID
+%token <string> STRING
+%token OPEN_BRACKET
+%token CLOSE_BRACKET
+%token COMMA
+%token COLON
+%token DOT
+%token INSELECT
+%token SEMI
+%token EQUAL
+%token SELECTSTAR
+%token STAR
+%token PLUS
+%token MINUS
+%token SLASH
+%token LESS
+%token GREATER
+%token GREATER_EQUAL
+%token LESS_EQUAL
+%token NOT_EQUAL
+%left COLON
+%left QUESTION
+%left AND OR
+%left LESS LESS_EQUAL GREATER GREATER_EQUAL EQUAL
+%left PLUS MINUS
+%left STAR SLASH
+%left JOIN COMMA
+%left AVG MAX MIN SUM COUNT
+%right NOT
+%right ISNULL ISNOTNULL
+%right CONCAT
+%token PERCENT
+%token QUESTION 
+%token EOF
+
+%type <Result> start
+
+%%
+
+start: statements                   { Result.Create $1 }
+
+statements:
+ |                                  { [] }
+ | statement                        { [$1] }
+ | statement SEMI statements        { $1 :: $3 }
+
+statement:
+ | select                           { Select $1 }
+ | select UNION statement           { Union ($1 , $3) }
+
+
+select: SELECT subselect            { $2 }
+subselect:
+  | column_list FROM from_list where_expr group_expr order_expr limit_expr
+    { 
+      {
+        Columns = $1
+        From = $3
+        Where = $4
+        GroupBy = $5
+        OrderBy = $6
+        Limit = $7
+        Distinct = false
+        Position = (Pos parseState)
+      }
+    }
+
+  | STAR FROM from_list where_expr group_expr order_expr limit_expr
+    { 
+      {
+        Columns = []
+        From = $3
+        Where = $4
+        GroupBy = $5
+        OrderBy = $6
+        Limit = $7
+        Distinct = false
+        Position = (Pos parseState)
+      }
+    }
+
+  | DISTINCT column_list FROM from_list where_expr group_expr order_expr limit_expr
+    { 
+      {
+        Columns = $2
+        From = $4
+        Where = $5
+        GroupBy = $6
+        OrderBy = $7
+        Limit = $8
+        Distinct = true
+        Position = (Pos parseState)
+      }
+    }
+
+  | DISTINCT STAR FROM from_list where_expr group_expr order_expr limit_expr
+    { 
+      {
+        Columns = []
+        From = $4
+        Where = $5
+        GroupBy = $6
+        OrderBy = $7
+        Limit = $8
+        Distinct = true
+        Position = (Pos parseState)
+      }
+    }
+
+name:
+  | ID DOT name
+    { $1 :: $3 }
+
+  | ID
+    { [$1] }
+
+  | ID DOTSTAR
+	{ [$1; "*"] }
+
+column_list:
+  | column
+    { [$1] }
+
+  | column COMMA column_list
+    { $1 :: $3 }
+
+column:
+  | expression AS ID
+    { 
+      {
+        Expression = $1
+        Alias = Some $3
+        Position = (Pos parseState) 
+      }
+    }
+
+  | expression
+    { 
+      {
+        Expression = $1
+        Alias = None
+        Position = (Pos parseState) 
+      }
+    }
+
+  | boolean AS ID
+    { 
+      {
+        Expression = Boolean $1
+        Alias = Some $3
+        Position = (Pos parseState) 
+      }
+    }
+
+from_list:
+  | ID
+    { Table {
+        Name  = $1
+        Alias = None
+        Set = None
+        Subject = None
+        SubQuery = None
+        Position = (Pos parseState) 
+      }
+    }
+
+  | from_list COMMA from_list
+    { Product ($1, $3) }
+
+  | ID AS ID
+    { Table {
+        Name  = $1                    
+        Alias = Some $3
+        Set = None
+        Subject = None
+        SubQuery = None
+        Position = (Pos parseState) 
+      }
+    }
+
+  | OPEN_BRACKET select CLOSE_BRACKET AS ID
+    { SubQuery ($2, $5) }
+
+  | from_list JOIN from_list ON boolean
+    { Join ($1, $3, $5) }
+
+where_expr: 
+  | WHERE boolean
+    { Some $2 }
+
+  | 
+    { None }
+
+group_expr:
+  | GROUP BY column_list HAVING boolean
+    { 
+      Some {
+        Columns = $3
+        Having = Some $5
+        Position = (Pos parseState) 
+      }
+    }
+
+  | GROUP BY column_list 
+    { 
+      Some {
+        Columns = $3
+        Having = None
+        Position = (Pos parseState) 
+      }
+    }
+
+  | 
+    { None }
+
+order_expr:
+  | ORDER BY column_list
+    { $3 }
+
+  | 
+    { [] }
+
+limit_expr:
+  | LIMIT INT
+    { Some $2 }
+
+  | 
+    { None }
+
+expression:
+  | expression STAR expression                      { Mul ($1, $3) } 
+  | expression SLASH expression                     { Div ($1, $3) } 
+  | expression PLUS expression                      { Add ($1, $3) } 
+  | expression MINUS expression                     { Sub ($1, $3) } 
+  | OPEN_BRACKET expression CLOSE_BRACKET           { $2 }
+  | SUM expression                                  { Sum $2 }
+  | COUNT OPEN_BRACKET expression CLOSE_BRACKET     { Count $3 }
+  | COUNT OPEN_BRACKET STAR CLOSE_BRACKET           { CountStar }
+  | COLON ID                                        { Param ($2, None) }
+  | AVG OPEN_BRACKET expression CLOSE_BRACKET       { Avg $3 }
+  | MIN OPEN_BRACKET expression CLOSE_BRACKET       { Min $3 }
+  | MAX OPEN_BRACKET expression CLOSE_BRACKET       { Max $3 }
+  | INT                                             { Int $1 }
+  | FLOAT                                           { Num $1 } 
+  | DECIMAL                                         { Dec $1 }
+  | name                                            { Ref (Name.Create $1 (Pos parseState))}
+  | STRING                                          { Str $1 }
+  | TRUE                                            { Bool true }
+  | FALSE                                           { Bool false }
+  | expression CONCAT expression                    { Concat ($1, $3) } 
+ 
+boolean:
+  | NOT boolean                                     { Not $2 }
+  | expression LESS expression                      { Less ($1, $3) }
+  | expression LIKE expression                      { Like ($1, $3) }
+  | expression GREATER expression                   { Greater ($1, $3) }
+  | expression LESS_EQUAL expression                { LessEqual ($1, $3) }
+  | expression GREATER_EQUAL expression             { GreaterEqual ($1, $3) }
+  | expression EQUAL expression                     { Equal ($1, $3) }
+  | expression NOT_EQUAL expression                 { NotEqual ($1, $3) }
+  | boolean AND boolean                             { And ($1, $3) }
+  | boolean OR boolean                              { Or ($1, $3) }
+  | EXISTS OPEN_BRACKET subselect CLOSE_BRACKET     { Exists $3 }
+  | NOTEXISTS OPEN_BRACKET subselect CLOSE_BRACKET  { NotExists $3 }
+  | expression IN OPEN_BRACKET inlist CLOSE_BRACKET { In ($1, $4) }
+  | expression INSELECT subselect CLOSE_BRACKET     { InSelect ($1, $3) }
+  | expression BETWEEN expression AND expression    { Between ($1, $3, $5) }
+  | expression ISNULL                               { IsNull $1 }
+  | expression ISNOTNULL                            { IsNotNull $1 }
+  | OPEN_BRACKET boolean CLOSE_BRACKET              { $2 }
+
+inlist:
+  | expression
+    { [$1] }
+
+  | expression COMMA inlist
+    { $1 :: $3 }
