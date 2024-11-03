@@ -882,7 +882,7 @@ namespace Hiperspace
                         var getter = right.Getter();
                         var value = getter.GetValue();
 
-                        if (left.Target != null && property != null)
+                        if (left.Target != null && property != null && value != null)
                         {
                             property.SetValue(left.Target, value);
                         }

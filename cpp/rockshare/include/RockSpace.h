@@ -32,7 +32,7 @@ namespace Hiperspace
 		//
 		// Max value of a uint64 inported from .NET
 		//
-		const uint64_t MaxValue = 18446744073709551615LL;
+		const uint64_t MaxValue = 18446744073709551615ULL;
 
 		// 
 		// Min value of a uint
@@ -42,7 +42,7 @@ namespace Hiperspace
 		//
 		// the unix origin 01/01/1970 adjusted to 01/01/0001
 		//
-		const int64_t Origin = 621355968000000000L;
+		const int64_t Origin = 621355968000000000LL;
 
 		//
 		// Clock ticks per second

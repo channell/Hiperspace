@@ -11,6 +11,7 @@
 #include <boost/endian.hpp>
 #include <type_traits>
 #include <span>
+#include <cstddef>
 #include <google/protobuf/arena.h>
 
 using namespace rocksdb;
@@ -260,7 +261,7 @@ namespace Hiperspace
 		}
 		return move(result);
 	}
-	unique_ptr<ValueVersions> __stdcall RockSpace::Find(const FindVersionRequest& request)
+	unique_ptr<ValueVersions> RockSpace::Find(const FindVersionRequest& request)
 	{
 		unique_ptr<ValueVersions> result(google::protobuf::Arena::CreateMessage<ValueVersions>(request.GetArena()));
 		unique_ptr<Iterator> iter(_db->NewIterator(ReadOptions()));
@@ -348,7 +349,7 @@ namespace Hiperspace
 		}
 		return move(result);
 	}
-	unique_ptr<ValueVersions> __stdcall RockSpace::FindIndex(const FindVersionRequest& request)
+	unique_ptr<ValueVersions> RockSpace::FindIndex(const FindVersionRequest& request)
 	{
 		unique_ptr<ValueVersions> result(google::protobuf::Arena::CreateMessage<ValueVersions>(request.GetArena()));
 		unique_ptr<Iterator> iter(_db->NewIterator(ReadOptions()));

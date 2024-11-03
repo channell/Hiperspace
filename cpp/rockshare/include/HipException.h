@@ -20,9 +20,13 @@ namespace Hiperspace
 		string _msg;
 	public:
 		explicit MutationException() : exception() { }
-		explicit MutationException(string& msg) : exception(msg.c_str())
+		explicit MutationException(const string& msg) 
 		{
 			_msg = msg;
+		}
+		virtual const char* what() const noexcept override 
+		{
+			return _msg.c_str();
 		}
 	};
 
@@ -34,9 +38,13 @@ namespace Hiperspace
 
 	public:
 		explicit RocksExcpetion() : exception() { }
-		explicit RocksExcpetion(string msg) : exception(msg.c_str())
+		explicit RocksExcpetion(string msg) 
 		{
 			_msg = msg;
+		}
+		virtual const char* what() const noexcept override
+		{
+			return _msg.c_str();
 		}
 	};
 
@@ -48,9 +56,13 @@ namespace Hiperspace
 
 	public:
 		explicit ProtocolExcepetion() : exception() { }
-		explicit ProtocolExcepetion(string msg) : exception(msg.c_str())
+		explicit ProtocolExcepetion(string msg) 
 		{
 			_msg = msg;
+		}
+		virtual const char* what() const noexcept override
+		{
+			return _msg.c_str();
 		}
 	};
 }
