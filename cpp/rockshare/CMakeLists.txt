@@ -55,7 +55,7 @@ set (CMAKE_CXX_STANDARD 20)
 message("toolchain ${CMAKE_TOOLCHAIN_FILE}")
 include(${CMAKE_TOOLCHAIN_FILE})
 #target_include_directories(rockset, PRIVATE include)
-include_directories(include) 
+include_directories(include)
 
 # Link dependencies
 target_link_libraries(rockshare PRIVATE p3protolib)
@@ -82,3 +82,8 @@ find_package(RocksDB CONFIG REQUIRED)
 # sub directories
 add_subdirectory(proto)
 #add_subdirectory(src)
+
+# Set debug startup parameters
+set_target_properties(rockshare PROPERTIES
+  VS_DEBUGGER_COMMAND_ARGUMENTS "--port 4242" 
+)

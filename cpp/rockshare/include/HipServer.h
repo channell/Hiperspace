@@ -29,8 +29,8 @@ using namespace std;
 
 namespace Hiperspace
 {
-    // Class implementing the hiperspace proto iinterface 
-	class HipServer final: public HiServ::Service
+    // Class implementing the hiperspace proto interface 
+	class HipServer final: public RemoteServer::Service
 	{
 
     private:
@@ -52,14 +52,14 @@ namespace Hiperspace
         grpc::Status Close(ServerContext* context, const Token* request, Token* response) override;
         grpc::Status Bind(ServerContext* context, const BindRequest* request, Value* response) override;
         grpc::Status BatchBind(ServerContext* context, const BatchBindRequest* request, Values* response) override;
-        grpc::Status Find(ServerContext* context, const FindRequest* request, Values* response) override;
+        grpc::Status Find(ServerContext* context, const FindRequest* request, grpc::ServerWriter<KeyValue>* writer) override;
         grpc::Status Get(ServerContext* context, const KeyRequest* request, Value* response) override;
-        grpc::Status BindVersion(ServerContext* context, const BindVersionRequest* request, ValueVersion* response) override;
+        grpc::Status BindVersion(ServerContext* context, const BindVersionRequest* request, Value* response) override;
         grpc::Status BatchVersionBind(ServerContext* context, const BatchBindVersionRequest* request, Values* response) override;
-        grpc::Status FindVersion(ServerContext* context, const FindVersionRequest* request, ValueVersions* response) override;
+        grpc::Status FindVersion(::grpc::ServerContext* context, const ::Hiperspace::FindVersionRequest* request, ::grpc::ServerWriter< ::Hiperspace::KeyValueVersion>* writer) override;
         grpc::Status GetVersion(ServerContext* context, const KeyVersionRequest* request, ValueVersion* response) override;
-        grpc::Status GetVersions(ServerContext* context, const KeyRequest* request, VersionHistory* response) override;
-        grpc::Status FindIndex(ServerContext* context, const FindRequest* request, Values* response) override;
-        grpc::Status FindIndexVersion(ServerContext* context, const FindVersionRequest* request, ValueVersions* response) override;
-	};
+        grpc::Status GetVersions(::grpc::ServerContext* context, const ::Hiperspace::KeyRequest* request, ::grpc::ServerWriter< ::Hiperspace::ValueVersion>* writer) override;
+        grpc::Status FindIndex(::grpc::ServerContext* context, const ::Hiperspace::FindRequest* request, ::grpc::ServerWriter< ::Hiperspace::KeyValue>* writer) override;
+        grpc::Status FindIndexVersion(::grpc::ServerContext* context, const ::Hiperspace::FindVersionRequest* request, ::grpc::ServerWriter< ::Hiperspace::KeyValueVersion>* writer) override;
+    };
 }

@@ -53,7 +53,7 @@ namespace Hiperspace
 			auto connection = tokenAccessor->second;
 			if (connection->Context->path() != request->path())
 			{
-				throw ProtocolExcepetion(fmt::format("Open request reused token for {0} that is already open for {1}", request->path(), connection->Context->path()));
+				throw ProtocolException(fmt::format("Open request reused token for {0} that is already open for {1}", request->path(), connection->Context->path()));
 			}
 			else
 			{
@@ -95,7 +95,7 @@ namespace Hiperspace
 		}
 		else
 		{
-			throw ProtocolExcepetion("Token session not found");
+			throw ProtocolException("Token session not found");
 		}
 	}
 }

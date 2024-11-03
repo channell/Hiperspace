@@ -49,13 +49,21 @@ namespace Hiperspace
 		unique_ptr<Values> BatchBind(const BatchBindVersionRequest& request);
 
 		unique_ptr<Values> Find(const FindRequest& request);
+		void FindAsync(const FindRequest& request, function<void(const KeyValue&)> callback);
+
 		unique_ptr<ValueVersions> Find(const FindVersionRequest& request);
+		void FindAsync(const FindVersionRequest& request, function<void(const KeyValueVersion&)> callback);
+
 		unique_ptr<Values> FindIndex(const FindRequest& request);
+		void FindIndexAsync(const FindRequest& request, function<void(const KeyValue&)> callback);
+
 		unique_ptr<ValueVersions> FindIndex(const FindVersionRequest& request);
+		void FindIndexAsync(const FindVersionRequest& request, function<void(const KeyValueVersion&)> callback);
 
 		unique_ptr<Value> Get(const KeyRequest& request);
 		unique_ptr<ValueVersion> Get(const KeyVersionRequest& request);
 
 		unique_ptr<VersionHistory> GetVersions(const KeyRequest& request);
+		void GetVersionsAsync(const KeyRequest& request, function<void(const ValueVersion&)> callback);
 	};
 }

@@ -66,6 +66,15 @@ namespace Hiperspace
 		Open();
 		return _space->Find(request);
 	}
+
+	void SpaceConnection::FindAsync(const FindRequest& request, function<void(const KeyValue&)> callback)
+	{
+		_clock = clock();
+		tbb::spin_rw_mutex::scoped_lock lock(_mux, false);
+		Open();
+		_space->FindAsync(request, callback);
+	}
+
 	unique_ptr<ValueVersions> SpaceConnection::Find(const FindVersionRequest& request)
 	{
 		_clock = clock();
@@ -73,6 +82,16 @@ namespace Hiperspace
 		Open();
 		return _space->Find(request);
 	}
+
+	void SpaceConnection::FindAsync(const FindVersionRequest& request, function<void(const KeyValueVersion&)> callback)
+	{
+		_clock = clock();
+		tbb::spin_rw_mutex::scoped_lock lock(_mux, false);
+		Open();
+		_space->FindAsync(request, callback);
+
+	}
+
 	unique_ptr<Values> SpaceConnection::FindIndex(const FindRequest& request)
 	{
 		_clock = clock();
@@ -80,12 +99,28 @@ namespace Hiperspace
 		Open();
 		return _space->FindIndex(request);
 	}
+
+	void SpaceConnection::FindIndexAsync(const FindRequest& request, function<void(const KeyValue&)> callback)
+	{
+		_clock = clock();
+		tbb::spin_rw_mutex::scoped_lock lock(_mux, false);
+		Open();
+		_space->FindIndexAsync(request, callback);
+	}
+
 	unique_ptr<ValueVersions> SpaceConnection::FindIndex(const FindVersionRequest& request)
 	{
 		_clock = clock();
 		tbb::spin_rw_mutex::scoped_lock lock(_mux, false);
 		Open();
 		return _space->FindIndex(request);
+	}
+	void SpaceConnection::FindIndexAsync(const FindVersionRequest& request, function<void(const KeyValueVersion&)> callback)
+	{
+		_clock = clock();
+		tbb::spin_rw_mutex::scoped_lock lock(_mux, false);
+		Open();
+		_space->FindIndexAsync(request, callback);
 	}
 
 	unique_ptr<Value> SpaceConnection::Get(const KeyRequest& request)
@@ -109,5 +144,12 @@ namespace Hiperspace
 		tbb::spin_rw_mutex::scoped_lock lock(_mux, false);
 		Open();
 		return _space->GetVersions(request);
+	}
+	void SpaceConnection::GetVersionsAsync(const KeyRequest& request, function<void(const ValueVersion&)> callback)
+	{
+		_clock = clock();
+		tbb::spin_rw_mutex::scoped_lock lock(_mux, false);
+		Open();
+		_space->GetVersionsAsync(request, callback);
 	}
 }

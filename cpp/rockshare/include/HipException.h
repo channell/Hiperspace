@@ -31,14 +31,14 @@ namespace Hiperspace
 	};
 
 	// Exception caused by a IO error in Rocks DB. 
-	class RocksExcpetion : public exception
+	class RocksException : public exception
 	{
 	private:
 		string _msg;
 
 	public:
-		explicit RocksExcpetion() : exception() { }
-		explicit RocksExcpetion(string msg) 
+		explicit RocksException() : exception() { }
+		explicit RocksException(string msg) 
 		{
 			_msg = msg;
 		}
@@ -49,14 +49,14 @@ namespace Hiperspace
 	};
 
 	// Error throne when the session has timed out or failed validation. requires reconnect.  
-	class ProtocolExcepetion : public exception
+	class ProtocolException : public exception
 	{
 	private:
 		string _msg;
 
 	public:
-		explicit ProtocolExcepetion() : exception() { }
-		explicit ProtocolExcepetion(string msg) 
+		explicit ProtocolException() : exception() { }
+		explicit ProtocolException(string msg) 
 		{
 			_msg = msg;
 		}

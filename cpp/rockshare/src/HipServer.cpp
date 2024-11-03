@@ -3,7 +3,6 @@
 //                        Copyright (c) 2024 Cepheis Ltd
 //                                    www.cepheis.com
 //
-// This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 
 #include "HipServer.h"
@@ -65,14 +64,14 @@ namespace Hiperspace
 			cout << LogTime() << "\tMutationException " << me.what() << endl;
 			return grpc::Status(grpc::StatusCode::CANCELLED, me.what());
 		}
-		catch (RocksExcpetion re)
+		catch (RocksException re)
 		{
-			cout << LogTime() << "\tRocksExcpetion " << re.what() << endl;
+			cout << LogTime() << "\tRocksException" << re.what() << endl;
 			return grpc::Status(grpc::StatusCode::CANCELLED, re.what());
 		}
 		catch (exception e)
 		{
-			cout << LogTime() << "\tExcpetion " << e.what() << endl;
+			cout << LogTime() << "\tException" << e.what() << endl;
 			return grpc::Status(grpc::StatusCode::INTERNAL, e.what());
 		}
 	}
@@ -86,7 +85,7 @@ namespace Hiperspace
 		}
 		catch (exception e)
 		{
-			cout << LogTime() << "\tExcpetion " << e.what() << endl;
+			cout << LogTime() << "\tException" << e.what() << endl;
 			return grpc::Status(grpc::StatusCode::INTERNAL, e.what());
 		}
 	}
@@ -102,19 +101,19 @@ namespace Hiperspace
 			response->CopyFrom(*result);
 			return grpc::Status::OK;
 		}
-		catch (ProtocolExcepetion pe)
+		catch (ProtocolException pe)
 		{
-			cout << LogTime() << "\tProtocolExcepetion " << pe.what() << endl;
+			cout << LogTime() << "\tProtocolException" << pe.what() << endl;
 			return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, pe.what());
 		}
-		catch (RocksExcpetion re)
+		catch (RocksException re)
 		{
-			cout << LogTime() << "\tRocksExcpetion " << re.what() << endl;
+			cout << LogTime() << "\tRocksException" << re.what() << endl;
 			return grpc::Status(grpc::StatusCode::DATA_LOSS, re.what());
 		}
 		catch (exception e)
 		{
-			cout << LogTime() << "\tExcpetion " << e.what() << endl;
+			cout << LogTime() << "\tException" << e.what() << endl;
 			return grpc::Status(grpc::StatusCode::INTERNAL, e.what());
 		}
 	}
@@ -130,50 +129,51 @@ namespace Hiperspace
 			response->CopyFrom(*result);
 			return grpc::Status::OK;
 		}
-		catch (ProtocolExcepetion pe)
+		catch (ProtocolException pe)
 		{
-			cout << LogTime() << "\tProtocolExcepetion " << pe.what() << endl;
+			cout << LogTime() << "\tProtocolException" << pe.what() << endl;
 			return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, pe.what());
 		}
-		catch (RocksExcpetion re)
+		catch (RocksException re)
 		{
-			cout << LogTime() << "\tRocksExcpetion " << re.what() << endl;
+			cout << LogTime() << "\tRocksException" << re.what() << endl;
 			return grpc::Status(grpc::StatusCode::DATA_LOSS, re.what());
 		}
 		catch (exception e)
 		{
-			cout << LogTime() << "\tExcpetion " << e.what() << endl;
+			cout << LogTime() << "\tException" << e.what() << endl;
 			return grpc::Status(grpc::StatusCode::INTERNAL, e.what());
 		}
 	}
-	grpc::Status HipServer::Find(ServerContext* context, const FindRequest* request, Values* response)
+	grpc::Status HipServer::Find(ServerContext* context, const FindRequest* request, grpc::ServerWriter<KeyValue>* writer)
 	{
 		try
 		{
 #ifdef DEBUG
 			cout << LogTime() << " Find " << endl;
 #endif
+			auto callback = [&](const KeyValue& kv) { writer->Write(kv); };
 			auto space = _pool->Find(request->token());
-			auto result = space->Find(*request);
-			response->CopyFrom(*result);
+			space->FindAsync(*request, callback);
 			return grpc::Status::OK;
 		}
-		catch (ProtocolExcepetion pe)
+		catch (ProtocolException pe)
 		{
-			cout << LogTime() << "\tProtocolExcepetion " << pe.what() << endl;
+			cout << LogTime() << "\tProtocolException" << pe.what() << endl;
 			return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, pe.what());
 		}
-		catch (RocksExcpetion re)
+		catch (RocksException re)
 		{
-			cout << LogTime() << "\tRocksExcpetion " << re.what() << endl;
+			cout << LogTime() << "\tRocksException" << re.what() << endl;
 			return grpc::Status(grpc::StatusCode::DATA_LOSS, re.what());
 		}
 		catch (exception e)
 		{
-			cout << LogTime() << "\tExcpetion " << e.what() << endl;
+			cout << LogTime() << "\tException" << e.what() << endl;
 			return grpc::Status(grpc::StatusCode::INTERNAL, e.what());
 		}
 	}
+
 	grpc::Status HipServer::Get(ServerContext* context, const KeyRequest* request, Value* response)
 	{
 		try
@@ -186,23 +186,25 @@ namespace Hiperspace
 			response->CopyFrom(*result);
 			return grpc::Status::OK;
 		}
-		catch (ProtocolExcepetion pe)
+		catch (ProtocolException pe)
 		{
-			cout << LogTime() << "\tProtocolExcepetion " << pe.what() << endl;
+			cout << LogTime() << "\tProtocolException" << pe.what() << endl;
 			return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, pe.what());
 		}
-		catch (RocksExcpetion re)
+		catch (RocksException re)
 		{
-			cout << LogTime() << "\tRocksExcpetion " << re.what() << endl;
+			cout << LogTime() << "\tRocksException" << re.what() << endl;
 			return grpc::Status(grpc::StatusCode::DATA_LOSS, re.what());
 		}
 		catch (exception e)
 		{
-			cout << LogTime() << "\tExcpetion " << e.what() << endl;
+			cout << LogTime() << "\tException" << e.what() << endl;
 			return grpc::Status(grpc::StatusCode::INTERNAL, e.what());
 		}
 	}
-	grpc::Status HipServer::BindVersion(ServerContext* context, const BindVersionRequest* request, ValueVersion* response)
+
+
+	grpc::Status HipServer::BindVersion(ServerContext* context, const BindVersionRequest* request, Value* response)
 	{
 		try
 		{
@@ -214,19 +216,19 @@ namespace Hiperspace
 			response->CopyFrom(*result);
 			return grpc::Status::OK;
 		}
-		catch (ProtocolExcepetion pe)
+		catch (ProtocolException pe)
 		{
-			cout << LogTime() << "\tProtocolExcepetion " << pe.what() << endl;
+			cout << LogTime() << "\tProtocolException" << pe.what() << endl;
 			return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, pe.what());
 		}
-		catch (RocksExcpetion re)
+		catch (RocksException re)
 		{
-			cout << LogTime() << "\tRocksExcpetion " << re.what() << endl;
+			cout << LogTime() << "\tRocksException" << re.what() << endl;
 			return grpc::Status(grpc::StatusCode::DATA_LOSS, re.what());
 		}
 		catch (exception e)
 		{
-			cout << LogTime() << "\tExcpetion " << e.what() << endl;
+			cout << LogTime() << "\tException" << e.what() << endl;
 			return grpc::Status(grpc::StatusCode::INTERNAL, e.what());
 		}
 	}
@@ -242,51 +244,23 @@ namespace Hiperspace
 			response->CopyFrom(*result);
 			return grpc::Status::OK;
 		}
-		catch (ProtocolExcepetion pe)
+		catch (ProtocolException pe)
 		{
-			cout << LogTime() << "\tProtocolExcepetion " << pe.what() << endl;
+			cout << LogTime() << "\tProtocolException" << pe.what() << endl;
 			return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, pe.what());
 		}
-		catch (RocksExcpetion re)
+		catch (RocksException re)
 		{
-			cout << LogTime() << "\tRocksExcpetion " << re.what() << endl;
+			cout << LogTime() << "\tRocksException" << re.what() << endl;
 			return grpc::Status(grpc::StatusCode::DATA_LOSS, re.what());
 		}
 		catch (exception e)
 		{
-			cout << LogTime() << "\tExcpetion " << e.what() << endl;
+			cout << LogTime() << "\tException" << e.what() << endl;
 			return grpc::Status(grpc::StatusCode::INTERNAL, e.what());
 		}
 	}
-	grpc::Status HipServer::FindVersion(ServerContext* context, const FindVersionRequest* request, ValueVersions* response)
-	{
-		try
-		{
-#ifdef DEBUG
-			cout << LogTime() << " FindVersion " << endl;
-#endif
-			auto token = request->token().tokenid();
-			auto space = _pool->Find(request->token());
-			auto result = space->Find(*request);
-			response->CopyFrom(*result);
-			return grpc::Status::OK;
-		}
-		catch (ProtocolExcepetion pe)
-		{
-			cout << LogTime() << "\tProtocolExcepetion " << pe.what() << endl;
-			return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, pe.what());
-		}
-		catch (RocksExcpetion re)
-		{
-			cout << LogTime() << "\tRocksExcpetion " << re.what() << endl;
-			return grpc::Status(grpc::StatusCode::DATA_LOSS, re.what());
-		}
-		catch (exception e)
-		{
-			cout << LogTime() << "\tExcpetion " << e.what() << endl;
-			return grpc::Status(grpc::StatusCode::INTERNAL, e.what());
-		}
-	}
+
 	grpc::Status HipServer::GetVersion(ServerContext* context, const KeyVersionRequest* request, ValueVersion* response)
 	{
 		try
@@ -299,23 +273,54 @@ namespace Hiperspace
 			response->CopyFrom(*result);
 			return grpc::Status::OK;
 		}
-		catch (ProtocolExcepetion pe)
+		catch (ProtocolException pe)
 		{
-			cout << LogTime() << "\tProtocolExcepetion " << pe.what() << endl;
+			cout << LogTime() << "\tProtocolException" << pe.what() << endl;
 			return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, pe.what());
 		}
-		catch (RocksExcpetion re)
+		catch (RocksException re)
 		{
-			cout << LogTime() << "\tRocksExcpetion " << re.what() << endl;
+			cout << LogTime() << "\tRocksException" << re.what() << endl;
 			return grpc::Status(grpc::StatusCode::DATA_LOSS, re.what());
 		}
 		catch (exception e)
 		{
-			cout << LogTime() << "\tExcpetion " << e.what() << endl;
+			cout << LogTime() << "\tException" << e.what() << endl;
 			return grpc::Status(grpc::StatusCode::INTERNAL, e.what());
 		}
 	}
-	grpc::Status HipServer::GetVersions(ServerContext* context, const KeyRequest* request, VersionHistory* response)
+	grpc::Status HipServer::FindVersion(::grpc::ServerContext* context, const ::Hiperspace::FindVersionRequest* request, ::grpc::ServerWriter< ::Hiperspace::KeyValueVersion>* writer)
+	{
+		try
+		{
+#ifdef DEBUG
+			cout << LogTime() << " FindVersion " << endl;
+#endif
+			auto token = request->token().tokenid();
+			auto space = _pool->Find(request->token());
+			auto callback = [&](const KeyValueVersion& kv) { writer->Write(kv); };
+			space->FindAsync(*request, callback);
+			return grpc::Status::OK;
+		}
+		catch (ProtocolException pe)
+		{
+			cout << LogTime() << "\tProtocolException" << pe.what() << endl;
+			return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, pe.what());
+		}
+		catch (RocksException re)
+		{
+			cout << LogTime() << "\tRocksException" << re.what() << endl;
+			return grpc::Status(grpc::StatusCode::DATA_LOSS, re.what());
+		}
+		catch (exception e)
+		{
+			cout << LogTime() << "\tException" << e.what() << endl;
+			return grpc::Status(grpc::StatusCode::INTERNAL, e.what());
+		}
+	}
+
+
+	::grpc::Status HipServer::GetVersions(::grpc::ServerContext* context, const ::Hiperspace::KeyRequest* request, ::grpc::ServerWriter< ::Hiperspace::ValueVersion>* writer)
 	{
 		try
 		{
@@ -323,27 +328,28 @@ namespace Hiperspace
 			cout << LogTime() << " GetVersions " << endl;
 #endif
 			auto space = _pool->Find(request->token());
-			auto result = space->GetVersions(*request);
-			response->CopyFrom(*result);
+			auto callback = [&](const ValueVersion& kv) { writer->Write(kv); };
+			space->GetVersionsAsync(*request, callback);
 			return grpc::Status::OK;
 		}
-		catch (ProtocolExcepetion pe)
+		catch (ProtocolException pe)
 		{
-			cout << LogTime() << "\tProtocolExcepetion " << pe.what() << endl;
+			cout << LogTime() << "\tProtocolException" << pe.what() << endl;
 			return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, pe.what());
 		}
-		catch (RocksExcpetion re)
+		catch (RocksException re)
 		{
-			cout << LogTime() << "\tRocksExcpetion " << re.what() << endl;
+			cout << LogTime() << "\tRocksException" << re.what() << endl;
 			return grpc::Status(grpc::StatusCode::DATA_LOSS, re.what());
 		}
 		catch (exception e)
 		{
-			cout << LogTime() << "\tExcpetion " << e.what() << endl;
+			cout << LogTime() << "\tException" << e.what() << endl;
 			return grpc::Status(grpc::StatusCode::INTERNAL, e.what());
 		}
+
 	}
-	grpc::Status HipServer::FindIndex(ServerContext* context, const FindRequest* request, Values* response)
+	::grpc::Status HipServer::FindIndex(::grpc::ServerContext* context, const ::Hiperspace::FindRequest* request, ::grpc::ServerWriter< ::Hiperspace::KeyValue>* writer)
 	{
 		try
 		{
@@ -352,26 +358,31 @@ namespace Hiperspace
 #endif
 			auto space = _pool->Find(request->token());
 			auto result = space->FindIndex(*request);
-			response->CopyFrom(*result);
+			auto content = result->content();
+			for (auto i = begin(content); i != end(content); i++)
+			{
+				writer->Write(*i);
+			}
 			return grpc::Status::OK;
 		}
-		catch (ProtocolExcepetion pe)
+		catch (ProtocolException pe)
 		{
-			cout << LogTime() << "\tProtocolExcepetion " << pe.what() << endl;
+			cout << LogTime() << "\tProtocolException" << pe.what() << endl;
 			return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, pe.what());
 		}
-		catch (RocksExcpetion re)
+		catch (RocksException re)
 		{
-			cout << LogTime() << "\tRocksExcpetion " << re.what() << endl;
+			cout << LogTime() << "\tRocksException" << re.what() << endl;
 			return grpc::Status(grpc::StatusCode::DATA_LOSS, re.what());
 		}
 		catch (exception e)
 		{
-			cout << LogTime() << "\tExcpetion " << e.what() << endl;
+			cout << LogTime() << "\tException" << e.what() << endl;
 			return grpc::Status(grpc::StatusCode::INTERNAL, e.what());
 		}
 	}
-	grpc::Status HipServer::FindIndexVersion(ServerContext* context, const FindVersionRequest* request, ValueVersions* response)
+
+	::grpc::Status HipServer::FindIndexVersion(::grpc::ServerContext* context, const ::Hiperspace::FindVersionRequest* request, ::grpc::ServerWriter< ::Hiperspace::KeyValueVersion>* writer)
 	{
 		try
 		{
@@ -381,24 +392,27 @@ namespace Hiperspace
 			auto token = request->token().tokenid();
 			auto space = _pool->Find(request->token());
 			auto result = space->FindIndex(*request);
-			response->CopyFrom(*result);
+			auto content = result->content();
+			for (auto i = begin(content); i != end(content); i++)
+			{
+				writer->Write(*i);
+			}
 			return grpc::Status::OK;
 		}
-		catch (ProtocolExcepetion pe)
+		catch (ProtocolException pe)
 		{
-			cout << LogTime() << "\tProtocolExcepetion " << pe.what() << endl;
+			cout << LogTime() << "\tProtocolException" << pe.what() << endl;
 			return grpc::Status(grpc::StatusCode::FAILED_PRECONDITION, pe.what());
 		}
-		catch (RocksExcpetion re)
+		catch (RocksException re)
 		{
-			cout << LogTime() << "\tRocksExcpetion " << re.what() << endl;
+			cout << LogTime() << "\tRocksException" << re.what() << endl;
 			return grpc::Status(grpc::StatusCode::DATA_LOSS, re.what());
 		}
 		catch (exception e)
 		{
-			cout << LogTime() << "\tExcpetion " << e.what() << endl;
+			cout << LogTime() << "\tException" << e.what() << endl;
 			return grpc::Status(grpc::StatusCode::INTERNAL, e.what());
 		}
-
 	}
 }

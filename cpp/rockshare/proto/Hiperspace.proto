@@ -14,12 +14,6 @@ enum ResponseState
 	Error = 4;	// another error (not related to comunication) has occured
 }
 
-enum HiperDrive
-{
-	Rocks = 0;
-	Remote = 1;
-}
-
 message Token
 {
 	bytes TokenId = 1;
@@ -30,11 +24,10 @@ message OpenRequest
 	Token Token = 1;
 	string Path = 2;
 	bytes MetaModel = 3;
-	HiperDrive Driver = 4;
 	bool Compression = 5;
-	bool Read = 8;
-	string Realm = 6;
 	string UserName = 7;
+	bool Read = 8;
+	string SpaceName = 9;
 }
 
 message BindRequest
@@ -48,7 +41,8 @@ message BindVersionRequest
 	bytes Key = 1;
 	bytes Value = 2;
 	google.protobuf.Timestamp Version = 3;
-	Token Token = 4;
+	google.protobuf.Timestamp AsWas = 4;
+	Token Token = 5;
 }
 
 message BatchBindRequest
@@ -88,6 +82,13 @@ message FindVersionRequest
 	Token Token = 4;
 }
 
+message DeltaRequest 
+{
+	bytes Begin = 1;
+	google.protobuf.Timestamp Version = 3;
+	Token Token = 4;
+}
+
 message Value
 {
 	bytes Content = 1;
@@ -96,7 +97,7 @@ message Value
 message ValueVersion
 {
 	bytes Content = 1;
-	google.protobuf.Timestamp Version = 2;
+	optional google.protobuf.Timestamp Version = 2;
 	ResponseState State = 3;
 }
 
@@ -146,27 +147,76 @@ message ZipStatus
 	Token Token = 3;
 }
 
+message Vector 
+{
+	repeated int32 Ints = 1;
+	repeated float Floats = 2;
+}
+
+message VectorRequest
+{
+	enum MethodType
+	{
+		Distance = 0;
+		Dot = 1;
+		Cosine = 2;
+	}
+	bytes Begin = 1;
+	bytes End = 2;
+	google.protobuf.Timestamp Version = 3;
+	Vector Space = 4;
+	MethodType Method = 5;
+	int32 Limit = 6;
+	Token Token = 7;
+}
+
+message VectorReponse
+{
+	bytes Key = 1;
+	google.protobuf.Timestamp AsAt = 2;
+	bytes Value = 3;
+	double Distance = 4;
+}
+
+message VectorResponses
+{
+	repeated VectorReponse Value = 1;
+}
+
+// Raw value for Import / Export 
+message Element
+{
+	bytes Key = 1;
+	bytes Value = 2;
+}
+
+message ElementStatus
+{
+	ResponseState State = 1;
+	int32 Count = 2;
+}
+
 // Provides a remote interface to a hiperspace driver
 // for authorised users
-service HiServ
+service RemoteServer
 {
-	rpc Open (OpenRequest) returns (Token);
+	rpc Open (OpenRequest) returns (Token) ;
 	rpc Close (Token) returns (Token);
-
 	rpc Bind (BindRequest) returns (Value);
 	rpc BatchBind (BatchBindRequest) returns (Values);
-	rpc Find (FindRequest) returns (Values);
+	rpc Find (FindRequest) returns (stream KeyValue);
 	rpc Get (KeyRequest) returns (Value);
-
-	rpc BindVersion (BindVersionRequest) returns (ValueVersion);
+	rpc BindVersion (BindVersionRequest) returns (Value);
 	rpc BatchVersionBind (BatchBindVersionRequest) returns (Values);
-	rpc FindVersion (FindVersionRequest) returns (ValueVersions);
+	rpc FindVersion (FindVersionRequest) returns (stream KeyValueVersion);
 	rpc GetVersion (KeyVersionRequest) returns (ValueVersion);
-	rpc GetVersions (KeyRequest) returns (VersionHistory);
-
-	rpc FindIndex (FindRequest) returns (Values);
-	rpc FindIndexVersion (FindVersionRequest) returns (ValueVersions);
-
+	rpc GetVersions (KeyRequest) returns (stream ValueVersion);
+	rpc FindIndex (FindRequest) returns (stream KeyValue);
+	rpc FindIndexVersion (FindVersionRequest) returns (stream KeyValueVersion);
+	rpc Delta (DeltaRequest) returns (stream KeyValueVersion);
+	rpc Nearest (VectorRequest) returns (stream VectorReponse);
 	rpc UnZip (ZipStream) returns (ZipStatus);
 	rpc Zip (ZipStatus) returns (ZipStream);
+	rpc Import(stream Element) returns (ElementStatus);
+	rpc Export(ElementStatus) returns (stream Element);
 }	
