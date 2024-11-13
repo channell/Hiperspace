@@ -51,6 +51,8 @@ endif()
 
 set (CMAKE_CXX_STANDARD 20)
 
+target_compile_definitions(rockshare PRIVATE $<$<CONFIG:Debug>:DEBUG>)
+
 # dependencies
 message("toolchain ${CMAKE_TOOLCHAIN_FILE}")
 include(${CMAKE_TOOLCHAIN_FILE})
@@ -85,5 +87,5 @@ add_subdirectory(proto)
 
 # Set debug startup parameters
 set_target_properties(rockshare PROPERTIES
-  VS_DEBUGGER_COMMAND_ARGUMENTS "--port 4242" 
+  VS_DEBUGGER_COMMAND_ARGUMENTS "--port 4242 --path /Hiperspace/" 
 )

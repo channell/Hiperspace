@@ -31,9 +31,10 @@ namespace Hiperspace
 		return buff;
 	}
 
-	HipServer::HipServer(const string port, unique_ptr<SpacePool>& pool)
+	HipServer::HipServer(const string port, const string path, unique_ptr<SpacePool>& pool)
 	{
 		_pool = move(pool);
+		_path = path;
 		_address = fmt::format("0.0.0.0:{0}", port);
 	}
 
@@ -53,10 +54,21 @@ namespace Hiperspace
 		{
 			const Token& token = request->token();
 			const string path = request->path();
-
-			cout << LogTime() << " Open " << path << endl;
-			_pool->Open(request);
-			response->CopyFrom(request->token());
+			if (path.empty())
+			{
+				cout << LogTime() << " Open " << path << endl;
+				_pool->Open(request);
+			}
+			else
+			{
+				auto req = google::protobuf::Arena::CreateMessage<OpenRequest>(request->GetArena());
+				req->CopyFrom(*request);
+				auto fullpath = _path + path;
+				req->set_path(fullpath);		// add the prefix if there is one
+				cout << LogTime() << " Open " << fullpath << endl;
+				_pool->Open(req);
+			}
+			response->set_tokenid(request->token().tokenid());
 			return grpc::Status::OK;
 		}
 		catch (MutationException me)

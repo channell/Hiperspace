@@ -198,7 +198,7 @@ namespace Hiperspace
 		return move(result);
 	}
 
-	unique_ptr<ValueVersion> RockSpace::Bind(const BindVersionRequest& request)
+	unique_ptr<Value> RockSpace::Bind(const BindVersionRequest& request)
 	{
 		string keyBuffer;
 		auto key = toVersion(request.key(), request.version(), keyBuffer);
@@ -212,14 +212,14 @@ namespace Hiperspace
 		if (curentVersion.seconds() == request.version().seconds() &&
 			curentVersion.nanos() == request.version().nanos())
 		{
-			unique_ptr<ValueVersion> v(google::protobuf::Arena::CreateMessage<ValueVersion>(request.GetArena()));
+			unique_ptr<Value> v(google::protobuf::Arena::CreateMessage<Value>(request.GetArena()));
 			v->set_content(current->content());
 			v->set_state(ResponseState::Skip);
 			return move(v);
 		}
 		if (current->content().length() != 0 && current->content() == request.value())
 		{
-			unique_ptr<ValueVersion> v(google::protobuf::Arena::CreateMessage<ValueVersion>(request.GetArena()));
+			unique_ptr<Value> v(google::protobuf::Arena::CreateMessage<Value>(request.GetArena()));
 			v->set_content(current->content());
 			v->set_state(ResponseState::Skip);
 			return move(v);
@@ -230,7 +230,7 @@ namespace Hiperspace
 		{
 			throw RocksException(s.ToString());
 		}
-		unique_ptr<ValueVersion> v(google::protobuf::Arena::CreateMessage<ValueVersion>(request.GetArena()));
+		unique_ptr<Value> v(google::protobuf::Arena::CreateMessage<Value>(request.GetArena()));
 		v->set_content(current->content());
 		v->set_state(ResponseState::Ok);
 		return move(v);
@@ -630,7 +630,15 @@ namespace Hiperspace
 		{
 			throw RocksException(s.ToString());
 		}
-		result->set_allocated_content(&value);
+//!		result->set_content(&value);
+		if (value.empty())
+			result->set_state(ResponseState::Fail);
+		else
+		{
+			result->set_state(ResponseState::Ok);
+			result->set_content(value);
+		}
+//		result->set_allocated_content(&value);
 		return move(result);
 	}
 	unique_ptr<ValueVersion> RockSpace::Get(const KeyVersionRequest& request)

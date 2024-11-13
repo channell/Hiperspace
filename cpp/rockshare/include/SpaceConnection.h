@@ -26,7 +26,7 @@ namespace Hiperspace
 		clock_t _clock;
 		// Spinlock to prevent close of connections while rocks is currently being used
 		spin_rw_mutex _mux;
-		// Reopen the connexion if it has been closed due to time out. 
+		// Reopen the connection if it has been closed due to time out. 
 		void Open();
 
 	public:
@@ -38,12 +38,12 @@ namespace Hiperspace
 		const clock_t& getClock() { return _clock; }
 
 		//
-		// Interface functions defined in hiperspace protophile. 
+		// Interface functions defined in hiperspace proto file. 
 		//
 		void Close();
 		
 		unique_ptr<Value> Bind(const BindRequest& request);
-		unique_ptr<ValueVersion> Bind(const BindVersionRequest& request);
+		unique_ptr<Value> Bind(const BindVersionRequest& request);
 
 		unique_ptr<Values> BatchBind(const BatchBindRequest& request);
 		unique_ptr<Values> BatchBind(const BatchBindVersionRequest& request);

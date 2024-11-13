@@ -31,14 +31,17 @@ namespace Hiperspace
 		{
 			this_thread::sleep_for(_ttl);
 			{
-				clock_t now = clock_t();
+				clock_t now = clock();
 				for (auto i = cbegin(_stores); i != cend(_stores); i++)
 				{
-					auto r = i->second;
-					auto last = chrono::seconds(now - r->getClock());
-					if (last > _ttl)
+					if (i->second != nullptr)
 					{
-						r->Close();
+						auto r = i->second;
+						auto last = chrono::seconds(now - r->getClock());
+						if (last > _ttl)
+						{
+							r->Close();
+						}
 					}
 				}
 			}

@@ -37,7 +37,7 @@ namespace Hiperspace
 		return _space->Bind(request);
 	}
 
-	unique_ptr<ValueVersion> SpaceConnection::Bind(const BindVersionRequest& request)
+	unique_ptr<Value> SpaceConnection::Bind(const BindVersionRequest& request)
 	{
 		_clock = clock();
 		tbb::spin_rw_mutex::scoped_lock lock(_mux, false);

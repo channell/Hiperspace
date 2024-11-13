@@ -91,7 +91,7 @@ namespace Hiperspace
 		~RockSpace();
 
 		unique_ptr<Value> Bind(const BindRequest& request);
-		unique_ptr<ValueVersion> Bind(const BindVersionRequest& request);
+		unique_ptr<Value> Bind(const BindVersionRequest& request);
 
 		unique_ptr<Values> BatchBind(const BatchBindRequest& request);
 		unique_ptr<Values> BatchBind(const BatchBindVersionRequest& request);

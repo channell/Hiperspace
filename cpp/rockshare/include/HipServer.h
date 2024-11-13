@@ -35,13 +35,14 @@ namespace Hiperspace
 
     private:
         string _address;
+		string _path;
 
         //  connections to hiperspaces are pooled for reuse between sessions. 
         unique_ptr<SpacePool> _pool;
 
     public:
         // Created from main entry point with a reference to the space pool. 
-        HipServer(string port, unique_ptr<SpacePool>& pool);
+        HipServer(string port, string path, unique_ptr<SpacePool>& pool);
         // Run the service until cancellation 
         void Run();
 
