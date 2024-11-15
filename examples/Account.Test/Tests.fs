@@ -161,4 +161,11 @@ type  AccountTest (output : ITestOutputHelper) =
         let result = engine.Execute("select * from CustomerAccounts; select * from Customers; select * from CustomerAccountTransactions;", null)
         output.WriteLine( markdown result)
 
+    [<Fact>]
+    member _.``test add account`` () =
 
+        let donald = (accSpace.Customers.Bind (Customer ( Name = "Donald"))).Value
+        donald.Accounts.Add (CustomerAccount ( Title = "Donalds"))
+        let donalds = accSpace.CustomerAccounts.Find (new CustomerAccount (owner = donald)) |> Seq.tryHead
+        donalds.IsSome.Should().BeTrue("added") |> ignore
+        donalds.Value.Title.Should().Be("Donalds", "added") |> ignore
