@@ -29,9 +29,22 @@ select * from SCHEMA_COLUMNS;
 select * from SCHEMA_PROPERTIES;
 """
 
-pams = { "name" : "Lucy" }
+#pams = { "name" : "Lucy" }
+pams = Dictionary[String, Object]()
+pams['name'] = 'Lucy'
 
-sql.Execute (query, [("name", "Lucy")])
+result = sql.Execute (query, pams)
+for query in result:
+    print ()
+    for column in query:
+        str = column.Key + ' : '
+        for value in column.Value:
+            if value is None :
+                str = str + 'na, '
+            else :
+                str = str + value + ", "
+        print (str)
+
 
 # person helper
 def person (name, gender, mother, father) :
