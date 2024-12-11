@@ -143,6 +143,8 @@ namespace Hiperspace.Meta
 
         protected abstract void Dispose(bool disposing);
 
+        public abstract object? Value (object source);
+
         ~Dependency()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
@@ -247,6 +249,7 @@ namespace Hiperspace.Meta
         public delegate void Trigger((TTarget target, DependencyPath sender) value);
 
         public event Trigger? OnTrigger;
+
         ~Dependency()
         {
             Dispose();
@@ -261,6 +264,17 @@ namespace Hiperspace.Meta
                 }
                 disposedValue = true;
             }
+        }
+        public TTarget? Value(TSource source)
+        {
+            return _dependency(source);
+        }
+        public override object? Value(object source)
+        {
+            if (source is TSource value)
+                return Value(value);
+            else
+                return null;
         }
     }
 }

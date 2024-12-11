@@ -20,7 +20,7 @@ namespace Hiperspace
         public DateTime AsAt { get; protected set; }
 
         /// <summary>
-        /// Timestamp of the version that this element replaced.  Used to implement optimisatic concurrency control
+        /// Timestamp of the version that this element replaced.  Used to implement optimistic concurrency control
         /// </summary>
         public DateTime? AsWas { get; protected set; }
         public abstract IEnumerable<TEntity> GetVersions();

@@ -1,14 +1,15 @@
-﻿using FluentAssertions;
+﻿using Cousins;
+using FluentAssertions;
 using Hiperspace;
 using Hiperspace.Heap;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Cousins
+namespace CousinProblem
 {
     public class Test
     {
-        public static T? nvl<T>(T t) where T : struct { return new Nullable<T>(t); }
+        public static T? nvl<T>(T t) where T : struct { return new T?(t); }
         ITestOutputHelper _output;
 
         private CousinsSpace _space;
@@ -33,7 +34,7 @@ namespace Cousins
                 new Person {Name = "Lucy", Gender = Gender.Female, Father = new Person {Name = "John" }, Mother = new Person {Name = "Mary" } },
                 new Person {Name = "Mark", Gender = Gender.Male, Father = new Person {Name = "John" }, Mother = new Person {Name = "Mary"} },
             };
-            tree.ForEach (p => _space.Persons.Bind (p, false));
+            tree.ForEach(p => _space.Persons.Bind(p, false));
         }
 
         [Fact]
@@ -43,8 +44,8 @@ namespace Cousins
             {
                 var gendererror =
                     (from p in space.Persons
-                     where ((p.Father != null && p.Father.Gender != null && p.Father.Gender != Gender.Male) ||
-                            (p.Mother != null && p.Mother.Gender != null && p.Mother.Gender != Gender.Female))
+                     where p.Father != null && p.Father.Gender != null && p.Father.Gender != Gender.Male ||
+                            p.Mother != null && p.Mother.Gender != null && p.Mother.Gender != Gender.Female
                      select new { p.Name, Mine = p.Gender, father = p.Father, mother = p.Mother }
                     ).ToList();
                 gendererror.ForEach(r => _output.WriteLine($"{r.Name} ({r.Mine}) has father {r.father.Name} and mother {r.mother.Name}"));
@@ -65,7 +66,7 @@ namespace Cousins
         {
             using (var space = new CousinsSpace(_space))
             {
-                var lines= space.Edge2s.Find(new Edge2 { From = new Person { Name = "Jack" }, TypeName = "Father" }).ToList();
+                var lines = space.Edge2s.Find(new Edge2 { From = new Person { Name = "Jack" }, TypeName = "Father" }).ToList();
                 lines.ForEach(e => _output.WriteLine($"{e.From?.Name} ({e.From?.TypeName}) has {e.TypeName} to {e.To?.Name} ({e.To?.TypeName})"));
                 lines.Should().NotBeEmpty();
                 lines.Count.Should().Be(1);
@@ -77,7 +78,7 @@ namespace Cousins
         {
             using (var space = new CousinsSpace(_space))
             {
-                var lines = 
+                var lines =
                     (from e in space.Edges
                      where e.From != null && e.To != null
                      select e
@@ -93,10 +94,10 @@ namespace Cousins
         {
             using (var space = new CousinsSpace(_space))
             {
-                var relatives = 
-                    (from i in (from p in space.Persons
-                                where p.Name == "Lucy"
-                                select p)
+                var relatives =
+                    (from i in from p in space.Persons
+                               where p.Name == "Lucy"
+                               select p
                      select i.Relatives
                     ).FirstOrDefault();
                 relatives.Should().NotBeNull("Lucy is in hiperspace");
@@ -122,7 +123,7 @@ namespace Cousins
         [Fact]
         public void TestRelations()
         {
-            using (var temp = new Hiperspace.GenerationSpace(new Hiperspace.HiperSpace[] { new HeapSpace(), _space }))
+            using (var temp = new GenerationSpace(new HiperSpace[] { new HeapSpace(), _space }))
             {
                 using (var space = new CousinsSpace(temp))
                 {
@@ -151,8 +152,8 @@ namespace Cousins
                 }
             }
         }
-        public static T NVL<T>(T? t) where T : struct { return t ?? default(T); }
-        public static T NVL<T>(T? t) where T : class { return t!;}
+        public static T NVL<T>(T? t) where T : struct { return t ?? default; }
+        public static T NVL<T>(T? t) where T : class { return t!; }
         [Fact]
         public void TestJoin()
         {

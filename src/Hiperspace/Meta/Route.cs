@@ -5,6 +5,8 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using System.ComponentModel.Design;
+
 namespace Hiperspace.Meta
 {
     public class Routes: IDisposable
@@ -59,6 +61,9 @@ namespace Hiperspace.Meta
 
         public abstract bool One { get; }
         public abstract bool Many { get; }
+
+        public abstract object? OneValue(object source);
+        public abstract IEnumerable<object>? ManyValue (object source);
     }
 
     public class Route<TSource, TTarget> : Route
@@ -110,6 +115,36 @@ namespace Hiperspace.Meta
         public override bool One => _one != null;
 
         public override bool Many => _many != null;
+
+        public TTarget? OneValue (TSource source)
+        {
+            if (_one != null)
+                return _one(source);
+            else
+                return default;
+
+        }
+        public IEnumerable<TTarget>? ManyValue (TSource source)
+        {
+            if (_many != null)
+                return _many(source);
+            else
+                return default;
+        }
+        public override object? OneValue (object source)
+        {
+            if (source is TSource value)
+                return OneValue(value);
+            else
+                return default;
+        }
+        public override IEnumerable<object>? ManyValue (object source)
+        {
+            if (source is TSource value)
+                return ManyValue(value);
+            else
+                return default;
+        }
 
         protected override void Dispose(bool disposing)
         {

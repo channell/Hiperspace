@@ -1,8 +1,11 @@
-﻿using Hiperspace;
+﻿using CousinProblem;
+using Cousins;
+using Hiperspace;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using Path = Cousins.Path;
 
-namespace Cousins
+namespace Cousins //Problem
 {
     internal static class Helper
     {
@@ -288,7 +291,7 @@ namespace Cousins
             {
                 var val = valid.Pop();
 
-                if (!val.Any(i => i == path?.Edge?.TypeName)) 
+                if (!val.Any(i => i == path?.Edge?.TypeName))
                     return false;
                 if (path.Source != null)
                 {
@@ -306,10 +309,10 @@ namespace Cousins
 
         private static ImmutableSortedSet<Path> FindPaths(Node root, Edge edge, Path? source)
         {
-            if (edge == null || 
-                root == edge.To || 
-                (root == edge.From && source != null) || 
-                edge.InPath(source) )
+            if (edge == null ||
+                root == edge.To ||
+                root == edge.From && source != null ||
+                edge.InPath(source))
                 return ImmutableSortedSet<Path>.Empty;
 
             var path = new Path
@@ -347,9 +350,9 @@ namespace Cousins
                 var stack = new Stack<string[]>(transform.Path);
                 if (path.Match(stack))
                 {
-                    if (path.From?.Object is Person f && 
-                        path.To?.Object is Person t 
-                        && transform.Predicate(f,t))
+                    if (path.From?.Object is Person f &&
+                        path.To?.Object is Person t
+                        && transform.Predicate(f, t))
                         return new Path(path)
                         {
                             TypeName = transform.Infered

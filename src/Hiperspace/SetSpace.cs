@@ -43,7 +43,7 @@ namespace Hiperspace
             if (OnDependency != null) source.OnDependency += RaiseOnDependency;
         }
 
-        protected Func<TEntity, bool>[]? predicates;
+        protected Horizon.Predicate<TEntity>[]? predicates;
         public SubSpace Space { get; set; }
         public SetSpace(SubSpace space, IQueryProvider provider)
         {
@@ -52,14 +52,14 @@ namespace Hiperspace
             if (space.Horizon != null)
                 predicates = space.Horizon
                     .Where(h => h.Type == typeof(TEntity))
-                    .Select(i => ((Horizon<TEntity>)i).Predicate)
+                    .Select(i => ((Horizon<TEntity>)i)._predicate)
                     .ToArray();
         }
         protected SpinLock _lock = new SpinLock();
 
         public virtual Result<TEntity> Bind(TEntity item, bool cache = true)
         {
-            var filtered = Filter(item);
+            var filtered = Filter(item, false);
             if (filtered.Fail)
                 return filtered;
 
@@ -141,13 +141,13 @@ namespace Hiperspace
 
         public abstract IAsyncEnumerable<(TEntity Item, double Distance)> NearestAsync(TEntity template, Vector space, Vector.Method method, int limit = 0, bool cache = true, CancellationToken cancellation = default);
 
-        public IEnumerable<TEntity> Filter(IEnumerable<TEntity> entities)
+        public IEnumerable<TEntity> Filter(IEnumerable<TEntity> entities, bool read = true)
         {
             if (predicates != null)
                 return entities
                     .Where(e =>
                     {
-                        if (Filter(e).Fail)
+                        if (Filter(e, read).Fail)
                         {
                             Cached.Remove(e);
                             return false;
@@ -157,7 +157,7 @@ namespace Hiperspace
                     });
             return entities;
         }
-        public IEnumerable<(TEntity Item, double Distance)> Filter(IEnumerable<(TEntity Item, double Distance)> entities)
+        public IEnumerable<(TEntity Item, double Distance)> Filter(IEnumerable<(TEntity Item, double Distance)> entities, bool read = true)
         {
             if (predicates != null)
                 return entities
@@ -165,20 +165,20 @@ namespace Hiperspace
                     {
                         for (int c = 0; c < predicates.Length; c++)
                         {
-                            if (!predicates[c](e.Item))
+                            if (!predicates[c](e.Item, Space?.ContextLabel, Space?.UserLabel, read))
                                 return false;
                         }
                         return true;
                     });
             return entities;
         }
-        public virtual Result<TEntity> Filter(TEntity entity)
+        public virtual Result<TEntity> Filter(TEntity entity, bool read = true)
         {
             if (predicates != null)
             {
                 for (int c = 0; c < predicates.Length; c++)
                 {
-                    if (!predicates[c](entity))
+                    if (!predicates[c](entity, Space?.ContextLabel, Space?.UserLabel, read))
                         return Result.Fail(entity);
                 }
             }
@@ -336,7 +336,7 @@ namespace Hiperspace
         public override Result<TEntity> Bind(TEntity item, bool cache = true)
         {
             TEntity? res;
-            var filtered = Filter(item);
+            var filtered = Filter(item, false);
             if (filtered.Fail)
                 return filtered;
             if (Cached.TryGetValue(item, out res))
@@ -390,7 +390,7 @@ namespace Hiperspace
         public virtual Result<TEntity> BindVersion(TEntity item, bool cache = true)
         {
             TEntity? res;
-            var filtered = Filter(item);
+            var filtered = Filter(item, false);
             if (filtered.Fail)
                 return filtered;
             if (Cached.TryGetValue(item, out res))

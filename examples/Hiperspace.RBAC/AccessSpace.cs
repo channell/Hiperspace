@@ -6,7 +6,7 @@ namespace Access
     {
         public enum Mode
         {
-            ILoad,      // for inital load permissions will fail
+            ILoad,      // for initial load permissions will fail
             Write,      // applies valid constraints
             Read        // applies valid constraint and permissions that have been approved
         }
@@ -18,21 +18,31 @@ namespace Access
         /// <returns></returns>
         private static Horizon[] Read (RBAC.Realm realm) =>
         [
-            new Horizon<RBAC.Realm>(r => r.Valid == true && r.Name == realm.Name),
-            new Horizon<RBAC.UserPermission>(p => p.Valid == true && p.Deleted == false && p.Approved == true && p.owner?.Realm == realm), 
-            new Horizon<RBAC.GroupPermission>(p => p.Valid == true && p.Deleted == false && p.Approved == true && p.owner?.Realm == realm),
-            new Horizon<RBAC.User>(u => u.Valid == true && u.Deleted == false && u?.Realm == realm),
-            new Horizon<RBAC.Group>(g => g.Valid == true && g.Deleted == false && g?.Realm == realm),
-            new Horizon<RBAC.Resource>(i => i.Valid == true && i.Deleted == false),
+            new Horizon<RBAC.Realm>((r,c,read) => (read ? true : r.Valid == true) && r.Name == realm.Name),
+            new Horizon<RBAC.UserPermission>((p,c,read) => (read ? true : p.Valid == true) && p.Deleted == false && p.Approved == true && p.owner?.Realm == realm), 
+            new Horizon<RBAC.GroupPermission>((p,c,read) => (read ? true : p.Valid == true) && p.Deleted == false && p.Approved == true && p.owner?.Realm == realm),
+            new Horizon<RBAC.User>((u,c,read) => (read ? true : u.Valid == true) && u.Deleted == false && u?.Realm == realm),
+            new Horizon<RBAC.Group>((g,c,read) => (read ? true : g.Valid == true) && g.Deleted == false && g?.Realm == realm),
+            new Horizon<RBAC.Resource>((i,c,read) => (read ? i.Valid == true : true) && i.Deleted == false),
         ];
         private static Horizon[] Write (RBAC.Realm realm) =>
         [
-            new Horizon<RBAC.Realm>(r => r.Valid == true && r == realm),
-            new Horizon<RBAC.UserPermission>(p => p.Valid == true && p.owner?.Realm == realm),
-            new Horizon<RBAC.GroupPermission>(p => p.Valid == true && p.owner?.Realm == realm),
-            new Horizon<RBAC.User>(u => u.Valid == true && u?.Realm == realm),
-            new Horizon<RBAC.Group>(g => g.Valid == true && g?.Realm == realm),
-            new Horizon<RBAC.Resource>(i => i.Valid == true),
+            new Horizon<RBAC.Realm>((r,c,read) => (read ? true : r.Valid == true) && r == realm),
+            new Horizon<RBAC.UserPermission>((p,c,read) => (read ? true : p.Valid == true) && p.owner?.Realm == realm),
+            new Horizon<RBAC.GroupPermission>((p,c,read) => (read ? true : p.Valid == true) && p.owner?.Realm == realm),
+            new Horizon<RBAC.User>((u,c,read) => (read ? true : u.Valid == true) && u?.Realm == realm),
+            new Horizon<RBAC.Group>((g,c,read) => (read ? true : g.Valid == true) && g?.Realm == realm),
+            new Horizon<RBAC.Resource>((i,c,read) => (read ? true : i.Valid == true)),
+        ];
+
+        private static Horizon[] Unified(RBAC.Realm realm) =>
+        [
+            new Horizon<RBAC.Realm>((r,context,user,read) => (context == "ILoad" || ((read ? true : r.Valid == true) && r.Name == realm.Name)) && user?.IsInRole("BULK") == true) ,
+            new Horizon<RBAC.UserPermission>((p,context,read) => context == "ILoad" || (p.Valid == true && ((p.Deleted == false && p.Approved == true) || context != "Read") && p.owner?.Realm == realm)),
+            new Horizon<RBAC.GroupPermission>((p,context,read) => context == "ILoad" || (p.Valid == true && ((p.Deleted == false && p.Approved == true) || context != "Read") && p.owner?.Realm == realm)),
+            new Horizon<RBAC.User>((u,context,read) => context == "ILoad" || (u.Valid == true && u.Deleted == false && u?.Realm == realm)),
+            new Horizon<RBAC.Group>((g,context,read) => context == "ILoad" || (g.Valid == true && g.Deleted == false && g?.Realm == realm)),
+            new Horizon<RBAC.Resource>((i,context,read) => context == "ILoad" || (i.Valid == true && i.Deleted == false)),
         ];
 
         /// <summary>
@@ -44,6 +54,7 @@ namespace Access
         public AccessSpace(HiperSpace space, Mode mode, RBAC.Realm realm, DateTime? AsAt = null) 
             : this(space, (mode == Mode.Write ? Write(realm) : (mode == Mode.Read ? Read (realm) : null)), AsAt)
         {
+            ContextLabel = mode.ToString();
             _realm = realm;
         }
         protected RBAC.Realm? _realm;

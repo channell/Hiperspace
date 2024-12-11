@@ -60,3 +60,39 @@ segment Friend
 	= Edge (From = owner, To = Of, Name = "", TypeName = "Friend")
 	(Of : Person) {When : DateTime};
 segment Likes = Edge (From = owner, To = Restaurant, Name = "", TypeName = "Likes") (Restaurant : Restaurant) { Rating : Int32};
+
+"
+Path Type is a specification for Paths between nodes that can be recursively derived 
+from Node and Edges. e.g. Name:Relation, From: [Person], To: [Person], Edges: [Father, Mother, Child]
+"
+entity Hiperspace.Graph.PathType #1
+(
+	"Name of the path is the source of the EdgeType"
+	Name	: String #1
+)
+{
+	"Set of Nodes that cane be the source of a Path"
+	Froms		: Set<String> #2,
+	"Set of Nodes that can be the target of a Path"
+	Tos			: Set<String> #3,
+	"Set of Edges that can be used to traverse the Path"
+	Edges		: Set<String> #4
+};
+
+
+"
+Path appears to be an Edge between two Nodes, but the EdgeType is a reference to the PathType
+Paths that do not have a source, are Edges in the Graph, but Paths that have a source have a reference to 
+the path that was navigated to dervice the path.
+
+Source can be used to chain paths into a graph of relations
+"
+entity Hiperspace.Graph.Path : Edge = Edge () #2
+{
+	Length		: Int32										#1,
+	Count		: Int32										#2,
+	Source		: Hiperspace.Graph.Path						#3
+}
+[
+	Next		: Hiperspace.Graph.Path (Source = this)		#4
+];

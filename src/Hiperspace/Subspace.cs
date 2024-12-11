@@ -6,6 +6,7 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using System.Linq.Expressions;
+using System.Security.Principal;
 using System.Text;
 
 namespace Hiperspace
@@ -19,6 +20,15 @@ namespace Hiperspace
         internal Horizon[]? Horizon;
         protected DateTime? _version;
         protected DateTime? _delta;
+        /// <summary>
+        /// Label applied to the subspace for security verification in Horizon filters
+        /// </summary>
+        public string? ContextLabel { get; init; }
+
+        /// <summary>
+        /// Label applied to the subspace for fine grained access control
+        /// </summary>
+        public IPrincipal? UserLabel { get; init; }
         /// <summary>
         /// Create a subpace through the domain space
         /// </summary>
@@ -43,10 +53,20 @@ namespace Hiperspace
             _version = AsAt;
             _delta = DeltaFrom;
         }
+        /// <summary>
+        /// Get all Horizon filters from referenced spaces
+        /// </summary>
+        /// <returns>horizon filters</returns>
+        public override IEnumerable<Horizon> GetHorizons()
+        {
+            if (Horizon != null)
+                return Horizon;
+            else
+                return Array.Empty<Horizon>();
+        }
 
         private void SubSpace_OnAfterGet(ref byte[] key, ref byte[] value)
         {
-            throw new NotImplementedException();
         }
 
         /// <summary>
