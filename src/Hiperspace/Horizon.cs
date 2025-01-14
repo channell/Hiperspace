@@ -50,7 +50,15 @@ namespace Hiperspace
         }
 
         /// <summary>
-        /// Construct a Horizon with a predicate that includes context and access role
+        /// Construct a Horizon with a predicate that includes context and read access role
+        /// </summary>
+        /// <param name="entityContextReadPredicate"></param>
+        public Horizon([NotNull] Func<TEntity, bool, bool> entityReadPredicate) : base(typeof(TEntity))
+        {
+            _predicate = (p, s, u, b) => entityReadPredicate(p, b);
+        }
+        /// <summary>
+        /// Construct a Horizon with a predicate that includes context and read access role
         /// </summary>
         /// <param name="entityContextReadPredicate"></param>
         public Horizon([NotNull] Func<TEntity, string?, bool, bool> entityContextReadPredicate) : base(typeof(TEntity))

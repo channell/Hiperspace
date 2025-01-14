@@ -6,11 +6,13 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using ProtoBuf;
+using System.Diagnostics;
 namespace Hiperspace.Meta
 {
     [ProtoContract]
     public class MetaModel : IEquatable<MetaModel>
     {
+        internal static readonly BaseTypeModel MetaTypeModel = new BaseTypeModel();
         public MetaModel()
         {
             Elements = new Element[0];
@@ -26,7 +28,7 @@ namespace Hiperspace.Meta
             {
                 // ensure we have a serialisable model
                 var cp = new MetaModel(Elements ?? new Element[] { });
-                return Space.ValueBytes(cp);
+                return Space.ValueBytes(MetaTypeModel, cp);
             }
         }
 

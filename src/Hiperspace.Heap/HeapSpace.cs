@@ -17,7 +17,10 @@ namespace Hiperspace.Heap
     {
         private SortedSet<HeapNode> _heap = new SortedSet<HeapNode>();
 
-        public HeapSpace() { }
+        public HeapSpace() 
+        {
+            TypeModel = new BaseTypeModel();
+        }
 
         public override Result<byte[]> Bind(byte[] key, byte[] value, object? source = null)
         {
@@ -273,7 +276,7 @@ namespace Hiperspace.Heap
                     }
                     else if (lastVersion != 0)
                     {
-                        var vec = Hiperspace.Space.FromValue<Vector>(row.Value);
+                        var vec = Hiperspace.Space.FromValue<Vector>(TypeModel, row.Value);
                         var distance = space.Nearest(vec, method);
                         if (distance.HasValue)
                             ranks.Add(new Nearest(distance.Value, lastKey));
@@ -286,7 +289,7 @@ namespace Hiperspace.Heap
             }
             if (lastVersion != 0)
             {
-                var vec = Hiperspace.Space.FromValue<Vector>(lastValue);
+                var vec = Hiperspace.Space.FromValue<Vector>(TypeModel, lastValue);
                 var distance = space.Nearest(vec, method);
                 if (distance.HasValue)
                     ranks.Add(new Nearest(distance.Value, lastKey));

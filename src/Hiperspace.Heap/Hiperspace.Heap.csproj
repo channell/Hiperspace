@@ -5,10 +5,40 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>Hiperspace Heap Store</Title>
-    <Description>Hiperspace heap store for testing purposes</Description>
+    <Description>Hiperspace heap store for session, edge and testing purposes</Description>
     <Copyright>Cepheis Ltd</Copyright>
     <PackageReleaseNotes>
-      Add support for .NET 9
+      ## Overview
+      This Version is a major refactor, taking into consideration lessons learned from implementing hyperspace with blazer web assembly.  It was hoped that .NET 9 would include greater compatibility with runtime type creation (used by protobuf-net for serialisation classes) or that protobuf-net "Ahead of time" (AOT) code generation would be included, but switching to direct protobuf serialization has the additional benefit of simplify usage with {Android, iOS, [Unity](https://unity.com/), zOS, [Meadow](https://www.wildernesslabs.co/)}. **Hiperspace** is the only domain-oriented object mapping technology that can be deployed into these environments, providing transparent sharing of elements between edge devices and server context.
+
+      The companion change to [HiLang](https://www.nuget.org/packages/HiLang) includes the generation of serialization code for domain models.
+
+      ### Security enhancement
+      Previously the predicates provided to **Horizon**  filters look an instance of an element and return true if it was within the horizon of the subspace.  This has been expanded to allow three types of Horizon Filter
+      * `new Horizon&lt;Element_Type&gt; ( element =&gt; element.Valid == true)'  a horizon predicate with the element only
+      * `new Horizon&lt;Element_Type&gt; ( (element, read) =&gt; element.Valid == true || read)'  a horizon predicate with a flag to indicate a read operation
+      * `new Horizon&lt;Element_Type&gt; ( (element, context, read) =&gt; element.Valid == true || read)'  a horizon predicate with a context parameter and a flag to indicate a read operation
+      * `new Horizon&lt;Element_Type&gt; ( (element, context, user, read) =&gt; element.Valid == true || user?.IsInRole("BULK"))'  a horizon predicate with a context parameter, user IPrinciple and a flag to indicate a read operation
+
+      Subspace has three labels added to support enhanced security
+
+      | Label name  | Description |
+      | ------------- | ------------- |
+      | Context        | Context that the space was opened with e.g. "Front Office", "Risk", "Settlement" |
+      | User           | an optional `IPrincipal` for access control |
+      | Remote     | Was the subspace opened remotely, and security/validation need to be re-applied on the server |
+
+
+      ### Protobuf-net
+      [protobuf-net](https://www.nuget.org/packages/protobuf-net) dependency for all .NET assemblies have been changed to [protobuf-net.Core](https://www.nuget.org/packages/protobuf-net.Core) which does not include dynamic generation of serialization/deserialization code.
+
+      ### Web applications
+
+      Web applications can take advantage of the HiperSpace shared between the web-client (or desktop applications) and the server session for the user with full lazy loading as required.
+
+      Hiperspace elements are transferred using [gRPC-Web](https://github.com/grpc/grpc-web)  for web-clients {browser, Android, iOS, [Unity](https://unity.com/)}  and [gRPC](https://grpc.io/) for desktop applications.
+      gRPC-Web packets are exchanged space efficient binary messages without JSON text conversion
+
     </PackageReleaseNotes>
     <PackageLicenseExpression>GPL-2.0-or-later</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>

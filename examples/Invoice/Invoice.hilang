@@ -91,7 +91,8 @@ entity ERP.Products.Product : Versioned
     Valid           = Name = null ||Tax = null || Supplier = null || Shipping = null ? false : true
 }
 [
-    Price           : ERP.Products.Price
+    Price           : ERP.Products.Price,
+    Rate            = Tax.Rate
 ];
 
 aspect ERP.Products.Price : Versioned
@@ -146,7 +147,7 @@ value ERP.Sales.OrderLine
     Price           = Product.Price.Sell * Units,
     Cost            = (Product.Price.Buy * Units) + Product.Shipping,
     Shipping        = Product.Shipping,
-    Tax             = Product.Tax.Rate * Units
+    Tax             = Product.Rate * Units
 ];
 
 "
@@ -205,7 +206,7 @@ entity ERP.Sales.Order : Versioned
     Commission      = Salesperson = null ? 0.0 : Profit * Salesperson.CommissionRate,
 
     "Gross profit from order, less costs and Commission"
-    Profit          = 0.0 + Total - Cost - Commission,
+    Profit          = 0.0 + Total - Cost,
 
     "the optional invoice aspect with coists and tax frozen "
     Invoice         : ERP.Sales.Invoice 

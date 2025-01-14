@@ -7,6 +7,8 @@ using FluentAssertions;
 using ERP.Products;
 using Hiperspace.Heap;
 using Hiperspace;
+using ProtoBuf;
+using System.Runtime.CompilerServices;
 
 namespace Invoice
 {
@@ -143,7 +145,7 @@ namespace Invoice
 
             using (var read = new ERPSpace(_space))
             {
-                var country = read.Stores.Get(new Store { Id = 1 }).Country;
+                var country = read.Stores.Get(new Store { Id = 1 })?.Country;
                 country!.Name.Should().Be("United Kingdom", because: "was lazy loaded");
             }
         }
@@ -160,7 +162,7 @@ namespace Invoice
             using (var read = new ERPSpace(_space))
             {
                 var sales = read.Salespersons.Get(new ERP.Sales.Salesperson { Id = 6 });
-                sales.Name.Should().Be("Karl", because: "We just addded him");
+                sales?.Name.Should().Be("Karl", because: "We just added him");
             }
         }
 
@@ -173,6 +175,17 @@ namespace Invoice
             TestStore();
             TestSales();
  
+            var anorder = new ERP.Sales.Order
+            {
+                OrderNumber = 42,
+                Customer = new Customer { Id = 3 },
+                Salesperson = new ERP.Sales.Salesperson { Id = 6 },
+                Store = new Store { Id = 1 },
+                Lines = new HashSet<ERP.Sales.OrderLine>
+                {
+                    new ERP.Sales.OrderLine { LineNumber = 1, Product = new Product {Id = 4 }, Units = 10m }
+                }
+            };
             _space.Orders.Add (new ERP.Sales.Order
             {
                 OrderNumber = 42,

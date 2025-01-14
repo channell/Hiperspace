@@ -68,7 +68,7 @@ type RBACTest (output : ITestOutputHelper) =
             |> result
 
         let approval =
-            System.Collections.Generic.HashSet<RefGroup> ( seq { RefGroup ( Value = admins ) })
+            System.Collections.Generic.HashSet<RefGroup> ( seq { RefGroup ( Value = admins.self) })
                
         let admin = 
             Access.RBAC.User 
@@ -221,19 +221,4 @@ type RBACTest (output : ITestOutputHelper) =
                 printEdges $"{tabs}\t" newVisited n
 
         print "" (Set.ofList []) relm
-
-    [<Fact>]
-    member _.``empty test`` () =
-
-        use space = new AccessSpace (new Heap.HeapSpace())
-
-        let res = new RBAC.GroupPermission( owner = RBAC.Group())
-
-        let find = space.GroupPermissions.Find(res) |> List.ofSeq;
-
-
-        let bytes = Hiperspace.Space.ValueBytes (res)
-        let res2 = Hiperspace.Space.FromValue<RBAC.GroupPermission.KeyType> (bytes)
-
-        res.Should().Be(res, "same")
 

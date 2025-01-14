@@ -28,8 +28,9 @@ namespace Hiperspace.Rocks
         /// and that expected indexes ID are not not changed
         /// </param>
         /// <param name="compress">attempt to open store with compression when metamodel provided</param>
-        public RockSpace(string path, MetaModel? metaModel = null, bool compress = false, bool read = false)
+        public RockSpace(string path, MetaModel? metaModel = null, bool compress = false, bool read = false) 
         {
+            TypeModel = new BaseTypeModel();
             _readonly = read;
             try
             {
@@ -63,7 +64,7 @@ namespace Hiperspace.Rocks
                 var stored = Get(mk);    // no proto message starts with 0x00
                 if (stored != null) 
                 {
-                    var current = Hiperspace.Space.FromValue<MetaModel>(stored);
+                    var current = Hiperspace.Space.FromValue<MetaModel>(TypeModel, stored);
                     if (current != null)
                     {
                         if (!current.Equals(metaModel))
@@ -404,7 +405,7 @@ namespace Hiperspace.Rocks
                         }
                         else if (lastVersion != 0)
                         {
-                            var vec = Hiperspace.Space.FromValue<Vector>(lastValue);
+                            var vec = Hiperspace.Space.FromValue<Vector>(TypeModel, lastValue);
                             var distance = space.Nearest(vec, method);
                             if (distance.HasValue)
                                 ranks.Add(new Nearest(distance.Value, lastKey));
@@ -420,7 +421,7 @@ namespace Hiperspace.Rocks
                 }
                 if (lastVersion != 0)
                 {
-                    var vec = Hiperspace.Space.FromValue<Vector>(lastValue);
+                    var vec = Hiperspace.Space.FromValue<Vector>(TypeModel, lastValue);
                     var distance = space.Nearest(vec, method);
                     if (distance.HasValue)
                         ranks.Add(new Nearest(distance.Value, lastKey));

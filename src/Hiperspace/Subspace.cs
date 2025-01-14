@@ -5,6 +5,7 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using ProtoBuf.Meta;
 using System.Linq.Expressions;
 using System.Security.Principal;
 using System.Text;
@@ -20,6 +21,8 @@ namespace Hiperspace
         internal Horizon[]? Horizon;
         protected DateTime? _version;
         protected DateTime? _delta;
+        protected TypeModel _model;
+
         /// <summary>
         /// Label applied to the subspace for security verification in Horizon filters
         /// </summary>
@@ -29,6 +32,13 @@ namespace Hiperspace
         /// Label applied to the subspace for fine grained access control
         /// </summary>
         public IPrincipal? UserLabel { get; init; }
+
+
+        /// <summary>
+        /// Was the subspace opened by a remote client, and need to have Horizon security re-applied 
+        /// </summary>
+        public bool RemoteLabel { get; init; }
+
         /// <summary>
         /// Create a subpace through the domain space
         /// </summary>

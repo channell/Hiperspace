@@ -1,377 +1,827 @@
-﻿// ---------------------------------------------------------------------------------------
-//                                   Hiperspace
-//                        Copyright (c) 2023 Cepheis Ltd
-//                                    www.cepheis.com
-//
-// This file is part of Hiperspace and is distributed under the GPL Open Source License. 
-// ---------------------------------------------------------------------------------------
-using System.Buffers.Binary;
+﻿using System.Buffers.Binary;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
-namespace Hiperspace
+namespace Hiperspace.Heap
 {
-    /// <summary>
-    /// A hiperspace aggregate that partitions writes to multiple hiperspaces
-    /// </summary>
     public class FailoverSpace : HiperSpace
     {
-        private (HiperSpace space, DateTime? fault)[] _spaces;
+        private (HiperSpace space, bool fault)[] _spaces;
         private HiperSpace _primary;
-
-        public FailoverSpace([NotNull] HiperSpace[] stores)
+        private HiperSpace? _sync;
+        private Func<HiperSpace> _createSync;
+#if NET9_0_OR_GREATER
+        private readonly Lock _lock = new();
+#else
+        private readonly object _lock = new();
+#endif
+        /// <summary>
+        /// Create a failover space
+        /// </summary>
+        /// <param name="stores">collection of Hiperspace</param>
+        /// <param name="createSync">function to create a HeapSpace</param>
+        /// <exception cref="ArgumentException">should be at least two stores</exception>
+        public FailoverSpace([NotNull] HiperSpace[] stores, Func<HiperSpace> createSync)
         {
             if (stores.Length < 2)
                 throw new ArgumentException($"{nameof(FailoverSpace)} should have at least two spaces");
             _primary = stores[0];
-            _spaces = new(HiperSpace space, DateTime ? fault)[stores.Length - 1];
+            _spaces = new (HiperSpace space, bool fault)[stores.Length - 1];
             for (int c = 0; c < stores.Length - 1; c++)
             {
-                _spaces[c].space = stores[c + 1];
+                _spaces[c] = (stores[c], false);
+            }
+            _createSync = createSync;
+        }
+        public override BaseTypeModel? TypeModel
+        {
+            get
+            {
+                return _primary.TypeModel;
+            }
+            set
+            {
+                for (int c = 0; c < _spaces.Length; c++)
+                    _spaces[c].space.TypeModel = value;
             }
         }
 
-        private void Recover (DateTime start)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void Sync()
         {
-            lock (_spaces)
+            if (_sync != null)
             {
-                HiperSpace? target = null;
-                for (int c = 0; c < _spaces.Length - 1; c++)
+                bool fault = false;
+                lock (_lock)
                 {
-                    if (!_spaces[c].fault.HasValue)
+                    for (int c = 0; c < _spaces.Length; c++)
                     {
-                        target = _spaces[c].space;
+                        if (_spaces[c].fault)
+                        {
+                            try
+                            {
+                                foreach (var row in _sync.Space())
+                                {
+                                    if (row.Item1.Length > 0 && row.Item1[0] != 0x00)
+                                    {
+                                        _spaces[c].space.Bind(row.Item1, row.Item2, null);
+                                    }
+                                    else
+                                    {
+                                        var keypart = new byte[row.Item1.Length - sizeof(long) - 1];
+                                        var span = new Span<byte>(row.Item1, 1, row.Item1.Length - sizeof(long) - 1);
+                                        span.CopyTo(keypart);
+                                        var ver = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(row.Item1, row.Item1.Length - sizeof(ulong), sizeof(ulong))));
+                                        var stamp = new DateTime(ver);
+                                        _spaces[c].space.Bind(keypart, row.Item2, stamp, null);
+                                    }
+                                }
+                                _spaces[c].fault = false;
+                            }
+                            catch (Exception)
+                            {
+                                fault = true;
+                                _spaces[c].fault = true;
+                            }
+                        }
+                    }
+                    if (!fault)
+                    {
+                        _sync.Dispose();
+                        _sync = null;
+                    }
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void Fault(int c)
+        {
+            _spaces[c].fault = true;
+            if (_primary == _spaces[c].space)
+            {
+                for (int d = 0; d < _spaces.Length; d++)
+                {
+                    if (!_spaces[d].fault)
+                    {
+                        _primary = _spaces[d].space;
                         break;
                     }
                 }
-                if (target == null)
-                    throw new IOException("No Failover Space is currently available");
-                else
-                {
-                    for (int c = 0, i = 1; c < _spaces.Length - 1; c++)
-                    {
-                        if (_spaces[c].space != target)
-                        {
-                            _spaces[i++] = _spaces[c];
-                        }
-                    }
-                    _spaces[_spaces.Length - 1] = (target, start);
-                    _primary = target;
-                }
             }
         }
-        private void Sync (int c)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void Recover()
         {
-            lock (_spaces) 
+            for (int c = 0; c < _spaces.Length; c++)
             {
-                var target = _spaces[c];
-                if (target.fault.HasValue)
+                if (_spaces[c].space == _primary)
                 {
-                    try
-                    {
-                        foreach (var row in _primary.Space())
-                        {
-                            if (row.Key.Length > 0 && row.Key[0] != 0x00)
-                            {
-                                target.space.Bind(row.Key, row.Value, null);
-                            }
-                            else
-                            {
-                                var keypart = new byte[row.Key.Length - sizeof(long) - 1];
-                                var span = new Span<byte>(row.Key, 1, row.Key.Length - sizeof(long) - 1);
-                                span.CopyTo(keypart);
-                                var ver = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(row.Key, row.Key.Length - sizeof(ulong), sizeof(ulong))));
-                                if (ver > target.fault.Value.Ticks)
-                                {
-                                    target.space.Bind(row.Key, row.Value, new DateTime(ver), null);
-                                }
-                            }
-                        }
-                        target.fault = null;
-                    }
-                    catch { }   // still in fault
+                    _spaces[c].fault = true;
+                }
+                else if (!_spaces[c].fault)
+                {
+                    _primary = _spaces[c].space;
+                    break;
                 }
             }
         }
 
-        public override Result<byte[]> Bind(byte[] key, byte[] value, object? source)
+        public override Result<byte[]> Bind(byte[] key, byte[] value, object? source = null)
         {
-            var start = DateTime.Now;
-            Task.Run(() =>
-            {
-                var tasks = new Task[_spaces.Length];
-                for (int c = 0; c < _spaces.Length; c++)
-                {
-                    tasks[c] = _spaces[c].space.BindAsync(key, value, source);
-                }
-                for (int c = 0; c < tasks.Length; c++)
-                {
-                    tasks[c].Wait();
-                    if (tasks[c].IsCompleted && _spaces[c].fault.HasValue)
-                    {
-                        Sync(c);
-                    }
-                    else if (!_spaces[c].fault.HasValue)
-                    {
-                        lock (_spaces)
-                        {
-                            _spaces[c].fault = start;
-                        }
-                    }
-                }
-            });
-            try
-            {
-                return _primary.Bind(key, value, source);
-            }
-            catch
-            {
-                Recover(start);
-                return _primary.Bind(key, value, source);
-            }
+            return BindAsync(key, value, source).GetAwaiter().GetResult();
         }
 
         public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, object? source = null)
         {
-            var start = DateTime.Now;
-            Task.Run(() =>
-            {
-                var tasks = new Task[_spaces.Length];
-                for (int c = 0; c < _spaces.Length; c++)
-                {
-                    tasks[c] = _spaces[c].space.BindAsync(key, value, version, source);
-                }
-                for (int c = 0; c < tasks.Length; c++)
-                {
-                    tasks[c].Wait();
-                    if (tasks[c].IsCompleted && _spaces[c].fault.HasValue)
-                    {
-                        Sync(c);
-                    }
-                    else if (!_spaces[c].fault.HasValue)
-                    {
-                        lock (_spaces)
-                        {
-                            _spaces[c].fault = start;
-                        }
-                    }
-                }
-            });
-            try
-            {
-                return _primary.Bind(key, value, version, source);
-            }
-            catch
-            {
-                Recover(start);
-                return _primary.Bind(key, value, version, source);
-            }
+            return BindAsync(key, value, version, source).GetAwaiter().GetResult();
         }
+
         public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
         {
-            var start = DateTime.Now;
-            Task.Run(() =>
-            {
-                var tasks = new Task[_spaces.Length];
-                for (int c = 0; c < _spaces.Length; c++)
-                {
-                    tasks[c] = _spaces[c].space.BindAsync(key, value, version, priorVersion, source);
-                }
-                for (int c = 0; c < tasks.Length; c++)
-                {
-                    tasks[c].Wait();
-                    if (tasks[c].IsCompleted && _spaces[c].fault.HasValue)
-                    {
-                        Sync(c);
-                    }
-                    else if (!_spaces[c].fault.HasValue)
-                    {
-                        lock (_spaces)
-                        {
-                            _spaces[c].fault = start;
-                        }
-                    }
-                }
-            });
-            try
-            {
-                return _primary.Bind(key, value, version, source);
-            }
-            catch
-            {
-                Recover(start);
-                return _primary.Bind(key, value, version, source);
-            }
+            return BindAsync(key, value, version, priorVersion, source).GetAwaiter().GetResult();
         }
 
-        public override async Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, object? source)
+        public override async Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, object? source = null)
         {
-            return await Task.Run(() => Bind(key, value, source));
+            var tasks = new Task<Result<byte[]>>[_spaces.Length];
+            Result<byte[]>? result = null;
+            Exception? exception = null;
+
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                tasks[c] = _spaces[c].space.BindAsync(key, value, source);
+            }
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                try
+                {
+                    var r = await tasks[c];
+                    if (!result.HasValue)
+                        result = r;
+                }
+                catch (Exception e)
+                {
+                    lock (_lock)
+                    {
+                        if (_sync == null)
+                            _sync = _createSync();
+                        _sync.Bind(key, value);
+                        Fault(c);
+                        exception = e;
+                    }
+                }
+            }
+            if (result.HasValue)
+                return result.Value;
+            else
+                throw exception!;
         }
+
         public override async Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, object? source = null)
         {
-            return await Task.Run(() => Bind(key, value, version, source));
+            var tasks = new Task<Result<byte[]>>[_spaces.Length];
+            Result<byte[]>? result = null;
+            Exception? exception = null;
+
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                tasks[c] = _spaces[c].space.BindAsync(key, value, source);
+            }
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                try
+                {
+                    var r = await tasks[c];
+                    if (!result.HasValue)
+                        result = r;
+                }
+                catch (Exception e)
+                {
+                    lock (_lock)
+                    {
+                        if (_sync == null)
+                            _sync = _createSync();
+                        _sync.Bind(key, value, version);
+                        Fault(c);
+                        exception = e;
+                    }
+                }
+            }
+            if (result.HasValue)
+                return result.Value;
+            else
+                throw exception!;
         }
+
         public override async Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
         {
-            return await Task.Run(() => Bind(key, value, version, priorVersion, source));
+            var tasks = new Task<Result<byte[]>>[_spaces.Length];
+            Result<byte[]>? result = null;
+            Exception? exception = null;
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                tasks[c] = _spaces[c].space.BindAsync(key, value, version, priorVersion, source);
+            }
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                try
+                {
+                    var r = await tasks[c];
+                    if (!result.HasValue)
+                        result = r;
+                }
+                catch (Exception e)
+                {
+                    lock (_lock)
+                    {
+                        if (_sync == null)
+                            _sync = _createSync();
+                        _sync.Bind(key, value, version, priorVersion);
+                        Fault(c);
+                        exception = e;
+                    }
+                }
+            }
+            if (result.HasValue)
+                return result.Value;
+            else
+                throw exception!;
+        }
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Delta(byte[] key, DateTime? version)
+        {
+            try
+            {
+                return _primary.Delta(key, version);
+            }
+            catch (Exception)
+            {
+                Recover();
+                return _primary.Delta(key, version);
+            }
         }
 
-        public override IEnumerable<(byte[], byte[])> Find(byte[] begin, byte[] end)
+        public override IEnumerable<(byte[] Key, byte[] Value)> Find(byte[] begin, byte[] end)
         {
-            var start = DateTime.Now;
             try
             {
                 return _primary.Find(begin, end);
             }
-            catch
+            catch (Exception)
             {
-                Recover(start);
+                Recover();
                 return _primary.Find(begin, end);
             }
         }
+
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Find(byte[] begin, byte[] end, DateTime? version)
         {
-            var start = DateTime.Now;
             try
             {
                 return _primary.Find(begin, end, version);
             }
-            catch
+            catch (Exception)
             {
-                Recover(start);
+                Recover();
                 return _primary.Find(begin, end, version);
             }
         }
 
-
-        public override IAsyncEnumerable<(byte[], byte[])> FindAsync(byte[] begin, byte[] end, CancellationToken cancellationToken = default)
+        public override IAsyncEnumerable<(byte[] Key, byte[] Value)> FindAsync(byte[] begin, byte[] end, CancellationToken cancellationToken = default)
         {
-            return Find(begin, end).ToAsyncEnumerable(cancellationToken);
+            try
+            {
+                return _primary.FindAsync(begin, end, cancellationToken);
+            }
+            catch (Exception)
+            {
+                Recover();
+                return _primary.FindAsync(begin, end, cancellationToken);
+            }
         }
+
         public override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindAsync(byte[] begin, byte[] end, DateTime? version, CancellationToken cancellationToken = default)
         {
-            return Find(begin, end, version).ToAsyncEnumerable(cancellationToken);
-        }
-        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)
-        {
-            var start = DateTime.Now;
             try
             {
-                return _primary.Nearest(begin, end, version, space, method, limit);
+                return _primary.FindAsync(begin, end, version, cancellationToken);
             }
-            catch
+            catch (Exception)
             {
-                Recover(start);
-                return _primary.Nearest(begin, end, version, space, method, limit);
+                Recover();
+                return _primary.FindAsync(begin, end, version, cancellationToken);
             }
         }
-        public override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> NearestAsync(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0, CancellationToken cancellationToken = default)
+
+        public override byte[] Get(byte[] key)
         {
-            return Nearest (begin, end, version, space, method, limit).ToAsyncEnumerable();
+            try
+            {
+                return _primary.Get(key);
+            }
+            catch (Exception)
+            {
+                Recover();
+                return _primary.Get(key);
+            }
+        }
+
+        public override (byte[] Value, DateTime version) Get(byte[] key, DateTime? version)
+        {
+            try
+            {
+                return _primary.Get(key, version);
+            }
+            catch (Exception)
+            {
+                Recover();
+                return _primary.Get(key, version);
+            }
+        }
+
+        public override Task<byte[]> GetAsync(byte[] key)
+        {
+            try
+            {
+                return _primary.GetAsync(key);
+            }
+            catch (Exception)
+            {
+                Recover();
+                return _primary.GetAsync(key);
+            }
+        }
+
+        public override Task<(byte[] Value, DateTime version)> GetAsync(byte[] key, DateTime? version)
+        {
+            try
+            {
+                return _primary.GetAsync(key, version);
+            }
+            catch (Exception)
+            {
+                Recover();
+                return _primary.GetAsync(key, version);
+            }
         }
 
         public override IEnumerable<(byte[] value, DateTime version)> GetVersions(byte[] key)
         {
-            var start = DateTime.Now;
             try
             {
                 return _primary.GetVersions(key);
             }
-            catch
+            catch (Exception)
             {
-                Recover(start);
+                Recover();
                 return _primary.GetVersions(key);
             }
         }
 
         public override IAsyncEnumerable<(byte[] value, DateTime version)> GetVersionsAsync(byte[] key, CancellationToken cancellationToken = default)
         {
-            return GetVersions(key).ToAsyncEnumerable(cancellationToken);
-        }
-
-        private IEnumerable<T> Yielder<T>([NotNull] IEnumerable<T>[] values)
-        {
-            for (int c = 0; c < _spaces.Length; ++c)
-            {
-                foreach (var t in values[c])
-                    yield return t;
-            }
-        }
-
-        public override byte[] Get(byte[] key)
-        {
-            var start = DateTime.Now;
             try
             {
-                return _primary.Get(key);
+                return _primary.GetVersionsAsync(key, cancellationToken);
             }
-            catch
+            catch (Exception)
             {
-                Recover(start);
-                return _primary.Get(key);
-            }
-        }
-        public override (byte[], DateTime) Get(byte[] key, DateTime? version)
-        {
-            var start = DateTime.Now;
-            try
-            {
-                return _primary.Get(key, version);
-            }
-            catch
-            {
-                Recover(start);
-                return _primary.Get(key, version);
+                Recover();
+                return _primary.GetVersionsAsync(key, cancellationToken);
             }
         }
 
-        public override async Task<byte[]> GetAsync(byte[] key)
+        public override IEnumerable<(byte[] Key, byte[] Value)> Space()
         {
-            return await Task.Run(() => Get(key));
-        }
-        public async override Task<(byte[], DateTime)> GetAsync(byte[] key, DateTime? version)
-        {
-            return await Task.Run(() => Get(key, version));
-        }
-
-        public override IEnumerable<(byte[], byte[])> Space()
-        {
-            var start = DateTime.Now;
             try
             {
                 return _primary.Space();
             }
-            catch
+            catch (Exception)
             {
-                Recover(start);
+                Recover();
                 return _primary.Space();
             }
         }
 
-        public override IAsyncEnumerable<(byte[], byte[])> SpaceAsync(CancellationToken cancellationToken = default)
+        public override IAsyncEnumerable<(byte[] Key, byte[] Value)> SpaceAsync(CancellationToken cancellationToken = default)
         {
-            return Space().ToAsyncEnumerable(cancellationToken);
-        }
-
-        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Delta(byte[] key, DateTime? version)
-        {
-            var start = DateTime.Now;
             try
             {
-                return _primary.Delta(key, version);
+                return _primary.SpaceAsync(cancellationToken);
             }
-            catch
+            catch (Exception)
             {
-                Recover(start);
-                return _primary.Delta(key, version);
+                Recover();
+                return _primary.SpaceAsync(cancellationToken);
+            }
+        }
+        public override Result<(byte[] Key, byte[] Value)>[] BatchBind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)
+        {
+            try
+            {
+                return _primary.BatchBind(batch);
+            }
+            catch (Exception)
+            {
+                Recover();
+                return _primary.BatchBind(batch);
+            }
+        }
+        public override Result<(byte[] Key, byte[] Value)>[] BatchBind((byte[] key, byte[] value, DateTime version, object? source)[] batch)
+        {
+            try
+            {
+                return _primary.BatchBind(batch);
+            }
+            catch (Exception)
+            {
+                Recover();
+                return _primary.BatchBind(batch);
+            }
+        }
+        public override Result<(byte[] Key, byte[] Value)>[] BatchBind((byte[] key, byte[] value, object? source)[] batch)
+        {
+            return base.BatchBind(batch);
+        }
+        public override async Task<Result<(byte[] Key, byte[] Value)>[]> BatchBindAsync((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)
+        {
+            var tasks = new Task<Result<(byte[] Key, byte[] Value)>[]>[_spaces.Length];
+            Result<(byte[] Key, byte[] Value)>[]? result = null;
+            Exception? exception = null;
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                tasks[c] = _spaces[c].space.BatchBindAsync(batch);
+            }
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                try
+                {
+                    var r = await tasks[c];
+                    if (result == null)
+                        result = r;
+                }
+                catch (Exception e)
+                {
+                    lock (_lock)
+                    {
+                        if (_sync == null)
+                            _sync = _createSync();
+                        _sync.BatchBind(batch);
+                        Fault(c);
+                        exception = e;
+                    }
+                }
+            }
+            if (result != null)
+                return result;
+            else
+                throw exception!;
+        }
+        public override async Task<Result<(byte[] Key, byte[] Value)>[]> BatchBindAsync((byte[] key, byte[] value, DateTime version, object? source)[] batch)
+        {
+            var tasks = new Task<Result<(byte[] Key, byte[] Value)>[]>[_spaces.Length];
+            Result<(byte[] Key, byte[] Value)>[]? result = null;
+            Exception? exception = null;
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                tasks[c] = _spaces[c].space.BatchBindAsync(batch);
+            }
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                try
+                {
+                    var r = await tasks[c];
+                    if (result == null)
+                        result = r;
+                }
+                catch (Exception e)
+                {
+                    lock (_lock)
+                    {
+                        if (_sync == null)
+                            _sync = _createSync();
+                        _sync.BatchBind(batch);
+                        Fault(c);
+                        exception = e;
+                    }
+                }
+            }
+            if (result != null)
+                return result;
+            else
+                throw exception!;
+        }
+        public override async Task<Result<(byte[] Key, byte[] Value)>[]> BatchBindAsync((byte[] key, byte[] value, object? source)[] batch)
+        {
+            var tasks = new Task<Result<(byte[] Key, byte[] Value)>[]>[_spaces.Length];
+            Result<(byte[] Key, byte[] Value)>[]? result = null;
+            Exception? exception = null;
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                tasks[c] = _spaces[c].space.BatchBindAsync(batch);
+            }
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                try
+                {
+                    var r = await tasks[c];
+                    if (result == null)
+                        result = r;
+                }
+                catch (Exception e)
+                {
+                    lock (_lock)
+                    {
+                        if (_sync == null)
+                            _sync = _createSync();
+                        _sync.BatchBind(batch);
+                        Fault(c);
+                        exception = e;
+                    }
+                }
+            }
+            if (result != null)
+                return result;
+            else
+                throw exception!;
+        }
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindDelta(byte[] begin, DateTime? version, DateTime? DeltaFrom)
+        {
+            try
+            {
+                return _primary.FindDelta(begin, version, DeltaFrom);
+            }
+            catch (Exception)
+            {
+                Recover();
+                return _primary.FindDelta(begin, version, DeltaFrom);
+            }
+        }
+        public override IEnumerable<(byte[] Key, byte[] Value)> FindIndex(byte[] begin, byte[] end)
+        {
+            try
+            {
+                return _primary.FindIndex(begin, end);
+            }
+            catch (Exception)
+            {
+                Recover();
+                return _primary.FindIndex(begin, end);
+            }
+        }
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindIndex(byte[] begin, byte[] end, DateTime? version)
+        {
+            try
+            {
+                return _primary.FindIndex(begin, end, version);
+            }
+            catch (Exception)
+            {
+                Recover();
+                return _primary.FindIndex(begin, end, version);
+            }
+        }
+        public override IAsyncEnumerable<(byte[] Key, byte[] Value)> FindIndexAsync(byte[] begin, byte[] end, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return _primary.FindIndexAsync(begin, end, cancellationToken);
+            }
+            catch (Exception)
+            {
+                Recover();
+                return _primary.FindIndexAsync(begin, end, cancellationToken);
+            }
+        }
+        public override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindIndexAsync(byte[] begin, byte[] end, DateTime? version, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return _primary.FindIndexAsync(begin, end, version, cancellationToken);
+            }
+            catch (Exception)
+            {
+                Recover();
+                return _primary.FindIndexAsync(begin, end, version, cancellationToken);
+            }
+        }
+        public override (byte[] Key, byte[] Value)? GetFirst(byte[] begin, byte[] end)
+        {
+            try
+            {
+                return _primary.GetFirst(begin, end);
+            }
+            catch (Exception)
+            {
+                Recover();
+                return _primary.GetFirst(begin, end);
+            }
+        }
+        public override (byte[] Key, DateTime AsAt, byte[] Value)? GetFirst(byte[] begin, byte[] end, DateTime? version)
+        {
+            try
+            {
+                return _primary.GetFirst(begin, end, version);
+            }
+            catch (Exception)
+            {
+                Recover();
+                return _primary.GetFirst(begin, end, version);
+            }
+        }
+        public override Task<(byte[] Key, byte[] Value)?> GetFirstAsync(byte[] begin, byte[] end)
+        {
+            try
+            {
+                return _primary.GetFirstAsync(begin, end);
+            }
+            catch (Exception)
+            {
+                Recover();
+                return _primary.GetFirstAsync(begin, end);
+            }
+        }
+        public override Task<(byte[] Key, DateTime AsAt, byte[] Value)?> GetFirstAsync(byte[] begin, byte[] end, DateTime? version)
+        {
+            try
+            {
+                return _primary.GetFirstAsync(begin, end, version);
+            }
+            catch (Exception)
+            {
+                Recover();
+                return _primary.GetFirstAsync(begin, end, version);
             }
         }
         public override IEnumerable<Horizon> GetHorizons()
         {
+            var result = new HashSet<Horizon>();
             for (int c = 0; c < _spaces.Length; c++)
             {
-                foreach (var h in _spaces[c].space.GetHorizons())
-                    yield return h;
+                foreach (var horizon in _spaces[c].space.GetHorizons())
+                {
+                    result.Add(horizon);
+                }
+            }
+            return result;
+        }
+        public override (byte[] Key, byte[] Value)? GetLast(byte[] begin, byte[] end)
+        {
+            try
+            {
+                return _primary.GetLast(begin, end);
+            }
+            catch (Exception)
+            {
+                Recover();
+                return _primary.GetLast(begin, end);
+            }
+        }
+        public override (byte[] Key, DateTime AsAt, byte[] Value)? GetLast(byte[] begin, byte[] end, DateTime? version)
+        {
+            try
+            {
+                return _primary.GetLast(begin, end, version);
+            }
+            catch (Exception)
+            {
+                Recover();
+                return _primary.GetLast(begin, end, version);
+            }
+        }
+        public override Task<(byte[] Key, byte[] Value)?> GetLastAsync(byte[] begin, byte[] end)
+        {
+            try
+            {
+                return _primary.GetLastAsync(begin, end);
+            }
+            catch (Exception)
+            {
+                Recover();
+                return _primary.GetLastAsync(begin, end);
+            }
+        }
+        public override Task<(byte[] Key, DateTime AsAt, byte[] Value)?> GetLastAsync(byte[] begin, byte[] end, DateTime? version)
+        {
+            try
+            {
+                return _primary.GetLastAsync(begin, end, version);
+            }
+            catch (Exception)
+            {
+                Recover();
+                return _primary.GetLastAsync(begin, end, version);
+            }
+        }
+        public override IEnumerable<(byte[] key, byte[] value)> GetMany(IEnumerable<byte[]> keys)
+        {
+            try
+            {
+                return _primary.GetMany(keys);
+            }
+            catch (Exception)
+            {
+                Recover();
+                return _primary.GetMany(keys);
+            }
+        }
+        public override IEnumerable<(byte[] key, byte[] Value, DateTime version)> GetMany(IEnumerable<byte[]> keys, DateTime? version)
+        {
+            try
+            {
+                return _primary.GetMany(keys, version);
+            }
+            catch (Exception)
+            {
+                Recover();
+                return _primary.GetMany(keys, version);
+            }
+        }
+        public override async IAsyncEnumerable<(byte[] key, byte[] value)> GetManyAsync(IAsyncEnumerable<byte[]> keys, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            await foreach (var row in _primary.GetManyAsync(keys, cancellationToken))
+            {
+                yield return row;
+            }
+        }
+        public override async IAsyncEnumerable<(byte[] key, byte[] Value, DateTime version)> GetManyAsync(IAsyncEnumerable<byte[]> keys, DateTime? version, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            await foreach (var row in _primary.GetManyAsync(keys, version, cancellationToken))
+            {
+                yield return row;
+            }
+        }
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)
+        {
+            try
+            {
+                return _primary.Nearest(begin, end, version, space, method, limit);
+            }
+            catch (Exception)
+            {
+                Recover();
+                return _primary.Nearest(begin, end, version, space, method, limit);
+            }
+        }
+        public override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> NearestAsync(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return _primary.NearestAsync(begin, end, version, space, method, limit, cancellationToken);
+            }
+            catch (Exception)
+            {
+                Recover();
+                return _primary.NearestAsync(begin, end, version, space, method, limit, cancellationToken);
+            }
+        }
+        public override IEnumerable<(byte[] Key, byte[] Value)> Scan(byte[] begin, byte[] end, byte[][] values)
+        {
+            try
+            {
+                return _primary.Scan(begin, end, values);
+            }
+            catch (Exception)
+            {
+                Recover();
+                return _primary.Scan(begin, end, values);
+            }
+        }
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Scan(byte[] begin, byte[] end, byte[][] values, DateTime? version)
+        {
+            try
+            {
+                return _primary.Scan(begin, end, values, version);
+            }
+            catch (Exception)
+            {
+                Recover();
+                return _primary.Scan(begin, end, values, version);
+            }
+        }
+        public override IAsyncEnumerable<(byte[] Key, byte[] Value)> ScanAsync(byte[] begin, byte[] end, byte[][] values, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return _primary.ScanAsync(begin, end, values, cancellationToken);
+            }
+            catch (Exception)
+            {
+                Recover();
+                return _primary.ScanAsync(begin, end, values, cancellationToken);
+            }
+        }
+        public override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> ScanAsync(byte[] begin, byte[] end, byte[][] values, DateTime? version, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                return _primary.ScanAsync(begin, end, values, version, cancellationToken);
+            }
+            catch (Exception)
+            {
+                Recover();
+                return _primary.ScanAsync(begin, end, values, version, cancellationToken);
             }
         }
     }

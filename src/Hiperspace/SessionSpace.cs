@@ -5,6 +5,7 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using System;
 using System.Buffers.Binary;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
@@ -64,6 +65,19 @@ namespace Hiperspace
             _durableSpace = durableSpace;
             _spaces = new[] { _sessionSpace, _durableSpace };
             _roller = rollup;
+        }
+
+        public override BaseTypeModel? TypeModel
+        {
+            get
+            {
+                return _durableSpace.TypeModel;
+            }
+            set
+            {
+                for (int c = 0; c < _spaces.Length; c++)
+                    _spaces[c].TypeModel = value;
+            }
         }
 
         protected override void Dispose(bool disposing)
@@ -343,6 +357,213 @@ namespace Hiperspace
                     yield return h;
             }
         }
-
+        public override Result<(byte[] Key, byte[] Value)>[] BatchBind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)
+        {
+            return _sessionSpace.BatchBind(batch);
+        }
+        public override Result<(byte[] Key, byte[] Value)>[] BatchBind((byte[] key, byte[] value, DateTime version, object? source)[] batch)
+        {
+            return _sessionSpace.BatchBind(batch);
+        }
+        public override Result<(byte[] Key, byte[] Value)>[] BatchBind((byte[] key, byte[] value, object? source)[] batch)
+        {
+            return _sessionSpace.BatchBind(batch);
+        }
+        public override Task<Result<(byte[] Key, byte[] Value)>[]> BatchBindAsync((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)
+        {
+            return _sessionSpace.BatchBindAsync(batch);
+        }
+        public override Task<Result<(byte[] Key, byte[] Value)>[]> BatchBindAsync((byte[] key, byte[] value, DateTime version, object? source)[] batch)
+        {
+            return _sessionSpace.BatchBindAsync(batch);
+        }
+        public override Task<Result<(byte[] Key, byte[] Value)>[]> BatchBindAsync((byte[] key, byte[] value, object? source)[] batch)
+        {
+            return _sessionSpace.BatchBindAsync(batch);
+        }
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindDelta(byte[] begin, DateTime? version, DateTime? DeltaFrom)
+        {
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                foreach (var b in _spaces[c].FindDelta (begin, version, DeltaFrom))
+                    yield return b;
+            }
+        }
+        public override IEnumerable<(byte[] Key, byte[] Value)> FindIndex(byte[] begin, byte[] end)
+        {
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                foreach (var b in _spaces[c].FindIndex(begin, end))
+                    yield return b;
+            }
+        }
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindIndex(byte[] begin, byte[] end, DateTime? version)
+        {
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                foreach (var b in _spaces[c].FindIndex(begin, end, version))
+                    yield return b;
+            }
+        }
+        public override async IAsyncEnumerable<(byte[] Key, byte[] Value)> FindIndexAsync(byte[] begin, byte[] end, [EnumeratorCancellation]CancellationToken cancellationToken = default)
+        {
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                await foreach (var b in _spaces[c].FindIndexAsync(begin, end, cancellationToken))
+                    yield return b;
+            }
+        }
+        public override async IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindIndexAsync(byte[] begin, byte[] end, DateTime? version, [EnumeratorCancellation]CancellationToken cancellationToken = default)
+        {
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                await foreach (var b in _spaces[c].FindIndexAsync(begin, end, version, cancellationToken))
+                    yield return b;
+            }
+        }
+        public override (byte[] Key, byte[] Value)? GetFirst(byte[] begin, byte[] end)
+        {
+            for (int c = _spaces.Length -1; c >= 0; c--)
+            {
+                var result = _spaces[c].GetFirst(begin, end);
+                if (result != null)
+                    return result;
+            }
+            return null;
+        }
+        public override (byte[] Key, DateTime AsAt, byte[] Value)? GetFirst(byte[] begin, byte[] end, DateTime? version)
+        {
+            for (int c = _spaces.Length - 1; c >= 0; c--)
+            {
+                var result = _spaces[c].GetFirst(begin, end, version);
+                if (result != null)
+                    return result;
+            }
+            return null;
+        }
+        public override async Task<(byte[] Key, byte[] Value)?> GetFirstAsync(byte[] begin, byte[] end)
+        {
+            for (int c = _spaces.Length - 1; c >= 0; c--)
+            {
+                var result = await _spaces[c].GetFirstAsync(begin, end);
+                if (result != null)
+                    return result;
+            }
+            return null;
+        }
+        public override async Task<(byte[] Key, DateTime AsAt, byte[] Value)?> GetFirstAsync(byte[] begin, byte[] end, DateTime? version)
+        {
+            for (int c = _spaces.Length - 1; c >= 0; c--)
+            {
+                var result = await _spaces[c].GetFirstAsync(begin, end, version);
+                if (result != null)
+                    return result;
+            }
+            return null;
+        }
+        public override (byte[] Key, byte[] Value)? GetLast(byte[] begin, byte[] end)
+        {
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                var result = _spaces[c].GetLast(begin, end);
+                if (result != null)
+                    return result;
+            }
+            return null;
+        }
+        public override (byte[] Key, DateTime AsAt, byte[] Value)? GetLast(byte[] begin, byte[] end, DateTime? version)
+        {
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                var result = _spaces[c].GetLast(begin, end, version);
+                if (result != null)
+                    return result;
+            }
+            return null;
+        }
+        public override async Task<(byte[] Key, byte[] Value)?> GetLastAsync(byte[] begin, byte[] end)
+        {
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                var result = await _spaces[c].GetLastAsync(begin, end);
+                if (result != null)
+                    return result;
+            }
+            return null;
+        }
+        public override async Task<(byte[] Key, DateTime AsAt, byte[] Value)?> GetLastAsync(byte[] begin, byte[] end, DateTime? version)
+        {
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                var result = await _spaces[c].GetLastAsync(begin, end, version);
+                if (result != null)
+                    return result;
+            }
+            return null;
+        }
+        public override IEnumerable<(byte[] key, byte[] value)> GetMany(IEnumerable<byte[]> keys)
+        {
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                foreach (var b in _spaces[c].GetMany(keys))
+                    yield return b;
+            }
+        }
+        public override async IAsyncEnumerable<(byte[] key, byte[] value)> GetManyAsync(IAsyncEnumerable<byte[]> keys, [EnumeratorCancellation]CancellationToken cancellationToken = default)
+        {
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                await foreach (var b in _spaces[c].GetManyAsync(keys, cancellationToken))
+                    yield return b;
+            }
+        }
+        public override IEnumerable<(byte[] key, byte[] Value, DateTime version)> GetMany(IEnumerable<byte[]> keys, DateTime? version)
+        {
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                foreach (var b in _spaces[c].GetMany(keys, version))
+                    yield return b;
+            }
+        }
+        public override async IAsyncEnumerable<(byte[] key, byte[] Value, DateTime version)> GetManyAsync(IAsyncEnumerable<byte[]> keys, DateTime? version, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                await foreach (var b in _spaces[c].GetManyAsync(keys, version, cancellationToken))
+                    yield return b;
+            }
+        }
+        public override IEnumerable<(byte[] Key, byte[] Value)> Scan(byte[] begin, byte[] end, byte[][] values)
+        {
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                foreach (var b in _spaces[c].Scan(begin, end, values))
+                    yield return b;
+            }
+        }
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Scan(byte[] begin, byte[] end, byte[][] values, DateTime? version)
+        {
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                foreach (var b in _spaces[c].Scan(begin, end, values, version))
+                    yield return b;
+            }
+        }
+        public override async IAsyncEnumerable<(byte[] Key, byte[] Value)> ScanAsync(byte[] begin, byte[] end, byte[][] values, [EnumeratorCancellation]CancellationToken cancellationToken = default)
+        {
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                await foreach (var b in _spaces[c].ScanAsync(begin, end, values))
+                    yield return b;
+            }
+        }
+        public override async IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> ScanAsync(byte[] begin, byte[] end, byte[][] values, DateTime? version, [EnumeratorCancellation]CancellationToken cancellationToken = default)
+        {
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                await foreach (var b in _spaces[c].ScanAsync(begin, end, values, version))
+                    yield return b;
+            }
+        }
     }
 }

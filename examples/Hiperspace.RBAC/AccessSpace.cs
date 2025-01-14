@@ -83,7 +83,7 @@ namespace Access
                         {
                             foreach (var approve in perm.Approval)
                             {
-                                if (approve.Value != null && groups.Contains(approve.Value))
+                                if (approve.Value != null && groups.Contains(approve.Value?.Value))
                                 {
                                     result.Add(perm);
                                     break;
@@ -119,7 +119,7 @@ namespace Access
                         {
                             foreach (var approve in perm.Approval)
                             {
-                                if (approve.Value != null && groups.Contains(approve.Value))
+                                if (approve.Value != null && groups.Contains(approve.Value?.Value))
                                 {
                                     result.Add(perm);
                                     break;

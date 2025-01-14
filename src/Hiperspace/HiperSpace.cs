@@ -5,6 +5,7 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using ProtoBuf.Meta;
 using System.IO.Compression;
 using System.Runtime.CompilerServices;
 
@@ -56,6 +57,11 @@ namespace Hiperspace
         public HiperSpace() 
         {
         }
+
+        /// <summary>
+        /// Enable Hiperspace to use ProtoBuf-net.core for serialization win Blazor web assembly
+        /// </summary>
+        public virtual BaseTypeModel? TypeModel { get; set; }
 
         #region space
 
@@ -218,7 +224,6 @@ namespace Hiperspace
         /// <remarks>will be protected in a future release</remarks>
         /// <returns>content of space</returns>
         public abstract IAsyncEnumerable<(byte[] Key, byte[] Value)> SpaceAsync(CancellationToken cancellationToken = default);
-
         /// <summary>
         /// Find all values of space between the key values
         /// </summary>
@@ -249,7 +254,6 @@ namespace Hiperspace
         /// <param name="version">version stamp or null for latest</param>
         /// <returns></returns>
         public abstract IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindAsync(byte[] begin, byte[] end, DateTime? version, CancellationToken cancellationToken = default);
-
         /// <summary>
         /// Find keys in a delta index that are greater than the value provided
         /// </summary>
@@ -268,7 +272,6 @@ namespace Hiperspace
         {
             return Delta(begin, version).ToAsyncEnumerable(cancellationToken);  
         }
-
         /// <summary>
         /// Find all values of space for index values between the index values
         /// </summary>
@@ -336,7 +339,6 @@ namespace Hiperspace
         {
             return FindIndex(begin, end, version).ToAsyncEnumerable(cancellationToken);
         }
-
         /// <summary>
         /// Find all values of space for similarity match for AI queries
         /// </summary>
@@ -361,7 +363,6 @@ namespace Hiperspace
         {
             return Nearest(begin, end, version, space, method, limit).ToAsyncEnumerable(cancellationToken);
         }
-
         /// <summary>
         /// Get a single unique value from space
         /// </summary>
@@ -400,14 +401,13 @@ namespace Hiperspace
         /// <param name="key"></param>
         /// <returns></returns>
         public abstract IAsyncEnumerable<(byte[] value, DateTime version)> GetVersionsAsync(byte[] key, CancellationToken cancellationToken = default);
-
         /// <summary>
         /// Default implementation to get the first item from a setspace
         /// </summary>
         /// <param name="begin"></param>
         /// <param name="end"></param>
         /// <returns></returns>
-        public virtual (byte[] Key, byte[] Value) GetFirst(byte[] begin, byte[] end)
+        public virtual (byte[] Key, byte[] Value)? GetFirst(byte[] begin, byte[] end)
         {
             return Find(begin, end).FirstOrDefault();
         }
@@ -417,7 +417,7 @@ namespace Hiperspace
         /// <param name="begin"></param>
         /// <param name="end"></param>
         /// <returns></returns>
-        public virtual Task<(byte[] Key, byte[] Value)> GetFirstAsync(byte[] begin, byte[] end)
+        public virtual Task<(byte[] Key, byte[] Value)?> GetFirstAsync(byte[] begin, byte[] end)
         {
             return Task.Run(() => GetFirst(begin, end));
         }
@@ -427,7 +427,7 @@ namespace Hiperspace
         /// <param name="begin"></param>
         /// <param name="end"></param>
         /// <returns></returns>
-        public virtual (byte[] Key, byte[] Value) GetLast(byte[] begin, byte[] end)
+        public virtual (byte[] Key, byte[] Value)? GetLast(byte[] begin, byte[] end)
         {
             return Find(begin, end).LastOrDefault();
         }
@@ -437,7 +437,7 @@ namespace Hiperspace
         /// <param name="begin"></param>
         /// <param name="end"></param>
         /// <returns></returns>
-        public virtual Task<(byte[] Key, byte[] Value)> GetLastAsync(byte[] begin, byte[] end)
+        public virtual Task<(byte[] Key, byte[] Value)?> GetLastAsync(byte[] begin, byte[] end)
         {
             return Task.Run(() => GetLast(begin, end));
         }
@@ -448,7 +448,7 @@ namespace Hiperspace
         /// <param name="end"></param>
         /// <param name="version"></param>
         /// <returns></returns>
-        public virtual (byte[] Key, DateTime AsAt, byte[] Value) GetFirst(byte[] begin, byte[] end, DateTime? version)
+        public virtual (byte[] Key, DateTime AsAt, byte[] Value)? GetFirst(byte[] begin, byte[] end, DateTime? version)
         {
             return Find(begin, end, version).FirstOrDefault();
         }
@@ -459,7 +459,7 @@ namespace Hiperspace
         /// <param name="end"></param>
         /// <param name="version"></param>
         /// <returns></returns>
-        public virtual Task<(byte[] Key, DateTime AsAt, byte[] Value)> GetFirstAsync(byte[] begin, byte[] end, DateTime? version)
+        public virtual Task<(byte[] Key, DateTime AsAt, byte[] Value)?> GetFirstAsync(byte[] begin, byte[] end, DateTime? version)
         {
             return Task.Run(() => GetFirst(begin, end, version));
         }
@@ -470,7 +470,7 @@ namespace Hiperspace
         /// <param name="end"></param>
         /// <param name="version"></param>
         /// <returns></returns>
-        public virtual (byte[] Key, DateTime AsAt, byte[] Value) GetLast(byte[] begin, byte[] end, DateTime? version)
+        public virtual (byte[] Key, DateTime AsAt, byte[] Value)? GetLast(byte[] begin, byte[] end, DateTime? version)
         {
             return Find(begin, end, version).LastOrDefault();
         }
@@ -481,12 +481,112 @@ namespace Hiperspace
         /// <param name="end"></param>
         /// <param name="version"></param>
         /// <returns></returns>
-        public virtual Task<(byte[] Key, DateTime AsAt, byte[] Value)> GetLastAsync(byte[] begin, byte[] end, DateTime? version)
+        public virtual Task<(byte[] Key, DateTime AsAt, byte[] Value)?> GetLastAsync(byte[] begin, byte[] end, DateTime? version)
         {
             return Task.Run(() => GetLast(begin, end, version));
         }
 
-        #endregion
+        /// <summary>
+        /// GPU Accelerated Get a set of value from space for the collection of keys
+        /// </summary>
+        /// <param name="keys"></param>
+        /// <returns></returns>
+        public virtual IEnumerable<(byte[] key, byte[] value)> GetMany(IEnumerable<byte[]> keys)
+        {
+            foreach (var key in keys)
+            {
+                yield return (key, Get(key));
+            }
+        }
+        /// <summary>
+        /// GPU Accelerated Get a set of value from space for the collection of keys
+        /// </summary>
+        /// <param name="keys"></param>
+        /// <param name="version">version stamp or null for latest</param>
+        /// <returns></returns>
+        public virtual IEnumerable<(byte[] key, byte[] Value, DateTime version)> GetMany(IEnumerable<byte[]> keys, DateTime? version)
+        {
+            foreach (var key in keys)
+            {
+                var value = Get(key, version);
+                yield return (key, value.Value, value.version);
+            }
+        }
+        /// <summary>
+        /// GPU Accelerated Get a set of value from space for the collection of keys asynchronously
+        /// </summary>
+        /// <param name="keys"></param>
+        /// <returns></returns>
+        public virtual async IAsyncEnumerable<(byte[] key, byte[] value)> GetManyAsync(IAsyncEnumerable<byte[]> keys, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            await foreach (var key in keys)
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    yield break;
+                yield return (key, await GetAsync(key));
+            }
+        }
+        /// <summary>
+        /// GPU Accelerated Get a set of value from space for the collection of keys asynchronously
+        /// </summary>
+        /// <param name="keys"></param>
+        /// <returns></returns>
+        public virtual async IAsyncEnumerable<(byte[] key, byte[] Value, DateTime version)> GetManyAsync(IAsyncEnumerable<byte[]> keys, DateTime? version, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            await foreach (var key in keys)
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    yield break;
+                var value = await GetAsync(key, version);
+                yield return (key, value.Value, value.version);
+            }
+        }
+
+        /// <summary>
+        /// GPU Accelerated Scan for matching values, with default implementation of non-optimized scan
+        /// </summary>
+        /// <param name="begin"></param>
+        /// <param name="end"></param>
+        /// <param name="values">an array of values (that are byte[] values) </param>
+        /// <returns></returns>
+        public virtual IEnumerable<(byte[] Key, byte[] Value)> Scan(byte[] begin, byte[] end, byte[][] values)
+        {
+            return Find(begin, end);
+        }
+        /// <summary>
+        /// GPU Accelerated Scan for matching versioned values, with default implementation of non-optimized scan
+        /// </summary>
+        /// <param name="begin"></param>
+        /// <param name="end"></param>
+        /// <param name="values">an array of values (that are byte[] values) </param>
+        /// <returns></returns>
+        public virtual IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Scan(byte[] begin, byte[] end, byte[][] values, DateTime? version)
+        {
+            return Find(begin, end, version);
+        }
+        /// <summary>
+        /// GPU Accelerated async Scan for matching values, with default implementation of non-optimized scan
+        /// </summary>
+        /// <param name="begin"></param>
+        /// <param name="end"></param>
+        /// <param name="values">an array of values (that are byte[] values) </param>
+        /// <returns></returns>
+        public virtual IAsyncEnumerable<(byte[] Key, byte[] Value)> ScanAsync(byte[] begin, byte[] end, byte[][] values, CancellationToken cancellationToken = default)
+        {
+            return FindAsync(begin, end, cancellationToken);
+        }
+        /// <summary>
+        /// GPU Accelerated async Scan for matching versioned values, with default implementation of non-optimized scan
+        /// </summary>
+        /// <param name="begin"></param>
+        /// <param name="end"></param>
+        /// <param name="values">an array of values (that are byte[] values) </param>
+        /// <returns></returns>
+        public virtual IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> ScanAsync(byte[] begin, byte[] end, byte[][] values, DateTime? version, CancellationToken cancellationToken = default)
+        {
+            return FindAsync(begin, end, version, cancellationToken);
+        }
+#endregion
 
         /// <summary>
         /// Transfer the entire content of the space to a zip stream

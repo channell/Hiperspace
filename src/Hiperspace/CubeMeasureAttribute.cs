@@ -32,4 +32,5 @@ namespace Hiperspace
 
         public Aggregate Type { get; init; }
     }
+
 }

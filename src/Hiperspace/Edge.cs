@@ -26,12 +26,6 @@ namespace Hiperspace
     {
         public KeyType _key;
         internal ValueType _value;
-        static Edge()
-        {
-            Space.Prepare<KeyType>();
-            Space.Prepare<ValueType>();
-        }
-
         public Edge ()
         {
 
@@ -185,7 +179,7 @@ namespace Hiperspace
         }
 
         [ProtoContract]
-        internal struct ValueType
+        public struct ValueType
         {
             public ValueType()
             {

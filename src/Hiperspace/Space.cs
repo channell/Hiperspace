@@ -6,31 +6,13 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using ProtoBuf;
+using ProtoBuf.Meta;
+using System.Reflection;
 
 namespace Hiperspace
 {
     public static class Space
     {
-        private static SpinLock _lock = new SpinLock();
-        public static void Prepare<TProto> ()
-        {
-            bool taken = false;
-            _lock.Enter(ref taken);
-            if (taken)
-            {
-                try
-                {
-                    Serializer.PrepareSerializer<TProto>();
-                }
-                finally
-                {
-                    _lock.Exit();
-                }
-            }
-            else
-                throw new LockRecursionException();
-        }
-
         public static ValueTuple<byte[], byte[]> FindBytes(byte[] source, (int key, (int member, int key)[] values)[] map)
         {
             var find = Vpl2f(source, map);
@@ -41,11 +23,11 @@ namespace Hiperspace
             var find = Vpl2s(source, map);
             return (find.begin, find.end);
         }
-
-        public static byte[] KeyBytes<TProto>(TProto proto, (int key, (int member, int key)[] values)[] map)
+        public static byte[] KeyBytes<TProto>(TypeModel? model, TProto proto, (int key, (int member, int key)[] values)[] map)
         {
+            if (model == null) throw new TypeModelException();
             var ms = new MemoryStream();
-            Serializer.Serialize(ms, proto);
+            model.Serialize(ms, proto); 
             ms.Position = 0;
             var key = ms.ToArray();
             var vpl = Lpv2Vpl(key, map);
@@ -55,51 +37,55 @@ namespace Hiperspace
 #endif
             return vpl;
         }
-
-        public static byte[] VectorKeyBytes<TProto>(TProto proto, (int key, (int member, int key)[] values)[] map)
+        public static byte[] VectorKeyBytes<TProto>(TypeModel? model, TProto proto, (int key, (int member, int key)[] values)[] map)
         {
-            var bytes = KeyBytes(proto, map);
+            if (model == null) throw new TypeModelException();
+            var bytes = KeyBytes(model, proto, map);
             var result = new byte[bytes.Length + 1];
             var span = new Span<byte>(result, 1, bytes.Length);
             bytes.CopyTo(span);
             return result;
         }
-        public static byte[] ValueBytes<TProto>(TProto proto, bool eof = false)
+        public static byte[] ValueBytes<TProto>(TypeModel? model, TProto proto, bool eof = false)
         {
+            if (model == null) throw new TypeModelException();
             var ms = new MemoryStream();
-            Serializer.Serialize(ms, proto);
+            model.Serialize(ms, proto);
             ms.Position = 0;
             return ms.ToArray();
         }
-        public static TProto FromKey<TProto>(byte[] bytes, (int key, (int member, int key)[] values)[] map)
+        public static TProto FromKey<TProto>(TypeModel? model, byte[] bytes, (int key, (int member, int key)[] values)[] map)
         {
+            if (model == null) throw new TypeModelException();
             var lpv = Vpl2lpv(bytes, map);
             var protoStream = new MemoryStream(lpv);
             protoStream.Position = 0;
-            var key = Serializer.Deserialize<TProto>(protoStream);
+            var key = model.Deserialize<TProto>(protoStream);
             return key;
         }
-        public static TProto FromVectorKey<TProto>(byte[] bytes, (int key, (int member, int key)[] values)[] map)
+        public static TProto FromVectorKey<TProto>(TypeModel? model, byte[] bytes, (int key, (int member, int key)[] values)[] map)
         {
+            if (model == null) throw new TypeModelException();
             var result = new byte[bytes.Length - 1];
             var span = new Span<byte>(bytes, 1, bytes.Length - 1);
             span.CopyTo(result);
-            return FromKey<TProto>(result, map);
+            return FromKey<TProto>(model, result, map);
         }
-        public static TProto FromValue<TProto>(byte[] bytes)
+        public static TProto FromValue<TProto>(TypeModel? model, byte[] bytes)
         {
+            if (model == null) throw new TypeModelException();
             var protoStream = new MemoryStream(bytes);
             protoStream.Position = 0;
-            return Serializer.Deserialize<TProto>(protoStream);
+            return model.Deserialize<TProto>(protoStream);
         }
-        public static (TKey, TValue) From<TKey,TValue>(byte[] Key, byte[] Value)
+        public static (TKey, TValue) From<TKey, TValue>(TypeModel model, byte[] Key, byte[] Value)
         {
             var keyStream = new MemoryStream(Key);
             var valueStream = new MemoryStream(Value);
-            return 
+            return
                 (
-                    Serializer.Deserialize<TKey>(keyStream),
-                    Serializer.Deserialize<TValue>(valueStream)
+                    model.Deserialize<TKey>(keyStream),
+                    model.Deserialize<TValue>(valueStream)
                 );
         }
 
@@ -466,7 +452,7 @@ namespace Hiperspace
             return (bytes, other);
         }
         /// <summary>
-        /// Get they key type from the source for detla search
+        /// Get they key type from the source for delta search
         /// </summary>
         /// <param name="source">source stream serialized to protobuf</param>
         /// <returns>keytype followed by 0xFF</returns>
@@ -530,6 +516,5 @@ namespace Hiperspace
             while (s < bytes.Length) bytes[s++] = 0xFF;
             return bytes;
         }
-
     }
 }

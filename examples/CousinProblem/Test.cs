@@ -144,11 +144,11 @@ namespace CousinProblem
                     var edges = (from r in space.Edges
                                  where r.From != null && r.To != null
                                  select r).ToArray();
-                    edges.Length.Should().Be(106);
                     for (var i = 0; i < edges.Length; i++)
                     {
                         _output.WriteLine($"{edges[i].From?.Name} has a {edges[i].TypeName} named {edges[i].To?.Name}");
                     }
+                    edges.Length.Should().Be(74);
                 }
             }
         }

@@ -25,11 +25,6 @@ namespace Hiperspace
     {
         public KeyType _key;
         internal ValueType _value;
-        static Node ()
-        {
-            Space.Prepare<KeyType>();
-            Space.Prepare<ValueType>();
-        }
 
         public Node()
         {
@@ -189,7 +184,7 @@ namespace Hiperspace
         }
 
         [ProtoContract]
-        internal struct ValueType
+        public struct ValueType
         {
             public ValueType()
             {

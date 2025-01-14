@@ -6,6 +6,7 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using ProtoBuf;
+using ProtoBuf.Meta;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
@@ -53,9 +54,7 @@ namespace Hiperspace
         {
             get
             {
-#pragma warning disable CS8603 // Possible null reference return.
-                return _key.Vector;
-#pragma warning restore CS8603 // Possible null reference return.
+                return _key!.Vector;
             }
             set
             {
@@ -86,7 +85,7 @@ namespace Hiperspace
                 return false;
             }
 
-            public string SKey => Convert.ToBase64String(Hiperspace.Space.ValueBytes(this));
+            public string SKey => Convert.ToBase64String(Hiperspace.Space.ValueBytes(new BaseTypeModel(), this));
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void Bind(SubSpace space)
             {
