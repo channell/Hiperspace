@@ -1,4 +1,4 @@
-# Cousins Problem
+ Cousins Problem
 
 Cousin Problem that highlights the different perspectives of ancestor relationships 
 seen from the perspective of parents, and individual with their {siblings, 
@@ -18,14 +18,14 @@ This simple diagram shows parental relations and *some* of the implied relations
 Only a subset of implied relations is shown,including them all would resemble a 
 spider-web rather than a reaable graph.
 
-## Example using hiperspace
+ Example using hiperspace
 
 Hiperspace makes it easier to resolve the conflict of ancestoral or cousins view because
 
 * Node traversal in Hiperspace is very quick and performed in parallel for views (like Node)
 * HiLang models allow extensions to be added: [Helper](./Helper.cs) add graph search
 
-### Model
+ Model
 
 The ancestoral model can be expressed in HiLang as an Entity `Person` witha `Father` and `Mother` reference.
 The person provides the `Node` view and four `Edge` views for graph traversal.  For this sample the key is just `Name`.
@@ -73,7 +73,7 @@ loaded when referenced
     new Person {Name = "Mark", Gender = Gender.Male, Father = new Person {Name = "John" }, Mother = new Person {Name = "Mary"} },
 ```
 
-**11** row of data becomes **22** Edges when viewed as a graph. The code `Relatives = relation (this)` uses a native C# function to 
+**11** row of data becomes **22** Edges when viewed as a graph. The code `Relatives = relation (this)` uses a native C function to 
 provide the **106** infered relations that would be unmaintainable if stored in a graph database.
 
 The advantgage of the Hiperspace graph view are

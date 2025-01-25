@@ -43,16 +43,16 @@ namespace Hiperspace
             if (OnDependency != null) source.OnDependency += RaiseOnDependency;
         }
 
-        protected Horizon.Predicate<TEntity>[]? predicates;
+        protected Horizon<TEntity>[]? horizons;
         public SubSpace Space { get; set; }
         public SetSpace(SubSpace space, IQueryProvider provider)
         {
             Space = space;
             Provider = provider ?? throw new ArgumentNullException(nameof(provider));
             if (space.Horizon != null)
-                predicates = space.Horizon
+                horizons = space.Horizon
                     .Where(h => h.Type == typeof(TEntity))
-                    .Select(i => ((Horizon<TEntity>)i)._predicate)
+                    .Select(i => ((Horizon<TEntity>)i))
                     .ToArray();
         }
         protected SpinLock _lock = new SpinLock();
@@ -143,7 +143,7 @@ namespace Hiperspace
 
         public IEnumerable<TEntity> Filter(IEnumerable<TEntity> entities, bool read = true)
         {
-            if (predicates != null)
+            if (horizons != null)
                 return entities
                     .Where(e =>
                     {
@@ -159,13 +159,13 @@ namespace Hiperspace
         }
         public IEnumerable<(TEntity Item, double Distance)> Filter(IEnumerable<(TEntity Item, double Distance)> entities, bool read = true)
         {
-            if (predicates != null)
+            if (horizons != null)
                 return entities
                     .Where(e =>
                     {
-                        for (int c = 0; c < predicates.Length; c++)
+                        for (int c = 0; c < horizons.Length; c++)
                         {
-                            if (!predicates[c](e.Item, Space?.ContextLabel, Space?.UserLabel, read))
+                            if (!horizons[c].predicate(e.Item, Space?.ContextLabel, Space?.UserLabel, read))
                                 return false;
                         }
                         return true;
@@ -174,12 +174,14 @@ namespace Hiperspace
         }
         public virtual Result<TEntity> Filter(TEntity entity, bool read = true)
         {
-            if (predicates != null)
+            if (horizons != null)
             {
-                for (int c = 0; c < predicates.Length; c++)
+                for (int c = 0; c < horizons.Length; c++)
                 {
-                    if (!predicates[c](entity, Space?.ContextLabel, Space?.UserLabel, read))
-                        return Result.Fail(entity);
+                    if (!horizons[c].predicate(entity, Space?.ContextLabel, Space?.UserLabel, read))
+                    {
+                        return Result.Fail(entity, horizons[c].Reason);
+                    }
                 }
             }
             return Result.Ok(entity);

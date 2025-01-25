@@ -1,72 +1,72 @@
 @Table ( "t_package" ), Versioned
 entity Sparx.EA.Package = Node (SKey = SKey, Name = Name, TypeName = "EA-Package"),
-                          Edge (From = Parent, To = this, TypeName = "EA-PackageChild")    
+                          Edge (From = Parent, To = this, TypeName = "EA-PackageChild") #44    
 (
     @Key, Column ( "Package_ID" ), DatabaseGenerated ( DatabaseGeneratedOption.Identity )
-    Id : Int32
+    Id : Int32 #1
 )
 {
     @StringLength ( 255 )
-    Name : String
+    Name : String #2
 ,
-    Parent      : Sparx.EA.Package
+    Parent      : Sparx.EA.Package #3
 ,
-    CreatedDate : DateTime
+    CreatedDate : DateTime #4
 ,
-    ModifiedDate : DateTime
+    ModifiedDate : DateTime #5
 ,
     @Column()
-    Notes : String
+    Notes : String #6
 ,
     @StringLength ( 40 ), Column ( "ea_guid" )
-    GUID : String
+    GUID : String #7
 ,
     @StringLength ( 255 )
-    XMLPath : String
+    XMLPath : String #8
 ,
-    IsControlled : Int32
+    IsControlled : Int32 #9
 ,
-    LastLoadDate : DateTime
+    LastLoadDate : DateTime #10
 ,
-    LastSaveDate : DateTime
+    LastSaveDate : DateTime #11
 ,
     @StringLength ( 50 )
-    Version : String
+    Version : String #12
 ,
-    Protected : Int32
+    Protected : Int32 #13
 ,
     @StringLength ( 255 )
-    PkgOwner : String
+    PkgOwner : String #14
 ,
     @StringLength ( 50 )
-    UMLVersion : String
+    UMLVersion : String #15
 ,
-    UseDTD : Int32
+    UseDTD : Int32 #16
 ,
-    LogXML : Int32
+    LogXML : Int32 #17
 ,
     @StringLength ( 255 )
-    CodePath : String
+    CodePath : String #18
 ,
     @StringLength ( 50 )
-    Namespace : String
+    Namespace : String #19
 ,
-    TPos : Int32
+    TPos : Int32 #20
 ,
     @StringLength ( 255 )
-    PackageFlags : String
+    PackageFlags : String #21
 ,
-    BatchSave : Int32
+    BatchSave : Int32 #22
 ,
-    BatchLoad : Int32
+    BatchLoad : Int32 #23
 ,
-    Deleted = false
+    Deleted = false #24
 
 }
 [
-    Diagrams    : Sparx.EA.Diagram (Package = this),
-    Content     : Sparx.EA.Element (Package = this),
-    Children    : Sparx.EA.Package (Parent  = this),
+    Diagrams    : Sparx.EA.Diagram (Package = this) #40,
+    Content     : Sparx.EA.Element (Package = this) #41,
+    Children    : Sparx.EA.Package (Parent  = this) #42,
     @NotMapped
-    Loaded      : Sparx.Load.Tracking
+    Loaded      : Sparx.Load.Tracking #81
 ];

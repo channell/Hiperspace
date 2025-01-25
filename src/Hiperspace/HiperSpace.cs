@@ -586,7 +586,7 @@ namespace Hiperspace
         {
             return FindAsync(begin, end, version, cancellationToken);
         }
-#endregion
+        #endregion
 
         /// <summary>
         /// Transfer the entire content of the space to a zip stream

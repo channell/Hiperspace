@@ -1,86 +1,86 @@
-﻿@Table ( "t_diagram" ), Versioned
-entity Sparx.EA.Diagram = Node (SKey = SKey, Name = Name, TypeName = "EA-Diagram" + DiagramTypeCode)
+@Table ( "t_diagram" ), Versioned
+entity Sparx.EA.Diagram = Node (SKey = SKey, Name = Name, TypeName = "EA-Diagram" + DiagramTypeCode) #28
 (
     @Key,Column ( "Diagram_ID" ), DatabaseGenerated ( DatabaseGeneratedOption.Identity )
-    Id : Int32
+    Id : Int32 #1
 )
 {
     @Column ( "Package_ID" )
-    PackageId : Int32
+    PackageId : Int32 #2
 ,
-    ParentID : Int32
+    ParentID : Int32 #3
 ,
     @StringLength ( 50 ) ,Column ( "Diagram_Type" )
-    DiagramTypeCode : String
+    DiagramTypeCode : String #4
 ,
     @StringLength ( 255 )
-    Name : String
+    Name : String #5
 ,
     @StringLength ( 50 )
-    Version : String
+    Version : String #6
 ,
     @StringLength ( 255 )
-    Author : String
+    Author : String #7
 ,
-    ShowDetails : Int32
+    ShowDetails : Int32 #8
 ,
     @Column()
-    Notes : String
+    Notes : String #9
 ,
     @StringLength ( 50 )
-    Stereotype : String
+    Stereotype : String #10
 ,
-    AttPub : Int32
+    AttPub : Int32 #11
 ,
-    AttPri : Int32
+    AttPri : Int32 #12
 ,
-    AttPro : Int32
+    AttPro : Int32 #13
 ,
     @StringLength ( 1 )
-    Orientation : String
+    Orientation : String #14
 ,
-    cx : Int32
+    cx : Int32 #15
 ,
-    cy : Int32
+    cy : Int32 #16
 ,
-    Scale : Int32
+    Scale : Int32 #17
 ,
-    CreatedDate : DateTime
+    CreatedDate : DateTime #18
 ,
-    ModifiedDate : DateTime
-,
-    @StringLength ( 255 )
-    HTMLPath : String
-,
-    ShowForeign : Int32
-,
-    ShowBorder : Int32
-,
-    ShowPackageContents : Int32
+    ModifiedDate : DateTime #19
 ,
     @StringLength ( 255 )
-    PDATA : String
+    HTMLPath : String #20
 ,
-    Locked : Int32
+    ShowForeign : Int32 #21
+,
+    ShowBorder : Int32 #22
+,
+    ShowPackageContents : Int32 #23
+,
+    @StringLength ( 255 )
+    PDATA : String #24
+,
+    Locked : Int32 #25
 ,
     @StringLength ( 40 ),Column ( "ea_guid" )
-    GUID : String
+    GUID : String #26
 ,
-    TPos : Int32
+    TPos : Int32 #27
 ,
     @StringLength ( 255 )
-    Swimlanes : String
+    Swimlanes : String #28
 ,
     @Column()
-    StyleEx : String
+    StyleEx : String #29
 ,
-    Package : Sparx.EA.Package
+    Package : Sparx.EA.Package #30
 ,
-    Deleted = false
+    Deleted = false #31
 }
 [
     @NotMapped 
-    DiagramLinks   : Sparx.EA.DiagramLink (Diagram = this),
+    DiagramLinks   : Sparx.EA.DiagramLink (Diagram = this) #26,
     @NotMapped 
-    Parts          : Sparx.EA.DiagramObject (Diagram = this)
+    Parts          : Sparx.EA.DiagramObject (Diagram = this) #27
 ];

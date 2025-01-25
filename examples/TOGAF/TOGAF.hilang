@@ -1,4 +1,4 @@
-%domain(Togaf);
+%domain(Togaf); %ids;
 /*
     Togaf.Edge2 is a view that inherits its keys and attributes, and realized the view
     the implmentation allows an entity/segment/aspect to provide an additional view
@@ -86,19 +86,19 @@ type Togaf.General.Base : Togaf.Base, HasVectorSpace
 entity Togaf.Organization : Togaf.Base 
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Organization"),
       Edge        ( From = this, To = Parent, TypeName = "AF-Organization-Part"),
-      Togaf.Edge2 ( From = Parent, To = this, TypeName = "AF-Organization-Include")
+      Togaf.Edge2 ( From = Parent, To = this, TypeName = "AF-Organization-Include") #20
 {
-    Parent          : Togaf.Organization
+    Parent          : Togaf.Organization #5
 }
 [
-    Children        : Togaf.Organization ( Parent = this),
-    Motivates       : Togaf.Business.Driver (MotivatedBy = this),
-    Contains        : Togaf.Business.Actor (In = this),
-    Functions       : Togaf.Business.Function (For = this),
-    Uses            : Togaf.Business.Capability ( By = this),
-    Produces        : Togaf.Business.Product ( By = this),
-    Governs         : Togaf.Service ( OwnedBy = this),
-    SameName        : Togaf.Organization (Name = Name)
+    Children        : Togaf.Organization ( Parent = this) #12,
+    Motivates       : Togaf.Business.Driver (MotivatedBy = this) #13,
+    Contains        : Togaf.Business.Actor (In = this) #14,
+    Functions       : Togaf.Business.Function (For = this) #15,
+    Uses            : Togaf.Business.Capability ( By = this) #16,
+    Produces        : Togaf.Business.Product ( By = this) #17,
+    Governs         : Togaf.Service ( OwnedBy = this) #18,
+    SameName        : Togaf.Organization (Name = Name) #19
 ];
 
 /* ********************************************************
@@ -108,24 +108,24 @@ entity Togaf.Organization : Togaf.Base
 entity Togaf.Business.Driver : Togaf.General.Base
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Driver"),    
       Edge        ( From = this, To = MotivatedBy, TypeName = "AF-Driver-Organization"),
-      Togaf.Edge2 ( From = MotivatedBy, To = this, TypeName = "AF-Organization-Driver")
+      Togaf.Edge2 ( From = MotivatedBy, To = this, TypeName = "AF-Organization-Driver") #76
 {
-    MotivatedBy     : Togaf.Organization
+    MotivatedBy     : Togaf.Organization #5
 }
 [
-    Creates         : Togaf.Business.Goal ( By = this )
+    Creates         : Togaf.Business.Goal ( By = this ) #75
 ];
 
 entity Togaf.Business.Actor : Togaf.General.Base
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Actor"),
       Edge        (From = this, To = In, Name = Name, TypeName = "AF-Actor-Organization"),
-      Togaf.Edge2 (From = In, To = this, Name = Name, TypeName = "AF-Organization-Actor") 
+      Togaf.Edge2 (From = In, To = this, Name = Name, TypeName = "AF-Organization-Actor") #88 
 {
-    In              : Togaf.Organization
+    In              : Togaf.Organization #5
 }
 [
-    Performs        : Togaf.Has.Activity,
-    Involved        : Togaf.Business.ValueStream (Involves = this)
+    Performs        : Togaf.Has.Activity #414,
+    Involved        : Togaf.Business.ValueStream (Involves = this) #87
 ];
 
 entity Togaf.Business.Function : Togaf.General.Base
@@ -135,31 +135,31 @@ entity Togaf.Business.Function : Togaf.General.Base
       Togaf.Edge3 ( From = this, To = For, TypeName = "AF-Function-Organization"),
       Togaf.Edge4 ( From = For, To = this, TypeName = "AF-Organization-Function"),
       Togaf.Edge5 ( From = this, To = Delivers, TypeName = "AF-Function-Capability"),
-      Togaf.Edge6 ( From = Delivers, To = this, TypeName = "AF-Capability-Function")
+      Togaf.Edge6 ( From = Delivers, To = this, TypeName = "AF-Capability-Function") #101
 {
-    For             : Togaf.Organization,
-    Parent          : Togaf.Business.Function,
-    Delivers        : Togaf.Business.Capability
+    For             : Togaf.Organization #5,
+    Parent          : Togaf.Business.Function #6,
+    Delivers        : Togaf.Business.Capability #7
 }
 [
-    Children        : Togaf.Business.Function (Parent = this),
-    Orchestrates    : Togaf.Business.Process (Decomposes = this),
-    Involves        : Togaf.Business.CourseOfAction (Involves = this)
+    Children        : Togaf.Business.Function (Parent = this) #98,
+    Orchestrates    : Togaf.Business.Process (Decomposes = this) #99,
+    Involves        : Togaf.Business.CourseOfAction (Involves = this) #100
 ];
 entity Togaf.Business.Capability : Togaf.General.Base
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Capability"),  
       Edge        ( From = this, To = Parent, TypeName = "AF-Capability-Part"),
-      Togaf.Edge2 ( From = Parent, To = this, TypeName = "AF-Capability-Include")
+      Togaf.Edge2 ( From = Parent, To = this, TypeName = "AF-Capability-Include") #116
 {
-    By              : Togaf.Organization,
-    Parent          : Togaf.Business.Capability
+    By              : Togaf.Organization #5,
+    Parent          : Togaf.Business.Capability #6
 }
 [
-    Children        : Togaf.Business.Capability (Parent = this),
-    Operated        : Togaf.Business.Process (Operates = this),
-    Delivered       : Togaf.Business.Function (Delivers = this),
-    EnabledBy       : Togaf.Business.ValueStream (Enables = this),
-    Related         : Togaf.Business.CourseOfAction (Enables = this)
+    Children        : Togaf.Business.Capability (Parent = this) #111,
+    Operated        : Togaf.Business.Process (Operates = this) #112,
+    Delivered       : Togaf.Business.Function (Delivers = this) #113,
+    EnabledBy       : Togaf.Business.ValueStream (Enables = this) #114,
+    Related         : Togaf.Business.CourseOfAction (Enables = this) #115
 ];
 
 entity Togaf.Business.Product : Togaf.General.Base
@@ -167,37 +167,37 @@ entity Togaf.Business.Product : Togaf.General.Base
       Edge        ( From = this, To = Parent, TypeName = "AF-Product-Part"),
       Togaf.Edge2 ( From = Parent, To = this, TypeName = "AF-Product-Include"),
       Togaf.Edge3 ( From = this, To = Parent, TypeName = "AF-Organisation-Product"),
-      Togaf.Edge4 ( From = Parent, To = this, TypeName = "AF-Product-Organisation")
+      Togaf.Edge4 ( From = Parent, To = this, TypeName = "AF-Product-Organisation") #128
 {
-    By              : Togaf.Organization,
-    Parent          : Togaf.Business.Product
+    By              : Togaf.Organization #5,
+    Parent          : Togaf.Business.Product #6
 }
 [
-    Children        : Togaf.Business.Product (Parent = this),
-    ProvidedBy      : Togaf.Business.Process (Provides = this)
+    Children        : Togaf.Business.Product (Parent = this) #126,
+    ProvidedBy      : Togaf.Business.Process (Provides = this) #127
 ];
 
 entity Togaf.Business.Goal : Togaf.General.Base
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Goal"),
       Edge        ( From = this, To = By, TypeName = "AF-Goal-Driver"),
-      Togaf.Edge2 ( From = By, To = this, TypeName = "AF-Driver-Goal")
+      Togaf.Edge2 ( From = By, To = this, TypeName = "AF-Driver-Goal") #140
 {
-    By              : Togaf.Business.Driver 
+    By              : Togaf.Business.Driver #5 
 }
 [
-    RealizedBy      : Togaf.Business.Objective (For = this),
-    Follows         : Togaf.Business.CourseOfAction (Leads = this)
+    RealizedBy      : Togaf.Business.Objective (For = this) #138,
+    Follows         : Togaf.Business.CourseOfAction (Leads = this) #139
 ];
 
 entity Togaf.Business.Objective : Togaf.General.Base
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Objective"),
       Edge        ( From = this, To = For, TypeName = "AF-Objective-Organisation"),
-      Togaf.Edge2 ( From = For, To = this, TypeName = "AF-Organisation-Objective")
+      Togaf.Edge2 ( From = For, To = this, TypeName = "AF-Organisation-Objective") #151
 {
-    For             : Togaf.Business.Goal
+    For             : Togaf.Business.Goal #5
 }
 [
-    Measured        : Togaf.Business.Measure ( For = this )
+    Measured        : Togaf.Business.Measure ( For = this ) #150
 ];
 
 entity Togaf.Business.Measure : Togaf.General.Base
@@ -205,31 +205,31 @@ entity Togaf.Business.Measure : Togaf.General.Base
       Edge        ( From = this, To = Tracks, Name = Name, TypeName = "AF-Measure-Service"),
       Togaf.Edge2 ( From = Tracks, To = this, Name = Name, TypeName = "AF-Service-Measure"),
       Togaf.Edge3 ( From = this, To = For, Name = Name, TypeName = "AF-Measure-Objective"),
-      Togaf.Edge4 ( From = For, To = this, Name = Name, TypeName = "AF-Objective-Measure")
+      Togaf.Edge4 ( From = For, To = this, Name = Name, TypeName = "AF-Objective-Measure") #162
 {
-    For             : Togaf.Business.Objective,
-    Unit            : String,
-    Tracks          : Togaf.Service
+    For             : Togaf.Business.Objective #5,
+    Unit            : String #6,
+    Tracks          : Togaf.Service #7
 }
 [
-    Observation     : Togaf.History.Measure 
+    Observation     : Togaf.History.Measure #323 
 ];
 
 segment Togaf.History.Measure
     = Node        ( SKey = SKey, Name = "", TypeName = "AF-Measurement"),
       Edge        (From = owner, To = this, Name = "", TypeName = "AF-Measurement")
 (
-    At              : DateTime
+    At              : DateTime #2
 )
 {
-    Value           : Decimal
+    Value           : Decimal #3
 };
 
 enum Togaf.Business.ActivityType
 {
-    Task            #1,
-    Decision        #2,
-    Event           #3
+    Task #1            ,
+    Decision #2        ,
+    Event #3           
 };
 
 entity Togaf.Business.Activity : Togaf.General.Base
@@ -243,18 +243,18 @@ entity Togaf.Business.Activity : Togaf.General.Base
       Togaf.Edge7  ( From = this, To = After, Name = Name, TypeName = "AF-Activity-After"),
       Togaf.Edge8  ( From = After, To = this, Name = Name, TypeName = "AF-Activity-Before"),
       Togaf.Edge9  ( From = this, To = Part, Name = Name, TypeName = "AF-Activity-Process"),
-      Togaf.Edge10 ( From = Part, To = this, Name = Name, TypeName = "AF-Process-Activity") 
+      Togaf.Edge10 ( From = Part, To = this, Name = Name, TypeName = "AF-Process-Activity") #175 
 {
-    By              : Togaf.Business.Actor,
-    Type            : Togaf.Business.ActivityType,
-    After           : Togaf.Business.Activity,
-    Part            : Togaf.Business.Process,
-    Event           : Togaf.Business.Event,
-    Uses            : Togaf.Service
+    By              : Togaf.Business.Actor #5,
+    Type            : Togaf.Business.ActivityType #6,
+    After           : Togaf.Business.Activity #7,
+    Part            : Togaf.Business.Process #8,
+    Event           : Togaf.Business.Event #9,
+    Uses            : Togaf.Service #10
 }
 [
-    Before          : Togaf.Business.Activity (After = this),
-    Originates      : Togaf.Data.Entity(Originator = this)
+    Before          : Togaf.Business.Activity (After = this) #173,
+    Originates      : Togaf.Data.Entity(Originator = this) #174
 ];
 
 segment Togaf.Has.Activity : Many<Togaf.Business.Activity>
@@ -264,26 +264,26 @@ segment Togaf.Has.Activity : Many<Togaf.Business.Activity>
     Item            : Togaf.Business.Activity
 ) */
 { 
-    Comment         : String 
+    Comment         : String #4 
 };
 
 enum Togaf.Business.EventType
 {
-    Start           #1,
-    End             #2,
-    Intermediate    #3
+    Start #1           ,
+    End #2             ,
+    Intermediate #3    
 };
 
 entity Togaf.Business.Event : Togaf.General.Base
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Event"),
       Edge        ( From = this, To = Trigger, Name = Name, TypeName = "AF-Event-Service"),
-      Togaf.Edge2 ( From = Trigger, To = this, Name = Name, TypeName = "AF-Service-Event")
+      Togaf.Edge2 ( From = Trigger, To = this, Name = Name, TypeName = "AF-Service-Event") #187
 {
-    Type            : Togaf.Business.EventType,
-    Trigger         : Togaf.Service
+    Type            : Togaf.Business.EventType #5,
+    Trigger         : Togaf.Service #6
 }
 [
-    Activities      : Togaf.Business.Activity ( Event = this)
+    Activities      : Togaf.Business.Activity ( Event = this) #186
 ];
 
 entity Togaf.Business.Process : Togaf.General.Base
@@ -297,30 +297,30 @@ entity Togaf.Business.Process : Togaf.General.Base
       Togaf.Edge7  ( From = this, To = Governed, Name = Name, TypeName = "AF-Process-Control"), 
       Togaf.Edge8  ( From = Governed, To = this, Name = Name, TypeName = "AF-Control-Process"), 
       Togaf.Edge9  ( From = this, To = Realizes, Name = Name, TypeName = "AF-Process-ValueStream"), 
-      Togaf.Edge10 ( From = Realizes, To = this, Name = Name, TypeName = "AF-ValueStream-Process") 
+      Togaf.Edge10 ( From = Realizes, To = this, Name = Name, TypeName = "AF-ValueStream-Process") #198 
 {
-    Decomposes      : Togaf.Business.Function,
-    Starts          : Togaf.Business.Activity,
-    Operates        : Togaf.Business.Capability,
-    Provides        : Togaf.Business.Product,
-    Governed        : Togaf.Business.Control,
-    Realizes        : Togaf.Business.ValueStream
+    Decomposes      : Togaf.Business.Function #5,
+    Starts          : Togaf.Business.Activity #6,
+    Operates        : Togaf.Business.Capability #7,
+    Provides        : Togaf.Business.Product #8,
+    Governed        : Togaf.Business.Control #9,
+    Realizes        : Togaf.Business.ValueStream #10
 }
 [
-    Steps           : Togaf.Business.Activity (Part = this)
+    Steps           : Togaf.Business.Activity (Part = this) #197
 ];
 
 entity Togaf.Business.Control : Togaf.General.Base
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Control"),
       Edge        ( From = this, To = PartOf, Name = Name, TypeName = "AF-Control-Part"),
-      Togaf.Edge2 ( From = PartOf, To = this, Name = Name, TypeName = "AF-Control-Includes") 
+      Togaf.Edge2 ( From = PartOf, To = this, Name = Name, TypeName = "AF-Control-Includes") #210 
 {
-    URL             : String,
-    PartOf          : Togaf.Business.Control
+    URL             : String #5,
+    PartOf          : Togaf.Business.Control #6
 }
 [
-    Includes        : Togaf.Business.Control (PartOf = this),
-    Governs         : Togaf.Business.Process (Governed = this)
+    Includes        : Togaf.Business.Control (PartOf = this) #208,
+    Governs         : Togaf.Business.Process (Governed = this) #209
 ];
 
 entity Togaf.Business.ValueStream : Togaf.General.Base
@@ -330,16 +330,16 @@ entity Togaf.Business.ValueStream : Togaf.General.Base
       Togaf.Edge3 ( From = this, To = Enables, Name = Name, TypeName = "AF-ValueStream-Capability"),
       Togaf.Edge4 ( From = Enables, To = this, Name = Name, TypeName = "AF-Capability-ValueStream"), 
       Togaf.Edge5 ( From = this, To = Involves, Name = Name, TypeName = "AF-ValueStream-Actor"),
-      Togaf.Edge6 ( From = Involves, To = this, Name = Name, TypeName = "AF-Actor-ValueStream") 
+      Togaf.Edge6 ( From = Involves, To = this, Name = Name, TypeName = "AF-Actor-ValueStream") #222 
 {
-    URL             : String,
-    Parent          : Togaf.Business.ValueStream,
-    Enables         : Togaf.Business.Capability,
-    Involves        : Togaf.Business.Actor
+    URL             : String #5,
+    Parent          : Togaf.Business.ValueStream #6,
+    Enables         : Togaf.Business.Capability #7,
+    Involves        : Togaf.Business.Actor #8
 }
 [
-    Children        : Togaf.Business.ValueStream (Parent = this),
-    RealizedBy      : Togaf.Business.Process (Realizes = this)
+    Children        : Togaf.Business.ValueStream (Parent = this) #220,
+    RealizedBy      : Togaf.Business.Process (Realizes = this) #221
 ];
 
 entity Togaf.Business.CourseOfAction : Togaf.General.Base
@@ -349,12 +349,12 @@ entity Togaf.Business.CourseOfAction : Togaf.General.Base
       Togaf.Edge3 ( From = this, To = Leads, Name = Name, TypeName = "AF-CourseOfAction-Goal"),
       Togaf.Edge4 ( From = Leads, To = this, Name = Name, TypeName = "AF-Goal-CourseOfAction"), 
       Togaf.Edge5 ( From = this, To = Leads, Name = Name, TypeName = "AF-CourseOfAction-Function"),
-      Togaf.Edge6 ( From = Leads, To = this, Name = Name, TypeName = "AF-Function-CourseOfAction") 
+      Togaf.Edge6 ( From = Leads, To = this, Name = Name, TypeName = "AF-Function-CourseOfAction") #232 
 {
-    URL             : String,
-    Enables         : Togaf.Business.Capability,
-    Leads           : Togaf.Business.Goal,
-    Involves        : Togaf.Business.Function
+    URL             : String #5,
+    Enables         : Togaf.Business.Capability #6,
+    Leads           : Togaf.Business.Goal #7,
+    Involves        : Togaf.Business.Function #8
 };
 
 /* ********************************************************
@@ -364,16 +364,16 @@ entity Togaf.Business.CourseOfAction : Togaf.General.Base
 entity Togaf.Service : Togaf.General.Base 
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Service"),
       Edge        ( From = this, To = OwnedBy, Name = Name, TypeName = "AF-Service-Organization"),
-      Togaf.Edge2 ( From = OwnedBy, To = this, Name = Name, TypeName = "AF-Organization-Service")
+      Togaf.Edge2 ( From = OwnedBy, To = this, Name = Name, TypeName = "AF-Organization-Service") #35
 {
-    OwnedBy         : Togaf.Organization
+    OwnedBy         : Togaf.Organization #5
 }
 [
-    Measures        : Togaf.Business.Measure ( Tracks = this),
-    Triggers        : Togaf.Business.Event ( Trigger = this),
-    UsedBy          : Togaf.Business.Activity ( Uses = this),
-    Provides        : Togaf.Data.Entity(Provider = this),
-    ProvidedBy      : Togaf.Application.System ( Realizes = this)
+    Measures        : Togaf.Business.Measure ( Tracks = this) #30,
+    Triggers        : Togaf.Business.Event ( Trigger = this) #31,
+    UsedBy          : Togaf.Business.Activity ( Uses = this) #32,
+    Provides        : Togaf.Data.Entity(Provider = this) #33,
+    ProvidedBy      : Togaf.Application.System ( Realizes = this) #34
 ];
 
 /* ********************************************************
@@ -385,14 +385,14 @@ entity Togaf.Data.Entity: Togaf.General.Base
       Edge        ( From = this, To = Originator, Name = Name, TypeName = "AF-Entity-Activity"),
       Togaf.Edge2 ( From = Originator, To = this, Name = Name, TypeName = "AF-Activity-Entity"),
       Togaf.Edge3 ( From = this, To = Originator, Name = Name, TypeName = "AF-Entity-Activity"),
-      Togaf.Edge4 ( From = Originator, To = this, Name = Name, TypeName = "AF-Activity-Entity")
+      Togaf.Edge4 ( From = Originator, To = this, Name = Name, TypeName = "AF-Activity-Entity") #457
 {
-    Originator      : Togaf.Business.Activity,
-    Provider        : Togaf.Service
+    Originator      : Togaf.Business.Activity #5,
+    Provider        : Togaf.Service #6
 }
 [
-    Logical         : Togaf.Data.Logical (Encapsulate = this),
-    DataUsage       : Togaf.Data.Usage (Entity = this)
+    Logical         : Togaf.Data.Logical (Encapsulate = this) #455,
+    DataUsage       : Togaf.Data.Usage (Entity = this) #456
 ];
 
 entity Togaf.Data.Usage : Togaf.Base
@@ -400,13 +400,13 @@ entity Togaf.Data.Usage : Togaf.Base
       Edge        ( From = this, To = Entity, Name = Name, TypeName = "AF-DataUsage-Entity"),
       Togaf.Edge2 ( From = Entity, To = this, Name = Name, TypeName = "AF-Entity-DataUsage"),
       Togaf.Edge3 ( From = this, To = System, Name = Name, TypeName = "AF-DataUsage-System"),
-      Togaf.Edge4 ( From = System, To = this, Name = Name, TypeName = "AF-System-DataUsage")
+      Togaf.Edge4 ( From = System, To = this, Name = Name, TypeName = "AF-System-DataUsage") #459
 (
-    Entity          : Togaf.Data.Entity,
-    System          : Togaf.Application.System
+    Entity          : Togaf.Data.Entity #2,
+    System          : Togaf.Application.System #3
 )
 {
-    Comment         : String
+    Comment         : String #7
 };
 
 entity Togaf.Data.Logical : Togaf.General.Base
@@ -414,13 +414,13 @@ entity Togaf.Data.Logical : Togaf.General.Base
       Edge        ( From = this, To = Encapsulate, Name = Name, TypeName = "AF-Logical-Entity"),
       Togaf.Edge2 ( From = Encapsulate, To = this, Name = Name, TypeName = "AF-Entity-Logical"),
       Togaf.Edge3 ( From = this, To = Component, Name = Name, TypeName = "AF-Logical-Component"),
-      Togaf.Edge4 ( From = Component, To = this, Name = Name, TypeName = "AF-Component-Logical")
+      Togaf.Edge4 ( From = Component, To = this, Name = Name, TypeName = "AF-Component-Logical") #470
 {
-    Encapsulate     : Togaf.Data.Entity,
-    Component       : Togaf.Application.Component
+    Encapsulate     : Togaf.Data.Entity #5,
+    Component       : Togaf.Application.Component #6
 }
 [
-    Instantiate     : Togaf.Data.Physical (Instantiate = this)
+    Instantiate     : Togaf.Data.Physical (Instantiate = this) #469
 ];
 
 entity Togaf.Data.Physical : Togaf.General.Base
@@ -428,10 +428,10 @@ entity Togaf.Data.Physical : Togaf.General.Base
       Edge        ( From = this, To = Instantiate, Name = Name, TypeName = "AF-Physical-Logical"),
       Togaf.Edge2 ( From = Instantiate, To = this, Name = Name, TypeName = "AF-Logical-Physical"),
       Togaf.Edge3 ( From = this, To = Deployed, Name = Name, TypeName = "AF-Physical-Deployed"),
-      Togaf.Edge4 ( From = Deployed, To = this, Name = Name, TypeName = "AF-Deployed-Physical")
+      Togaf.Edge4 ( From = Deployed, To = this, Name = Name, TypeName = "AF-Deployed-Physical") #480
 {
-    Instantiate     : Togaf.Data.Logical,
-    Deployed        : Togaf.Application.Deployed
+    Instantiate     : Togaf.Data.Logical #5,
+    Deployed        : Togaf.Application.Deployed #6
 };
 /* ********************************************************
     Application
@@ -441,14 +441,14 @@ entity Togaf.Application.System : Togaf.General.Base
       Edge        ( From = this, To = Realizes, Name = Name, TypeName = "AF-System-Service"),
       Togaf.Edge2 ( From = Realizes, To = this, Name = Name, TypeName = "AF-Service-System"),
       Togaf.Edge3 ( From = this, To = Platform, Name = Name, TypeName = "AF-System-Platform"),
-      Togaf.Edge4 ( From = Platform, To = this, Name = Name, TypeName = "AF-Platform-System")
+      Togaf.Edge4 ( From = Platform, To = this, Name = Name, TypeName = "AF-Platform-System") #537
 {
-    Realizes        : Togaf.Service,
-    Platform        : Togaf.Technology.Platform
+    Realizes        : Togaf.Service #5,
+    Platform        : Togaf.Technology.Platform #6
 }
 [
-    SystemUsage     : Togaf.Data.Usage (System = this),
-    ImplementedBy   : Togaf.Application.Component (Implements = this)
+    SystemUsage     : Togaf.Data.Usage (System = this) #535,
+    ImplementedBy   : Togaf.Application.Component (Implements = this) #536
 ];
 
 entity Togaf.Application.Component: Togaf.General.Base
@@ -456,14 +456,14 @@ entity Togaf.Application.Component: Togaf.General.Base
       Edge        ( From = this, To = Implements, Name = Name, TypeName = "AF-Component-System"),
       Togaf.Edge2 ( From = Implements, To = this, Name = Name, TypeName = "AF-System-Component"),
       Togaf.Edge3 ( From = this, To = Host, Name = Name, TypeName = "AF-Component-Host"),
-      Togaf.Edge4 ( From = Host, To = this, Name = Name, TypeName = "AF-Host-Component")
+      Togaf.Edge4 ( From = Host, To = this, Name = Name, TypeName = "AF-Host-Component") #549
 {
-    Implements      : Togaf.Application.System,
-    Host            : Togaf.Technology.Host
+    Implements      : Togaf.Application.System #5,
+    Host            : Togaf.Technology.Host #6
 }
 [
-    ComponentUsage  : Togaf.Data.Logical (Component = this),
-    DeployedBy      : Togaf.Application.Deployed (Deployes = this)
+    ComponentUsage  : Togaf.Data.Logical (Component = this) #547,
+    DeployedBy      : Togaf.Application.Deployed (Deployes = this) #548
 ];
 
 entity Togaf.Application.Deployed : Togaf.General.Base
@@ -471,13 +471,13 @@ entity Togaf.Application.Deployed : Togaf.General.Base
       Edge        ( From = this, To = Deployes, Name = Name, TypeName = "AF-Deployed-Component"),
       Togaf.Edge2 ( From = Deployes, To = this, Name = Name, TypeName = "AF-Component-Deployed"),
       Togaf.Edge3 ( From = this, To = Host, Name = Name, TypeName = "AF-Deployed-Host"),
-      Togaf.Edge4 ( From = Host, To = this, Name = Name, TypeName = "AF-Host-Deployed")
+      Togaf.Edge4 ( From = Host, To = this, Name = Name, TypeName = "AF-Host-Deployed") #560
 {
-    Deployes        : Togaf.Application.Component,
-    Host            : Togaf.Technology.Instance
+    Deployes        : Togaf.Application.Component #5,
+    Host            : Togaf.Technology.Instance #6
 }
 [
-    Usage           : Togaf.Data.Physical (Deployed = this)
+    Usage           : Togaf.Data.Physical (Deployed = this) #559
 ];
 
 /* ********************************************************
@@ -486,34 +486,34 @@ entity Togaf.Application.Deployed : Togaf.General.Base
 entity Togaf.Technology.Platform : Togaf.General.Base
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Platform"),
       Edge        ( From = this, To = Serves, Name = Name, TypeName = "AF-Platform-Service"),
-      Togaf.Edge2 ( From = Serves, To = this, Name = Name, TypeName = "AF-Service-Platform")
+      Togaf.Edge2 ( From = Serves, To = this, Name = Name, TypeName = "AF-Service-Platform") #617
 {
-    Serves          : Togaf.Service
+    Serves          : Togaf.Service #5
 }
 [
-    Hosts           : Togaf.Application.System (Platform = this),
-    Defines         : Togaf.Technology.Host (Platform = this)
+    Hosts           : Togaf.Application.System (Platform = this) #615,
+    Defines         : Togaf.Technology.Host (Platform = this) #616
 ];
 
 entity Togaf.Technology.Host : Togaf.General.Base
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Platform"),
       Edge        ( From = this, To = Platform, Name = Name, TypeName = "AF-Host-Platform"),
-      Togaf.Edge2 ( From = Platform, To = this, Name = Name, TypeName = "AF-Platform-Host")
+      Togaf.Edge2 ( From = Platform, To = this, Name = Name, TypeName = "AF-Platform-Host") #629
 {
-    Platform        : Togaf.Technology.Platform
+    Platform        : Togaf.Technology.Platform #5
 }
 [
-    Hosts           : Togaf.Application.Component (Host = this),
-    Instances       : Togaf.Technology.Instance (Host = this) 
+    Hosts           : Togaf.Application.Component (Host = this) #627,
+    Instances       : Togaf.Technology.Instance (Host = this) #628 
 ];
 
 entity Togaf.Technology.Instance : Togaf.General.Base
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Platform"),
       Edge        ( From = this, To = Host, Name = Name, TypeName = "AF-Instance-Platform"),
-      Togaf.Edge2 ( From = Host, To = this, Name = Name, TypeName = "AF-Platform-Instance")
+      Togaf.Edge2 ( From = Host, To = this, Name = Name, TypeName = "AF-Platform-Instance") #640
 {
-    Host            : Togaf.Technology.Host
+    Host            : Togaf.Technology.Host #5
 }
 [
-    Hosts           : Togaf.Application.Deployed (Host = this)
+    Hosts           : Togaf.Application.Deployed (Host = this) #639
 ];

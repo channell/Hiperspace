@@ -1,4 +1,4 @@
-%domain(QL);
+%domain(QL);%ids;
 
 /*
     Functions to create QLNet objects
@@ -21,17 +21,17 @@
 */
 type QLNet.ActualActual.Convention;
 type QLNet.ActualActual;
-type QLNet.BusinessDayConvention;
-type QLNet.Calendar;
+type QLNet.BusinessDayConvention #30      ;
+type QLNet.Calendar #31      ;
 type QLNet.CashFlow;
-type QLNet.DateGeneration.Rule;
-type QLNet.DayCounter;
-type QLNet.FixedRateBond;
-type QLNet.Handle<QLNet.YieldTermStructure>;
-type QLNet.IPricingEngine;
-type QLNet.Period;
-type QLNet.Schedule;
-type QLNet.YieldTermStructure;
+type QLNet.DateGeneration.Rule #39      ;
+type QLNet.DayCounter #32      ;
+type QLNet.FixedRateBond #33      ;
+type QLNet.Handle<QLNet.YieldTermStructure> #34      ;
+type QLNet.IPricingEngine #35      ;
+type QLNet.Period #36      ;
+type QLNet.Schedule #37      ;
+type QLNet.YieldTermStructure #38      ;
 
 "values for FixedRateBond"
 type QL.Values.FixedRateBond 
@@ -51,7 +51,7 @@ type QL.Values.FixedRateBond
 "Calcualtion view for a fixed rate bond"
 view QL.FixedRateBond : QL.Values.FixedRateBond = QL.Instrument()
 (
-    SKey            : String
+    SKey                  : String
 )
 [
     _DayCount       = makeDayCounter (DayCount),
@@ -73,17 +73,17 @@ view QL.FixedRateBond : QL.Values.FixedRateBond = QL.Instrument()
 "Base view that all Instrument types can be converted to"
 view QL.Instrument
 (
-    SKey            : String
+    SKey                  : String
 )
 {
-    NPV             : Double,
-    CASH            : Double
+    NPV                   : Double,
+    CASH                  : Double
 };
 
 "A Fixed rate bond stored in hiperspace"
-@CubeFact
-entity QL.FixedRate : QL.Values.FixedRateBond = QL.FixedRateBond()  /* NB Inherits properties from view, and exports for aggregation */
+@CubeFact (28) 
+entity QL.FixedRate       : QL.Values.FixedRateBond = QL.FixedRateBond() #55  /* NB Inherits properties from view, and exports for aggregation */
 (
-    Mnmonic         : String
+    Mnmonic               : String #1
 );
 

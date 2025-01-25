@@ -1,4 +1,4 @@
-# 
+ 
 from pythonnet import load
 load ("coreclr")
 import os, sys
@@ -29,7 +29,7 @@ select * from SCHEMA_COLUMNS;
 select * from SCHEMA_PROPERTIES;
 """
 
-#pams = { "name" : "Lucy" }
+pams = { "name" : "Lucy" }
 pams = Dictionary[String, Object]()
 pams['name'] = 'Lucy'
 
@@ -46,7 +46,7 @@ for query in result:
         print (str)
 
 
-# person helper
+ person helper
 def person (name, gender, mother, father) :
     p = Person()
     p.Name = name
@@ -55,19 +55,19 @@ def person (name, gender, mother, father) :
     if father is not None : p.Father = father
     return p
 
-# person reference helper
+ person reference helper
 def name (name) :
     p = Person()
     p.Name = name
     return p
 
-# enumeration helper 
+ enumeration helper 
 def each (list) :
     for i in list.GetEnumerator() :
         yield i
 
 
-# sample data
+ sample data
 tree =  [ person ('Eve',   Gender.Female, None, None),
           person ('Jane',  Gender.Female, name('Eve'), None),
           person ("Jack",  Gender.Male, name('Eve'), None),

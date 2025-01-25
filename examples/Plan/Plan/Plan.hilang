@@ -1,16 +1,19 @@
-﻿%domain (Plan);
-%sql;
+%domain (Plan);
+%sql;%ids;
 %function ( unary, hours, Plan.Calc.Hours, Decimal);
 %function ( unary, zeronull, Plan.Calc.ZeroNull, Decimal);
 
-type TimeSpan;
+type TimeSpan #45    ;
 
-value Plan.Duration
+  
+value Plan.Duration #47    
 {
-    Start    : DateTime,
-    End      : DateTime,
-    Valid    = Start <= End ? true : false
+  
+    Start    : DateTime #1,
+    End      : DateTime #2,
+    Valid        = Start <= End ? true : false #3
 }
+  
 [
     Time     = hours (End , Start)
 ];
@@ -39,7 +42,7 @@ project plan by setting a baseline. This allows you to track your actual progres
 help you stay on track. Get started with ProjectManager today for free.
 "
 @CubeDimension  /* dimension for reporting */
-entity Plan.Project : Versioned
+entity Plan.Project     : Versioned
                     = Node (SKey = SKey, Name = Name, TypeName = "Plan"),
                       BI.Item (WBS         = WBS, 
                                Name        = Name,
@@ -48,24 +51,28 @@ entity Plan.Project : Versioned
                                ImpliedCost = ImpliedCost,
                                Plan        = Duration, 
                                Actual      = Duration,
-                               TypeName    = "Plan")
+                               TypeName    = "Plan") #52
 
+  
 (
-    Id : Guid
+    Id     : Guid #1
 )
+  
 {
-    Name        : String,
-    Description : String,
-    WBS         : String,
-    Duration    : Plan.Duration,
-    Valid       = Name     = null ||
-                  Duration = null
-                  ? false : true
+    Name            : String #3,
+    Description     : String #4  ,
+    WBS             : String #5  ,
+    Duration     : Plan.Duration #6,
+    Valid           = Name     =   null ||
+                  Duration    = null
+                  ? false : true #7
 }
+  
 [
-    Tasks        : Plan.Tasks.Task (Project = this),
+    Tasks        : Plan.Tasks.Task (Project = this) #48,
 
-    PlanCost     = 0.0 + sum (Tasks.PlanCost),
+  
+    PlanCost     = 0.0 + sum (Tasks    .PlanCost),
     ActualCost   = 0.0 + sum (Tasks.ActualCost),
     ImpliedCost  = 0.0 + sum (Tasks.ImpliedCost)
 ];
@@ -73,8 +80,8 @@ entity Plan.Project : Versioned
 "SubTask enables the entity Task to export more than one Edge"
 view Plan.Tasks.SubTask = Edge (From = Parent, To = Task, TypeName = "Plan-Task-Part", Name = Task.Name)
 (
-    Parent      : Plan.Tasks.Task,
-    Task        : Plan.Tasks.Task
+    Parent          : Plan.Tasks.Task,
+    Task            : Plan.Tasks.Task
 )
 ;
 
@@ -85,8 +92,8 @@ this is usually related more so to the way you have to manage your time than the
 In this article, we’ll do a deep dive into tasks, show you the best ways to break down larger 
 projects into them, while covering efficient approaches to manage and distribute tasks.
 "
-@DeltaIndex, CubeFact, CubeDimension  /* dimensions for reporting */
-entity Plan.Tasks.Task : Versioned
+@DeltaIndex (56) , CubeFact (43) , CubeDimension  /* dimensions for reporting */
+entity Plan.Tasks.Task     : Versioned
                        = Node (SKey = SKey, Name = Name, TypeName = "Plan-Task"),
                          Edge (From = Project, To = this, TypeName = "Plan-Task", Name = Name),
                          Plan.Tasks.SubTask (Task = this, Parent = Parent),
@@ -97,30 +104,39 @@ entity Plan.Tasks.Task : Versioned
                                   ImpliedCost = ImpliedCost,
                                   Plan        = Duration, 
                                   Actual      = Actual.Duration,
-                                  TypeName    = Parent = null ? "Task" : "SubTask")
+                                  TypeName    = Parent = null ? "Task" : "SubTask") #70
 (
-    Project     : Plan.Project,
-    Id          : Int32
+  
+    Project         : Plan.Project #1,
+    Id              : Int32 #2
+  
 )
+  
 {
-    Parent      : Plan.Tasks.Task,
-    Name        : String,
-    WBS         : String,
-    Schedule    : Plan.Tasks.ScheduleType,    
-    Duration    : Plan.Duration,
-    Cost        : Decimal,
-    Valid       = Project  = null ||
+    Parent          : Plan.Tasks.Task #4,
+    Name            : String #5,
+  
+    WBS             : String #6  ,
+    Schedule        : Plan.Tasks.ScheduleType #7,    
+    Duration        : Plan.Duration #8,
+  
+    Cost            : Decimal #9,
+  
+    Valid           = Project    = null ||
                   Duration = null ||
                   Name     = null 
-                  ? false : true
+                  ? false : true #10
 }
+  
 [
-    Actual      : Plan.Tasks.Actual,
-    After       : Plan.Tasks.TaskLink,
-    Before      : Plan.Tasks.TaskLink,
-    SubTasks    : Plan.Tasks.Task (Parent = this),
-    Resources   : Plan.Tasks.TaskResource,
+    Actual          : Plan.Tasks.Actual #84,
+    After           : Plan.Tasks.TaskLink #83,
+    Before          : Plan.Tasks.TaskLink #81  ,
+    SubTasks        : Plan.Tasks.Task (Parent = this) #60,
+    Resources       : Plan.Tasks.TaskResource #79,
+  
 
+  
     /* BI */
     @CubeMeasure(Aggregate.First)
     BIWBS       = Parent = null ? Project.WBS + "." + WBS : Parent.BIWBS + "." + WBS,  
@@ -151,21 +167,26 @@ entity Plan.Tasks.Task : Versioned
 @Versioned
 aspect Plan.Tasks.Actual
 {
-    Duration    : Plan.Duration,
-    Close       : DateTime,
-    "set of the controllers that have approved this update"
-    Approval    : Set<String>,
-    Cost        : Decimal
+    Duration        : Plan.Duration #2,
+    Close           : DateTime #3,
+  
+    "set of the controllers th  at have approved this update"
+    Approval        : Set<String> #4,
+    Cost            : Decimal #5
+  
 };
+  
 
 @Versioned
 segment Plan.Tasks.TaskLink
 (
-    Task        : Plan.Tasks.Task
+    Task            : Plan.Tasks.Task #1
 )
+  
 {
-    Lag         : TimeSpan
+    Lag             : TimeSpan #2
 }
+  
 [
     LinkCost    = 0.0 + Task.SunkCost
 ]
@@ -173,9 +194,10 @@ segment Plan.Tasks.TaskLink
 
 enum Plan.Tasks.ScheduleType
 {
-    Manual  #1,
-    Auto    #2
+    Manual #1      ,
+    Auto #2          
 };
+  
 
 "
 Resources used by the task
@@ -183,18 +205,21 @@ Resources used by the task
 segment Plan.Tasks.TaskResource  = Node (SKey = SKey, Name = Resource.Name, TypeName = "Plan-Task-Resource"), 
                                    Edge (From = owner, To = Resource, Name = Resource.Name, TypeName = "Plan-Task-Resource")
 (
-    Resource    : Plan.Resource
+    Resource        : Plan.Resource #2
 )
+  
 {
-    Weight      = 1.0,
-    Deleted     = false,
-    Valid       = Resource = null ? false : true
+    Weight          = 1.0 #3,
+    Deleted         = false #4,
+    Valid           = Resource = null ? false : true #5
 }
+  
 [
     /* booking */
 
-    Timesheets  : Booking.Timesheet (Resource = Resource, Task = owner),
+    Timesheets      : Booking.Timesheet (Resource = Resource, Task = owner) #75,
 
+  
     /* cost */
     "Implied Cost"
     ImpliedCost = 0.0 + sum (Timesheets.Cost),
@@ -213,27 +238,34 @@ such as assigning tasks to individuals based on their skills and availability.
 It helps balance demand and capacity across projects, allowing you to keep tight 
 timelines and manage stakeholder expectations.
 "
-entity Plan.Resource : Versioned
-                     = Node (SKey = SKey, Name = Name, TypeName = "Plan-Resource")
+entity Plan.Resource     : Versioned
+                     = Node (SKey = SKey, Name = Name, TypeName = "Plan-Resource") #54
 (
-    Name      : String
+  
+    Name          : String #1
 )
+  
 {
     "Description of the resource"
-    Notes     : String,
+    Notes         : String #3,
 
+  
     "Dates the resource is available"
-    Duration  : Plan.Duration,
+    Duration      : Plan.Duration #4,
 
+  
     "Cost each time the resource is used"
-    UseCost   : Decimal,
+    UseCost       : Decimal #5,
 
+  
     "Cost per hour of resource usage"
-    TimeCost  : Decimal
+    TimeCost      : Decimal #6
 }
+  
 [
-    Booked    : Booking.Timesheet (Resource = this)
+    Booked        : Booking.Timesheet (Resource = this) #53
 ];
+  
 
 /* 
  * view for BI analysis
@@ -241,16 +273,16 @@ entity Plan.Resource : Versioned
 
 view BI.Item    = Node (SKey = SKey, Name = Name, TypeName = "BI-Cost-" + TypeName)
 (
-    WBS         : String,
-    TypeName    : String
+    WBS             : String,
+    TypeName        : String
 )
 {
-    Name        : String,
-    ActualCost  : Decimal, 
-    PlanCost    : Decimal, 
-    ImpliedCost : Decimal,
+    Name            : String,
+    ActualCost      : Decimal, 
+    PlanCost        : Decimal, 
+    ImpliedCost     : Decimal,
     Plan        : Plan.Duration,
-    Actual      : Plan.Duration
+    Actual          : Plan.Duration
 }
 [
     PlanStart   = Plan.Start,
@@ -264,25 +296,29 @@ view BI.Item    = Node (SKey = SKey, Name = Name, TypeName = "BI-Cost-" + TypeNa
 "
 Time booking by resources against 
 "
-@DeltaIndex
-entity Booking.Timesheet : Versioned
+@DeltaIndex (60) 
+entity Booking.Timesheet     : Versioned #95
 (
-    Resource    : Plan.Resource,
-    Task        : Plan.Tasks.Task,
-    Date        : DateTime
+  
+    Resource        : Plan.Resource #1,
+    Task            : Plan.Tasks.Task #2,
+    Date            : DateTime #3
+  
 )
+  
 {
-    Time        : Decimal,
-    "Estimated time to complete this task"
-    Estimate    : Decimal,
-    Comment     : String,
-    Valid       = Resource = null ||             /* resource can not be null                                */
+    Time            : Decimal #5,
+    "Estimated time to comple  te this task"
+    Estimate        : Decimal #6,
+    Comment         : String #7,  
+    Valid           = Resource = null ||             /* resource can not be null                                */
                   Task = null ||                 /* task can not be null                                    */
                   Date <= Task.Duration.Start || /* date before task start is invalid                       */
                   Date >= Task.Duration.End ||   /* date after task end is invalid                          */
                   Date <= Task.Actual.Close      /* Closing date for time booking in the Task Actual aspect */
-                  ? false : true
+                  ? false : true #8
 }
+  
 [
     Cost        = Resource.TimeCost * Time,
 ];

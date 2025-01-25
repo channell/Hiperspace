@@ -7,37 +7,44 @@
     <Title>Hiperspace</Title>
     <Description>Base assembly of HiperSpaces</Description>
     <Copyright>Cepheis Ltd (C) 2023, 2024</Copyright>
-    <PackageReleaseNotes>## Overview
-This Version is a major refactor, taking into consideration lessons learned from implementing hyperspace with blazer web assembly.  It was hoped that .NET 9 would include greater compatibility with runtime type creation (used by protobuf-net for serialisation classes) or that protobuf-net "Ahead of time" (AOT) code generation would be included, but switching to direct protobuf serialization has the additional benefit of simplify usage with {Android, iOS, [Unity](https://unity.com/), zOS, [Meadow](https://www.wildernesslabs.co/)}. **Hiperspace** is the only domain-oriented object mapping technology that can be deployed into these environments, providing transparent sharing of elements between edge devices and server context.
+    <PackageReleaseNotes># Overview
+This release introduced introdues two changes, to enhance error reporting when binding an element that fails a horizon filter, the second add functionality to simplify schema evolution.  In addition to changes to Hiperspace, packages references have been upgraded to the latest versions.
 
-The companion change to [HiLang](https://www.nuget.org/packages/HiLang) includes the generation of serialization code for domain models.
+## Horizon Filters
 
-### Security enhancement
-Previously the predicates provided to **Horizon**  filters look an instance of an element and return true if it was within the horizon of the subspace.  This has been expanded to allow three types of Horizon Filter
-* `new Horizon&lt;Element_Type&gt; ( element =&gt; element.Valid == true)'  a horizon predicate with the element only 
-* `new Horizon&lt;Element_Type&gt; ( (element, read) =&gt; element.Valid == true || read)'  a horizon predicate with a flag to indicate a read operation
-* `new Horizon&lt;Element_Type&gt; ( (element, context, read) =&gt; element.Valid == true || read)'  a horizon predicate with a context parameter and a flag to indicate a read operation
-* `new Horizon&lt;Element_Type&gt; ( (element, context, user, read) =&gt; element.Valid == true || user?.IsInRole("BULK"))'  a horizon predicate with a context parameter, user IPrinciple and a flag to indicate a read operation
+Horizon filter provide a conditional view that divided a sybspace with elements that are viasible in the hiperspace, and thoswe that are not (*over the horizon*).  This is great for reading from hiperspace because it allows elements that are not valid in the current context (*e.g. changes that have not been approved*) or the user does not have access. The Horizon filters are also applied when binding an element to hiperspace, since you should not be able to add anthing that you could not see.
 
-Subspace has three labels added to support enhanced security
+Hiperspace horizon is contextual, to allow allow the same code to be used for initial seeding of data and logging errors for later analysis.  **This change** assists with validation by adding the option of an error message when the horizon is used for data validation.
 
-| Label name  | Description |
-| ------------- | ------------- |
-| Context        | Context that the space was opened with e.g. "Front Office", "Risk", "Settlement" |
-| User           | an optional `IPrincipal` for access control |
-| Remote     | Was the subspace opened remotely, and security/validation need to be re-applied on the server |
+`new Horizon&lt;Element_Type&gt; ( "element only", element =&gt; element.Valid == true)' a horizon predicate with the element only
+`new Horizon&lt;Element_Type&gt; ( "element only", (element, read) =&gt; element.Valid == true || read)' a horizon predicate with a flag to indicate a read operation
+`new Horizon&lt;Element_Type&gt; ( "element only", (element, context, read) =&gt; element.Valid == true || read)' a horizon predicate with a context parameter and a flag to indicate a read operation
+`new Horizon&lt;Element_Type&gt; ( "element only",(element, context, user, read) =&gt; element.Valid == true || user?.IsInRole("BULK"))' a horizon predicate with a context parameter, user IPrinciple and a flag to indicate a read operation
 
+## Auto-edit of #id alias in HiLang schema
 
-### Protobuf-net
-[protobuf-net](https://www.nuget.org/packages/protobuf-net) dependency for all .NET assemblies have been changed to [protobuf-net.Core](https://www.nuget.org/packages/protobuf-net.Core) which does not include dynamic generation of serialization/deserialization code.
+If a #id is not added to the definition of an {element, key, value, extent, index} an id is auto-allocated during the compilation of a **.hilang** file. It is best practice to add #id field to simplify the evolution of a schema since the internal #id can never be changed (*to a different data type*) or reused for a different purpose since it wil invalidate historic views of data.  This can be a problem when {element, key, value, extent, index} are dropped and the #id is then used for a later addition.  To simplify maintenance the directive `%ids;` has been added to optionally add the generated #id to the source file
 
-### Web applications
-
-Web applications can take advantage of the HiperSpace shared between the web-client (or desktop applications) and the server session for the user with full lazy loading as required.
+the source `entity Customer (Id : Int32) {Name :String} [SameName = Customer(Name = Name];` defines an entity *Customer* with a key *Id* and value *Name* and an index *SameName* that can be used to find Customers **or** to apply horizon validation 'Horizon&lt;Customer&gt;("Duplicate Name", (customer, read) =&gt; customer.SameName == null || read).
  
-Hiperspace elements are transferred using [gRPC-Web](https://github.com/grpc/grpc-web)  for web-clients {browser, Android, iOS, [Unity](https://unity.com/)}  and [gRPC](https://grpc.io/) for desktop applications. 
-gRPC-Web packets are exchanged space efficient binary messages without JSON text conversion
-  
+When the `%ids;` directive is added, the the source is auto edited to `entity Customer #1 (Id : Int32 #1) {Name : String #2} [SameName = Customer(Name = Name) #2];` to indicate that Customer has #1 id and CustomerSameNameIndex has #2 (*stored items have unique #id, but SameName is not stored with customer, so does not need to be unique within the element*)
+ 
+If we decide to break *Name* into *First_Name* and *Family_Name* we'd change the entity to 
+```
+entity Customer #1 (Id : Int32 #1) 
+ {First_Name : String #3, Family_Name : String #4}
+ [Name =  First_Name + " " + Family_Name, SameName #3 = Customer( Family_Name = Family_Name, First_Name = First_Name];
+```
+Adding `%ids;` directive simplifies the process of avoiding clashes that will prevent the hiperspace being opened with updated code.
+ 
+### DeltaIndex
+The `@DeltaIndex` property of an entity provides indexes access to elements that have changed since a date-time stamp.  The property has been updated to include the option to define the #id for the index by adding a parameter  `@DeltaIndex(4)` 
+ 
+### CubeFact
+The `@CubeFact` property of an element creates a fact element (the code `@CubeFact entity Account` adds an additional *Account_Fact* table to the hiperspace for stored historic aggregates of @CubeMeasure values).
+The property has been updated to incldue the #id of the fact table table  `@CubeFact(5)` indicates that the the fact table has #id of 5.
+ 
+`%ids;` is optional since #id's will be allocated (*during compilation*) for intermediate elements that will be pruned before generation resulting in gaps in the generated #id numbers 
 </PackageReleaseNotes>
     <PackageLicenseExpression>GPL-2.0-or-later</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>

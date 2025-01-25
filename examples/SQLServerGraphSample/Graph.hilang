@@ -1,4 +1,4 @@
-﻿%sql;
+%sql;%ids;
 /*
 -- Create a GraphDemo database
 IF NOT EXISTS (SELECT * FROM sys.databases WHERE NAME = 'graphdemo')
@@ -34,7 +34,7 @@ CREATE TABLE locatedIn AS EDGE;
 */
 aspect Option<T> = Edge (From = owner, To = A, Name = "", TypeName = "Maybe")
 {
-	A : T
+	A : T #1
 };
 /*
 segment Has<T> = Edge (From = owner, To = A, Name = "", TypeName = "Has")
@@ -47,36 +47,36 @@ segment Has<T> = Edge (From = owner, To = A, Name = "", TypeName = "Has")
 
 
 @Xmi("1d353ff9-543f-4719-9ab1-23b21d6e685d")
-entity City = Node (SKey = SKey, Name = Name, TypeName = "City") (@Xmi("932d465c-d4c2-4b10-a83d-7cbb76927921")  Id : Int32) {Name : String, State : String } [People : Person (City = this)];
+entity City = Node (SKey = SKey, Name = Name, TypeName = "City") #3 (@Xmi("932d465c-d4c2-4b10-a83d-7cbb76927921")  Id : Int32 #1) {Name : String #2, State : String #3 } [People : Person (City = this) #2];
 entity Person : Versioned 
 	= Node (SKey = SKey, Name = Name, TypeName = "Person"), 
-	  Edge (From = this, To = City, Name = "", TypeName = "Lives In") 
-	( Id : Int32) { Name : String, City : City } [ Friends : Friend, Likes : Likes, Ownes : Option<Restaurant> ]; 
+	  Edge (From = this, To = City, Name = "", TypeName = "Lives In") #7 
+	( Id : Int32 #1) { Name : String #2, City : City #3 } [ Friends : Friend #14, Likes : Likes #13, Ownes : Option<Restaurant> #12 ]; 
 entity Restaurant 
 	= Node (SKey = SKey, Name = Name, TypeName = "Restaurant"),
-	  Edge (From = this, To = City, Name = "", TypeName = "Located In") 
-	  ( Id : Int32) {Name : String, City : City };
+	  Edge (From = this, To = City, Name = "", TypeName = "Located In") #8 
+	  ( Id : Int32 #1) {Name : String #2, City : City #3 };
 segment Friend 
 	= Edge (From = owner, To = Of, Name = "", TypeName = "Friend")
-	(Of : Person) {When : DateTime};
-segment Likes = Edge (From = owner, To = Restaurant, Name = "", TypeName = "Likes") (Restaurant : Restaurant) { Rating : Int32};
+	(Of : Person #2) {When : DateTime #3};
+segment Likes = Edge (From = owner, To = Restaurant, Name = "", TypeName = "Likes") (Restaurant : Restaurant #2) { Rating : Int32 #3};
 
 "
 Path Type is a specification for Paths between nodes that can be recursively derived 
 from Node and Edges. e.g. Name:Relation, From: [Person], To: [Person], Edges: [Father, Mother, Child]
 "
-entity Hiperspace.Graph.PathType #1
+entity Hiperspace.Graph.PathType #15 
 (
 	"Name of the path is the source of the EdgeType"
-	Name	: String #1
+	Name	 :  String #1 
 )
 {
 	"Set of Nodes that cane be the source of a Path"
-	Froms		: Set<String> #2,
+	Froms		 :  Set<String> #2 ,
 	"Set of Nodes that can be the target of a Path"
-	Tos			: Set<String> #3,
+	Tos			 :  Set<String> #3 ,
 	"Set of Edges that can be used to traverse the Path"
-	Edges		: Set<String> #4
+	Edges		 :  Set<String> #4 
 };
 
 
@@ -87,12 +87,12 @@ the path that was navigated to dervice the path.
 
 Source can be used to chain paths into a graph of relations
 "
-entity Hiperspace.Graph.Path : Edge = Edge () #2
+entity Hiperspace.Graph.Path  :  Edge = Edge () #17 
 {
-	Length		: Int32										#1,
-	Count		: Int32										#2,
-	Source		: Hiperspace.Graph.Path						#3
+	Length		 :  Int32 #10										,
+	Count		 :  Int32 #11										,
+	Source		 :  Hiperspace.Graph.Path #12						
 }
 [
-	Next		: Hiperspace.Graph.Path (Source = this)		#4
+	Next		 :  Hiperspace.Graph.Path (Source = this) #16		
 ];

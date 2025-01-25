@@ -13,6 +13,7 @@ namespace Hiperspace
     [AttributeUsage(AttributeTargets.Class)]
     public class DeltaIndexAttribute : Attribute
     {
+        public DeltaIndexAttribute(int id) : base() { }
         public DeltaIndexAttribute() : base() { }
     }
 }

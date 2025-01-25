@@ -1,5 +1,4 @@
-﻿
-%domain(Access);
+%domain(Access);%ids;
 
 /*
     Additional functions specirtfic to the domain and implemented in the target language
@@ -11,8 +10,8 @@
 " Optional note "
 aspect Note
 {
-    Text : String
-};
+    Text : String #2
+}; 
 
 /* Helper to enable a set of references in a set */
 value Ref<T>
@@ -42,14 +41,14 @@ type Access.RBAC.Permissioned
 "Permission enum can be checked with a bitwise and"
 enum Access.RBAC.PermissionType
 {
-    Create          #1,
-    Delete          #2,
-    Update          #4,
-    CreateDelete    #3,
-    CreateUpdate    #5,
-    DeleteUpdate    #6,
-    All             #7
-};
+    Create #1          ,
+    Delete #2           ,
+    Update #3           ,
+    CreateDelete #4    ,
+    CreateUpdate #5     ,
+    DeleteUpdate #6     ,
+    All #7              
+}; 
 
 " 
 A Access realm is a mechanism used for protecting Web application resources. 
@@ -57,21 +56,21 @@ It gives you the ability to protect a resource with a defined Access constraint
 and then define the user roles that can access the protected resource.
 "
 entity Access.RBAC.Realm : Access.RBAC.Permissioned
-                         = Node ( SKey = SKey, Name = Name, TypeName = "RBAC-Realm")    
-(
-    Name        : String
-)
+                         = Node ( SKey = SKey, Name = Name, TypeName = "RBAC-Realm") #16    
+( 
+    Name        : String #1
+) 
 {
     " Validation constraint for the creation of a realm in hiperspace. "
     Valid       = Name = null ||
                   Author = null ||
                   CanCreate = false
-                  ? false : true
-}
+                  ? false : true #3
+} 
 [
     /* Validation property to check for uniqueness for permission checks. */
-    Exists      : Access.RBAC.Realm (Name = Name),
-
+    Exists      : Access.RBAC.Realm (Name = Name) #11,
+ 
     TypeName    = "RBAC-Realm",
 
     " Can the user create this realm using permissions granted to them, their group or their role? "
@@ -82,8 +81,8 @@ entity Access.RBAC.Realm : Access.RBAC.Permissioned
                   (Author = null ? "Invalid Author, " : "") +
                   (CanCreate = false ? "not authorised " : ""),
 
-    Note        : Note
-];
+    Note        : Note #140
+]; 
 
 "
 A Access principal is any entity that can be authenticated by the operating system, 
@@ -125,15 +124,15 @@ segment Access.RBAC.Permission : Versioned, Access.RBAC.Permissioned
                                  Edge2 (From = Item, To = owner, Name = Item.Subject, TypeName = TypeName + "|From")
 (
     " Identify all the resource item. "
-    Item        : Access.RBAC.Resource,
-
+    Item        : Access.RBAC.Resource #1,
+ 
     " The permission being granted create, update, delete. "
-    Right       : Access.RBAC.PermissionType
-)
+    Right       : Access.RBAC.PermissionType #2
+) 
 {
     " The set of roles that have approve this permission. "
-    Approval    : Set<Ref<Access.RBAC.Group>>,
-
+    Approval    : Set<Ref<Access.RBAC.Group>> #3,
+ 
     " The set of roles that are required to approve this permission before it is used. "
     Required    = Item.Approvers,
 
@@ -174,34 +173,34 @@ entity Access.RBAC.Group : Access.RBAC.Principal
                            Edge  (From = this, To = Parent, Name = Name, TypeName = TypeName),
                            Edge2 (From = this, To = Realm, Name = Name, TypeName = "RBAC-Realm-Member"),
                            Edge3 (From = Parent, To = this, Name = Name, TypeName = TypeName + "|From"),
-                           Edge4 (From = Realm, To = this, Name = Name, TypeName = "RBAC-Realm-Member|From") 
-(
-    Id          : Guid
-)
+                           Edge4 (From = Realm, To = this, Name = Name, TypeName = "RBAC-Realm-Member|From") #42 
+( 
+    Id          : Guid #2
+) 
 {
     " Referenced to the parent group of this group. "
-    Parent      : Access.RBAC.Group,
-
+    Parent      : Access.RBAC.Group #6,
+ 
     " Flag for searching to indicate whether this is a root group. "
-    Root        = Parent = null ? true : false,
-
+    Root        = Parent = null ? true : false #7,
+ 
     " Validation criteria to implement constraints, used with Horizon filters. "
     Valid       = Id = null ||
                   ValidBase = false ||
                   CanUpdate = false ||
                   CanDelete = false 
-                  ? false : true
-}
+                  ? false : true #8
+} 
 [
     " Join extension to all the children of this group. "
-    SubGroups   : Access.RBAC.Group (Parent = this),
-
+    SubGroups   : Access.RBAC.Group (Parent = this) #34,
+ 
     " Users that are members of this group. "
-    Members     : Access.RBAC.User (Group = this),
-
+    Members     : Access.RBAC.User (Group = this) #35,
+ 
     /* Validation property to check for uniqueness for permission checks. */
-    Exists      : Access.RBAC.Group (Realm = Realm, Name = Name),
-
+    Exists      : Access.RBAC.Group (Realm = Realm, Name = Name) #36,
+ 
     TypeName    = "RBAC-Group",
 
     " Can the author update this group using permissions granted to itself, to its groups or to the role it's a member of? "
@@ -227,28 +226,28 @@ User is a security principal that can connect to a resource. Either a person or 
 entity Access.RBAC.User : Access.RBAC.Principal
                         = Node  (SKey = SKey, Name = Name, TypeName = TypeName),
                           Edge  (From = this, To = Group, Name = Name, TypeName = TypeName),
-                          Edge2 (From = Group, To = this, Name = Name, TypeName = TypeName + "|From")
-(
-    Id          : Guid
-)
+                          Edge2 (From = Group, To = this, Name = Name, TypeName = TypeName + "|From") #56
+( 
+    Id          : Guid #2
+) 
 {
-    PublicKey   : String,
-
+    PublicKey   : String #6,
+ 
     " Group that this user is a member of. "
-    Group       : Access.RBAC.Group,
-
+    Group       : Access.RBAC.Group #7,
+ 
     " Validation criteria prior to creating this user in hyperspace. "
     Valid       = Id = null ||
                   PublicKey = null ||
                   ValidBase = false ||
                   CanUpdate = false ||
                   CanDelete = false   
-                  ? false : true
-}
+                  ? false : true #8
+} 
 [
     /* Validation property to check for uniqueness for permission checks. */
-    Exists      : Access.RBAC.User (Realm = Realm, Name = Name),
-
+    Exists      : Access.RBAC.User (Realm = Realm, Name = Name) #50,
+ 
     TypeName    = "RBAC-User",
 
     " Can the author update this user using permissions assigned to itself, its group or role that is a member of. "
@@ -272,23 +271,23 @@ entity Access.RBAC.User : Access.RBAC.Principal
 Royal membership can be validated directly for groups and users but also applies to a collection of permissions. 
 "
 entity Access.RBAC.Role : Access.RBAC.Principal 
-                        = Node  (SKey = SKey, Name = Name, TypeName = TypeName)
-(
+                        = Node  (SKey = SKey, Name = Name, TypeName = TypeName) #70
+( 
     " Friendly name for his user enroll check. "
-    Code        : String
-)
+    Code        : String #2
+) 
 {
     " Validation criteria for implementation of constraints and to prevent unauthorized update. "
     Valid       = Code = null ||
                   ValidBase = false ||
                   CanUpdate = false ||
                   CanDelete = false   
-                  ? false : true
-}
+                  ? false : true #6
+} 
 [
     /* Validation property to check for uniqueness for permission checks. */
-    Exists      : Access.RBAC.User (Realm = Realm, Name = Name),
-
+    Exists      : Access.RBAC.User (Realm = Realm, Name = Name) #64,
+ 
     TypeName    = "RBAC-Role",
 
     " Can the author update this role using permissions granted to itself, its group or role that is a member of "
@@ -313,8 +312,8 @@ Any security principal (group, user or role) can be a member of a role - it is s
 segment Access.RBAC.RoleMember : Versioned, Access.RBAC.Permissioned  
 (
     " Reference to the role that this group user or role is a member of "
-    Role        : Access.RBAC.Role
-)
+    Role        : Access.RBAC.Role #1
+) 
 {
     " Validation criteria to implement standard constraints. "
     Valid       = owner = null ||
@@ -343,22 +342,22 @@ segment Access.RBAC.RoleMember : Versioned, Access.RBAC.Permissioned
 A resource is a subject where permissions can be granted to create, update, delete, or a combination of all
 "
 entity Access.RBAC.Resource : Versioned, Access.RBAC.Permissioned 
-                            = Node (SKey = SKey, Name = Subject, TypeName = "RBAC-Resource")
-(
-    Subject     : String
-)
+                            = Node (SKey = SKey, Name = Subject, TypeName = "RBAC-Resource") #85
+( 
+    Subject     : String #1
+) 
 {
     " Set of groups that must approve this resource access. "
-    Approvers   : Set<Ref<Access.RBAC.Group>>,
-
+    Approvers   : Set<Ref<Access.RBAC.Group>> #2,
+ 
     "Validation property to implement standard constraints. "
     Valid       = Subject = null ||
                   Approvers = null ||
                   ValidAuthor = false ||
                   CanUpdate = false ||
                   CanDelete = false
-                  ? false : true
-}
+                  ? false : true #3
+} 
 [
     " Can the author update this resource? "
     CanUpdate   = authorised (Author, Access.RBAC.PermissionType.Update, Subject),

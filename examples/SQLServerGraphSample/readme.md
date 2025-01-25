@@ -1,5 +1,5 @@
-﻿# Hiperspace Graph
-## Porting of SQL/Server Graph Sample 
+﻿ Hiperspace Graph
+ Porting of SQL/Server Graph Sample 
 
 Microsoft have added Graph support to their database product [SQL/Server 2017](https://learn.microsoft.com/en-us/sql/relational-databases/graphs/sql-graph-sample?view=sql-server-ver16) and Provided examples of using it with a normal relational database.
 
@@ -38,7 +38,7 @@ segment Likes = Edge (From = owner, To = Restaurant, Name = "", TypeName = "Like
 
  ```
 
- ## Data load
+  Data load
 
  ```
  INSERT INTO likes
@@ -60,7 +60,7 @@ is eqivilent to. **Note** Hiperpace does not join to *Person* and *Restaurant* s
     };
 ```
 
-## Query
+ Query
 Find people who like a restaurant in the same city they live in
 ```
 SELECT Person.name
@@ -113,7 +113,7 @@ is equivilent to
 |Jacob->Mary->Alice->John|
 |Julie->Jacob->Mary->Alice|
 
-## Recursive search
+ Recursive search
 ```
     foreach (var p in dom.Nodes)
         foreach (var path in Paths(p) ?? ImmutableList<ImmutableList<Node>>.Empty)
@@ -133,5 +133,5 @@ is equivilent to
 |Jacob->Mary->Alice->John|
 |Julie->Jacob->Mary->Alice->**John** |5th path omitted in join|
 
-These examples use C#, but would be a more direct representation with F#.
+These examples use C, but would be a more direct representation with F.
 Hiperspace treats the entire graph as if it was in memory

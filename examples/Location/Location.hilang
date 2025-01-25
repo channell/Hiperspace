@@ -1,14 +1,14 @@
-%domain(Location);
+%domain(Location); %ids;
 
 view Edge2  : Edge = Edge ();
 
 "National Country"
-entity Location.Country : HasVectorSpace = Node ( SKey = SKey, Name = Code, TypeName = "Country")
+entity Location.Country : HasVectorSpace = Node ( SKey = SKey, Name = Code, TypeName = "Country") #5
 (
-    Code        : String
+    Code        : String #1
 )
 [
-    AirPorts    : Location.Airport (Country = this)
+    AirPorts    : Location.Airport (Country = this) #4
 ];
 
 "Airport within a country"
@@ -17,8 +17,8 @@ entity Location.Airport : HasVectorSpace
     = Node ( SKey = SKey, Name = Code, TypeName = "Airport"),
       Edge (From = Country, To = this, Name = Code, TypeName = "Airport"),
       Edge2 (From = this, To = Country, Name = Code, TypeName = "Airport-Country") ,
-      VectorNode ( SKey = SKey, Vector = VectorSpace.Vector) 
+      VectorNode ( SKey = SKey, Vector = VectorSpace.Vector) #7 
 (
-    Country     : Location.Country,
-    Code        : String
+    Country     : Location.Country #1,
+    Code        : String #2
 );

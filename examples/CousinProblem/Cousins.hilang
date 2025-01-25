@@ -1,46 +1,47 @@
 %domain (Cousins);
 %odata;
+%ids;
 
 %function (unary, relation, Cousins.Helper.Relations, List<Path>);  
 
-view Cousins.Edge2 : Edge = Edge() #11;
-view Cousins.Edge3 : Edge = Edge() #12;
-view Cousins.Edge4 : Edge = Edge() #13;
+view Cousins.Edge2 : Edge = Edge() ;
+view Cousins.Edge3 : Edge = Edge() ;
+view Cousins.Edge4 : Edge = Edge() ;
 
-enum Cousins.Gender
-{
-    Female #1,
-    Male #2
-};
-
-entity Cousins.Person : Versioned
+enum Cousins.Gender {Female #1         , Male #2        };
+        
+@DeltaIndex(15)
+entity Cousins.Person               : Versioned
     = Node          (),
       Edge          (From = this,   To = Mother, Name = Name, TypeName = "Mother"),
       Cousins.Edge2 (From = this,   To = Father, Name = Name, TypeName = "Father"),
       Cousins.Edge3 (From = Father, To = this,   Name = Name, TypeName = "Child"),
-      Cousins.Edge4 (From = Mother, To = this,   Name = Name, TypeName = "Child")
-      #10
+      Cousins.Edge4 (From = Mother, To = this,   Name = Name, TypeName = "Child") #11
 (
-    Name        : String #1
+    Name                    : String #1
 )
 {
-    Gender      : Cousins.Gender #2,
-
-    Mother      : Cousins.Person #3,
-    Father      : Cousins.Person #4,
-    Email       : String #5
+    Gender                  : Cousins.Gender #3 ,
+    Mother                  : Cousins.Person #4 ,
+  
+    Father                  : Cousins.Person #5  ,  
+    Email                   : String #6  
 }
 [
     TypeName    = "Person",
-
-    FatherChild : Cousins.Person (Father = this) #16,
-    MotherChild : Cousins.Person (Mother = this) #14,
-    @Once
+    FatherChild               : Cousins.Person (Father = this) #8 ,
+    MotherChild             : Cousins.Person   (Mother = this) #9  ,
+    @Once     
     Relatives   = relation (this)
-];
+]; 
 
-entity Cousins.Path : Edge = Edge () #15
+ 
+entity Cousins.Path             : Edge = Edge () #12 
 {
-    Edge        : Edge #1,
-    Source      : Cousins.Path #2,
+ 
+    Edge                    : Edge #10 ,
+    Source                  : Cousins.Path #11 ,
+ 
 };
+   
+ 

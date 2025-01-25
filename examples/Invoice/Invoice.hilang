@@ -1,4 +1,4 @@
-﻿%domain (ERP);
+%domain (ERP);%ids;
 %function (unary, changed, ERP.ERPFunctions.Changed, Boolean);
 %function (unary, changedLines, ERP.ERPFunctions.ChangedLines, Boolean);
 
@@ -10,138 +10,138 @@ view Edge6 : Edge = Edge();
 
 entity ERP.Location.Address : Versioned
     = Node  (Name = "{ Street: '" + Street + "', PostalCode: '" + PostalCode + "'}", TypeName = "Address", SKey = SKey),
-      Edge  (From = this, To = Country, TypeName = "Address-Country")
+      Edge  (From = this, To = Country, TypeName = "Address-Country") #7
 
 (
-    Id              : Int32
+    Id              : Int32 #1
 )
 {
-    Street          : String,
-    Town            : String,
-    City            : String,
-    County          : String,
-    Country         : ERP.Location.Country,
-    PostalCode      : String,
-    Valid           = Country = null || PostalCode = null ? false : true
+    Street          : String #3,
+    Town            : String #4,
+    City            : String #5,
+    County          : String #6,
+    Country         : ERP.Location.Country #7,
+    PostalCode      : String #8,
+    Valid           = Country = null || PostalCode = null ? false : true #9
 };
 
 entity ERP.Location.Country : Versioned
-    = Node  (Name = Name, SKey = SKey, TypeName = "Country")
+    = Node  (Name = Name, SKey = SKey, TypeName = "Country") #8
 (
-    Id              : Int16
+    Id              : Int16 #1
 )
 {
-    Name            : String,
-    ShippingCharge  : Decimal,
-    Valid           = Name = null ? false : true
+    Name            : String #3,
+    ShippingCharge  : Decimal #4,
+    Valid           = Name = null ? false : true #5
 };
 
-entity ERP.Location.Store : ERP.Location.Address
+entity ERP.Location.Store : ERP.Location.Address #10
 {
-    Name            : String
+    Name            : String #10
 }
 [
-    StoreSales      : ERP.Sales.Order (Store = this)
+    StoreSales      : ERP.Sales.Order (Store = this) #9
 ];
 
 entity ERP.Finance.Tarriff : Versioned
     = Node  (Name = From.Name + " to " + To.Name, SKey = SKey, TypeName = "Tarriff"),
-      Edge  (From = From, To = To, TypeName = "Tarriff")
+      Edge  (From = From, To = To, TypeName = "Tarriff") #11
 (
-    From            : ERP.Location.Country,
-    To              : ERP.Location.Country
+    From            : ERP.Location.Country #1,
+    To              : ERP.Location.Country #2
 )
 {
-    Tax             : ERP.Finance.Tax,
-    Valid           = From = null || To = null || Tax = null ? false : true
+    Tax             : ERP.Finance.Tax #4,
+    Valid           = From = null || To = null || Tax = null ? false : true #5
 };
 
-entity ERP.Finance.Tax : Versioned
+entity ERP.Finance.Tax : Versioned #12
 (
-    Id              : Int16
+    Id              : Int16 #1
 )
 {
-    Name            : String,
-    Rate            : Decimal,
-    Valid           = Name = null || Rate = null ? false : true
+    Name            : String #3,
+    Rate            : Decimal #4,
+    Valid           = Name = null || Rate = null ? false : true #5
 };
 
 entity ERP.Finance.Shipping : Versioned
     = Node  (Name = From.Name + " to " + To.Name, SKey = SKey, TypeName = "Shipping"),
-      Edge  (From = From, To = To, TypeName = "Shipping")
+      Edge  (From = From, To = To, TypeName = "Shipping") #13
 (
-    From            : ERP.Location.Country,
-    To              : ERP.Location.Country
+    From            : ERP.Location.Country #1,
+    To              : ERP.Location.Country #2
 )
 {
-    Fee             : Decimal,
-    Valid           = From = null || To = null || Fee = null ? false : true
+    Fee             : Decimal #4,
+    Valid           = From = null || To = null || Fee = null ? false : true #5
 };
 
 entity ERP.Products.Product : Versioned
-    = Node  (Name = Name, SKey = SKey, TypeName = "Product")
+    = Node  (Name = Name, SKey = SKey, TypeName = "Product") #16
 (
-    Id              : Int32
+    Id              : Int32 #1
 )
 {
-    Name            : String,
-    Tax             : ERP.Finance.Tax,
-    Supplier        : ERP.Client.Customer,
-    Shipping        : Decimal,
-    Valid           = Name = null ||Tax = null || Supplier = null || Shipping = null ? false : true
+    Name            : String #3,
+    Tax             : ERP.Finance.Tax #4,
+    Supplier        : ERP.Client.Customer #5,
+    Shipping        : Decimal #6,
+    Valid           = Name = null ||Tax = null || Supplier = null || Shipping = null ? false : true #7
 }
 [
-    Price           : ERP.Products.Price,
+    Price           : ERP.Products.Price #18,
     Rate            = Tax.Rate
 ];
 
 aspect ERP.Products.Price : Versioned
 {
-    Name            : String,
-    Sell            : Decimal,
-    Buy             : Decimal,
-    Valid           = Name = null || Sell = null || Buy = null ? false : true
+    Name            : String #3,
+    Sell            : Decimal #4,
+    Buy             : Decimal #5,
+    Valid           = Name = null || Sell = null || Buy = null ? false : true #6
 };
 
 entity ERP.Client.Customer : Versioned
     = Node  (Name = Name, SKey = SKey, TypeName = "Customer"),
       Edge  (From = this, To = BillTo, TypeName = "BillTo"),
-      Edge2 (From = this, To = ShipTo, TypeName = "BillTo")
+      Edge2 (From = this, To = ShipTo, TypeName = "BillTo") #20
 (
-    Id              : Int32
+    Id              : Int32 #1
 )
 {
-    Name            : String,
-    BillTo          : ERP.Location.Address,
-    ShipTo          : ERP.Location.Address,
-    Valid           = Name = null || BillTo = null || BillTo.Valid = false || ShipTo = null || ShipTo.Valid = false ? false : true
+    Name            : String #3,
+    BillTo          : ERP.Location.Address #4,
+    ShipTo          : ERP.Location.Address #5,
+    Valid           = Name = null || BillTo = null || BillTo.Valid = false || ShipTo = null || ShipTo.Valid = false ? false : true #6
 }
 [
-    CustomerOrders  : ERP.Sales.Order  (Customer = this)
+    CustomerOrders  : ERP.Sales.Order  (Customer = this) #19
 ];
 
 entity ERP.Sales.Salesperson
-    = Node  (Name = Name, SKey = SKey, TypeName = "Salesperson")
+    = Node  (Name = Name, SKey = SKey, TypeName = "Salesperson") #22
 (
-    Id              : Int16
+    Id              : Int16 #1
 )
 {
-    Name            : String,
-    CommissionRate  = 0.0,
-    Valid           = Name = null ? false : true
+    Name            : String #2,
+    CommissionRate  = 0.0 #3,
+    Valid           = Name = null ? false : true #4
 }
 [
-    Sales           : ERP.Sales.Order (Salesperson = this)
+    Sales           : ERP.Sales.Order (Salesperson = this) #21
 ];
 
-value ERP.Sales.OrderLine
+value ERP.Sales.OrderLine #27
 (
-    LineNumber      : Int16
+    LineNumber      : Int16 #1
 )
 {
-    Product         : ERP.Products.Product,
-    Units           : Decimal,
-    Valid           = Product = null || Units = null ? false : true
+    Product         : ERP.Products.Product #2,
+    Units           : Decimal #3,
+    Valid           = Product = null || Units = null ? false : true #4
 }
 [
     Price           = Product.Price.Sell * Units,
@@ -161,21 +161,21 @@ entity ERP.Sales.Order : Versioned
       Edge3 (From = this,        To = Store,       TypeName = "Order-Store"),
       Edge4 (From = Store,       To = this,        TypeName = "Store-Order"),
       Edge5 (From = this,        To = Salesperson, TypeName = "Order-Sales"),
-      Edge6 (From = Salesperson, To = this,        TypeName = "Sales-Order")
+      Edge6 (From = Salesperson, To = this,        TypeName = "Sales-Order") #42
 (
-    OrderNumber     : Int32
+    OrderNumber     : Int32 #1
 )
 {
-    Customer        : ERP.Client.Customer,
-    Store           : ERP.Location.Store,
-    Salesperson     : ERP.Sales.Salesperson,
+    Customer        : ERP.Client.Customer #3,
+    Store           : ERP.Location.Store #4,
+    Salesperson     : ERP.Sales.Salesperson #5,
 
     "all the order lines included in the order"
-    Lines           : Set <ERP.Sales.OrderLine>,
+    Lines           : Set <ERP.Sales.OrderLine> #6,
     Valid           = Customer = null || changed(Customer) = true ||
                       Store = null || _changeStore = true ||
                       count(Lines.LineNumber) = 0 || _changeLines = true
-                      ? false : true
+                      ? false : true #7
 }
 [
     Invoiced        = Invoice = null ? true : false,
@@ -183,10 +183,10 @@ entity ERP.Sales.Order : Versioned
     _changeLines    = changedLines(this) = true && Invoiced = true ? true : false,
 
     "optional tarriff for this order - ommision implies tarriff free trade"
-    Tariff          : ERP.Finance.Tarriff (From = Store.Country, To = Customer.BillTo.Country),
+    Tariff          : ERP.Finance.Tarriff (From = Store.Country, To = Customer.BillTo.Country) #31,
 
     "optional internnational shipping sharges "
-    Shipping        : ERP.Finance.Shipping (From = Store.Country, To = Customer.ShipTo.Country),
+    Shipping        : ERP.Finance.Shipping (From = Store.Country, To = Customer.ShipTo.Country) #32,
 
     "total value of the order for all lines"
     Total           = sum (Lines.Price),
@@ -209,7 +209,7 @@ entity ERP.Sales.Order : Versioned
     Profit          = 0.0 + Total - Cost,
 
     "the optional invoice aspect with coists and tax frozen "
-    Invoice         : ERP.Sales.Invoice 
+    Invoice         : ERP.Sales.Invoice #46 
 ];
 "
     Frozen value of order 
@@ -219,14 +219,14 @@ aspect ERP.Sales.Invoice
       Edge  (From = this,   To = owner, TypeName = "Invoice"),
       Edge2 (From = owner,  To = this,  TypeName = "Invoiced")
 {
-    TaxDate         : DateTime,
-    Total           : Decimal,
-    ShippingCost    : Decimal,
-    SalesTax        : Decimal,
-    TariffTax       : Decimal,
-    Cost            : Decimal,
-    Profit          : Decimal,
-    Commission      : Decimal
+    TaxDate         : DateTime #2,
+    Total           : Decimal #3,
+    ShippingCost    : Decimal #4,
+    SalesTax        : Decimal #5,
+    TariffTax       : Decimal #6,
+    Cost            : Decimal #7,
+    Profit          : Decimal #8,
+    Commission      : Decimal #9
 } 
 [
     Bill            = 0.0 + Total + ShippingCost + SalesTax + TariffTax

@@ -13,6 +13,7 @@ namespace Hiperspace
     [AttributeUsage(AttributeTargets.Class)]
     public class CubeFactAttribute : Attribute
     {
+        public CubeFactAttribute(int id) : base() { }
         public CubeFactAttribute() : base() { }
     }
 }
