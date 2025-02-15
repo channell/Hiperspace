@@ -1,6 +1,6 @@
 ﻿// ---------------------------------------------------------------------------------------
 //                                   Hiperspace
-//                        Copyright (c) 2023 Cepheis Ltd
+//                        Copyright (c) 2023, 2024,2025 Cepheis Ltd
 //                                    www.cepheis.com
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
@@ -31,7 +31,7 @@ namespace Hiperspace
         /// <summary>
         /// Label applied to the subspace for fine grained access control
         /// </summary>
-        public IPrincipal? UserLabel { get; init; }
+        public IPrincipal? UserLabel { get; set; }
 
 
         /// <summary>
@@ -103,10 +103,6 @@ namespace Hiperspace
         /// <param name="skey">a base64 encoding of a key structure</param>
         /// <returns>the object from one of the setspaces in the subspace</returns>
         public abstract object? Get(string sid);
-        public virtual object? Get(CubeKey.KeyPart bkey)
-        {
-            throw new NotImplementedException ();
-        }
         public bool ISChild(SubSpace space)
         {
             if (space == this)

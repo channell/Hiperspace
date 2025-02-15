@@ -11,43 +11,16 @@
     <PackageReadmeFile>readme.md</PackageReadmeFile>
     <PackageReleaseNotes>
       # Overview
-      This release introduced introdues two changes, to enhance error reporting when binding an element that fails a horizon filter, the second add functionality to simplify schema evolution.  In addition to changes to Hiperspace, packages references have been upgraded to the latest versions.
+      This release is primarily concerned with updates to match changes to .NET 9.0 with the release of Visual Studio 17.13 and related libaries.  It also includes an Update to Hiperspace.Rocks to reflect similar changes to RocksDB.
 
-      ## Horizon Filters
+      The implementation of OLAP cube support has also been changed to simplify its use for client applications and allow Fact tables to be used with BI tools that cannot use the binary CubeKey, OLAP Cube Facts now include references to the dimensions.  This allows the removal of BKey (Key represented as an array of bytes) that us *unhelpful* for **Hiperspace.SQL** and **JSON** serialization.
 
-      Horizon filter provide a conditional view that divided a sybspace with elements that are viasible in the hiperspace, and thoswe that are not (*over the horizon*).  This is great for reading from hiperspace because it allows elements that are not valid in the current context (*e.g. changes that have not been approved*) or the user does not have access. The Horizon filters are also applied when binding an element to hiperspace, since you should not be able to add anthing that you could not see.
+      ## Fact tables
+      Fact tables store calculated summaries of the underlying data, but aggregated for real-time access without the need to reevaluate calculations.  Hiperspace Fact tables also support to store of Hierarchy of values - in this example the `sum` of transaction values are stored in the slice "20" for CustomerAccount (sum of all Transactions for an Account) and slice "3" for Customer (sum of all Transactions for a Customer). Both Customer and CustomerAccount elements have navigation reference to CustomerAccount_Fact to retrieve summaries directly.
 
-      Hiperspace horizon is contextual, to allow allow the same code to be used for initial seeding of data and logging errors for later analysis.  **This change** assists with validation by adding the option of an error message when the horizon is used for data validation.
+      Hiperspace OLAP doesn't just store the sum of transactions for fast read, but allows *deltas* to be added without the need for rerun a complete aggregation.  The `@deltaindex` on Transaction allows only the changes within an *epoch* (transactions between the last aggregation and last update) to be selected, and `deltasum` calculates only the difference since the last time the cube was calculated - this enables real-time aggregation to be performed.
 
-      `new Horizon&lt;Element_Type&gt; ( "element only", element =&gt; element.Valid == true)' a horizon predicate with the element only
-      `new Horizon&lt;Element_Type&gt; ( "element only", (element, read) =&gt; element.Valid == true || read)' a horizon predicate with a flag to indicate a read operation
-      `new Horizon&lt;Element_Type&gt; ( "element only", (element, context, read) =&gt; element.Valid == true || read)' a horizon predicate with a context parameter and a flag to indicate a read operation
-      `new Horizon&lt;Element_Type&gt; ( "element only",(element, context, user, read) =&gt; element.Valid == true || user?.IsInRole("BULK"))' a horizon predicate with a context parameter, user IPrinciple and a flag to indicate a read operation
-
-      ## Auto-edit of #id alias in HiLang schema
-
-      If a #id is not added to the definition of an {element, key, value, extent, index} an id is auto-allocated during the compilation of a **.hilang** file. It is best practice to add #id field to simplify the evolution of a schema since the internal #id can never be changed (*to a different data type*) or reused for a different purpose since it wil invalidate historic views of data.  This can be a problem when {element, key, value, extent, index} are dropped and the #id is then used for a later addition.  To simplify maintenance the directive `%ids;` has been added to optionally add the generated #id to the source file
-
-      the source `entity Customer (Id : Int32) {Name :String} [SameName = Customer(Name = Name];` defines an entity *Customer* with a key *Id* and value *Name* and an index *SameName* that can be used to find Customers **or** to apply horizon validation 'Horizon&lt;Customer&gt;("Duplicate Name", (customer, read) =&gt; customer.SameName == null || read).
-
-      When the `%ids;` directive is added, the the source is auto edited to `entity Customer #1 (Id : Int32 #1) {Name : String #2} [SameName = Customer(Name = Name) #2];` to indicate that Customer has #1 id and CustomerSameNameIndex has #2 (*stored items have unique #id, but SameName is not stored with customer, so does not need to be unique within the element*)
-
-      If we decide to break *Name* into *First_Name* and *Family_Name* we'd change the entity to
-      ```
-      entity Customer #1 (Id : Int32 #1)
-      {First_Name : String #3, Family_Name : String #4}
-      [Name =  First_Name + " " + Family_Name, SameName #3 = Customer( Family_Name = Family_Name, First_Name = First_Name];
-      ```
-      Adding `%ids;` directive simplifies the process of avoiding clashes that will prevent the hiperspace being opened with updated code.
-
-      ### DeltaIndex
-      The `@DeltaIndex` property of an entity provides indexes access to elements that have changed since a date-time stamp.  The property has been updated to include the option to define the #id for the index by adding a parameter  `@DeltaIndex(4)`
-
-      ### CubeFact
-      The `@CubeFact` property of an element creates a fact element (the code `@CubeFact entity Account` adds an additional *Account_Fact* table to the hiperspace for stored historic aggregates of @CubeMeasure values).
-      The property has been updated to incldue the #id of the fact table table  `@CubeFact(5)` indicates that the the fact table has #id of 5.
-
-      `%ids;` is optional since #id's will be allocated (*during compilation*) for intermediate elements that will be pruned before generation resulting in gaps in the generated #id numbers
+      As the `CustomerAccount_Fact` table is versioned, it is possible to view the history of a cube-slice (in a graph) and calculate regression analysis without the need to drill-down to detail rows.
     </PackageReleaseNotes>
     <PackageLicenseExpression>GPL-2.0-or-later</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>

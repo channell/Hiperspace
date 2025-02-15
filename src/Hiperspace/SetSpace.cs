@@ -1,6 +1,6 @@
 ﻿// ---------------------------------------------------------------------------------------
 //                                   Hiperspace
-//                        Copyright (c) 2023 Cepheis Ltd
+//                        Copyright (c) 2023, 2024,2025 Cepheis Ltd
 //                                    www.cepheis.com
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
@@ -15,7 +15,7 @@ namespace Hiperspace
     public abstract class SetSpace<TEntity> : ISet<TEntity>, IOrderedQueryable<TEntity>, IEnumerable<TEntity>, ISetSpace
         where TEntity : Element<TEntity>, new()
     {
-        public ConcurrentHashSet<TEntity> Cached = new ConcurrentHashSet<TEntity>();
+        public readonly ConcurrentHashSet<TEntity> Cached = new ConcurrentHashSet<TEntity>();
 
         public delegate void Bound(TEntity entity);
         public delegate void Dependency((TEntity target, Meta.DependencyPath sender) value);

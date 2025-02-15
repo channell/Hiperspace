@@ -1,6 +1,6 @@
 ﻿// ---------------------------------------------------------------------------------------
 //                                   Hiperspace
-//                        Copyright (c) 2023 Cepheis Ltd
+//                        Copyright (c) 2023, 2024,2025 Cepheis Ltd
 //                                    www.cepheis.com
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
@@ -102,8 +102,8 @@ namespace Hiperspace
                 T result = T.Zero;
                 foreach (var item in source.ToArray())
                 {
-                    var last = versionspace?.Get(item, item.AsAt.AddMilliseconds(-1));
-                    // subtract the prior value if exits to allow the sum to provide the delta
+					var last = versionspace?.Get(item, item!.SetSpace!.Space.DeltaFrom);
+					// subtract the prior value if exits to allow the sum to provide the delta
                     if (last != null) result -= func(item);
                     result += func(item);
                 }
@@ -125,7 +125,7 @@ namespace Hiperspace
                 foreach (var item in source.ToArray())
                 {
                     T result = func(item);
-                    var last = versionspace?.Get(item, item.AsAt.AddMilliseconds(-1));
+                    var last = versionspace?.Get(item, item!.SetSpace!.Space.DeltaFrom);
                     // subtract the prior value if exits to allow the sum to provide the delta
                     if (last != null) result = T.Max(result, func(item));
                     if (first)
@@ -155,8 +155,8 @@ namespace Hiperspace
                 foreach (var item in source.ToArray())
                 {
                     T result = func(item);
-                    var last = versionspace?.Get(item, item.AsAt.AddMilliseconds(-1));
-                    // subtract the prior value if exits to allow the sum to provide the delta
+					var last = versionspace?.Get(item, item!.SetSpace!.Space.DeltaFrom);
+					// subtract the prior value if exits to allow the sum to provide the delta
                     if (last != null) result = T.Min(result, func(item));
                     if (first)
                     {
@@ -184,8 +184,8 @@ namespace Hiperspace
                 foreach (var item in source.ToArray())
                 {
                     T result = func(item);
-                    var last = versionspace?.Get(item, item.AsAt.AddMilliseconds(-1));
-                    // subtract the prior value if exits to allow the sum to provide the delta
+					var last = versionspace?.Get(item, item!.SetSpace!.Space.DeltaFrom);
+					// subtract the prior value if exits to allow the sum to provide the delta
                     if (last != null) result -= T.One;
                     if (result != null && returner != null)
                     {

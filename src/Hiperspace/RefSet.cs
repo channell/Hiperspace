@@ -1,6 +1,6 @@
 ﻿// ---------------------------------------------------------------------------------------
 //                                   Hiperspace
-//                        Copyright (c) 2023 Cepheis Ltd
+//                        Copyright (c) 2023, 2024,2025 Cepheis Ltd
 //                                    www.cepheis.com
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
@@ -12,7 +12,7 @@ namespace Hiperspace
     public class RefSet<TEntity> : ISet<TEntity>, ICollection<TEntity>, ICollection
         where TEntity : Element<TEntity>, new()
     {
-        protected HashSet<TEntity> _cached;
+        public readonly HashSet<TEntity> Cached = new HashSet<TEntity>();
         /// <summary>
         /// For deserialisation
         /// </summary>
@@ -20,14 +20,12 @@ namespace Hiperspace
         {
             _template = () => new TEntity();
             _binder = e => { };
-            _cached = new HashSet<TEntity>();
             _filter = e => true;
         }
         public RefSet(Func<TEntity> template, Action<TEntity> binder)
         {
             _template = template;
             _binder = binder;
-            _cached = new HashSet<TEntity>();
             _filter = e => true;
         }
         public void PreBind(Func<TEntity> template, Action<TEntity> binder)
@@ -40,7 +38,6 @@ namespace Hiperspace
                 {
                     _template = template;
                     _binder = binder;
-                    _cached = new HashSet<TEntity>();
                     _filter = e => true;
                 }
                 finally
@@ -62,7 +59,6 @@ namespace Hiperspace
         {
             _template = template;
             _binder = binder;
-            _cached = new HashSet<TEntity>();
             _filter = filter;
         }
         public void PreBind(Func<TEntity> template, Action<TEntity> binder, Func<TEntity, bool> filter)
@@ -75,7 +71,6 @@ namespace Hiperspace
                 {
                     _template = template;
                     _binder = binder;
-                    _cached = new HashSet<TEntity>();
                     _filter = filter;
                 }
                 finally
@@ -101,7 +96,7 @@ namespace Hiperspace
                         TEntity[] result = SetSpace.Find(_template(), true).ToArray();
                         if (result != Array.Empty<TEntity>())
                         {
-                            _cached.UnionWith(result.Where(_filter));
+                            Cached.UnionWith(result.Where(_filter));
                         }
                     }
                 }
@@ -112,7 +107,7 @@ namespace Hiperspace
             }
             else
                 throw new LockRecursionException();
-            return _cached;
+            return Cached;
         }
 
         private SpinLock _lock = new SpinLock(true);
@@ -132,7 +127,7 @@ namespace Hiperspace
                 try
                 {
                     SetSpace = setspace;
-                    foreach (var en in _cached)
+                    foreach (var en in Cached)
                     {
                         _binder(en);
                         SetSpace.Bind(en);
@@ -156,7 +151,7 @@ namespace Hiperspace
                 {
                     if (SetSpace?.Space == subSpace)
                     {
-                        foreach (var en in _cached)
+                        foreach (var en in Cached)
                         {
                             en.Unbind(SetSpace.Space);
                         }
@@ -185,19 +180,19 @@ namespace Hiperspace
                     {
                         _binder(item);
                         SetSpace.Bind(item);
-                        if (!_cached.Add(item))
+                        if (!Cached.Add(item))
                         {
-                            _cached.Remove(item);
-                            _cached.Add(item);
+                            Cached.Remove(item);
+                            Cached.Add(item);
                         }
                     }
                     else
                     {
                         _binder(item);
-                        if (!_cached.Add(item))
+                        if (!Cached.Add(item))
                         {
-                            _cached.Remove(item);
-                            _cached.Add(item);
+                            Cached.Remove(item);
+                            Cached.Add(item);
                         }
                     }
                 }
@@ -218,9 +213,7 @@ namespace Hiperspace
 
         public IEnumerator<TEntity> GetEnumerator() => Lazy().GetEnumerator();
 
-        public bool Remove(TEntity item) => throw new NotImplementedException();
-
-        public IEnumerable<TEntity> Cached => _cached;
+        public bool Remove(TEntity item) => Cached.Remove(item);
 
         /// <summary>
         /// Cause next action to re-fetch from Hiperspace
@@ -236,11 +229,11 @@ namespace Hiperspace
                 bool added;
                 try
                 {
-                    added = _cached.Add(item);
+                    added = Cached.Add(item);
                     if (!added)
                     {
-                        _cached.Remove(item);
-                        added = _cached.Add(item);
+                        Cached.Remove(item);
+                        added = Cached.Add(item);
                     }
                 }
                 finally
@@ -261,7 +254,7 @@ namespace Hiperspace
             {
                 try
                 {
-                    _cached.ExceptWith(other);
+                    Cached.ExceptWith(other);
                 }
                 finally
                 {
@@ -280,7 +273,7 @@ namespace Hiperspace
             {
                 try
                 {
-                    _cached.IntersectWith(other);
+                    Cached.IntersectWith(other);
                 }
                 finally
                 {
@@ -300,7 +293,7 @@ namespace Hiperspace
                 bool returner;
                 try
                 {
-                    returner = _cached.IsProperSubsetOf(other);
+                    returner = Cached.IsProperSubsetOf(other);
                 }
                 finally
                 {
@@ -321,7 +314,7 @@ namespace Hiperspace
                 bool returner;
                 try
                 {
-                    returner = _cached.IsProperSupersetOf(other);
+                    returner = Cached.IsProperSupersetOf(other);
                 }
                 finally
                 {
@@ -342,7 +335,7 @@ namespace Hiperspace
                 bool returner;
                 try
                 {
-                    returner = _cached.IsSubsetOf(other);
+                    returner = Cached.IsSubsetOf(other);
                 }
                 finally
                 {
@@ -363,7 +356,7 @@ namespace Hiperspace
                 bool returner;
                 try
                 {
-                    returner = _cached.IsSupersetOf(other);
+                    returner = Cached.IsSupersetOf(other);
                 }
                 finally
                 {
@@ -384,7 +377,7 @@ namespace Hiperspace
                 bool returner;
                 try
                 {
-                    returner = _cached.Overlaps(other);
+                    returner = Cached.Overlaps(other);
                 }
                 finally
                 {
@@ -405,7 +398,7 @@ namespace Hiperspace
                 bool returner;
                 try
                 {
-                    returner = _cached.SetEquals(other);
+                    returner = Cached.SetEquals(other);
                 }
                 finally
                 {
@@ -425,7 +418,7 @@ namespace Hiperspace
             {
                 try
                 {
-                    _cached.SymmetricExceptWith(other);
+                    Cached.SymmetricExceptWith(other);
                 }
                 finally
                 {
@@ -444,7 +437,7 @@ namespace Hiperspace
             {
                 try
                 {
-                    _cached.UnionWith(other);
+                    Cached.UnionWith(other);
                 }
                 finally
                 {
@@ -471,6 +464,6 @@ namespace Hiperspace
         }
         public bool IsSynchronized => true;
 
-        public object SyncRoot => _cached;
+        public object SyncRoot => Cached;
     }
 }

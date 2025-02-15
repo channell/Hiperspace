@@ -1,4 +1,4 @@
-%domain(Acc);%ids;
+%domain(Acc);%ids;%json;
 
 %function ( unary, credit, Acc.Totals.Credit, Decimal);
 %function ( unary, debit, Acc.Totals.Debit, Decimal);
@@ -39,7 +39,7 @@ segment Acc.Transaction : Versioned
 ];
 
 "An Account for a customer"
-@CubeFact(26)
+@CubeFact(26), CubeDimension
 segment Acc.Account : Versioned 
 (
     Title           : String #2
@@ -57,7 +57,7 @@ segment Acc.Account : Versioned
 
     /* calculations */
     @CubeMeasure(Aggregate.Sum)
-    CurrentBalance  = sum(Transactions.Amount),
+    CurrentBalance  = deltasum(Transactions.Amount),
     Debit           = sum(Transactions.Debit),
     Credit          = sum(Transactions.Credit),
 ];

@@ -13,8 +13,6 @@ public class BaseTypeModel
     , ISerializer<MetaModel> 
     , ISerializer<Name> 
     , ISerializer<Relation>
-    , ISerializer<CubeKey>
-    , ISerializer<CubeKey.KeyPart>
     , ISerializer<Edge.KeyType> 
     , ISerializer<Edge.ValueType>
     , ISerializer<KeyRef<Edge.KeyType, Edge>>
@@ -377,70 +375,6 @@ public class BaseTypeModel
         if (id != 0)
         {
             state.WriteInt32Varint(3, id);
-        }
-    }
-
-    CubeKey ISerializer<CubeKey>.Read(ref ProtoReader.State state, CubeKey value)
-    {
-        //IL_004d: Unknown result type (might be due to invalid IL or missing references)
-        int num;
-        while ((num = state.ReadFieldHeader()) > 0)
-        {
-            if (num == 1)
-            {
-                CubeKey.KeyPart[]? keys = value.Keys;
-                keys = RepeatedSerializer.CreateVector<CubeKey.KeyPart>().ReadRepeated(ref state, (SerializerFeatures)146, keys, (ISerializer<CubeKey.KeyPart>)this);                if (keys != null)
-                {
-                    value.Keys = keys;
-                }
-            }
-            else
-            {
-                state.SkipField();
-            }
-        }
-        return value;
-    }
-
-    void ISerializer<CubeKey>.Write(ref ProtoWriter.State state, CubeKey value)
-    {
-        CubeKey.KeyPart[]? keys = value.Keys;
-        if (keys != null)
-        {
-            CubeKey.KeyPart[] array = keys;
-            RepeatedSerializer.CreateVector<CubeKey.KeyPart>().WriteRepeated(ref state, 1, (SerializerFeatures)146, array, (ISerializer<CubeKey.KeyPart>)this);
-        }
-    }
-    CubeKey.KeyPart ISerializer<CubeKey.KeyPart>.Read(ref ProtoReader.State state, CubeKey.KeyPart value)
-    {
-        int num;
-        while ((num = state.ReadFieldHeader()) > 0)
-        {
-            if (num == 1)
-            {
-                byte[]? key = value.Key;
-                key = state.AppendBytes(key);
-                if (key != null)
-                {
-                    value.Key = key;
-                }
-            }
-            else
-            {
-                state.SkipField();
-            }
-        }
-        return value;
-    }
-
-    void ISerializer<CubeKey.KeyPart>.Write(ref ProtoWriter.State state, CubeKey.KeyPart value)
-    {
-        byte[]? key = value.Key;
-        if (key != null)
-        {
-            state.WriteFieldHeader(1, WireType.String);
-            byte[] array = key;
-            state.WriteBytes(array);
         }
     }
 

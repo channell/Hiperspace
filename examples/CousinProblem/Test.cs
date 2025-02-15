@@ -148,7 +148,7 @@ namespace CousinProblem
                     {
                         _output.WriteLine($"{edges[i].From?.Name} has a {edges[i].TypeName} named {edges[i].To?.Name}");
                     }
-                    edges.Length.Should().Be(74);
+                    edges.Length.Should().Be(106);
                 }
             }
         }

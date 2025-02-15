@@ -313,10 +313,11 @@ type  PlanTest (output : ITestOutputHelper) =
             |> Seq.map      (fun (p,t) -> p, sumtask t)
         
         let cube = 
-            let ck          (p : Plan.Project) = CubeKey ([|p.BKey|])
+    //            let ck          (p : Plan.Project) = CubeKey ([|p.BKey|])
             let fact        (p, (sc : decimal, ac : decimal, pc : decimal, ic : decimal, e : decimal)) = 
                 let f = Plan.Tasks.Task_Fact ()
-                f.Key <- ck p
+                f.Slice <- ""
+                f.Project <- p
                 f.SunkCost <- sc
                 f.ActualCost <- ac
                 f.PlanCost <- pc
@@ -328,7 +329,9 @@ type  PlanTest (output : ITestOutputHelper) =
         cube
         |> Seq.iter     (fun f -> planSpace.Task_Facts.Add f |> ignore)
 
-        let j = JsonSerializer.Serialize(cube)
+        let options = JsonSerializerOptions()
+        options.ReferenceHandler <- ReferenceHandler.IgnoreCycles
+        let j = JsonSerializer.Serialize(cube, options)
         let engine = new SQL.Engine (planSpace)
 
         let dict = engine.Execute ("SELECT * FROM SCHEMA_TABLES", null)
