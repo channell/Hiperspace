@@ -83,7 +83,11 @@ let main argv =
         log "Opening Remote RocksDB"
         let path = results.GetResult Path
         let port =  results.GetResult Port
+<<<<<<< HEAD
         let remote = new Hiperspace.Remote.RemoteSpace (path, MetaModel(), port, "root", Guid.NewGuid().ToString(), true)
+=======
+        let remote = new Hiperspace.Remote.RemoteSpace (path, MetaModel(), port, "Access", "root", Guid.NewGuid(), true)
+>>>>>>> parent of 69002c0 (update Python sample)
         new SparxSpace (remote))
 
 

@@ -137,6 +137,16 @@ namespace Hiperspace
 
         public abstract IAsyncEnumerable<TEntity> FindAsync(TEntity template, bool cache = true, CancellationToken cancellationToken = default);
 
+        public virtual IEnumerable<TEntity> Query(string SQL)
+        {
+            throw new NotImplementedException("This SubSpace does not support SQL queries");
+        }
+
+        public virtual IAsyncEnumerable<TEntity> QueryAsync(string SQL, bool cache = true, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException("This SubSpace does not support SQL queries");
+        }
+
         public abstract IEnumerable<(TEntity Item, double Distance)> Nearest(TEntity template, Vector space, Vector.Method method, int limit = 0, bool cache = true);
 
         public abstract IAsyncEnumerable<(TEntity Item, double Distance)> NearestAsync(TEntity template, Vector space, Vector.Method method, int limit = 0, bool cache = true, CancellationToken cancellation = default);

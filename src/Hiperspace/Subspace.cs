@@ -138,9 +138,18 @@ namespace Hiperspace
             return _space.Find(begin, end);
         }
 
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Find(byte[] begin, byte[] end, DateTime? version)
+        {
+            return _space.Find(begin, end, version);
+        }
+
         public override IAsyncEnumerable<(byte[], byte[])> FindAsync(byte[] begin, byte[] end, CancellationToken cancellationToken = default)
         {
             return _space.FindAsync(begin, end, cancellationToken);
+        }
+        public override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindAsync(byte[] begin, byte[] end, DateTime? version, CancellationToken cancellationToken = default)
+        {
+            return _space.FindAsync(begin, end, version, cancellationToken);
         }
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Delta(byte[] key, DateTime? version)
         {
@@ -165,6 +174,15 @@ namespace Hiperspace
         {
             return _space.GetAsync(key);
         }
+        public override IEnumerable<(byte[] value, DateTime version)> GetVersions(byte[] key)
+        {
+            return _space.GetVersions(key);
+        }
+        public override IAsyncEnumerable<(byte[] value, DateTime version)> GetVersionsAsync(byte[] key, CancellationToken cancellationToken = default)
+        {
+            return _space.GetVersionsAsync(key, cancellationToken);
+        }
+
 
         public DateTime? AsAt => _version;
         public DateTime? DeltaFrom => _delta;
@@ -210,16 +228,6 @@ namespace Hiperspace
             return _space.BindAsync(key, value, version, priorVersion, source);
         }
 
-        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Find(byte[] begin, byte[] end, DateTime? version)
-        {
-            return _space.Find(begin, end, version ?? _version);
-        }
-
-        public override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindAsync(byte[] begin, byte[] end, DateTime? version, CancellationToken cancellationToken = default)
-        {
-            return _space.FindAsync(begin, end, version ?? _version, cancellationToken);
-        }
-
         public override (byte[], DateTime) Get(byte[] key, DateTime? version)
         {
             return _space.Get(key, version ?? _version);
@@ -228,16 +236,6 @@ namespace Hiperspace
         public override Task<(byte[], DateTime)> GetAsync(byte[] key, DateTime? version)
         {
             return _space.GetAsync(key, version ?? _version);
-        }
-
-        public override IEnumerable<(byte[] value, DateTime version)> GetVersions(byte[] key)
-        {
-            return _space.GetVersions(key);
-        }
-
-        public override IAsyncEnumerable<(byte[] value, DateTime version)> GetVersionsAsync(byte[] key, CancellationToken cancellationToken = default)
-        {
-            return _space.GetVersionsAsync(key, cancellationToken);
         }
 
         public override IEnumerable<(byte[] Key, byte[] Value)> FindIndex(byte[] begin, byte[] end)
