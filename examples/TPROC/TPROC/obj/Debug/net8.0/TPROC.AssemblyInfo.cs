@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TPROC")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+aa05012442149ebfe024c6afbce42bbe89c2a56e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7bc1758067c8eb547231dfed8ba1d2d384d9bdfd")]
 [assembly: System.Reflection.AssemblyProductAttribute("TPROC")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TPROC")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

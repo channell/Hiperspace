@@ -93,7 +93,8 @@ namespace Hiperspace
                     if (_new && SetSpace != null)
                     {
                         _new = false;
-                        TEntity[] result = SetSpace.Find(_template(), true).ToArray();
+                        var template = _template();
+                        TEntity[] result = SetSpace.Find(template, true).ToArray();
                         if (result != Array.Empty<TEntity>())
                         {
                             Cached.UnionWith(result.Where(_filter));

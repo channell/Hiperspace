@@ -6,19 +6,39 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>Hiperspace Heap Store</Title>
     <Description>Hiperspace heap store for session, edge and testing purposes</Description>
-    <Copyright>Cepheis Ltd</Copyright>
+    <Copyright>Cepheis Ltd (C) 2023, 2024, 2025</Copyright>
     <PackageReleaseNotes>
       # Overview
-      This release is primarily concerned with updates to match changes to .NET 9.0 with the release of Visual Studio 17.13 and related libaries.  It also includes an Update to Hiperspace.Rocks to reflect similar changes to RocksDB.
+      This release is primarily concerned with performance when used in a server context the volume if data is huge and accessed via `Hiperspace.DB` and many CPU-cores are available.
 
-      The implementation of OLAP cube support has also been changed to simplify its use for client applications and allow Fact tables to be used with BI tools that cannot use the binary CubeKey, OLAP Cube Facts now include references to the dimensions.  This allows the removal of BKey (Key represented as an array of bytes) that us *unhelpful* for **Hiperspace.SQL** and **JSON** serialization.
+      Performance is addressed with greater parallelism (graph `Node` and `Edge` queries already execute in parallel) and server-side filtering with using SQL queries.
 
-      ## Fact tables
-      Fact tables store calculated summaries of the underlying data, but aggregated for real-time access without the need to reevaluate calculations.  Hiperspace Fact tables also support to store of Hierarchy of values - in this example the `sum` of transaction values are stored in the slice "20" for CustomerAccount (sum of all Transactions for an Account) and slice "3" for Customer (sum of all Transactions for a Customer). Both Customer and CustomerAccount elements have navigation reference to CustomerAccount_Fact to retrieve summaries directly.
+      ## Parallelism
+      `PartitionSpace` and `GenerationSpace` have been updated to search each of the child spaces in parallel and collate results to return to a calling space.  For very large hiperspaces `PartitionSpace` enables `Hiperspace.DB` to match the performance of direct/local hiperspaces by executing access in parallel.  Hiperspace uses versioning to avoid transaction contention when multiple sessions are accessing a Space, as historical versions of a `GenerationSpace`  never ned to be updated they are opened with read-only option, which obviates the need for rockshare to mediate access to the underlying files.
 
-      Hiperspace OLAP doesn't just store the sum of transactions for fast read, but allows *deltas* to be added without the need for rerun a complete aggregation.  The `@deltaindex` on Transaction allows only the changes within an *epoch* (transactions between the last aggregation and last update) to be selected, and `deltasum` calculates only the difference since the last time the cube was calculated - this enables real-time aggregation to be performed.
+      ## SQL Queries
+      Hiperspace is optimized for key or index access to efficiently search hiperspace for elements that match key or key-part criteria.
 
-      As the `CustomerAccount_Fact` table is versioned, it is possible to view the history of a cube-slice (in a graph) and calculate regression analysis without the need to drill-down to detail rows.
+      For the model `entity Customer ( Id : Int64 ) { Name : String, ...};`, a  client query `from c in space.Customers where c.Id == 42' is translated into 'space.Customers.Find (new Customer { Id = 42} )` which in turn is translated into `CustomerKeyPath.Get (42)`, which directly fetches the customer from Hiperspace.
+
+      For the model
+      ```
+      entity Customer ( Id : Int64 ) { Name : String, ... [Accounts : Account ].
+      segment Account ( Id : Int64 ) { Title : String, ...};
+      ```
+      A query `from as in space.CustomerAccounts where owner.Id == 42' is translated into 'space.CustomerAccounts.Find (new Account { owner = new Customer { Id = 42} })` which in turn is translated into `CustomerAccountKeyPath.Find (42)` retrieving all Accounts that are owned by Customer 42.
+
+      For the model
+      ```
+      entity Customer ( Id : Int64 ) { Name : String, ...} [ Accounts : Account ( Customer = this ) ];
+      entity Account ( Id : Int64 ) { Title : String, Customer : Customer, ...};
+      ```
+      A query `from as in space.Accounts where Customer.Id == 42' is translated into 'space.Accounts.Find (new Account { Customer = new Customer { Id = 42} })` which in turn is translated into `AccountCustonerIndex Path.Find (42)` retrieving all Accounts that have a Customer 42, because the Customer extension `Accounts : Account ( Customer = this )` causes an index to be created on Account.
+
+      **If** the extension `Accounts : Account ( Customer = this )` is omitted, the Account `SetSpace` is scanned (with a residual condition Customer.KeyType.Id of 42), but if the query is `from as in space.Accounts where Customer.Id &lt; 42' the criteria is evaluated once the results have been returned - potentially a very large set.
+
+      ### Query
+      The `Query` function allows 'space.Accounts.Query ("SELECT Account.* FROM Accounts WHERE Accounts.Customer.Id &lt; 42") to be used to send the query to a `Hiperspace.DB` server where the results will be filtered before return to the client.
     </PackageReleaseNotes>
     <PackageLicenseExpression>GPL-2.0-or-later</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>

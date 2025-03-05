@@ -17,20 +17,16 @@ namespace Cousins //Problem
         internal static List<Path> Relations(Person person)
         {
             Node node = person;
-            var result = new SortedSet<Path>();
+            var result = new List<Path>();
             foreach (var edge in node.Froms)
             {
-                var paths = FindPaths(node, edge, null);
+                var paths = FindPaths(node, edge, null).Where(p => p.From != null && p.To != null).ToImmutableSortedSet();
                 if (paths != ImmutableSortedSet<Path>.Empty)
                 {
-                    var transformed =
-                        paths
-                        .Select(p => p.TransformPath(Infered))
-                        .ToList();
-                    transformed.ForEach(p => result.Add(p));
+                    result.AddRange(paths.Select(p => p.TransformPath(Infered)).Where(p => p.TypeName != "relation"));
                 }
             }
-            return result.ToList();
+            return result.GroupBy(p => new { p.From, p.To }).Select (g => g.First()).ToList();
         }
         internal struct Transform
         {
@@ -73,7 +69,7 @@ namespace Cousins //Problem
             },
             new Transform
             {
-                Infered = "Parents",
+                Infered = "Parent",
                 Path = new string[][]
                 {
                     new [] {"Child"},
@@ -115,11 +111,31 @@ namespace Cousins //Problem
             },
             new Transform
             {
-                Infered = "GrandMother",
+                Infered = "Grandmother",
                 Path = new string[][]
                 {
                     new [] {"Father", "Mother"},
                     new [] {"Mother"},
+                },
+                Predicate = (f,t) => t?.Gender == Gender.Female
+            },
+            new Transform
+            {
+                Infered = "Grandson",
+                Path = new string[][]
+                {
+                    new [] {"Child"},
+                    new [] {"Child"},
+                },
+                Predicate = (f,t) => t?.Gender == Gender.Male
+            },
+            new Transform
+            {
+                Infered = "Granddaughter",
+                Path = new string[][]
+                {
+                    new [] {"Child"},
+                    new [] {"Child"},
                 },
                 Predicate = (f,t) => t?.Gender == Gender.Female
             },
@@ -142,6 +158,28 @@ namespace Cousins //Problem
                     new [] {"Father", "Mother"},
                     new [] {"Father", "Mother"},
                     new [] {"Mother"},
+                },
+                Predicate = (f,t) => t?.Gender == Gender.Female
+            },
+            new Transform
+            {
+                Infered = "Great-Grandson",
+                Path = new string[][]
+                {
+                    new [] {"Child"},
+                    new [] {"Child"},
+                    new [] {"Child"},
+                },
+                Predicate = (f,t) => t?.Gender == Gender.Male
+            },
+            new Transform
+            {
+                Infered = "Great-Granddaughter",
+                Path = new string[][]
+                {
+                    new [] {"Child"},
+                    new [] {"Child"},
+                    new [] {"Child"},
                 },
                 Predicate = (f,t) => t?.Gender == Gender.Female
             },

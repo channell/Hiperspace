@@ -78,18 +78,14 @@ let main argv =
         let path = results.GetResult Path
         if not (Directory.Exists(path)) then Directory.CreateDirectory(path) |> ignore;
         new SparxSpace (new RockSpace (path, MetaModel())))
-
+(*
     let remote = lazy (
         log "Opening Remote RocksDB"
         let path = results.GetResult Path
         let port =  results.GetResult Port
-<<<<<<< HEAD
-        let remote = new Hiperspace.Remote.RemoteSpace (path, MetaModel(), port, "root", Guid.NewGuid().ToString(), true)
-=======
         let remote = new Hiperspace.Remote.RemoteSpace (path, MetaModel(), port, "Access", "root", Guid.NewGuid(), true)
->>>>>>> parent of 69002c0 (update Python sample)
         new SparxSpace (remote))
-
+*)
 
     if results.Contains Load        then loader.load (rocks.Value) (ctx.Value)
     if results.Contains Listing     then export.listing (rocks.Value)
@@ -98,7 +94,7 @@ let main argv =
     if results.Contains Json        then export.jsonrocks (rocks.Value)    
     if results.Contains JsonSQL     then export.jsonsql (ctx.Value)
     if results.Contains Count       then export.countrocks (rocks.Value)
-    if results.Contains CountRemote then export.countremote (remote.Value)
+    //if results.Contains CountRemote then export.countremote (remote.Value)
     if results.Contains CountSQL    then export.countsql (ctx.Value)
     if results.Contains Update      then updates.update (rocks.Value)
     if results.Contains UpdateSQL   then updates.updateSQL (ctx.Value)

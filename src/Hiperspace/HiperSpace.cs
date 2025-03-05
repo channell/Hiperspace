@@ -268,7 +268,7 @@ namespace Hiperspace
         /// <param name="key">the start value for delta search </param>
         /// <param name="end"></param>
         /// <returns></returns>
-        public IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> DeltaAsync(byte[] begin, DateTime? version, CancellationToken cancellationToken = default)
+        public virtual IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> DeltaAsync(byte[] begin, DateTime? version, CancellationToken cancellationToken = default)
         {
             return Delta(begin, version).ToAsyncEnumerable(cancellationToken);  
         }
@@ -317,6 +317,17 @@ namespace Hiperspace
                 var value = Get(inx.Value, version);
                 yield return (inx.Value, value.version, value.Value);
             }
+        }
+        /// <summary>
+        /// Find all values of space for index values between the index values
+        /// </summary>
+        /// <param name="begin"></param>
+        /// <param name="end"></param>
+        /// <param name="version">version stamp or null for latest</param>
+        /// <returns></returns>
+        public virtual IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindDeltaAsync(byte[] begin, DateTime? version, DateTime? DeltaFrom, CancellationToken cancellationToken = default)
+        {
+            return FindDelta(begin, version, DeltaFrom).ToAsyncEnumerable();
         }
         /// <summary>
         /// Find all values of space for index values between the index values asynchronously

@@ -6,7 +6,9 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using ProtoBuf.Meta;
+using System.IO.Compression;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Security.Principal;
 using System.Text;
 
@@ -156,6 +158,12 @@ namespace Hiperspace
             return _space.Delta(key, version);
         }
 
+        public override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> DeltaAsync(byte[] begin, DateTime? version, CancellationToken cancellationToken = default)
+        {
+            return _space.DeltaAsync(begin, version);
+        }
+
+
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)
         {
             return _space.Nearest(begin, end, version, space, method, limit);
@@ -182,6 +190,79 @@ namespace Hiperspace
         {
             return _space.GetVersionsAsync(key, cancellationToken);
         }
+        public override (byte[] Key, byte[] Value)? GetFirst(byte[] begin, byte[] end)
+        {
+            return _space.GetFirst(begin, end);
+        }
+        public override Task<(byte[] Key, byte[] Value)?> GetFirstAsync(byte[] begin, byte[] end)
+        {
+            return _space.GetFirstAsync(begin, end);
+        }
+        public override (byte[] Key, byte[] Value)? GetLast(byte[] begin, byte[] end)
+        {
+            return _space.GetLast(begin, end);
+        }
+        public override Task<(byte[] Key, byte[] Value)?> GetLastAsync(byte[] begin, byte[] end)
+        {
+            return _space.GetLastAsync(begin, end);
+        }
+        public override (byte[] Key, DateTime AsAt, byte[] Value)? GetFirst(byte[] begin, byte[] end, DateTime? version)
+        {
+            return _space.GetFirst(begin, end, version);
+        }
+        public override Task<(byte[] Key, DateTime AsAt, byte[] Value)?> GetFirstAsync(byte[] begin, byte[] end, DateTime? version)
+        {
+            return _space.GetFirstAsync(begin, end, version);
+        }
+        public override (byte[] Key, DateTime AsAt, byte[] Value)? GetLast(byte[] begin, byte[] end, DateTime? version)
+        {
+            return _space.GetLast(begin, end, version);
+        }
+        public override Task<(byte[] Key, DateTime AsAt, byte[] Value)?> GetLastAsync(byte[] begin, byte[] end, DateTime? version)
+        {
+            return _space.GetLastAsync(begin, end, version);
+        }
+        public override IEnumerable<(byte[] key, byte[] value)> GetMany(IEnumerable<byte[]> keys)
+        {
+            return _space.GetMany(keys);
+        }
+        public override IEnumerable<(byte[] key, byte[] Value, DateTime version)> GetMany(IEnumerable<byte[]> keys, DateTime? version)
+        {
+            return _space.GetMany(keys, version);
+        }
+        public override async IAsyncEnumerable<(byte[] key, byte[] value)> GetManyAsync(IAsyncEnumerable<byte[]> keys, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            await foreach (var item in _space.GetManyAsync(keys, cancellationToken))
+                yield return item;
+        }
+        public override async IAsyncEnumerable<(byte[] key, byte[] Value, DateTime version)> GetManyAsync(IAsyncEnumerable<byte[]> keys, DateTime? version, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            await foreach (var item in _space.GetManyAsync(keys, version, cancellationToken))
+                yield return item;
+        }
+        public override IEnumerable<(byte[] Key, byte[] Value)> Scan(byte[] begin, byte[] end, byte[][] values)
+        {
+            return _space.Scan(begin, end, values);
+        }
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Scan(byte[] begin, byte[] end, byte[][] values, DateTime? version)
+        {
+            return _space.Scan(begin, end, values, version);
+        }
+        public override IAsyncEnumerable<(byte[] Key, byte[] Value)> ScanAsync(byte[] begin, byte[] end, byte[][] values, CancellationToken cancellationToken = default)
+        {
+            return _space.ScanAsync(begin, end, values, cancellationToken);
+        }
+        public override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> ScanAsync(byte[] begin, byte[] end, byte[][] values, DateTime? version, CancellationToken cancellationToken = default)
+        {
+            return _space.ScanAsync(begin, end, values, version, cancellationToken);
+        }
+
+
+
+
+
+
+
 
 
         public DateTime? AsAt => _version;
@@ -246,10 +327,25 @@ namespace Hiperspace
         {
             return _space.FindIndex(begin, end, version);
         }
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindDelta(byte[] begin, DateTime? version, DateTime? DeltaFrom)
+        {
+            return _space.FindDelta(begin, version, DeltaFrom);
+        }
+        public override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindDeltaAsync(byte[] begin, DateTime? version, DateTime? DeltaFrom, CancellationToken cancellationToken = default)
+        {
+            return _space.FindDeltaAsync(begin, version, DeltaFrom, cancellationToken);
+        }
+
+
         public override IAsyncEnumerable<(byte[] Key, byte[] Value)> FindIndexAsync(byte[] begin, byte[] end, CancellationToken cancellationToken = default)
         {
             return _space.FindIndexAsync(begin, end, cancellationToken);
         }
+        public override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindIndexAsync(byte[] begin, byte[] end, DateTime? version, CancellationToken cancellationToken = default)
+        {
+            return _space.FindIndexAsync(begin, end, version, cancellationToken);
+        }
+
         public override int GetHashCode()
         {
             return base.GetHashCode();
@@ -272,5 +368,11 @@ namespace Hiperspace
         #endregion
         public virtual Meta.Dependencies Dependencies => new Meta.Dependencies(Array.Empty<Meta.Dependency>());
         public virtual Meta.Routes Routes => new Meta.Routes(Array.Empty<Meta.Route>());
+
+        public interface ISQLQueryProvider
+        {
+            public IQueryable<TEntity> Query<TEntity>(string SQL);
+        }
+        public ISQLQueryProvider? SQLQueryProvider { get; init; }
     }
 }

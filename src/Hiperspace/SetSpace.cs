@@ -92,7 +92,7 @@ namespace Hiperspace
 
         public bool Add(TEntity item)
         {
-            return Bind(item, true).Ok;
+            return Bind(item, true).New;
         }
 
         public bool Insert(TEntity item)
@@ -114,9 +114,20 @@ namespace Hiperspace
                 throw new MutationException($"Cannot update a {item.GetType().Name}, use Add(item) if an existing value is not needed");
             return Bind(item, true).Ok;
         }
-        public virtual bool Delete(TEntity item)
+        public bool Delete(TEntity item)
         {
-            throw new MutationException($"Cannot delete {item.GetType().Name}, a non versioned element");
+            var current = Get(item);
+            if (current == null)
+            {
+                if (item.GetType().GetCustomAttribute<VersionedAttribute>() != null)
+                {
+                    item.GetType().GetProperty("Deleted")?.SetValue(item, true);
+                    return Bind(item, true).Ok;
+                }
+                else
+                    throw new MutationException($"Cannot insert a new deleted {item.GetType().Name}, value already exists");
+            }
+            throw new MutationException($"Cannot delete {item.GetType().Name}, a value was not found");
         }
 
         public bool TryGetValue(TEntity equalValue, out TEntity actualValue)
@@ -137,11 +148,23 @@ namespace Hiperspace
 
         public abstract IAsyncEnumerable<TEntity> FindAsync(TEntity template, bool cache = true, CancellationToken cancellationToken = default);
 
-        public virtual IEnumerable<TEntity> Query(string SQL)
+        /// <summary>
+        /// Provides an interface for queries like customers.Query("customer.id IN (SELECT id FROM contact WHERE status = 'OPEN') AND valid IS NOT NULL")
+        /// </summary>
+        /// <param name="SQLWhere">Just there WHERE clause (SELECT * FROM customers) is added</param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public virtual IEnumerable<TEntity> Query(string SQL, bool cache = true)
         {
             throw new NotImplementedException("This SubSpace does not support SQL queries");
         }
 
+        /// <summary>
+        /// Provides an interface for queries like await customers.QueryAsync("customer.id IN (SELECT id FROM contact WHERE status = 'OPEN') AND valid IS NOT NULL")
+        /// </summary>
+        /// <param name="SQLWhere">Just there WHERE clause (SELECT * FROM customers) is added</param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
         public virtual IAsyncEnumerable<TEntity> QueryAsync(string SQL, bool cache = true, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException("This SubSpace does not support SQL queries");
@@ -353,12 +376,20 @@ namespace Hiperspace
                 return filtered;
             if (Cached.TryGetValue(item, out res))
             {
-                Cached.Remove(res);
-                if (cache)
-                    Cached.Add(item);
-                return Result.Ok(item);
+                // update the value if it is newer
+                if (res.AsAt < item.AsAt)
+                { 
+                    Cached.Remove(res);
+                    if (cache)
+                        Cached.Add(item);
+                    return Result.Ok(item);
+                }
+                else
+                {
+                    return Result.Skip(res);    
+                }
             }
-            if (cache)
+            else if (cache)
             {
                 Cached.Add(item);
             }
@@ -427,21 +458,6 @@ namespace Hiperspace
                     return item;
             }
             return null;
-        }
-        public override bool Delete(TEntity item)
-        {
-            var current = Get(item);
-            if (current == null)
-            {
-                if (item.GetType().GetCustomAttribute<VersionedAttribute>() != null)
-                {
-                    item.GetType().GetProperty("Deleted")?.SetValue(item, true);
-                    return Bind(item, true).Ok;
-                }
-                else
-                    throw new MutationException($"Cannot insert a new {item.GetType().Name}, value already exists");
-            }
-            throw new MutationException($"Cannot delete {item.GetType().Name}, a value was not found");
         }
     }
 }

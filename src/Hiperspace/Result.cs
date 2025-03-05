@@ -9,7 +9,7 @@ namespace Hiperspace
 {
     public static class Result
     {
-        public enum Status { Ok, Skip, Fail }
+        public enum Status { Ok, Skip, Fail, EOF }
         /// <summary>
         /// The result is ok
         /// </summary>
@@ -31,6 +31,13 @@ namespace Hiperspace
         /// <param name="result">value</param>
         /// <returns>new result struct</returns>
         public static Result<T> Fail<T>(T value, string? reason = null) => new Result<T>(value, Status.Fail, reason);
+        /// <summary>
+        /// The result is EOF from a publisher/consumer channel
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="result">value</param>
+        /// <returns>new result struct</returns>
+        public static Result<T> EOF<T>() => new Result<T>(default!, Status.EOF);
     }
 
     public struct Result<T>
@@ -59,6 +66,7 @@ namespace Hiperspace
         public bool New => Status == Result.Status.Ok;
         public bool Skip => Status == Result.Status.Skip || Status == Result.Status.Fail;
         public bool Fail => Status == Result.Status.Fail;
+        public bool EOF => Status == Result.Status.EOF;
 
         public static explicit operator T (Result<T> value) 
         {

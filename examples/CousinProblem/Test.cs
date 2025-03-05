@@ -12,14 +12,14 @@ namespace CousinProblem
         public static T? nvl<T>(T t) where T : struct { return new T?(t); }
         ITestOutputHelper _output;
 
+        private HeapSpace driver;
         private CousinsSpace _space;
 
         public Test(ITestOutputHelper output)
         {
             _output = output;
-            var driver = new HeapSpace();
+            driver = new HeapSpace();
             _space = new CousinsSpace(driver);
-
             var tree = new List<Person>
             {
                 new Person {Name = "Eve", Gender = Gender.Female },
@@ -123,7 +123,8 @@ namespace CousinProblem
         [Fact]
         public void TestRelations()
         {
-            using (var temp = new GenerationSpace(new HiperSpace[] { new HeapSpace(), _space }))
+            var tempHash = new HeapSpace();
+            using (var temp = new GenerationSpace(new HiperSpace[] { tempHash, _space }))
             {
                 using (var space = new CousinsSpace(temp))
                 {
@@ -138,7 +139,7 @@ namespace CousinProblem
                     {
                         foreach (var rel in rels)
                         {
-                            space.Paths.Add(rel);
+                            space.Paths.Bind(rel);
                         }
                     }
                     var edges = (from r in space.Edges
@@ -148,7 +149,7 @@ namespace CousinProblem
                     {
                         _output.WriteLine($"{edges[i].From?.Name} has a {edges[i].TypeName} named {edges[i].To?.Name}");
                     }
-                    edges.Length.Should().Be(106);
+                    edges.Length.Should().Be(80);
                 }
             }
         }

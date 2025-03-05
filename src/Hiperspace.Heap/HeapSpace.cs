@@ -7,6 +7,7 @@
 // ---------------------------------------------------------------------------------------
 using System.Buffers.Binary;
 using System.Collections;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -420,6 +421,7 @@ namespace Hiperspace.Heap
         }
 
         #region node
+        [DebuggerDisplay("{KeyHex} / {ValueHex}")]
         class HeapNode : IStructuralEquatable, IStructuralComparable, IComparable
         {
             public byte[] Key;
@@ -429,7 +431,8 @@ namespace Hiperspace.Heap
                 Key = key;
                 Value = value;
             }
-
+            public string KeyHex => BitConverter.ToString(Key);
+            public string ValueHex => BitConverter.ToString(Value);
             public override bool Equals([NotNullWhen(true)] object? obj)
             {
                 return Equals(obj, EqualityComparer<object>.Default);
