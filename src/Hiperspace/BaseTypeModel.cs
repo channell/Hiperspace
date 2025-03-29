@@ -1,4 +1,5 @@
-﻿using Hiperspace.Meta;
+﻿using Graph;
+using Hiperspace.Meta;
 using ProtoBuf;
 using ProtoBuf.Meta;
 using ProtoBuf.Serializers;
@@ -13,15 +14,23 @@ public class BaseTypeModel
     , ISerializer<MetaModel> 
     , ISerializer<Name> 
     , ISerializer<Relation>
-    , ISerializer<Edge.KeyType> 
+    , ISerializer<Edge.KeyType>
     , ISerializer<Edge.ValueType>
     , ISerializer<KeyRef<Edge.KeyType, Edge>>
+    , ISerializer<Edge>
     , ISerializer<Node.KeyType>
     , ISerializer<Node.ValueType>
     , ISerializer<KeyRef<Node.KeyType, Node>>
+    , ISerializer<Node>
     , ISerializer<Vector> 
     , ISerializer<VectorNode.KeyType> 
     , ISerializer<VectorNode.ValueType>
+    , ISerializer<Graph.Route>
+    , ISerializer<Graph.Rule>
+    , ISerializer<Graph.TransitiveEdge.KeyType>
+    , ISerializer<Graph.TransitiveEdge.ValueType>
+    , ISerializer<KeyRef<Graph.TransitiveEdge.KeyType, Graph.TransitiveEdge>>
+    , ISerializer<Graph.TransitiveEdge>
 {
     public SerializerFeatures Features => SerializerFeatures.CategoryMessage;
 
@@ -551,6 +560,17 @@ public class BaseTypeModel
         Node.KeyType key = value.Key;
         state.WriteMessage<Node.KeyType>(2, (SerializerFeatures)0, key, (ISerializer<Node.KeyType>)this);
     }
+    Node ISerializer<Node>.Read(ref ProtoReader.State state, Node item)
+    {
+        item._key = ((ISerializer<Node.KeyType>)this).Read(ref state, item._key);
+        item._value = ((ISerializer<Node.ValueType>)this).Read(ref state, item._value);
+        return item;
+    }
+    void ISerializer<Node>.Write(ref ProtoWriter.State state, Node item)
+    {
+        ((ISerializer<Node.KeyType>)this).Write(ref state, item._key);
+        ((ISerializer<Node.ValueType>)this).Write(ref state, item._value);
+    }
 
     Vector ISerializer<Vector>.Read(ref ProtoReader.State state, Vector value)
     {
@@ -715,5 +735,274 @@ public class BaseTypeModel
     public void Write(ref ProtoWriter.State state, KeyRef<Edge.KeyType, Edge> value)
     {
         throw new NotImplementedException();
+    }
+    Edge ISerializer<Edge>.Read(ref ProtoReader.State state, Edge item)
+    {
+        item._key = ((ISerializer<Edge.KeyType>)this).Read(ref state, item._key);
+        item._value = ((ISerializer<Edge.ValueType>)this).Read(ref state, item._value);
+        return item;
+    }
+    void ISerializer<Edge>.Write(ref ProtoWriter.State state, Edge item)
+    {
+        ((ISerializer<Edge.KeyType>)this).Write(ref state, item._key);
+        ((ISerializer<Edge.ValueType>)this).Write(ref state, item._value);
+    }
+
+    Graph.Route ISerializer<Graph.Route>.Read(ref ProtoReader.State state, Graph.Route value)
+    {
+        int num;
+        while ((num = state.ReadFieldHeader()) > 0)
+        {
+            switch (num)
+            {
+
+                case 1:
+                    value.Name = state.ReadString();
+                    break;
+
+                case 2:
+                    value.Rules = RepeatedSerializer.CreateSet<HashSet<Graph.Rule>, Graph.Rule>().ReadRepeated(ref state, SerializerFeatures.WireTypeString | SerializerFeatures.OptionPackedDisabled, value.Rules!, this);
+                    break;
+                default:
+                    state.SkipField();
+                    break;
+            }
+        }
+        return value;
+    }
+    void ISerializer<Graph.Route>.Write(ref ProtoWriter.State state, Graph.Route value)
+    {
+
+        state.WriteString(1, value.Name);
+
+        if (value.Rules != null)
+        {
+            RepeatedSerializer.CreateSet<HashSet<Graph.Rule>, Graph.Rule>().WriteRepeated(ref state, 2, SerializerFeatures.WireTypeString | SerializerFeatures.OptionPackedDisabled, value.Rules, this);
+        }
+    }
+    Graph.Rule ISerializer<Graph.Rule>.Read(ref ProtoReader.State state, Graph.Rule value)
+    {
+        int num;
+        while ((num = state.ReadFieldHeader()) > 0)
+        {
+            switch (num)
+            {
+
+                case 1:
+                    value.FromType = state.ReadString();
+                    break;
+                case 2:
+                    value.ToType = state.ReadString();
+                    break;
+                case 3:
+                    value.EdgeType = state.ReadString();
+                    break;
+
+                default:
+                    state.SkipField();
+                    break;
+            }
+        }
+        return value;
+    }
+    void ISerializer<Graph.Rule>.Write(ref ProtoWriter.State state, Graph.Rule value)
+    {
+
+        state.WriteString(1, value.FromType);
+        state.WriteString(2, value.ToType);
+        state.WriteString(3, value.EdgeType);
+
+    }
+    Graph.TransitiveEdge.KeyType ISerializer<Graph.TransitiveEdge.KeyType>.Read(ref ProtoReader.State state, Graph.TransitiveEdge.KeyType value)
+    {
+        int num;
+        while ((num = state.ReadFieldHeader()) > 0)
+        {
+            switch (num)
+            {
+
+                case 2:
+                    {
+                        KeyRef<Node.KeyType, Node> key = new();
+                        key = state.ReadMessage<KeyRef<Node.KeyType, Node>>(SerializerFeatures.CategoryRepeated, key, this);
+                        value.From = key;
+                    }
+                    break;
+                case 3:
+                    {
+                        KeyRef<Node.KeyType, Node> key = new();
+                        key = state.ReadMessage<KeyRef<Node.KeyType, Node>>(SerializerFeatures.CategoryRepeated, key, this);
+                        value.To = key;
+                    }
+                    break;
+                case 4:
+                    value.TypeName = state.ReadString();
+                    break;
+                default:
+                    state.SkipField();
+                    break;
+            }
+        }
+        return value;
+    }
+    void ISerializer<Graph.TransitiveEdge.KeyType>.Write(ref ProtoWriter.State state, Graph.TransitiveEdge.KeyType value)
+    {
+
+        if (value.From != null)
+        {
+            state.WriteMessage<KeyRef<Node.KeyType, Node>>(2, SerializerFeatures.CategoryRepeated, value.From.Value, this);
+        }
+        if (value.To != null)
+        {
+            state.WriteMessage<KeyRef<Node.KeyType, Node>>(3, SerializerFeatures.CategoryRepeated, value.To.Value, this);
+        }
+        state.WriteString(4, value.TypeName);
+    }
+
+    Graph.TransitiveEdge.ValueType ISerializer<Graph.TransitiveEdge.ValueType>.Read(ref ProtoReader.State state, Graph.TransitiveEdge.ValueType value)
+    {
+        int num;
+        while ((num = state.ReadFieldHeader()) > 0)
+        {
+            switch (num)
+            {
+
+                case 5:
+                    value.Name = state.ReadString();
+                    break;
+                case 10:
+                    {
+                        //KeyRef<Edge.KeyType, Edge> key = new();
+                        //key = state.ReadMessage<KeyRef<Edge.KeyType, Edge>>(SerializerFeatures.CategoryRepeated, key, this);
+                        //value.Edge = key;
+                        // read the full object
+                        Edge edge = new();
+                        edge = state.ReadMessage<Edge>(SerializerFeatures.CategoryRepeated, edge, this);
+                        value.Edge = edge;
+                    }
+                    break;
+                case 11:
+                    {
+                        //KeyRef<Graph.Path.KeyType, Graph.Path> key = new();
+                        //key = state.ReadMessage<KeyRef<Graph.Path.KeyType, Graph.Path>>(SerializerFeatures.CategoryRepeated, key, this);
+                        //value.Source = key;
+                        // read the full object
+                        Graph.TransitiveEdge path = new();
+                        path = state.ReadMessage<Graph.TransitiveEdge>(SerializerFeatures.CategoryRepeated, path, this);
+                        value.Source = path;
+                    }
+                    break;
+                case 13:
+                    value.Width = state.ReadInt32();
+                    break;
+                case 14:
+                    value.Length = state.ReadInt32();
+                    break;
+                default:
+                    state.SkipField();
+                    break;
+            }
+        }
+        return value;
+    }
+    void ISerializer<Graph.TransitiveEdge.ValueType>.Write(ref ProtoWriter.State state, Graph.TransitiveEdge.ValueType value)
+    {
+
+        state.WriteString(5, value.Name);
+        if (value.Edge != null && value.Edge.Value.Value != null)
+        {
+            //state.WriteMessage<KeyRef<Edge.KeyType, Edge>>(10, SerializerFeatures.CategoryRepeated, value.Edge.Value, this);
+            // write the full object
+            state.WriteMessage<Edge>(10, SerializerFeatures.CategoryRepeated, value.Edge.Value.Value, this);
+        }
+        if (value.Source != null && value.Source.Value.Value != null)
+        {
+            //state.WriteMessage<KeyRef<Graph.Path.KeyType, Graph.Path>>(11, SerializerFeatures.CategoryRepeated, value.Source.Value, this);
+            // write the full object
+            state.WriteMessage<Graph.TransitiveEdge>(11, SerializerFeatures.CategoryRepeated, value.Source.Value.Value, this);
+        }
+        if (value.Width != null)
+        {
+            state.WriteFieldHeader(13, WireType.Varint);
+            state.WriteInt32(value.Width.Value);
+        }
+        if (value.Length != null)
+        {
+            state.WriteFieldHeader(14, WireType.Varint);
+            state.WriteInt32(value.Length.Value);
+        }
+    }
+
+    KeyRef<Graph.TransitiveEdge.KeyType, Graph.TransitiveEdge> ISerializer<KeyRef<Graph.TransitiveEdge.KeyType, Graph.TransitiveEdge>>.Read(ref ProtoReader.State state, KeyRef<Graph.TransitiveEdge.KeyType, Graph.TransitiveEdge> item)
+    {
+        var value = item.Key;
+        int num;
+        while ((num = state.ReadFieldHeader()) > 0)
+        {
+            switch (num)
+            {
+
+                case 2:
+                    {
+                        //KeyRef<Node.KeyType, Node> key = new();
+                        //key = state.ReadMessage<KeyRef<Node.KeyType, Node>>(SerializerFeatures.CategoryRepeated, key, this);
+                        //value.From = key;
+                        //read the full object
+                        Node node = new();
+                        node = state.ReadMessage<Node>(SerializerFeatures.CategoryRepeated, node, this);
+                        value.From = node;
+                    }
+                    break;
+                case 3:
+                    {
+                        //KeyRef<Node.KeyType, Node> key = new();
+                        //key = state.ReadMessage<KeyRef<Node.KeyType, Node>>(SerializerFeatures.CategoryRepeated, key, this);
+                        //value.To = key;
+                        //read the full object
+                        Node node = new();
+                        node = state.ReadMessage<Node>(SerializerFeatures.CategoryRepeated, node, this);
+                        value.To = node;
+                    }
+                    break;
+                case 4:
+                    value.TypeName = state.ReadString();
+                    break;
+                default:
+                    state.SkipField();
+                    break;
+            }
+        }
+        return new KeyRef<Graph.TransitiveEdge.KeyType, Graph.TransitiveEdge>(value);
+    }
+
+    void ISerializer<KeyRef<Graph.TransitiveEdge.KeyType, Graph.TransitiveEdge>>.Write(ref ProtoWriter.State state, KeyRef<Graph.TransitiveEdge.KeyType, Graph.TransitiveEdge> item)
+    {
+        var value = item.Key;
+
+        if (value.From != null && value.From.Value.Value != null)
+        {
+            //state.WriteMessage<KeyRef<Node.KeyType, Node>>(2, SerializerFeatures.CategoryRepeated, value.From.Value, this);
+            //write the full object
+            state.WriteMessage<Node>(2, SerializerFeatures.CategoryRepeated, value.From.Value.Value, this);
+        }
+        if (value.To != null && value.To.Value.Value != null)
+        {
+            //state.WriteMessage<KeyRef<Node.KeyType, Node>>(3, SerializerFeatures.CategoryRepeated, value.To.Value, this);
+            //write the full object
+            state.WriteMessage<Node>(3, SerializerFeatures.CategoryRepeated, value.To.Value.Value, this);
+        }
+        state.WriteString(4, value.TypeName);
+    }
+
+    Graph.TransitiveEdge ISerializer<Graph.TransitiveEdge>.Read(ref ProtoReader.State state, Graph.TransitiveEdge item)
+    {
+        item._key = ((ISerializer<Graph.TransitiveEdge.KeyType>)this).Read(ref state, item._key);
+        item._value = ((ISerializer<Graph.TransitiveEdge.ValueType>)this).Read(ref state, item._value);
+        return item;
+    }
+    void ISerializer<Graph.TransitiveEdge>.Write(ref ProtoWriter.State state, Graph.TransitiveEdge item)
+    {
+        ((ISerializer<Graph.TransitiveEdge.KeyType>)this).Write(ref state, item._key);
+        ((ISerializer<Graph.TransitiveEdge.ValueType>)this).Write(ref state, item._value);
     }
 }

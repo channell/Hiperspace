@@ -1,5 +1,6 @@
 ﻿using Cousins;
 using FluentAssertions;
+using HiLang.CSGen;
 using Hiperspace;
 using Hiperspace.Heap;
 using Xunit;
@@ -175,6 +176,80 @@ namespace CousinProblem
                     foreach (var j in join)
                     {
                         _output.WriteLine($"{j.p.Name} () has father {j.f.Name} and mother {j.m.Name}");
+                    }
+                }
+            }
+        }
+
+        [Fact]
+        public void TestMetrics ()
+        {
+            var query = (from node in _space.Nodes
+                         group node by node.TypeName into g
+                         select new { TypeName = "Node", Name = g.Key, Count = g.Count() }
+                        ).Union
+                        (from edge in _space.Edges
+                         group edge by edge.TypeName into g
+                         select new { TypeName = "Edge", Name = g.Key, Count = g.Count() }
+                        );
+            var rows = query.ToHashSet();
+
+            _output.WriteLine($"{new QueryExplain(query.Expression)}");
+
+            var total = (from r in rows
+                         select r.Count).Sum();
+
+            foreach (var r in rows)
+            {
+                _output.WriteLine($"{r.TypeName} {r.Name} count {r.Count}");
+            }
+            total.Should().Be(55);
+        }
+
+        [Fact]
+        public void TestGraphFunc()
+        {
+            var relation = new Graph.Route
+            {
+                Name = "Relation",
+                Rules = new HashSet<Graph.Rule>
+                {
+                    new Graph.Rule { FromType = "Person", EdgeType = "Father", ToType = "Person" },
+                    new Graph.Rule { FromType = "Person", EdgeType = "Mother", ToType = "Person" },
+                    new Graph.Rule { FromType = "Person", EdgeType = "Child", ToType = "Person" },
+                }
+            };
+
+            using (var temp = new CousinsSpace(new SessionSpace(new HeapSpace(), _space)))
+            {
+                var lucy = (from r in temp.Persons
+                            where r.Name == "Lucy"
+                            select r).FirstOrDefault();
+
+                lucy!.Stored.Add(new PersonStored
+                {
+                    Route = relation
+                });
+                foreach (var path in lucy.Stored)
+                {
+                    if (path.Paths != null)
+                    { 
+                        foreach (var r in path.Paths)
+                        {
+                            var p = r;
+                            if (p != null)
+                                _output.WriteLine($"From {p.From?.Name} To {p.To?.Name} Length {p.Length} Width {p.Width}");
+                            var arrow = $"\t{p.To?.Name} ({p.Edge?.TypeName})";
+                            var source = p.Source;
+                            while (source != null) 
+                            {
+                                arrow = arrow + $" <- {source.To?.Name} ({source.Edge?.TypeName})";
+                                source = source.Source;
+                            }
+                            arrow = arrow + $" <- {p.From?.Name}";
+
+                            _output.WriteLine(arrow);
+                        }
                     }
                 }
             }

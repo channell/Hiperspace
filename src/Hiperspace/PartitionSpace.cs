@@ -1,14 +1,18 @@
 ﻿// ---------------------------------------------------------------------------------------
 //                                   Hiperspace
-//                        Copyright (c) 2023, 2024,2025 Cepheis Ltd
+//                        Copyright (c) 2023, 2024, 2025 Cepheis Ltd
 //                                    www.cepheis.com
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using System;
 using System.Buffers.Binary;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Channels;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Hiperspace
 {
@@ -61,16 +65,86 @@ namespace Hiperspace
 
         public override IEnumerable<(byte[], byte[])> Find(byte[] begin, byte[] end)
         {
-            return FindAsync(begin, end).ToBlockingEnumerable();
+            var channel = Channel.CreateUnbounded<Result<(byte[] Key, byte[] Value)>>();
+            long dispatched = 0;
+
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                dispatched++;
+                var C = c;
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await foreach (var item in _spaces[C].FindAsync(begin, end))
+                        {
+                            await channel.Writer.WriteAsync(Result.Ok(item));
+                        }
+                        await channel.Writer.WriteAsync(Result.EOF<(byte[] Key, byte[] Value)>());
+                    }
+                    catch (Exception ex)
+                    {
+                        await channel.Writer.WriteAsync(Result.Error<(byte[] Key, byte[] Value)>(ex));
+                    }
+                });
+            }
+            var channelEnumerator = channel.Reader.ReadAllAsync().ToBlockingEnumerable();
+            foreach (var item in channelEnumerator)
+            {
+                if (item.Ok)
+                    yield return item.Value;
+                else if (item.EOF)
+                {
+                    if (--dispatched == 0)
+                        break;
+                }
+                else if (item.Error)
+                    throw item.Exception;
+            }
         }
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Find(byte[] begin, byte[] end, DateTime? version)
         {
-            return FindAsync(begin, end, version).ToBlockingEnumerable();
+            var channel = Channel.CreateUnbounded<Result<(byte[] Key, DateTime AsAt, byte[] Value)>>();
+            long dispatched = 0;
+
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                dispatched++;
+                var C = c;
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        await foreach (var item in _spaces[C].FindAsync(begin, end, version))
+                        {
+                            await channel.Writer.WriteAsync(Result.Ok(item));
+                        }
+                        await channel.Writer.WriteAsync(Result.EOF<(byte[] Key, DateTime AsAt, byte[] Value)>());
+                    }
+                    catch (Exception ex)
+                    {
+                        await channel.Writer.WriteAsync(Result.Error<(byte[] Key, DateTime AsAt, byte[] Value)>(ex));
+                    }
+                });
+            }
+            var channelEnumerator = channel.Reader.ReadAllAsync().ToBlockingEnumerable();
+            foreach (var item in channelEnumerator)
+            {
+                if (item.Ok)
+                    yield return item.Value;
+                else if (item.EOF)
+                {
+                    if (--dispatched == 0)
+                        break;
+                }
+                else if (item.Error)
+                    throw item.Exception;
+            }
         }
 
         public override async IAsyncEnumerable<(byte[], byte[])> FindAsync(byte[] begin, byte[] end, [EnumeratorCancellation]CancellationToken cancellationToken = default)
         {
-            var channel = Channel.CreateUnbounded<(bool eof, (byte[] Key, byte[] Value))>();
+            var channel = Channel.CreateUnbounded<Result<(byte[] Key, byte[] Value)>>();
             var channelEnumerator = channel.Reader.ReadAllAsync(cancellationToken);
             long dispatched = 0;
 
@@ -84,29 +158,32 @@ namespace Hiperspace
                     {
                         await foreach (var item in _spaces[C].FindAsync(begin, end, cancellationToken))
                         {
-                            await channel.Writer.WriteAsync((false, item), cancellationToken);
+                            await channel.Writer.WriteAsync(Result.Ok(item), cancellationToken);
                         }
+                        await channel.Writer.WriteAsync(Result.EOF<(byte[] Key, byte[] Value)>(), cancellationToken);
                     }
-                    finally
+                    catch (Exception ex)
                     {
-                        await channel.Writer.WriteAsync((true, (Array.Empty<byte>(), Array.Empty<byte>())), cancellationToken);
+                        await channel.Writer.WriteAsync(Result.Error<(byte[] Key, byte[] Value)>(ex), cancellationToken);
                     }
                 }, cancellationToken);
             }
-            await foreach (var (eof,item) in channelEnumerator)
+            await foreach (var item in channelEnumerator)
             {
-                if (eof)
+                if (item.Ok)
+                    yield return item.Value;
+                else if (item.EOF)
                 {
                     if (--dispatched == 0)
                         break;
                 }
-                else
-                    yield return item;
+                else if (item.Error)
+                    throw item.Exception;
             }
         }
         public override async IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindAsync(byte[] begin, byte[] end, DateTime? version, [EnumeratorCancellation]CancellationToken cancellationToken = default)
         {
-            var channel = Channel.CreateUnbounded<(bool eof, (byte[] Key, DateTime AsAt, byte[] Value))>();
+            var channel = Channel.CreateUnbounded<Result<(byte[] Key, DateTime AsAt, byte[] Value)>>();
             var channelEnumerator = channel.Reader.ReadAllAsync(cancellationToken);
             long dispatched = 0;
 
@@ -120,39 +197,56 @@ namespace Hiperspace
                     {
                         await foreach (var item in _spaces[C].FindAsync(begin, end, version, cancellationToken))
                         {
-                            await channel.Writer.WriteAsync((false, item), cancellationToken);
+                            await channel.Writer.WriteAsync(Result.Ok(item), cancellationToken);
                         }
+                        await channel.Writer.WriteAsync(Result.EOF<(byte[] Key, DateTime AsAt, byte[] Value)>(), cancellationToken);
                     }
-                    finally
+                    catch (Exception ex)
                     {
-                        await channel.Writer.WriteAsync((true, (Array.Empty<byte>(), new DateTime(), Array.Empty<byte>())), cancellationToken);
+                        await channel.Writer.WriteAsync(Result.Error<(byte[] Key, DateTime AsAt, byte[] Value)>(ex), cancellationToken);
                     }
                 }, cancellationToken);
             }
 
-            await foreach (var (eof, item) in channelEnumerator)
+            await foreach (var item in channelEnumerator)
             {
-                if (eof)
+                if (item.Ok)
+                    yield return item.Value;
+                else if (item.EOF)
                 {
                     if (--dispatched == 0)
                         break;
                 }
-                else
-                    yield return item;
+                else if (item.Error)
+                    throw item.Exception;
             }
         }
         public override IEnumerable<(byte[] Key, byte[] Value)> FindIndex(byte[] begin, byte[] end)
         {
-            return FindAsync(begin, end).ToBlockingEnumerable();
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                var C = c;
+                foreach (var item in _spaces[C].FindIndex(begin, end))
+                {
+                    yield return item;
+                }
+            }
         }
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindIndex(byte[] begin, byte[] end, DateTime? version)
         {
-            return FindAsync(begin, end, version).ToBlockingEnumerable();
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                var C = c;
+                foreach (var item in _spaces[C].FindIndex(begin, end, version))
+                {
+                    yield return item;
+                }
+            }
         }
 
         public override async IAsyncEnumerable<(byte[] Key, byte[] Value)> FindIndexAsync(byte[] begin, byte[] end, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            var channel = Channel.CreateUnbounded<(bool eof, (byte[] Key, byte[] Value))>();
+            var channel = Channel.CreateUnbounded<Result<(byte[] Key, byte[] Value)>>();
             var channelEnumerator = channel.Reader.ReadAllAsync(cancellationToken);
             long dispatched = 0;
 
@@ -167,29 +261,33 @@ namespace Hiperspace
                         await foreach (var item in _spaces[C].FindAsync(begin, end, cancellationToken))
                         {
                             var value = await GetAsync(item.Value);
-                            await channel.Writer.WriteAsync((false, (item.Value, value)), cancellationToken);
+                            await channel.Writer.WriteAsync(Result.Ok((item.Value, value)), cancellationToken);
                         }
+                        await channel.Writer.WriteAsync(Result.EOF<(byte[] Key, byte[] Value)>(), cancellationToken);
                     }
-                    finally
+                    catch (Exception ex)
                     {
-                        await channel.Writer.WriteAsync((true, (Array.Empty<byte>(), Array.Empty<byte>())), cancellationToken);
+                        await channel.Writer.WriteAsync(Result.Error<(byte[] Key, byte[] Value)>(ex), cancellationToken);
                     }
                 }, cancellationToken);
             }
-            await foreach (var (eof, item) in channelEnumerator)
+            await foreach (var item in channelEnumerator)
             {
-                if (eof)
+                if (item.Ok)
+                    yield return item.Value;
+                else if (item.EOF)
                 {
                     if (--dispatched == 0)
                         break;
                 }
-                else
-                    yield return item;
+                else if (item.Error)
+                    throw item.Exception;
             }
         }
+
         public override async IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindIndexAsync(byte[] begin, byte[] end, DateTime? version, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            var channel = Channel.CreateUnbounded<(bool eof, (byte[] Key, DateTime AsAt, byte[] Value))>();
+            var channel = Channel.CreateUnbounded<Result<(byte[] Key, DateTime AsAt, byte[] Value)>>();
             var channelEnumerator = channel.Reader.ReadAllAsync(cancellationToken);
             long dispatched = 0;
 
@@ -204,30 +302,62 @@ namespace Hiperspace
                         await foreach (var item in _spaces[C].FindAsync(begin, end, version, cancellationToken))
                         {
                             var (value, asAt) = await GetAsync(item.Value, version);
-                            await channel.Writer.WriteAsync((false, (item.Value, asAt, value)), cancellationToken);
+                            await channel.Writer.WriteAsync(Result.Ok((item.Value, asAt, value)), cancellationToken);
                         }
+                        await channel.Writer.WriteAsync(Result.EOF<(byte[] Key, DateTime AsAt, byte[] Value)>(), cancellationToken);
                     }
-                    finally
+                    catch (Exception ex)
                     {
-                        await channel.Writer.WriteAsync((true, (Array.Empty<byte>(), new DateTime(), Array.Empty<byte>())), cancellationToken);
+                        await channel.Writer.WriteAsync(Result.Error<(byte[] Key, DateTime AsAt, byte[] Value)>(ex), cancellationToken);
                     }
                 }, cancellationToken);
             }
-            await foreach (var (eof, item) in channelEnumerator)
+            await foreach (var item in channelEnumerator)
             {
-                if (eof)
+                if (item.Ok)
+                    yield return item.Value;
+                else if (item.EOF)
                 {
                     if (--dispatched == 0)
                         break;
                 }
-                else
-                    yield return item;
+                else if (item.Error)
+                    throw item.Exception;
             }
         }
 
         public override (byte[] Key, byte[] Value)? GetFirst(byte[] begin, byte[] end)
         {
-            return GetFirstAsync(begin, end).GetAwaiter().GetResult();
+            var request = new (byte[] Key, byte[] Value)?[_spaces.Length];
+            var result = new (byte[] Key, byte[] Value)?[_spaces.Length];
+
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                request[c] = _spaces[c].GetFirst(begin, end);
+            }
+
+            var first = result[0];
+            for (int c = 1; c < _spaces.Length; c++)
+            {
+                if (!first.HasValue)
+                {
+                    first = result[c];
+                }
+                else if (result[c].HasValue)
+                {
+                    var val = result[c];
+                    if (val.HasValue)
+                    {
+                        switch (KeyPart.Compare(first.Value.Key, val.Value.Key))
+                        {
+                            case -1:
+                                first = result[c];
+                                break;
+                        }
+                    }
+                }
+            }
+            return first;
         }
         public override async Task<(byte[] Key, byte[] Value)?> GetFirstAsync(byte[] begin, byte[] end)
         {
@@ -268,7 +398,35 @@ namespace Hiperspace
         }
         public override (byte[] Key, DateTime AsAt, byte[] Value)? GetFirst(byte[] begin, byte[] end, DateTime? version)
         {
-            return GetFirstAsync(begin, end, version).GetAwaiter().GetResult();
+            var result = new(byte[] Key, DateTime AsAt, byte[] Value)? [_spaces.Length];
+
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                result[c] = _spaces[c].GetFirst(begin, end, version);
+            }
+
+            var first = result[0];
+            for (int c = 1; c < _spaces.Length; c++)
+            {
+                if (!first.HasValue)
+                {
+                    first = result[c];
+                }
+                else if (result[c].HasValue)
+                {
+                    var val = result[c];
+                    if (val.HasValue)
+                    {
+                        switch (KeyPart.Compare(first.Value.Key, val.Value.Key))
+                        {
+                            case -1:
+                                first = result[c];
+                                break;
+                        }
+                    }
+                }
+            }
+            return first;
         }
         public override async Task<(byte[] Key, DateTime AsAt, byte[] Value)?> GetFirstAsync(byte[] begin, byte[] end, DateTime? version)
         {
@@ -399,15 +557,87 @@ namespace Hiperspace
 
         public override IEnumerable<(byte[] key, byte[] value)> GetMany(IEnumerable<byte[]> keys)
         {
-            return GetManyAsync(AsyncEnumerable(keys)).ToBlockingEnumerable();
+            var channel = Channel.CreateUnbounded<Result<(byte[] Key, byte[] Value)>>();
+            var channelEnumerator = channel.Reader.ReadAllAsync().ToBlockingEnumerable();
+            long dispatched = 0;
+
+            foreach (var key in keys)
+            {
+                for (int c = 0; c < _spaces.Length; c++)
+                {
+                    dispatched++;
+                    var C = c;
+                    _ = Task.Run(async () =>
+                    {
+                        try
+                        {
+                            var item = await _spaces[C].GetAsync(key);
+                            await channel.Writer.WriteAsync(Result.Ok((key, item)));
+                            await channel.Writer.WriteAsync(Result.EOF<(byte[] Key, byte[] Value)>());
+                        }
+                        catch (Exception ex)
+                        {
+                            await channel.Writer.WriteAsync(Result.Error<(byte[] Key, byte[] Value)>(ex));
+                        }
+                    });
+                }
+            }
+            foreach (var item in channelEnumerator)
+            {
+                if (item.Ok)
+                    yield return item.Value;
+                else if (item.EOF)
+                {
+                    if (--dispatched == 0)
+                        break;
+                }
+                else if (item.Error)
+                    throw item.Exception;
+            }
         }
         public override IEnumerable<(byte[] key, byte[] Value, DateTime version)> GetMany(IEnumerable<byte[]> keys, DateTime? version)
         {
-            return GetManyAsync(AsyncEnumerable(keys), version).ToBlockingEnumerable();
+            var channel = Channel.CreateUnbounded<Result<(byte[] Key, byte[] Value, DateTime version)>>();
+            var channelEnumerator = channel.Reader.ReadAllAsync().ToBlockingEnumerable();
+            long dispatched = 0;
+
+            foreach (var key in keys)
+            {
+                for (int c = 0; c < _spaces.Length; c++)
+                {
+                    dispatched++;
+                    var C = c;
+                    _ = Task.Run(async () =>
+                    {
+                        try
+                        {
+                            var (item, ver) = await _spaces[C].GetAsync(key, version);
+                            await channel.Writer.WriteAsync(Result.Ok((key, item, ver)));
+                            await channel.Writer.WriteAsync(Result.EOF<(byte[] Key, byte[] Value, DateTime version)>());
+                        }
+                        catch (Exception ex)
+                        {
+                            await channel.Writer.WriteAsync(Result.Error<(byte[] Key, byte[] Value, DateTime version)>(ex));
+                        }
+                    });
+                }
+            }
+            foreach (var item in channelEnumerator)
+            {
+                if (item.Ok)
+                    yield return item.Value;
+                else if (item.EOF)
+                {
+                    if (--dispatched == 0)
+                        break;
+                }
+                else if (item.Error)
+                    throw item.Exception;
+            }
         }
         public override async IAsyncEnumerable<(byte[] key, byte[] value)> GetManyAsync(IAsyncEnumerable<byte[]> keys, [EnumeratorCancellation]CancellationToken cancellationToken = default)
         {
-            var channel = Channel.CreateUnbounded<(bool eof, (byte[] Key, byte[] Value))>();
+            var channel = Channel.CreateUnbounded<Result<(byte[] Key, byte[] Value)>>();
             var channelEnumerator = channel.Reader.ReadAllAsync(cancellationToken);
             long dispatched = 0;
 
@@ -422,29 +652,32 @@ namespace Hiperspace
                         try
                         {
                             var item = await _spaces[C].GetAsync(key);
-                            await channel.Writer.WriteAsync((false, (key, item)), cancellationToken);
+                            await channel.Writer.WriteAsync(Result.Ok((key, item)), cancellationToken);
+                            await channel.Writer.WriteAsync(Result.EOF<(byte[] Key, byte[] Value)>(), cancellationToken);
                         }
-                        finally
+                        catch (Exception ex)
                         {
-                            await channel.Writer.WriteAsync((true, (Array.Empty<byte>(), Array.Empty<byte>())), cancellationToken);
+                            await channel.Writer.WriteAsync(Result.Error<(byte[] Key, byte[] Value)>(ex), cancellationToken);
                         }
                     }, cancellationToken);
                 }
             }
-            await foreach (var (eof, item) in channelEnumerator)
+            await foreach (var item in channelEnumerator)
             {
-                if (eof)
+                if (item.Ok)
+                    yield return item.Value;
+                else if (item.EOF)
                 {
                     if (--dispatched == 0)
                         break;
                 }
-                else
-                    yield return item;
+                else if (item.Error)
+                    throw item.Exception;
             }
         }
         public override async IAsyncEnumerable<(byte[] key, byte[] Value, DateTime version)> GetManyAsync(IAsyncEnumerable<byte[]> keys, DateTime? version, [EnumeratorCancellation]CancellationToken cancellationToken = default)
         {
-            var channel = Channel.CreateUnbounded<(bool eof, (byte[] Key, byte[] Value, DateTime version))>();
+            var channel = Channel.CreateUnbounded<Result<(byte[] Key, byte[] Value, DateTime version)>>();
             var channelEnumerator = channel.Reader.ReadAllAsync(cancellationToken);
             long dispatched = 0;
 
@@ -459,24 +692,27 @@ namespace Hiperspace
                         try
                         {
                             var (item, ver) = await _spaces[C].GetAsync(key, version);
-                            await channel.Writer.WriteAsync((false, (key, item, ver)), cancellationToken);
+                            await channel.Writer.WriteAsync(Result.Ok((key, item, ver)), cancellationToken);
+                            await channel.Writer.WriteAsync(Result.EOF<(byte[] Key, byte[] Value, DateTime version)>(), cancellationToken);
                         }
-                        finally
+                        catch (Exception ex)
                         {
-                            await channel.Writer.WriteAsync((true, (Array.Empty<byte>(), Array.Empty<byte>(), new DateTime())), cancellationToken);
+                            await channel.Writer.WriteAsync(Result.Error<(byte[] Key, byte[] Value, DateTime version)>(ex), cancellationToken);
                         }
                     }, cancellationToken);
                 }
             }
-            await foreach (var (eof, item) in channelEnumerator)
+            await foreach (var item in channelEnumerator)
             {
-                if (eof)
+                if (item.Ok)
+                    yield return item.Value;
+                else if (item.EOF)
                 {
                     if (--dispatched == 0)
                         break;
                 }
-                else
-                    yield return item;
+                else if (item.Error)
+                    throw item.Exception;
             }
         }
 
@@ -490,7 +726,7 @@ namespace Hiperspace
         }
         public override async IAsyncEnumerable<(byte[] Key, byte[] Value)> ScanAsync(byte[] begin, byte[] end, byte[][] values, [EnumeratorCancellation]CancellationToken cancellationToken = default)
         {
-            var channel = Channel.CreateUnbounded<(bool eof, (byte[] Key, byte[] Value))>();
+            var channel = Channel.CreateUnbounded<Result<(byte[] Key, byte[] Value)>>();
             var channelEnumerator = channel.Reader.ReadAllAsync(cancellationToken);
             long dispatched = 0;
 
@@ -504,30 +740,33 @@ namespace Hiperspace
                     {
                         await foreach (var item in _spaces[C].ScanAsync(begin, end, values, cancellationToken))
                         {
-                            await channel.Writer.WriteAsync((false, item), cancellationToken);
+                            await channel.Writer.WriteAsync(Result.Ok(item), cancellationToken);
                         }
+                        await channel.Writer.WriteAsync(Result.EOF<(byte[] Key, byte[] Value)>(), cancellationToken);
                     }
-                    finally
+                    catch (Exception ex)
                     {
-                        await channel.Writer.WriteAsync((true, (Array.Empty<byte>(), Array.Empty<byte>())), cancellationToken);
+                        await channel.Writer.WriteAsync(Result.Error<(byte[] Key, byte[] Value)>(ex), cancellationToken);
                     }
                 }, cancellationToken);
             }
 
-            await foreach (var (eof, item) in channelEnumerator)
+            await foreach (var item in channelEnumerator)
             {
-                if (eof)
+                if (item.Ok)
+                    yield return item.Value;
+                else if (item.EOF)
                 {
                     if (--dispatched == 0)
                         break;
                 }
-                else
-                    yield return item;
+                else if (item.Error)
+                    throw item.Exception;
             }
         }
         public override async IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> ScanAsync(byte[] begin, byte[] end, byte[][] values, DateTime? version, [EnumeratorCancellation]CancellationToken cancellationToken = default)
         {
-            var channel = Channel.CreateUnbounded<(bool eof, (byte[] Key, DateTime AsAt, byte[] Value))>();
+            var channel = Channel.CreateUnbounded<Result<(byte[] Key, DateTime AsAt, byte[] Value)>>();
             var channelEnumerator = channel.Reader.ReadAllAsync(cancellationToken);
             long dispatched = 0;
 
@@ -541,35 +780,42 @@ namespace Hiperspace
                     {
                         await foreach (var item in _spaces[C].ScanAsync(begin, end, values, version, cancellationToken))
                         {
-                            await channel.Writer.WriteAsync((false, item), cancellationToken);
+                            await channel.Writer.WriteAsync(Result.Ok(item), cancellationToken);
                         }
+                        await channel.Writer.WriteAsync(Result.EOF<(byte[] Key, DateTime AsAt, byte[] Value)>(), cancellationToken);
                     }
-                    finally
+                    catch (Exception ex)
                     {
-                        await channel.Writer.WriteAsync((true, (Array.Empty<byte>(), new DateTime(), Array.Empty<byte>())), cancellationToken);
+                        await channel.Writer.WriteAsync(Result.Error<(byte[] Key, DateTime AsAt, byte[] Value)>(ex), cancellationToken);
                     }
                 }, cancellationToken);
             }
 
-            await foreach (var (eof, item) in channelEnumerator)
+            await foreach (var item in channelEnumerator)
             {
-                if (eof)
+                if (item.Ok)
+                    yield return item.Value;
+                else if (item.EOF)
                 {
                     if (--dispatched == 0)
                         break;
                 }
-                else
-                    yield return item;
+                else if (item.Error)
+                    throw item.Exception;
             }
         }
 
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Delta(byte[] key, DateTime? version)
         {
-            return DeltaAsync(key, version).ToBlockingEnumerable();
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                foreach (var b in _spaces[c].Delta(key, version))
+                    yield return b;
+            }
         }
         public override async IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> DeltaAsync(byte[] begin, DateTime? version, [EnumeratorCancellation]CancellationToken cancellationToken = default)
         {
-            var channel = Channel.CreateUnbounded<(bool eof, (byte[] Key, DateTime AsAt, byte[] Value))>();
+            var channel = Channel.CreateUnbounded<Result<(byte[] Key, DateTime AsAt, byte[] Value)>>();
             var channelEnumerator = channel.Reader.ReadAllAsync(cancellationToken);
             long dispatched = 0;
 
@@ -583,29 +829,32 @@ namespace Hiperspace
                     {
                         await foreach (var item in _spaces[C].DeltaAsync(begin, version, cancellationToken))
                         {
-                            await channel.Writer.WriteAsync((false, item), cancellationToken);
+                            await channel.Writer.WriteAsync(Result.Ok(item), cancellationToken);
                         }
+                        await channel.Writer.WriteAsync(Result.EOF<(byte[] Key, DateTime AsAt, byte[] Value)>(), cancellationToken);
                     }
-                    finally
+                    catch (Exception ex)
                     {
-                        await channel.Writer.WriteAsync((true, (Array.Empty<byte>(), new DateTime(), Array.Empty<byte>())), cancellationToken);
+                        await channel.Writer.WriteAsync(Result.Error<(byte[] Key, DateTime AsAt, byte[] Value)>(ex), cancellationToken);
                     }
                 }, cancellationToken);
             }
-            await foreach (var (eof, item) in channelEnumerator)
+            await foreach (var item in channelEnumerator)
             {
-                if (eof)
+                if (item.Ok)
+                    yield return item.Value;
+                else if (item.EOF)
                 {
                     if (--dispatched == 0)
                         break;
                 }
-                else
-                    yield return item;
+                else if (item.Error)
+                    throw item.Exception;
             }
         }
         public override async IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindDeltaAsync(byte[] begin, DateTime? version, DateTime? DeltaFrom, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            var channel = Channel.CreateUnbounded<(bool eof, (byte[] Key, DateTime AsAt, byte[] Value))>();
+            var channel = Channel.CreateUnbounded<Result<(byte[] Key, DateTime AsAt, byte[] Value)>>();
             var channelEnumerator = channel.Reader.ReadAllAsync(cancellationToken);
             long dispatched = 0;
 
@@ -620,24 +869,27 @@ namespace Hiperspace
                         await foreach (var item in _spaces[C].DeltaAsync(begin, version, cancellationToken))
                         {
                             var value = await GetAsync(item.Value, version);
-                            await channel.Writer.WriteAsync((false, (item.Value, value.Item2, value.Item1)), cancellationToken);
+                            await channel.Writer.WriteAsync(Result.Ok((item.Value, value.Item2, value.Item1)), cancellationToken);
                         }
+                        await channel.Writer.WriteAsync(Result.EOF<(byte[] Key, DateTime AsAt, byte[] Value)>(), cancellationToken);
                     }
-                    finally
+                    catch (Exception ex)
                     {
-                        await channel.Writer.WriteAsync((true, (Array.Empty<byte>(), new DateTime(), Array.Empty<byte>())), cancellationToken);
+                        await channel.Writer.WriteAsync(Result.Error<(byte[] Key, DateTime AsAt, byte[] Value)>(ex), cancellationToken);
                     }
                 }, cancellationToken);
             }
-            await foreach (var (eof, item) in channelEnumerator)
+            await foreach (var item in channelEnumerator)
             {
-                if (eof)
+                if (item.Ok)
+                    yield return item.Value;
+                else if (item.EOF)
                 {
                     if (--dispatched == 0)
                         break;
                 }
-                else
-                    yield return item;
+                else if (item.Error)
+                    throw item.Exception;
             }
         }
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)

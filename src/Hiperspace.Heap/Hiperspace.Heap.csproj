@@ -8,37 +8,57 @@
     <Description>Hiperspace heap store for session, edge and testing purposes</Description>
     <Copyright>Cepheis Ltd (C) 2023, 2024, 2025</Copyright>
     <PackageReleaseNotes>
+      https://www.cepheis.com/hiperspace/20250329
       # Overview
-      This release is primarily concerned with performance when used in a server context the volume if data is huge and accessed via `Hiperspace.DB` and many CPU-cores are available.
+      This release introduces transitive edges, which extend the Graph model provided by `Node` and `Edge` views to include transitive traversal of an entire graph without the need for recursive queries of esoteric query languages and integrated with the data views provided by `Hiperspace`.  `Graph.TransitiveEdge` encapsulates all the Edges that can be projected as a Transitive Edge using a simple set of rules.
 
-      Performance is addressed with greater parallelism (graph `Node` and `Edge` queries already execute in parallel) and server-side filtering with using SQL queries.
+      [Transitive Edge blog](https://www.cepheis.com/blog/blog/transitive-edge)  and [Enterprise Transitive Edge](https://www.cepheis.com/blog/blog/enterprise-transitive-edge) goes into the details of our model of `Transitive Edge`, but the [graph-automorphic](https://en.wikipedia.org/wiki/Graph_automorphism) view is that a `Transitive Edge` encapsulates all the edges between *nodes* and allows the user to focus on the ends rather than the intermediate steps between them, and view the data as relations using commodity business intelligence software without *esoteric* graph query languages.
 
-      ## Parallelism
-      `PartitionSpace` and `GenerationSpace` have been updated to search each of the child spaces in parallel and collate results to return to a calling space.  For very large hiperspaces `PartitionSpace` enables `Hiperspace.DB` to match the performance of direct/local hiperspaces by executing access in parallel.  Hiperspace uses versioning to avoid transaction contention when multiple sessions are accessing a Space, as historical versions of a `GenerationSpace`  never ned to be updated they are opened with read-only option, which obviates the need for rockshare to mediate access to the underlying files.
+      ## Hiperspace
 
-      ## SQL Queries
-      Hiperspace is optimized for key or index access to efficiently search hiperspace for elements that match key or key-part criteria.
+      The [Hiperspace](https://www.nuget.org/packages/Hiperspace) package includes the additional `Graph` package types
 
-      For the model `entity Customer ( Id : Int64 ) { Name : String, ...};`, a  client query `from c in space.Customers where c.Id == 42' is translated into 'space.Customers.Find (new Customer { Id = 42} )` which in turn is translated into `CustomerKeyPath.Get (42)`, which directly fetches the customer from Hiperspace.
+      | Name |░| Notes |
+      |-|-|-|
+      | GraphFunctions || static functions that can be sued directly, or via import in a *.hilang* schema |
+      | Route || Value type that defines name and rules for projecting `Edge` as `Transitive Edge` and extending to all related nodes |
+      | Rule || The rules for matching {From node type, edge type, to node type} Edges, to the transititive edge projection |
 
-      For the model
+      ### SubSpace
+      * `SubSpace` includes an  additional *view* `SetSpace` `TransitiveEdges` that includes all elements that implement this view
+      * `FindPaths` inteface function provides a method that matches the `Graph.GraphFunctions.Paths` function, but in a way that *domain spaces* can send the graph search to a server for parallel execution on computers that have many CPU cores.
+
+      ### Fix PartitionSpace and GenerationSpace
+      These two Space interceptors provide the partitioning of data by *hash-bucket* and *date-range*, but fault in the implementation of state-machine to implement `IAsyncEnumerable&lt;&gt;` in .NET9, can result in the *map/reduce* channel being disposed before the last message is processed (*warning to the wise: don't use AI generated suggestions without considering the stress-environments that it doesn't have a clue about*)
+
+      # Hilang
+      The [HiLang](https://www.nuget.org/packages/HiLang) schema compiler has been enhanced to include the additional {**function**, **value**,**view**,**segment**}  declarations for  features of  `Hiperspace`.
+
+      There are three ways that an element can project a view in Hilang:
+      * `entity Person = Node (From = member/this, To = member/this, Name="value", TypeName = "Person")` where each member of the view is mapped to a specific member of the element
+      * `entity Person = Node()` where the view members are automatically matched by name with members of the element
+      * `entity Name =  View_Name = member`  **This language element has been enhanced to include a set of values** e.g. the set returned from `TransitativeEdge` function
+
+      # Hiperspace.SQL
+      The [Hiperspace.SQL](https://www.nuget.org/packages/Hiperspace.SQL) already includes the ability to access deep structure methods like `SELECT p.Father.Name AS Father FROM Persons AS p  WHERE p.Name = :parameter;', but now also allows deep structure to members to be used in `FROM` clauses to join to segments and sets within each row.
+
+      e.g. `Person` has an extension segment `MotherChild` and property `AllRelatives` that yields a `HashSet&lt;TransitiveEdge&gt;`, which can now be joined to in a SQL query.
+
       ```
-      entity Customer ( Id : Int64 ) { Name : String, ... [Accounts : Account ].
-      segment Account ( Id : Int64 ) { Title : String, ...};
-      ```
-      A query `from as in space.CustomerAccounts where owner.Id == 42' is translated into 'space.CustomerAccounts.Find (new Account { owner = new Customer { Id = 42} })` which in turn is translated into `CustomerAccountKeyPath.Find (42)` retrieving all Accounts that are owned by Customer 42.
+      select  p.Name as Person,
+      r.To.Name as Relation,
+      r.TypeName as Relationship,
+      r.Length as Length,
+      r.Width as Width
+      from    Persons as p,
+      p.AllRelatives as r
+      where   p.Name = :name;
 
-      For the model
+      select  p.Name as Parent, c.Name as Child
+      from    Persons as p,
+      p.MotherChild as c
+      where   p.Name = :name;
       ```
-      entity Customer ( Id : Int64 ) { Name : String, ...} [ Accounts : Account ( Customer = this ) ];
-      entity Account ( Id : Int64 ) { Title : String, Customer : Customer, ...};
-      ```
-      A query `from as in space.Accounts where Customer.Id == 42' is translated into 'space.Accounts.Find (new Account { Customer = new Customer { Id = 42} })` which in turn is translated into `AccountCustonerIndex Path.Find (42)` retrieving all Accounts that have a Customer 42, because the Customer extension `Accounts : Account ( Customer = this )` causes an index to be created on Account.
-
-      **If** the extension `Accounts : Account ( Customer = this )` is omitted, the Account `SetSpace` is scanned (with a residual condition Customer.KeyType.Id of 42), but if the query is `from as in space.Accounts where Customer.Id &lt; 42' the criteria is evaluated once the results have been returned - potentially a very large set.
-
-      ### Query
-      The `Query` function allows 'space.Accounts.Query ("SELECT Account.* FROM Accounts WHERE Accounts.Customer.Id &lt; 42") to be used to send the query to a `Hiperspace.DB` server where the results will be filtered before return to the client.
     </PackageReleaseNotes>
     <PackageLicenseExpression>GPL-2.0-or-later</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>

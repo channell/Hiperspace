@@ -30,6 +30,13 @@ type Togaf.Base
     ValidBase 		= Id = null || Name = null ? false : true
 ];
 
+%function (unary, StrategicEdge, Togaf.TogafFunctions.StrategicEdge, Set<Graph.TransitiveEdge>);
+%function (unary, Goals, Togaf.TogafFunctions.Goals, Set<Togaf.GoalRef>);
+value Togaf.GoalRef #651
+{
+    Value           : Togaf.Business.Goal #1
+};
+
 /* ********************************************************
     General entities
 ******************************************************** */
@@ -62,12 +69,19 @@ segment Togaf.Has.Location : Togaf.Base
 segment Togaf.Has.Gap : Togaf.Base 
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Gap"),
       Edge        (From = owner, To = this, Name = Name, TypeName = "AF-Has-Gap") ,
-      Togaf.Edge2 (From = this, To = owner, Name = Name, TypeName = "AF-Gap-For") ;
+      Togaf.Edge2 (From = this, To = owner, Name = Name, TypeName = "AF-Gap-For");
 
 segment Togaf.Has.WorkPackage : Togaf.Base 
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-WorkPackage"),
       Edge        (From = owner, To = this, Name = Name, TypeName = "AF-Has-WorkPackage") ,
-      Togaf.Edge2 (From = this, To = owner, Name = Name, TypeName = "AF-WorkPackage-For") ;
+      Togaf.Edge2 (From = this, To = owner, Name = Name, TypeName = "AF-WorkPackage-For") ,
+      Graph.TransitiveEdge = StrategicEdges 
+[
+    "All Edges that can be projected as Transitative Edges to a Business Goal"
+    @Once
+    StrategicEdges  = StrategicEdge(this),
+    Goals           = Goals(StrategicEdges)
+];
 
 type Togaf.General.Base : Togaf.Base, HasVectorSpace
 [
@@ -348,8 +362,8 @@ entity Togaf.Business.CourseOfAction : Togaf.General.Base
       Togaf.Edge2 ( From = Enables, To = this, Name = Name, TypeName = "AF-Capability-CourseOfAction"), 
       Togaf.Edge3 ( From = this, To = Leads, Name = Name, TypeName = "AF-CourseOfAction-Goal"),
       Togaf.Edge4 ( From = Leads, To = this, Name = Name, TypeName = "AF-Goal-CourseOfAction"), 
-      Togaf.Edge5 ( From = this, To = Leads, Name = Name, TypeName = "AF-CourseOfAction-Function"),
-      Togaf.Edge6 ( From = Leads, To = this, Name = Name, TypeName = "AF-Function-CourseOfAction") #232 
+      Togaf.Edge5 ( From = this, To = Involves, Name = Name, TypeName = "AF-CourseOfAction-Function"),
+      Togaf.Edge6 ( From = Involves, To = this, Name = Name, TypeName = "AF-Function-CourseOfAction") #232 
 {
     URL             : String #5,
     Enables         : Togaf.Business.Capability #6,

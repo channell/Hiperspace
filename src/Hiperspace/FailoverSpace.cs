@@ -122,6 +122,7 @@ namespace Hiperspace.Heap
                 else if (!_spaces[c].fault)
                 {
                     _primary = _spaces[c].space;
+                    Sync();
                     break;
                 }
             }

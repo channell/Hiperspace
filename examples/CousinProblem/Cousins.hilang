@@ -3,20 +3,22 @@
 %ids;
 
 %function (unary, relation, Cousins.Helper.Relations, List<Path>);  
+%function (unary, allrelation, Cousins.Helper.AllRelations, Set<Graph.TransitiveEdge>);  
 
 view Cousins.Edge2 : Edge = Edge() ;
 view Cousins.Edge3 : Edge = Edge() ;
 view Cousins.Edge4 : Edge = Edge() ;
 
-enum Cousins.Gender {Female #1         , Male #2        };
+enum Cousins.Gender {Female #1, Male #2};
         
 @DeltaIndex(15)
-entity Cousins.Person               : Versioned
+entity Cousins.Person       : Versioned
     = Node          (),
       Edge          (From = this,   To = Mother, Name = Name, TypeName = "Mother"),
       Cousins.Edge2 (From = this,   To = Father, Name = Name, TypeName = "Father"),
       Cousins.Edge3 (From = Father, To = this,   Name = Name, TypeName = "Child"),
-      Cousins.Edge4 (From = Mother, To = this,   Name = Name, TypeName = "Child") #11
+      Cousins.Edge4 (From = Mother, To = this,   Name = Name, TypeName = "Child"),
+      Graph.TransitiveEdge = AllRelatives #11
 (
     Name                    : String #1
 )
@@ -29,19 +31,19 @@ entity Cousins.Person               : Versioned
 }
 [
     TypeName    = "Person",
-    FatherChild               : Cousins.Person (Father = this) #8 ,
+    FatherChild             : Cousins.Person (Father = this) #8 ,
     MotherChild             : Cousins.Person   (Mother = this) #9  ,
     @Once     
-    Relatives   = relation (this)
+    Relatives   = relation (this),
+    Stored                  : Graph.TransitiveSegment #52,
+    @Once     
+    AllRelatives   = allrelation(this),
+
 ]; 
 
  
-entity Cousins.Path             : Edge = Edge () #12 
+entity Cousins.Path         : Edge = Edge () #12 
 {
- 
     Edge                    : Edge #10 ,
-    Source                  : Cousins.Path #11 ,
- 
+    Source                  : Cousins.Path #11
 };
-   
- 

@@ -1,5 +1,6 @@
 ﻿using CousinProblem;
 using Cousins;
+using Graph;
 using Hiperspace;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -9,6 +10,21 @@ namespace Cousins //Problem
 {
     internal static class Helper
     {
+        internal static HashSet<TransitiveEdge> AllRelations(Person person)
+        {
+            Node node = person;
+
+            var route = new Route
+            {
+                Name = "Relation",
+                Rules = new HashSet<Rule>
+                {
+                    new Rule { FromType = "Person", EdgeType = "*", ToType = "Person" }
+                }
+            };
+
+            return PathFunctions.Paths(node, route);
+        }
         /// <summary>
         /// Entry function of HiLang model
         /// </summary>

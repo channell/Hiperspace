@@ -59,8 +59,8 @@ namespace Hiperspace
                     Horizon = baseHorizon.Union(horizon).ToArray();
             }
             else
-            { 
-                Horizon = horizon; 
+            {
+                Horizon = horizon;
             }
             _version = AsAt;
             _delta = DeltaFrom;
@@ -91,9 +91,10 @@ namespace Hiperspace
         public SetSpace<Edge> Edges { get; protected set; }
         public SetSpace<VectorSpace> VectorSpaces { get; protected set; }
         public SetSpace<VectorNode> VectorNodes { get; protected set; }
+        public SetSpace<Graph.TransitiveEdge> TransitiveEdges { get; protected set; }
 
 #pragma warning disable CS8618 // Nodes and Edges will be constructed from domain
-        public SubSpace (HiperSpace space) : base ()
+        public SubSpace(HiperSpace space) : base()
         {
             _space = space;
         }
@@ -162,7 +163,6 @@ namespace Hiperspace
         {
             return _space.DeltaAsync(begin, version);
         }
-
 
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)
         {
@@ -257,14 +257,6 @@ namespace Hiperspace
             return _space.ScanAsync(begin, end, values, version, cancellationToken);
         }
 
-
-
-
-
-
-
-
-
         public DateTime? AsAt => _version;
         public DateTime? DeltaFrom => _delta;
 
@@ -279,7 +271,7 @@ namespace Hiperspace
         }
         public virtual object? Execute(Expression expression)
         {
-            return Execute<object> (expression);
+            return Execute<object>(expression);
         }
         public virtual TResult Execute<TResult>(Expression expression)
         {
@@ -336,7 +328,6 @@ namespace Hiperspace
             return _space.FindDeltaAsync(begin, version, DeltaFrom, cancellationToken);
         }
 
-
         public override IAsyncEnumerable<(byte[] Key, byte[] Value)> FindIndexAsync(byte[] begin, byte[] end, CancellationToken cancellationToken = default)
         {
             return _space.FindIndexAsync(begin, end, cancellationToken);
@@ -374,5 +365,30 @@ namespace Hiperspace
             public IQueryable<TEntity> Query<TEntity>(string SQL);
         }
         public ISQLQueryProvider? SQLQueryProvider { get; init; }
+
+        /// <summary>
+        /// Find all paths from a root node to a target node on a server if available
+        /// </summary>
+        /// <param name="root">the node that the path is being constructed from</param>
+        /// <param name="route">the routing rules that are included in this path</param>
+        /// <param name="length">the maximum length of routes to be searched</param>
+        /// <param name="targets">set of target node types for this use of path</param>
+        /// <returns>Set of value references to paths</returns>
+        public virtual HashSet<Graph.TransitiveEdge> FindPaths(Node? root, Graph.Route? route, int? length = null, HashSet<string>? targets = null)
+        {
+            return Graph.PathFunctions.Paths(root, route, length, targets);
+        }
+        /// <summary>
+        /// Find all paths from a root node to a target node on a server if available
+        /// </summary>
+        /// <param name="root">the node that the path is being constructed from</param>
+        /// <param name="route">the routing rules that are included in this path</param>
+        /// <param name="length">the maximum length of routes to be searched</param>
+        /// <param name="targets">set of target node types for this use of path</param>
+        /// <returns>Set of value references to paths</returns>
+        public virtual async Task<HashSet<Graph.TransitiveEdge>> FindPathsAsync(Node root, Graph.Route route, int? length = null, HashSet<string>? targets = null, CancellationToken cancellationToken = default)
+        {
+            return await Graph.PathFunctions.PathsAsync(root, new Graph.RouteMap(route), length, targets, cancellationToken);
+        }
     }
 }

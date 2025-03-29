@@ -21,6 +21,12 @@ public partial class CousinsSpace
             }
         },
         {
+            "read", new Horizon[] 
+            {
+                new Horizon<Person> (p => p.Deleted == false),
+            }
+        },
+        {
             "WRITE", new Horizon[]
             {
             }
