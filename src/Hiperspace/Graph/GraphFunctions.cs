@@ -6,7 +6,6 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using Hiperspace;
-using Microsoft.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading.Channels;
 
@@ -35,18 +34,18 @@ namespace Graph
             public bool EOF => Interlocked.Read(ref Count) == 0;
         }
 
-        public static HashSet<TransitiveEdge> Paths
+        public static HashSet<HiperEdge> Paths
             (Node? root
             , Route? route
             , int? length = null
             , HashSet<string>? targets = null)
         {
             if (root == null || route == null)
-                return new HashSet<TransitiveEdge>();
+                return new HashSet<HiperEdge>();
             else
-                return new HashSet<TransitiveEdge>(PathsAsync(root, new RouteMap(route), length, targets).GetAwaiter().GetResult());
+                return new HashSet<HiperEdge>(PathsAsync(root, new RouteMap(route), length, targets).GetAwaiter().GetResult());
         }
-        public static HashSet<TransitiveEdge> PathsRemote
+        public static HashSet<HiperEdge> PathsRemote
             (Node? root
             , Route? route
             , int? length = null
@@ -58,17 +57,17 @@ namespace Graph
                 return Paths(root, route, length, targets);
         }
 
-        public static async Task<HashSet<TransitiveEdge>> PathsAsync
+        public static async Task<HashSet<HiperEdge>> PathsAsync
             (Node root
             , RouteMap route
             , int? length = null
             , HashSet<string>? targets = null
             , CancellationToken cancellationToken = default)
         {
-            var channel = Channel.CreateUnbounded<Result<TransitiveEdge>>();
+            var channel = Channel.CreateUnbounded<Result<HiperEdge>>();
             Dispatch dispatched = new Dispatch();
 
-            HashSet<TransitiveEdge> result = new HashSet<TransitiveEdge>();
+            HashSet<HiperEdge> result = new HashSet<HiperEdge>();
             foreach (var edge in root.Froms)
             {
                 if (edge != null)
@@ -82,7 +81,7 @@ namespace Graph
                         }
                         finally
                         {
-                            await channel.Writer.WriteAsync(Result.EOF<TransitiveEdge>());
+                            await channel.Writer.WriteAsync(Result.EOF<HiperEdge>());
                         }
                     });
                 }
@@ -127,10 +126,10 @@ namespace Graph
             (Node root
             , RouteMap route
             , Edge edge
-            , TransitiveEdge? source
+            , HiperEdge? source
             , int? length
             , int recursion
-            , Channel<Result<TransitiveEdge>> channel
+            , Channel<Result<HiperEdge>> channel
             , Dispatch dispatched
             , HashSet<string>? targets
             , CancellationToken cancellationToken = default)
@@ -142,7 +141,7 @@ namespace Graph
                 edge.InPath(source))
                 return;
 
-            var path = new TransitiveEdge
+            var path = new HiperEdge
             {
                 From = root,
                 To = edge.To,
@@ -170,7 +169,7 @@ namespace Graph
                                 }
                                 finally
                                 {
-                                    await channel.Writer.WriteAsync(Result.EOF<TransitiveEdge>());
+                                    await channel.Writer.WriteAsync(Result.EOF<HiperEdge>());
                                 }
                             });
                         }
@@ -183,7 +182,7 @@ namespace Graph
                 await channel.Writer.WriteAsync(Result.Ok(path));
             }
         }
-        public static bool InPath(this Edge edge, TransitiveEdge? path)
+        public static bool InPath(this Edge edge, HiperEdge? path)
         {
             if (path == null)
                 return false;
@@ -193,7 +192,6 @@ namespace Graph
             else
                 return edge.InPath(path?.Source);
         }
-
 
         /// <summary>
         /// Find cycles in the graph that link back to the root node
@@ -208,16 +206,16 @@ namespace Graph
         /// fraud detection, where a high number of cycle in a financial graph
         /// can indicate money laundering.
         /// </remarks>
-        public static async IAsyncEnumerable<TransitiveEdge> CycleAsync
+        public static async IAsyncEnumerable<HiperEdge> CycleAsync
             (Node root
             , RouteMap route
             , int? length = null
             , [EnumeratorCancellation]CancellationToken cancellationToken = default)
         {
-            var channel = Channel.CreateUnbounded<Result<TransitiveEdge>>();
+            var channel = Channel.CreateUnbounded<Result<HiperEdge>>();
             Dispatch dispatched = new Dispatch();
 
-            HashSet<TransitiveEdge> result = new HashSet<TransitiveEdge>();
+            HashSet<HiperEdge> result = new HashSet<HiperEdge>();
             foreach (var edge in root.Froms)
             {
                 if (edge != null)
@@ -231,7 +229,7 @@ namespace Graph
                         }
                         finally
                         {
-                            await channel.Writer.WriteAsync(Result.EOF<TransitiveEdge>());
+                            await channel.Writer.WriteAsync(Result.EOF<HiperEdge>());
                         }
                     });
                 }
@@ -258,14 +256,14 @@ namespace Graph
             (Node root
             , RouteMap route
             , Edge edge
-            , TransitiveEdge? source
+            , HiperEdge? source
             , int? length
             , int recursion
-            , Channel<Result<TransitiveEdge>> channel
+            , Channel<Result<HiperEdge>> channel
             , Dispatch dispatched
             , CancellationToken cancellationToken = default)
         {
-            var path = new TransitiveEdge
+            var path = new HiperEdge
             {
                 From = root,
                 To = edge.To,
@@ -302,7 +300,7 @@ namespace Graph
                                 }
                                 finally
                                 {
-                                    await channel.Writer.WriteAsync(Result.EOF<TransitiveEdge>());
+                                    await channel.Writer.WriteAsync(Result.EOF<HiperEdge>());
                                 }
                             });
                         }

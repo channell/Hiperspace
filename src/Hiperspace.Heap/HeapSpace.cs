@@ -101,6 +101,7 @@ namespace Hiperspace.Heap
             return Task.Run(() => Bind(key, value, version, source));
         }
 
+        [Obsolete("Use ExportAsync instead")]
         public override IEnumerable<(byte[], byte[])> Space()
         {
             foreach(var h in _heap)
@@ -109,6 +110,7 @@ namespace Hiperspace.Heap
             }
         }
 
+        [Obsolete("Use ExportAsync instead")]
         public override IAsyncEnumerable<(byte[], byte[])> SpaceAsync(CancellationToken cancellationToken = default)
         {
             return Space().ToAsyncEnumerable();
@@ -418,6 +420,21 @@ namespace Hiperspace.Heap
         public override IAsyncEnumerable<(byte[] value, DateTime version)> GetVersionsAsync(byte[] key, CancellationToken cancellationToken = default)
         {
             return GetVersions(key).ToAsyncEnumerable(cancellationToken);
+        }
+
+        public async override IAsyncEnumerable<(byte[] Key, byte[] Value)> ExportAsync([EnumeratorCancellation]CancellationToken cancellationToken = default)
+        {
+            await foreach (var h in _heap.ToAsyncEnumerable(cancellationToken))
+            {
+                yield return (h.Key, h.Value);
+            }
+        }
+        public async override void ImportAsync(IAsyncEnumerable<(byte[] Key, byte[] Value)> data, CancellationToken cancellationToken = default)
+        {
+            await foreach (var h in data.WithCancellation(cancellationToken))
+            {
+                Bind(h.Key, h.Value);
+            }
         }
 
         #region node

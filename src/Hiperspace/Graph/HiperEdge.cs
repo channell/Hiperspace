@@ -15,16 +15,16 @@ using System.Text.Json.Serialization;
 namespace Graph
 {
 
-    #region TransitiveEdge
+    #region HiperEdge
 
     /* <Summary>Path from one Node to another Node over a number of routes</Summary> */
     [ProtoContract]
-    public partial class TransitiveEdge : Hiperspace.Element<TransitiveEdge>
+    public partial class HiperEdge : Hiperspace.Element<HiperEdge>
     {
         public KeyType _key;
         internal ValueType _value;
 
-        public TransitiveEdge()
+        public HiperEdge()
         {
             _key = new KeyType();
             _value = new ValueType();
@@ -32,19 +32,19 @@ namespace Graph
 
 
         }
-        public TransitiveEdge(KeyType key, ValueType value) : this()
+        public HiperEdge(KeyType key, ValueType value) : this()
         {
             _key = key;
             _value = value;
 
         }
 
-        public TransitiveEdge(KeyType key) : this()
+        public HiperEdge(KeyType key) : this()
         {
             _key = key;
         }
 
-        public TransitiveEdge(TransitiveEdge source, SubSpace? space = null) : this()
+        public HiperEdge(HiperEdge source, SubSpace? space = null) : this()
         {
             _key = source._key;
             _value = source._value;
@@ -66,6 +66,13 @@ namespace Graph
                 _key.From = value;
             }
         }
+        public string? From_SKey
+        {
+            get
+            {
+                return _key.From?.Key.SKey;
+            }
+        }
 
         [ProtoMember(3)]
         public Node? To
@@ -78,6 +85,13 @@ namespace Graph
             {
                 if (SetSpace != null && _key.To != value) throw new Hiperspace.ValueMutationException("To");
                 _key.To = value;
+            }
+        }
+        public string? To_SKey
+        {
+            get
+            {
+                return _key.To?.Key.SKey;
             }
         }
 
@@ -105,7 +119,7 @@ namespace Graph
             }
             set
             {
-                if (SetSpace != null && _value.Name != value) throw new Hiperspace.ValueMutationException($"Name");
+                if (SetSpace != null && _value.Name != value) throw new Hiperspace.ValueMutationException($"CubeName");
                 _value.Name = value;
             }
         }
@@ -127,7 +141,7 @@ namespace Graph
 
         /* <Summary>The shortest source Path that this path extends</Summary> */
         [ProtoMember(11)]
-        public Graph.TransitiveEdge? Source
+        public Graph.HiperEdge? Source
         {
             get
             {
@@ -140,7 +154,7 @@ namespace Graph
             }
         }
 
-        /* <Summary>The number of distict paths between the Nodes</Summary> */
+        /* <Summary>The number of distinct paths between the Nodes</Summary> */
         [ProtoMember(13)]
         public Int32? Width
         {
@@ -176,7 +190,7 @@ namespace Graph
         public struct KeyType : IEquatable<KeyType>, IComparable<KeyType>
         {
 
-            internal KeyType(TransitiveEdge item)
+            internal KeyType(HiperEdge item)
             {
 
                 From = item.From;
@@ -298,19 +312,19 @@ namespace Graph
                 return false;
             }
 
-            internal KeyRef<KeyType, TransitiveEdge> self { get => new KeyRef<KeyType, TransitiveEdge>(this); }
+            internal KeyRef<KeyType, HiperEdge> self { get => new KeyRef<KeyType, HiperEdge>(this); }
 
-            public static implicit operator KeyRef<KeyType, TransitiveEdge>([NotNull] KeyType other)
+            public static implicit operator KeyRef<KeyType, HiperEdge>([NotNull] KeyType other)
             {
                 return other.self;
             }
         }
-        public static explicit operator KeyType(TransitiveEdge item) => item._key;
+        public static explicit operator KeyType(HiperEdge item) => item._key;
 
         [ProtoContract]
         public struct ValueType
         {
-            internal ValueType(TransitiveEdge item)
+            internal ValueType(HiperEdge item)
             {
 
                 Name = item.Name;
@@ -322,7 +336,7 @@ namespace Graph
 
             [ProtoMember(5)] public String? Name;
             [ProtoMember(10)] public KeyRef<Edge.KeyType, Edge>? Edge;
-            [ProtoMember(11)] public KeyRef<Graph.TransitiveEdge.KeyType, Graph.TransitiveEdge>? Source;
+            [ProtoMember(11)] public KeyRef<Graph.HiperEdge.KeyType, Graph.HiperEdge>? Source;
             [ProtoMember(13)] public Int32? Width;
             [ProtoMember(14)] public Int32? Length;
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -338,7 +352,7 @@ namespace Graph
                 if (Source.HasValue)
                 {
                     var item = Source.Value;
-                    item.Bind(space.TransitiveEdges);
+                    item.Bind(space.HiperEdges);
                     Source = item;
                 }
             }
@@ -355,7 +369,7 @@ namespace Graph
                 if (Source.HasValue)
                 {
                     var item = Source.Value;
-                    item.Unbind(space.TransitiveEdges);
+                    item.Unbind(space.HiperEdges);
                     Source = item;
                 }
             }
@@ -371,7 +385,7 @@ namespace Graph
                 return hc.ToHashCode();
             }
         }
-        public static explicit operator ValueType(TransitiveEdge item) => item._value;
+        public static explicit operator ValueType(HiperEdge item) => item._value;
 
         #endregion
 
@@ -417,7 +431,7 @@ namespace Graph
 
         #region views
 
-        public static implicit operator Edge(TransitiveEdge item)
+        public static implicit operator Edge(HiperEdge item)
         {
 #pragma warning disable CS8603
 #pragma warning disable CS8604
@@ -437,14 +451,14 @@ namespace Graph
 #pragma warning restore CS8603
 
         }
-        public static implicit operator KeyRef<Edge.KeyType, Edge>(TransitiveEdge? key)
+        public static implicit operator KeyRef<Edge.KeyType, Edge>(HiperEdge? key)
         {
             if (key != null)
                 return (Edge)key;
             else
                 return default;
         }
-        public TransitiveEdge(Edge that) : this()
+        public HiperEdge(Edge that) : this()
         {
             var item = this;
 
@@ -478,16 +492,16 @@ namespace Graph
             }
         }
 
-        public override Result<TransitiveEdge> Bind(SubSpace subSpace)
+        public override Result<HiperEdge> Bind(SubSpace subSpace)
         {
             if (subSpace is SubSpace space)
             {
-                if (SetSpace != space.TransitiveEdges)
+                if (SetSpace != space.HiperEdges)
                 {
                     PreBind();
-                    if (space.TransitiveEdges.TryGetValue(this, out TransitiveEdge current))
+                    if (space.HiperEdges.TryGetValue(this, out HiperEdge current))
                         return Result.Skip(current);
-                    SetSpace = space.TransitiveEdges;
+                    SetSpace = space.HiperEdges;
                     _key.Bind(space);
                     _value.Bind(space);
 
@@ -500,7 +514,7 @@ namespace Graph
         }
         public override void Unbind(SubSpace subSpace)
         {
-            if (subSpace is SubSpace space && space.TransitiveEdges == SetSpace)
+            if (subSpace is SubSpace space && space.HiperEdges == SetSpace)
             {
                 _key.Unbind(space);
                 _value.Unbind(space);
@@ -518,16 +532,16 @@ namespace Graph
         public override bool Equals(Object? other)
         {
             if (other == null) return false;
-            if (other is TransitiveEdge) return Equals((TransitiveEdge)other);
+            if (other is HiperEdge) return Equals((HiperEdge)other);
             return false;
         }
-        public override bool Equals(TransitiveEdge? other)
+        public override bool Equals(HiperEdge? other)
         {
             if (ReferenceEquals(null, other))
                 return false;
             return (_key == other._key);
         }
-        public override int CompareTo(TransitiveEdge? other)
+        public override int CompareTo(HiperEdge? other)
         {
             if (ReferenceEquals(null, other))
                 throw new ArgumentNullException(nameof(other));
@@ -546,19 +560,19 @@ namespace Graph
         }
         #endregion
         #region helpers
-        [JsonIgnore] public KeyRef<TransitiveEdge.KeyType, TransitiveEdge> self { get => new KeyRef<TransitiveEdge.KeyType, TransitiveEdge>(_key, this); }
+        [JsonIgnore] public KeyRef<HiperEdge.KeyType, HiperEdge> self { get => new KeyRef<HiperEdge.KeyType, HiperEdge>(_key, this); }
 
-        public static implicit operator KeyRef<KeyType, TransitiveEdge>([NotNull] TransitiveEdge other)
+        public static implicit operator KeyRef<KeyType, HiperEdge>([NotNull] HiperEdge other)
         {
             return other.self;
         }
-        public static implicit operator KeyRef<KeyType, TransitiveEdge>?(TransitiveEdge? other)
+        public static implicit operator KeyRef<KeyType, HiperEdge>?(HiperEdge? other)
         {
             if (!ReferenceEquals(null, other))
                 return other.self;
             return null;
         }
-        internal bool Filter(TransitiveEdge other, bool read)
+        internal bool Filter(HiperEdge other, bool read)
         {
 
             if (other.From != null && this.From != null && this.From != other.From) return false;
@@ -579,7 +593,7 @@ namespace Graph
             }
             return false;
         }
-        public static bool operator ==(TransitiveEdge? left, TransitiveEdge? right)
+        public static bool operator ==(HiperEdge? left, HiperEdge? right)
         {
             if (ReferenceEquals(null, left) && ReferenceEquals(null, right))
                 return true;
@@ -588,7 +602,7 @@ namespace Graph
             else
                 return left.Equals(right);
         }
-        public static bool operator !=(TransitiveEdge? left, TransitiveEdge? right)
+        public static bool operator !=(HiperEdge? left, HiperEdge? right)
         {
             if (ReferenceEquals(null, left) && ReferenceEquals(null, right))
                 return false;
@@ -599,7 +613,7 @@ namespace Graph
         }
 
         [JsonIgnore]
-        public new SetSpace<TransitiveEdge>? SetSpace { get => base.SetSpace; set => base.SetSpace = value; }
+        public new SetSpace<HiperEdge>? SetSpace { get => base.SetSpace; set => base.SetSpace = value; }
 
         #endregion
     }

@@ -61,7 +61,7 @@ namespace Hiperspace
             get => _value.Name;
             set
             {
-                if (SetSpace != null && _value.Name != value) throw new Hiperspace.MutationException($"Name can not be changed once bound to a Space");
+                if (SetSpace != null && _value.Name != value) throw new Hiperspace.MutationException($"CubeName can not be changed once bound to a Space");
                 _value.Name = value;
             }
         }

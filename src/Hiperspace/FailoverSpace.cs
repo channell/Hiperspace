@@ -47,49 +47,55 @@ namespace Hiperspace.Heap
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void Sync()
+        private async Task SyncAsync()
         {
-            if (_sync != null)
+            HiperSpace? sync = null;
+            lock (_lock)
+            {
+                if (_sync == null)
+                {
+                    sync = _sync!;
+                    _sync = null;
+                }
+            }
+
+            if (sync != null)
             {
                 bool fault = false;
-                lock (_lock)
+                for (int c = 0; c < _spaces.Length; c++)
                 {
-                    for (int c = 0; c < _spaces.Length; c++)
+                    if (_spaces[c].fault)
                     {
-                        if (_spaces[c].fault)
+                        try
                         {
-                            try
+                            await foreach (var row in sync.ExportAsync())
                             {
-                                foreach (var row in _sync.Space())
+                                if (row.Item1.Length > 0 && row.Item1[0] != 0x00)
                                 {
-                                    if (row.Item1.Length > 0 && row.Item1[0] != 0x00)
-                                    {
-                                        _spaces[c].space.Bind(row.Item1, row.Item2, null);
-                                    }
-                                    else
-                                    {
-                                        var keypart = new byte[row.Item1.Length - sizeof(long) - 1];
-                                        var span = new Span<byte>(row.Item1, 1, row.Item1.Length - sizeof(long) - 1);
-                                        span.CopyTo(keypart);
-                                        var ver = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(row.Item1, row.Item1.Length - sizeof(ulong), sizeof(ulong))));
-                                        var stamp = new DateTime(ver);
-                                        _spaces[c].space.Bind(keypart, row.Item2, stamp, null);
-                                    }
+                                    _spaces[c].space.Bind(row.Item1, row.Item2, null);
                                 }
-                                _spaces[c].fault = false;
+                                else
+                                {
+                                    var keypart = new byte[row.Item1.Length - sizeof(long) - 1];
+                                    var span = new Span<byte>(row.Item1, 1, row.Item1.Length - sizeof(long) - 1);
+                                    span.CopyTo(keypart);
+                                    var ver = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(row.Item1, row.Item1.Length - sizeof(ulong), sizeof(ulong))));
+                                    var stamp = new DateTime(ver);
+                                    _spaces[c].space.Bind(keypart, row.Item2, stamp, null);
+                                }
                             }
-                            catch (Exception)
-                            {
-                                fault = true;
-                                _spaces[c].fault = true;
-                            }
+                            _spaces[c].fault = false;
+                        }
+                        catch (Exception)
+                        {
+                            fault = true;
+                            _spaces[c].fault = true;
                         }
                     }
-                    if (!fault)
-                    {
-                        _sync.Dispose();
-                        _sync = null;
-                    }
+                }
+                if (!fault)
+                {
+                    sync.Dispose();
                 }
             }
         }
@@ -122,7 +128,7 @@ namespace Hiperspace.Heap
                 else if (!_spaces[c].fault)
                 {
                     _primary = _spaces[c].space;
-                    Sync();
+                    Task.Run(SyncAsync);
                     break;
                 }
             }
@@ -392,6 +398,7 @@ namespace Hiperspace.Heap
             }
         }
 
+        [Obsolete("Use ExportAsync instead")]
         public override IEnumerable<(byte[] Key, byte[] Value)> Space()
         {
             try
@@ -405,6 +412,7 @@ namespace Hiperspace.Heap
             }
         }
 
+        [Obsolete("Use ExportAsync instead")]
         public override IAsyncEnumerable<(byte[] Key, byte[] Value)> SpaceAsync(CancellationToken cancellationToken = default)
         {
             try
@@ -824,6 +832,14 @@ namespace Hiperspace.Heap
                 Recover();
                 return _primary.ScanAsync(begin, end, values, version, cancellationToken);
             }
+        }
+        public override IAsyncEnumerable<(byte[] Key, byte[] Value)> ExportAsync(CancellationToken cancellationToken = default)
+        {
+            return _primary.ExportAsync(cancellationToken);
+        }
+        public override void ImportAsync(IAsyncEnumerable<(byte[] Key, byte[] Value)> values, CancellationToken cancellationToken = default)
+        {
+            _primary.ImportAsync(values, cancellationToken);
         }
     }
 }

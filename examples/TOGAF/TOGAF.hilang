@@ -30,7 +30,7 @@ type Togaf.Base
     ValidBase 		= Id = null || Name = null ? false : true
 ];
 
-%function (unary, StrategicEdge, Togaf.TogafFunctions.StrategicEdge, Set<Graph.TransitiveEdge>);
+%function (unary, StrategicEdge, Togaf.TogafFunctions.StrategicEdge, Set<Graph.HiperEdge>);
 %function (unary, Goals, Togaf.TogafFunctions.Goals, Set<Togaf.GoalRef>);
 value Togaf.GoalRef #651
 {
@@ -75,7 +75,7 @@ segment Togaf.Has.WorkPackage : Togaf.Base
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-WorkPackage"),
       Edge        (From = owner, To = this, Name = Name, TypeName = "AF-Has-WorkPackage") ,
       Togaf.Edge2 (From = this, To = owner, Name = Name, TypeName = "AF-WorkPackage-For") ,
-      Graph.TransitiveEdge = StrategicEdges 
+      Graph.HiperEdge = StrategicEdges 
 [
     "All Edges that can be projected as Transitative Edges to a Business Goal"
     @Once

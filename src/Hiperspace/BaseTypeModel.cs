@@ -27,10 +27,10 @@ public class BaseTypeModel
     , ISerializer<VectorNode.ValueType>
     , ISerializer<Graph.Route>
     , ISerializer<Graph.Rule>
-    , ISerializer<Graph.TransitiveEdge.KeyType>
-    , ISerializer<Graph.TransitiveEdge.ValueType>
-    , ISerializer<KeyRef<Graph.TransitiveEdge.KeyType, Graph.TransitiveEdge>>
-    , ISerializer<Graph.TransitiveEdge>
+    , ISerializer<Graph.HiperEdge.KeyType>
+    , ISerializer<Graph.HiperEdge.ValueType>
+    , ISerializer<KeyRef<Graph.HiperEdge.KeyType, Graph.HiperEdge>>
+    , ISerializer<Graph.HiperEdge>
 {
     public SerializerFeatures Features => SerializerFeatures.CategoryMessage;
 
@@ -813,7 +813,7 @@ public class BaseTypeModel
         state.WriteString(3, value.EdgeType);
 
     }
-    Graph.TransitiveEdge.KeyType ISerializer<Graph.TransitiveEdge.KeyType>.Read(ref ProtoReader.State state, Graph.TransitiveEdge.KeyType value)
+    Graph.HiperEdge.KeyType ISerializer<Graph.HiperEdge.KeyType>.Read(ref ProtoReader.State state, Graph.HiperEdge.KeyType value)
     {
         int num;
         while ((num = state.ReadFieldHeader()) > 0)
@@ -845,7 +845,7 @@ public class BaseTypeModel
         }
         return value;
     }
-    void ISerializer<Graph.TransitiveEdge.KeyType>.Write(ref ProtoWriter.State state, Graph.TransitiveEdge.KeyType value)
+    void ISerializer<Graph.HiperEdge.KeyType>.Write(ref ProtoWriter.State state, Graph.HiperEdge.KeyType value)
     {
 
         if (value.From != null)
@@ -859,7 +859,7 @@ public class BaseTypeModel
         state.WriteString(4, value.TypeName);
     }
 
-    Graph.TransitiveEdge.ValueType ISerializer<Graph.TransitiveEdge.ValueType>.Read(ref ProtoReader.State state, Graph.TransitiveEdge.ValueType value)
+    Graph.HiperEdge.ValueType ISerializer<Graph.HiperEdge.ValueType>.Read(ref ProtoReader.State state, Graph.HiperEdge.ValueType value)
     {
         int num;
         while ((num = state.ReadFieldHeader()) > 0)
@@ -887,8 +887,8 @@ public class BaseTypeModel
                         //key = state.ReadMessage<KeyRef<Graph.Path.KeyType, Graph.Path>>(SerializerFeatures.CategoryRepeated, key, this);
                         //value.Source = key;
                         // read the full object
-                        Graph.TransitiveEdge path = new();
-                        path = state.ReadMessage<Graph.TransitiveEdge>(SerializerFeatures.CategoryRepeated, path, this);
+                        Graph.HiperEdge path = new();
+                        path = state.ReadMessage<Graph.HiperEdge>(SerializerFeatures.CategoryRepeated, path, this);
                         value.Source = path;
                     }
                     break;
@@ -905,7 +905,7 @@ public class BaseTypeModel
         }
         return value;
     }
-    void ISerializer<Graph.TransitiveEdge.ValueType>.Write(ref ProtoWriter.State state, Graph.TransitiveEdge.ValueType value)
+    void ISerializer<Graph.HiperEdge.ValueType>.Write(ref ProtoWriter.State state, Graph.HiperEdge.ValueType value)
     {
 
         state.WriteString(5, value.Name);
@@ -919,7 +919,7 @@ public class BaseTypeModel
         {
             //state.WriteMessage<KeyRef<Graph.Path.KeyType, Graph.Path>>(11, SerializerFeatures.CategoryRepeated, value.Source.Value, this);
             // write the full object
-            state.WriteMessage<Graph.TransitiveEdge>(11, SerializerFeatures.CategoryRepeated, value.Source.Value.Value, this);
+            state.WriteMessage<Graph.HiperEdge>(11, SerializerFeatures.CategoryRepeated, value.Source.Value.Value, this);
         }
         if (value.Width != null)
         {
@@ -933,7 +933,7 @@ public class BaseTypeModel
         }
     }
 
-    KeyRef<Graph.TransitiveEdge.KeyType, Graph.TransitiveEdge> ISerializer<KeyRef<Graph.TransitiveEdge.KeyType, Graph.TransitiveEdge>>.Read(ref ProtoReader.State state, KeyRef<Graph.TransitiveEdge.KeyType, Graph.TransitiveEdge> item)
+    KeyRef<Graph.HiperEdge.KeyType, Graph.HiperEdge> ISerializer<KeyRef<Graph.HiperEdge.KeyType, Graph.HiperEdge>>.Read(ref ProtoReader.State state, KeyRef<Graph.HiperEdge.KeyType, Graph.HiperEdge> item)
     {
         var value = item.Key;
         int num;
@@ -972,10 +972,10 @@ public class BaseTypeModel
                     break;
             }
         }
-        return new KeyRef<Graph.TransitiveEdge.KeyType, Graph.TransitiveEdge>(value);
+        return new KeyRef<Graph.HiperEdge.KeyType, Graph.HiperEdge>(value);
     }
 
-    void ISerializer<KeyRef<Graph.TransitiveEdge.KeyType, Graph.TransitiveEdge>>.Write(ref ProtoWriter.State state, KeyRef<Graph.TransitiveEdge.KeyType, Graph.TransitiveEdge> item)
+    void ISerializer<KeyRef<Graph.HiperEdge.KeyType, Graph.HiperEdge>>.Write(ref ProtoWriter.State state, KeyRef<Graph.HiperEdge.KeyType, Graph.HiperEdge> item)
     {
         var value = item.Key;
 
@@ -994,15 +994,15 @@ public class BaseTypeModel
         state.WriteString(4, value.TypeName);
     }
 
-    Graph.TransitiveEdge ISerializer<Graph.TransitiveEdge>.Read(ref ProtoReader.State state, Graph.TransitiveEdge item)
+    Graph.HiperEdge ISerializer<Graph.HiperEdge>.Read(ref ProtoReader.State state, Graph.HiperEdge item)
     {
-        item._key = ((ISerializer<Graph.TransitiveEdge.KeyType>)this).Read(ref state, item._key);
-        item._value = ((ISerializer<Graph.TransitiveEdge.ValueType>)this).Read(ref state, item._value);
+        item._key = ((ISerializer<Graph.HiperEdge.KeyType>)this).Read(ref state, item._key);
+        item._value = ((ISerializer<Graph.HiperEdge.ValueType>)this).Read(ref state, item._value);
         return item;
     }
-    void ISerializer<Graph.TransitiveEdge>.Write(ref ProtoWriter.State state, Graph.TransitiveEdge item)
+    void ISerializer<Graph.HiperEdge>.Write(ref ProtoWriter.State state, Graph.HiperEdge item)
     {
-        ((ISerializer<Graph.TransitiveEdge.KeyType>)this).Write(ref state, item._key);
-        ((ISerializer<Graph.TransitiveEdge.ValueType>)this).Write(ref state, item._value);
+        ((ISerializer<Graph.HiperEdge.KeyType>)this).Write(ref state, item._key);
+        ((ISerializer<Graph.HiperEdge.ValueType>)this).Write(ref state, item._value);
     }
 }

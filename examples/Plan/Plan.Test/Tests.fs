@@ -316,7 +316,7 @@ type  PlanTest (output : ITestOutputHelper) =
     //            let ck          (p : Plan.Project) = CubeKey ([|p.BKey|])
             let fact        (p, (sc : decimal, ac : decimal, pc : decimal, ic : decimal, e : decimal)) = 
                 let f = Plan.Tasks.Task_Fact ()
-                f.Slice <- ""
+                f.CubeSlice <- ""
                 f.Project <- p
                 f.SunkCost <- sc
                 f.ActualCost <- ac

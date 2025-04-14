@@ -6,11 +6,10 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using ProtoBuf.Meta;
-using System.IO.Compression;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Security.Principal;
-using System.Text;
+using System.Threading.Channels;
 
 namespace Hiperspace
 {
@@ -91,7 +90,7 @@ namespace Hiperspace
         public SetSpace<Edge> Edges { get; protected set; }
         public SetSpace<VectorSpace> VectorSpaces { get; protected set; }
         public SetSpace<VectorNode> VectorNodes { get; protected set; }
-        public SetSpace<Graph.TransitiveEdge> TransitiveEdges { get; protected set; }
+        public SetSpace<Graph.HiperEdge> HiperEdges { get; protected set; }
 
 #pragma warning disable CS8618 // Nodes and Edges will be constructed from domain
         public SubSpace(HiperSpace space) : base()
@@ -126,11 +125,13 @@ namespace Hiperspace
             return _space.BindAsync(key, value, source);
         }
 
+        [Obsolete("Use ExportAsync instead")]
         public override IEnumerable<(byte[], byte[])> Space()
         {
             return _space.Space();
         }
 
+        [Obsolete("Use ExportAsync instead")]
         public override IAsyncEnumerable<(byte[], byte[])> SpaceAsync(CancellationToken cancellationToken = default)
         {
             return _space.SpaceAsync(cancellationToken);
@@ -256,6 +257,15 @@ namespace Hiperspace
         {
             return _space.ScanAsync(begin, end, values, version, cancellationToken);
         }
+        public override IAsyncEnumerable<(byte[] Key, byte[] Value)> ExportAsync(CancellationToken cancellationToken = default)
+        {
+            return _space.ExportAsync(cancellationToken);
+
+        }
+        public override void ImportAsync(IAsyncEnumerable<(byte[] Key, byte[] Value)> values, CancellationToken cancellationToken = default)
+        {
+            _space.ImportAsync(values, cancellationToken);
+        }
 
         public DateTime? AsAt => _version;
         public DateTime? DeltaFrom => _delta;
@@ -374,7 +384,7 @@ namespace Hiperspace
         /// <param name="length">the maximum length of routes to be searched</param>
         /// <param name="targets">set of target node types for this use of path</param>
         /// <returns>Set of value references to paths</returns>
-        public virtual HashSet<Graph.TransitiveEdge> FindPaths(Node? root, Graph.Route? route, int? length = null, HashSet<string>? targets = null)
+        public virtual HashSet<Graph.HiperEdge> FindPaths(Node? root, Graph.Route? route, int? length = null, HashSet<string>? targets = null)
         {
             return Graph.PathFunctions.Paths(root, route, length, targets);
         }
@@ -386,7 +396,7 @@ namespace Hiperspace
         /// <param name="length">the maximum length of routes to be searched</param>
         /// <param name="targets">set of target node types for this use of path</param>
         /// <returns>Set of value references to paths</returns>
-        public virtual async Task<HashSet<Graph.TransitiveEdge>> FindPathsAsync(Node root, Graph.Route route, int? length = null, HashSet<string>? targets = null, CancellationToken cancellationToken = default)
+        public virtual async Task<HashSet<Graph.HiperEdge>> FindPathsAsync(Node root, Graph.Route route, int? length = null, HashSet<string>? targets = null, CancellationToken cancellationToken = default)
         {
             return await Graph.PathFunctions.PathsAsync(root, new Graph.RouteMap(route), length, targets, cancellationToken);
         }

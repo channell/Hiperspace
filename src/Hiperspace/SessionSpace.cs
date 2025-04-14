@@ -7,10 +7,12 @@
 // ---------------------------------------------------------------------------------------
 using System;
 using System.Buffers.Binary;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Transactions;
 
 namespace Hiperspace
 {
@@ -28,12 +30,12 @@ namespace Hiperspace
         /// <returns></returns>
         public delegate bool Rollup(DateTime? last, DateTime current);
 
-        public static Rollup RollUpYears(int n = 1) => (last, current) => !last.HasValue ? true : current.AddYears(n) < last.Value ? true : false;
-        public static Rollup RollUpMonths(int n = 1) => (last, current) => !last.HasValue ? true : current.AddMonths(n) < last.Value ? true : false;
-        public static Rollup RollUpDays(double n = 1.0) => (last, current) => !last.HasValue ? true : current.AddDays(n) < last.Value ? true : false;
-        public static Rollup RollUpHours(double n = 1.0) => (last, current) => !last.HasValue ? true : current.AddHours(n) < last.Value ? true : false;
-        public static Rollup RollUpMinutes(double n = 1.0) => (last, current) => !last.HasValue ? true : current.AddMinutes(n) < last.Value ? true : false;
-        public static Rollup RollUpSeconds(double n = 1.0) => (last, current) => !last.HasValue ? true : current.AddSeconds(n) < last.Value ? true : false;
+        public static Rollup RollUpYears(int n = 1) => (last, current) => !last.HasValue ? true : last.Value.AddYears(n) < current || last.Value.Year != current.Year ? true : false;
+        public static Rollup RollUpMonths(int n = 1) => (last, current) => !last.HasValue ? true : last.Value.AddMonths(n) < current || last.Value.Month != current.Month ? true : false;
+        public static Rollup RollUpDays(double n = 1.0) => (last, current) => !last.HasValue ? true : last.Value.AddDays(n) < current || last.Value.Day != current.Day ? true : false;
+        public static Rollup RollUpHours(double n = 1.0) => (last, current) => !last.HasValue ? true : last.Value.AddHours(n) < current || last.Value.Hour != current.Hour ? true : false;
+        public static Rollup RollUpMinutes(double n = 1.0) => (last, current) => !last.HasValue ? true : last.Value.AddMinutes(n) < current || last.Value.Minute != current.Minute? true : false;
+        public static Rollup RollUpSeconds(double n = 1.0) => (last, current) => !last.HasValue ? true : last.Value.AddSeconds(n) < current || last.Value.Second != current.Second ? true : false;
 
         private HiperSpace _sessionSpace;
         private HiperSpace _durableSpace;
@@ -86,25 +88,8 @@ namespace Hiperspace
             {
                 if (disposing)
                 {
-                    var fname = Path.GetTempFileName();
-                    try
-                    {
-                        using (var file = File.OpenWrite(fname))
-                        {
-                            Zip(file);      // only zip the session
-                            file.Close();
-                        }
-                        using (var file = File.OpenRead(fname))
-                        {
-                            _durableSpace.Unzip(file);
-                            file.Close();
-                        }
-                    }
-                    finally 
-                    { 
-                        if (Path.Exists(fname))
-                            File.Delete(fname);
-                    }
+                    var elements = _sessionSpace.ExportAsync();
+                    _durableSpace.ImportAsync(elements);
                 }
                 _disposedValue = true;
             }
@@ -242,6 +227,7 @@ namespace Hiperspace
             return (Array.Empty<byte>(), new DateTime());
         }
 
+        [Obsolete("Use ExportAsync instead")]
         public override IEnumerable<(byte[], byte[])> Space()
         {
             (byte[] Key, byte[] Value)? current = null;
@@ -269,6 +255,7 @@ namespace Hiperspace
             }
         }
 
+        [Obsolete("Use ExportAsync instead")]
         public override IAsyncEnumerable<(byte[], byte[])> SpaceAsync(CancellationToken cancellationToken = default)
         {
             return Space().ToAsyncEnumerable(cancellationToken);
@@ -280,16 +267,7 @@ namespace Hiperspace
         /// <param name="level"></param>
         public new void Zip(Stream stream, CompressionLevel level = CompressionLevel.Fastest)
         {
-            using (var zip = new GZipStream(stream, level))
-            {
-                foreach (var r in Space())
-                {
-                    zip.Write(BitConverter.GetBytes(r.Item1.Length));
-                    zip.Write(r.Item1);
-                    zip.Write(BitConverter.GetBytes(r.Item2.Length));
-                    zip.Write(r.Item2);
-                }
-            }
+            _sessionSpace.Zip(stream, level);
         }
         /// <summary>
         /// Transfer the entire content of the space to a zip stream async
@@ -564,6 +542,37 @@ namespace Hiperspace
                 await foreach (var b in _spaces[c].ScanAsync(begin, end, values, version))
                     yield return b;
             }
+        }
+        public async override IAsyncEnumerable<(byte[] Key, byte[] Value)> ExportAsync([EnumeratorCancellation]CancellationToken cancellationToken = default)
+        {
+            (byte[] Key, byte[] Value)? current = null;
+            DateTime? last = null;
+
+            await foreach (var item in _sessionSpace.ExportAsync(cancellationToken))
+            {
+                if (item.Key.Length > sizeof(ulong) + 1 && item.Key[0] == 0)   // versioned
+                {
+                    if (current.HasValue && item.Key.Length == current.Value.Key.Length)
+                    {
+                        var curkey = new Span<byte>(current.Value.Key, 0, current.Value.Key.Length - sizeof(ulong));
+                        var key = new Span<byte>(item.Key, 0, item.Key.Length - sizeof(ulong));
+                        if (Compare(curkey, key) != 0)
+                            last = null;
+                    }
+                    var ver = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(item.Key, item.Key.Length - sizeof(ulong), sizeof(ulong))));
+                    var currentDate = new DateTime(ver);
+                    if (_roller(last, currentDate))
+                    {
+                        yield return item;
+                        last = currentDate;
+                    }
+                }
+                current = item;
+            }
+        }
+        public override void ImportAsync(IAsyncEnumerable<(byte[] Key, byte[] Value)> values, CancellationToken cancellationToken = default)
+        {
+            _sessionSpace.ImportAsync(values, cancellationToken);
         }
     }
 }

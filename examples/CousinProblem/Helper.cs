@@ -10,7 +10,7 @@ namespace Cousins //Problem
 {
     internal static class Helper
     {
-        internal static HashSet<TransitiveEdge> AllRelations(Person person)
+        internal static HashSet<HiperEdge> AllRelations(Person person)
         {
             Node node = person;
 

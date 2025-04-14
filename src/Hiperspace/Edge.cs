@@ -90,7 +90,7 @@ namespace Hiperspace
             get => _value.Name;
             set
             {
-                if (SetSpace != null && _value.Name != value) throw new Hiperspace.ValueMutationException($"Name");
+                if (SetSpace != null && _value.Name != value) throw new Hiperspace.ValueMutationException($"CubeName");
                 _value.Name = value;
             }
         }

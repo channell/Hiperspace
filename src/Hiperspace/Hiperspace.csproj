@@ -18,42 +18,45 @@
     <RepositoryUrl>https://github.com/channell/Hiperspace</RepositoryUrl>
     <Nullable>enable</Nullable>
     <LangVersion>13.0</LangVersion>
-    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20250329
+    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20250414
 # Overview
-This release introduces transitive edges, which extend the Graph model provided by `Node` and `Edge` views to include transitive traversal of an entire graph without the need for recursive queries of esoteric query languages and integrated with the data views provided by `Hiperspace`.  `Graph.TransitiveEdge` encapsulates all the Edges that can be projected as a Transitive Edge using a simple set of rules.
+This release extends the `Hipperspace` model to better support streaming aggregation of Cube and viewing of aggregates part of graph view.  It also updated `SessionSpace` to use stream replication rather than Zip file compression.
 
-[Transitive Edge blog](https://www.cepheis.com/blog/blog/transitive-edge)  and [Enterprise Transitive Edge](https://www.cepheis.com/blog/blog/enterprise-transitive-edge) goes into the details of our model of `Transitive Edge`, but the [graph-automorphic](https://en.wikipedia.org/wiki/Graph_automorphism) view is that a `Transitive Edge` encapsulates all the edges between *nodes* and allows the user to focus on the ends rather than the intermediate steps between them, and view the data as relations using commodity business intelligence software without *esoteric* graph query languages.
+## Cube aggregation
+Traditional [OLAP Cubes](https://en.wikipedia.org/wiki/OLAP_cube) do not include the notion of history unless includes as a dimension in the cube, and are either calculated
+1.  *Multidimensional* cubes recalculated each night 
+2.  *Relational* cubes are translated into the SQL queries that aggregate at a point in time from source data
+3.  *Hybrid* cubes combine an overnight batch with intraday *relational* updates
 
-## Hiperspace
+Hiperspace includes history for element stored in `Hiperspace` with access to the full history of the element.  Cube data is not overwritten whenever a value is changed intraday, but a new version is created.  This allows a point-in-time view of a `SubSpace` to be opened, or history to be used for regression analysis over time (*A portfolio/book view can be aggregated in a cube and trend-line examined as the data changes*).  Traditionally the value of the latest summary (e.g. total-sales per product) is discounted by the frequency it is examined (*you wouldn't want to calculate a per-minute summary for a product if you only analyze it once a day*) and the cost of recalculating it each night if only reviewed at month end.  
 
-The [Hiperspace](https://www.nuget.org/packages/Hiperspace) package includes the additional `Graph` package types
+When you add the capability for regression analysis, the value of each observation increases: we presume that historical values will be re-used many times, and calculate the projection for fast access to data.
 
-| Name |░| Notes |
-|-|-|-|
-| GraphFunctions || static functions that can be sued directly, or via import in a *.hilang* schema |
-| Route || Value type that defines name and rules for projecting `Edge` as `Transitive Edge` and extending to all related nodes |
-| Rule || The rules for matching {From node type, edge type, to node type} Edges, to the transititive edge projection |
+### Stream aggregation
+`Hiperspace` uses Delta indexes to fast access to changes within a short epoch, and version history to calculate the delta from the last epoch.  The a price change to APPL.N stock will only update the portfolio that reference this stock, and not require the reaggregation of the entire portfolio (if APPL.N changes from $300 to $290 for a portfolio of 100 shares, the value of the portfolio changes by $-900, which is added to the current portfolio value) . Point-in-time `AsAt` views of the `SubSpace` are used to perform aggregation *concurrently* with other changes (*which will be included in the next epoch calculation*) without degradation to performance.
 
-### SubSpace
-* `SubSpace` includes an  additional *view* `SetSpace` `TransitiveEdges` that includes all elements that implement this view
-* `FindPaths` inteface function provides a method that matches the `Graph.GraphFunctions.Paths` function, but in a way that *domain spaces* can send the graph search to a server for parallel execution on computers that have many CPU cores.
+### code changes
+Additional interfaces are added for runtime access to Cube data:
+* **CubeDimension** property of a {`entity`, `segment`, `aspect`} now includes an `ICubeDimension` interface that includes the *CubeSlice* string (used to directly access the summary value for a cube node, without retriveing intersection with other dimensions
+* **CubeHierarchy** property to indicate that the dimension is part of a hierarchy and aggregates for levels in the hierarchy should be calculated in addition to the leaf values
+* **CubeFact** property of of a {`entity`, `segment`, `aspect`} now includes `ICubeFact` for the fact table, and includes methods to add dimensions and retrieve values generically.
 
-### Fix PartitionSpace and GenerationSpace
-These two Space interceptors provide the partitioning of data by *hash-bucket* and *date-range*, but fault in the implementation of state-machine to implement `IAsyncEnumerable&lt;&gt;` in .NET9, can result in the *map/reduce* channel being disposed before the last message is processed (*warning to the wise: don't use AI generated suggestions without considering the stress-environments that it doesn't have a clue about*)
+These methods enable cube data to be viewed as part of graph view.  When a *Cube Dimension* is a graph node, a `Node` view is added *fact table* with two edges *Dimension*-(Fact)-&gt;*Fact* for traversal from dimennsion to fact, and *Fact*-(Dimension)-&gt;*Dimension* for traversal from Fact to the Dimension.
 
-# Hilang
-The [HiLang](https://www.nuget.org/packages/HiLang) schema compiler has been enhanced to include the additional {**function**, **value**,**view**,**segment**}  declarations for  features of  `Hiperspace`.
+For example, a Cube of Transactions with dimensions {Customer, Product, Region}, the addition of *Fact Nodes* creates transitive edges for {Customer-&gt;Product, Customer-&gt;Region, Product-&gt;Region} via transaction fact.  When combined with *Transitive Edges* (*Hyper Edges*) it becomes possible to view to Cube data through a graph view in a [Hypergraph](https://en.wikipedia.org/wiki/Hypergraph). 
 
-There are three ways that an element can project a view in Hilang:
-* `entity Person = Node (From = member/this, To = member/this, Name="value", TypeName = "Person")` where each member of the view is mapped to a specific member of the element
-* `entity Person = Node()` where the view members are automatically matched by name with members of the element
-* `entity Name =  View_Name = member`  **This language element has been enhanced to include a set of values** e.g. the set returned from `TransitativeEdge` function
+For the Customer "British Steel" (*Client Node*), and "Coking Coal" (*Product Node*) the Quantity Fact contains the total available ( "British Steel" -&gt; "Coking Coal" -&gt; Quantity Edge), and ( "British Steel" -&gt; "Coking Coal" -&gt; "Scunthorpe" -&gt; Quantity Edge) references only the total currently in that region.
 
-# Hiperspace.SQL
-The [Hiperspace.SQL](https://www.nuget.org/packages/Hiperspace.SQL) already includes the ability to access deep structure methods like `SELECT p.Father.Name AS Father FROM Persons AS p  WHERE p.Name = :parameter;', but now also allows deep structure to members to be used in `FROM` clauses to join to segments and sets within each row.
+ [image]Sites/hiperspace/cube-edge.png[/image]
 
-e.g. `Person` has an extension segment `MotherChild` and property `AllRelatives` that yields a `HashSet&lt;TransitiveEdge&gt;`, which can now be joined to in a SQL query.
+## Transitative Edge becomes Hiper Edge
+The name of `SetSpace` `TransitiveEdge` has been changed to `HiperEdge` better distinguish Graph Edges that are transitively projected as Hiper-edges, from edges that might themselves be transitive without being projected.  This **breaking change** is used because Hiper-Edges can be viewed as *Cube edges* where each step in a *Cube Edge* is also a drill-down into the dimensions of a **Cube** for the dimensions in the hipergraph.  
 
+`HiperEdge` is used instead of the mathematically correct *hyper-edge* (within a [Hyper-Graph](https://en.wikipedia.org/wiki/Hypergraph) because our implementation explicitly includes the references to the *Hiper Edge* (extended) and *Edge* (projected): The inclusion of the path enables the identification of each *Dimension* and `CubeSlice` referenced
+
+## Hiperspace.DB
+`Hiperspace.DB` provides functionality to project *Edge* to *HiperEdge*, and aggregate *Fact Cubes* close to the data without network access - especially important for web-assembly clients that may be accessing the `Hiperspace` over the internet.
+*Edges*, *HiperEdges* and *Facts* can be used in SQL queries (our implementation of SQL allows joins to nested sets (syntax appears as a cross-join since the actual join is created by ownership).
 ```
 select  p.Name as Person, 
         r.To.Name as Relation, 
@@ -63,12 +66,13 @@ select  p.Name as Person,
 from    Persons as p,
         p.AllRelatives as r
 where   p.Name = :name;
+```
+## SessionSpace
+`HiperSpace` has additional streaming methods for `ExportAsync` and `ImportAsync` for bulk data import, but also for `SessionSpace` which might exceed message sizes when saving a large amount of data over the internet.  The legacy `Space()` function has is now `[Obsolete]`, and will be removed in a future release
 
-select  p.Name as Parent, c.Name as Child
-from    Persons as p,
-        p.MotherChild as c
-where   p.Name = :name;
-```</PackageReleaseNotes>
+## Hilang
+The Hilang AOT compiler has been updated to provide the implementation for the `ICubeDimension` and 'ICubeFact` views.
+</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\Hiper.png">

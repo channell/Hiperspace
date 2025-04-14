@@ -21,17 +21,17 @@
 */
 type QLNet.ActualActual.Convention;
 type QLNet.ActualActual;
-type QLNet.BusinessDayConvention #30      ;
-type QLNet.Calendar #31      ;
+type QLNet.BusinessDayConvention #30;
+type QLNet.Calendar #31;
 type QLNet.CashFlow;
-type QLNet.DateGeneration.Rule #39      ;
-type QLNet.DayCounter #32      ;
-type QLNet.FixedRateBond #33      ;
-type QLNet.Handle<QLNet.YieldTermStructure> #34      ;
-type QLNet.IPricingEngine #35      ;
-type QLNet.Period #36      ;
-type QLNet.Schedule #37      ;
-type QLNet.YieldTermStructure #38      ;
+type QLNet.DateGeneration.Rule #39;
+type QLNet.DayCounter #32;
+type QLNet.FixedRateBond #33;
+type QLNet.Handle<QLNet.YieldTermStructure> #34;
+type QLNet.IPricingEngine #35;
+type QLNet.Period #36;
+type QLNet.Schedule #37;
+type QLNet.YieldTermStructure #38;
 
 "values for FixedRateBond"
 type QL.Values.FixedRateBond 
@@ -51,7 +51,28 @@ type QL.Values.FixedRateBond
 "Calcualtion view for a fixed rate bond"
 view QL.FixedRateBond : QL.Values.FixedRateBond = QL.Instrument()
 (
-    SKey                  : String
+    Mnmonic               : String
+)
+{
+    NPV                   : Double,
+    CASH                  : Double
+};
+
+"Base view that all Instrument types can be converted to"
+view QL.Instrument
+(
+    Mnmonic               : String
+)
+{
+    NPV                   : Double,
+    CASH                  : Double
+};
+
+"A Fixed rate bond stored in hiperspace"
+@CubeFact (28), CubeDimension 
+entity QL.FixedRate       : QL.Values.FixedRateBond = QL.FixedRateBond() #55  /* NB Inherits properties from view, and exports for aggregation */
+(
+    Mnmonic		    : String #1
 )
 [
     _DayCount       = makeDayCounter (DayCount),
@@ -66,24 +87,8 @@ view QL.FixedRateBond : QL.Values.FixedRateBond = QL.Instrument()
     _Engine         = makeEngine (Engine, _Yield),
     @Once           /* Calculated once, and value cached for use by other functions */
     Bond            = makeFixedRateBond(SettlementDays, FaceAmount, _Schedule, Coupons, _DayCount),
+    @CubeMeasure(Aggregate.Sum)
     NPV             = NPV(Bond),
+    @CubeMeasure(Aggregate.Sum)
     CASH            = CASH(Bond)
 ];
-
-"Base view that all Instrument types can be converted to"
-view QL.Instrument
-(
-    SKey                  : String
-)
-{
-    NPV                   : Double,
-    CASH                  : Double
-};
-
-"A Fixed rate bond stored in hiperspace"
-@CubeFact (28) 
-entity QL.FixedRate       : QL.Values.FixedRateBond = QL.FixedRateBond() #55  /* NB Inherits properties from view, and exports for aggregation */
-(
-    Mnmonic               : String #1
-);
-

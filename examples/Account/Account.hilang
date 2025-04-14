@@ -3,8 +3,23 @@
 %function ( unary, credit, Acc.Totals.Credit, Decimal);
 %function ( unary, debit, Acc.Totals.Debit, Decimal);
 
-"A Customer"
 @CubeDimension
+entity Acc.Sector : Versioned #30
+(
+    "name of the sector"
+    Name            : String #1 
+)
+{
+    "description of the sector"
+    Description     : String #3 
+}
+[
+    "customers in this sector"
+    Customers       : Acc.Customer (Sector = this) #29
+];
+
+"A Customer"
+@CubeDimension, CubeHierarchy                           /* For aggregation testing */
 entity Acc.Customer : Versioned #3 
 (
     " name  of the customer"
@@ -12,11 +27,14 @@ entity Acc.Customer : Versioned #3
 )
 {
     Address         : String #3,
-    SSN             : String #4
+    SSN             : String #4,
+    Parent		    : Acc.Customer #5,                  /* For aggregation testing */
+    Sector          : Acc.Sector #11 
 }
 [
     "Account that the customer owns"
-    Accounts        : Acc.Account #20 
+    Accounts        : Acc.Account #20, 
+    Children        : Acc.Customer (Parent = this) #27  /* For aggregation testing */
 ];
 
 "a transaction against account"

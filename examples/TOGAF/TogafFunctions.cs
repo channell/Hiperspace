@@ -15,7 +15,6 @@ namespace Togaf
                 new Rule { FromType = "AF-Function", ToType = "AF-CourseOfAction", EdgeType = "AF-Function-CourseOfAction"},
                 new Rule { FromType = "AF-Capability", ToType = "AF-Capability", EdgeType = "AF-Capability-Part"}, // recursive
                 new Rule { FromType = "AF-Function", ToType = "AF-Function", EdgeType = "AF-Function-Part"}, // recursive
-                new Rule { FromType = "AF-Function", ToType = "AF-CourseOfAction", EdgeType = "AF-Function-CourseOfAction"},
                 new Rule { FromType = "AF-Process", ToType = "AF-Function", EdgeType = "AF-Process-Function"},
                 new Rule { FromType = "AF-Process", ToType = "AF-Capability", EdgeType = "AF-Process-Capability"},
                 new Rule { FromType = "AF-Activity", ToType = "AF-Process", EdgeType = "AF-Activity-Process"},
@@ -39,11 +38,11 @@ namespace Togaf
             ]
         };
 
-        public static HashSet<Graph.TransitiveEdge> StrategicEdge(Node? node)
+        public static HashSet<Graph.HiperEdge> StrategicEdge(Node? node)
         {
             return PathFunctions.Paths(node, GoalPriority, null, new HashSet<string> { "AF-Goal" });
         }
-        public static HashSet<Togaf.GoalRef> Goals(HashSet<Graph.TransitiveEdge>? edges)
+        public static HashSet<Togaf.GoalRef> Goals(HashSet<Graph.HiperEdge>? edges)
         {
             if (edges == null) return new HashSet<Togaf.GoalRef>();
             return 

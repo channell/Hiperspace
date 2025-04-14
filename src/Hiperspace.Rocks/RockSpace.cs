@@ -9,6 +9,7 @@ using Hiperspace.Meta;
 using RocksDbSharp;
 using System.Buffers.Binary;
 using System.Runtime.CompilerServices;
+using System.Xml.Serialization;
 
 namespace Hiperspace.Rocks
 {
@@ -169,6 +170,7 @@ namespace Hiperspace.Rocks
             return Task.Run(() => Bind(key, value, version, source));
         }
 
+        [Obsolete("Use ExportAsync instead")]
         public override IEnumerable<(byte[], byte[])> Space()
         {
             using (var iter = _db.NewIterator())
@@ -181,6 +183,7 @@ namespace Hiperspace.Rocks
             }
         }
 
+        [Obsolete("Use ExportAsync instead")]
         public override IAsyncEnumerable<(byte[], byte[])> SpaceAsync(CancellationToken cancellationToken = default)
         {
             return Space().ToAsyncEnumerable(cancellationToken);
@@ -534,6 +537,46 @@ namespace Hiperspace.Rocks
         public override IAsyncEnumerable<(byte[] value, DateTime version)> GetVersionsAsync(byte[] key, CancellationToken cancellationToken = default)
         {
             return GetVersions(key).ToAsyncEnumerable(cancellationToken);
+        }
+
+        /*        public override IEnumerable<(byte[], byte[])> Space()
+        {
+            using (var iter = _db.NewIterator())
+            {
+                while (iter.Valid())
+                {
+                    yield return (iter.Key(), iter.Value());
+                    iter.Next();
+                }
+            }
+        }
+*/
+        private IEnumerable<(byte[], byte[])> Export()
+        {
+            using (var iter = _db.NewIterator())
+            {
+                iter.SeekToFirst();
+                while (iter.Valid())
+                {
+                    yield return (iter.Key(), iter.Value());
+                    iter.Next();
+                }
+            }
+        }
+
+        public async override IAsyncEnumerable<(byte[] Key, byte[] Value)> ExportAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            await foreach (var h in Export().ToAsyncEnumerable(cancellationToken))
+            {
+                yield return h;
+            }
+        }
+        public async override void ImportAsync(IAsyncEnumerable<(byte[] Key, byte[] Value)> data, CancellationToken cancellationToken = default)
+        {
+            await foreach (var h in data.WithCancellation(cancellationToken))
+            {
+                Bind(h.Key, h.Value);
+            }
         }
 
         protected override void Dispose(bool disposing)

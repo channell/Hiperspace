@@ -475,7 +475,7 @@ namespace Hiperspace
                     }
                     sb.Append("]");
                 }
-                if (_Name != null) sb.Append($"{indent}Name: {_Name}");
+                if (_Name != null) sb.Append($"{indent}CubeName: {_Name}");
                 if (_target != null) sb.Append($"{indent}Target: {_target}");
                 if (_PropertyInfo != null) sb.Append($"{indent}PropertyInfo: {_PropertyInfo.Name}");
                 if (_FieldInfo != null) sb.Append($"{indent}FieldInfo: {_FieldInfo.Name}");

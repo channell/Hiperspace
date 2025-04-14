@@ -388,6 +388,7 @@ namespace Hiperspace
             return (Array.Empty<byte>(), new DateTime());
         }
 
+        [Obsolete("Use ExportAsync instead")]
         public override IEnumerable<(byte[], byte[])> Space()
         {
             for (int c = 0; c < _read.Length; c++)
@@ -397,6 +398,7 @@ namespace Hiperspace
             }
         }
 
+        [Obsolete("Use ExportAsync instead")]
         public override IAsyncEnumerable<(byte[], byte[])> SpaceAsync(CancellationToken cancellationToken = default)
         {
             return Space().ToAsyncEnumerable(cancellationToken);
@@ -1092,6 +1094,18 @@ namespace Hiperspace
                 else if (item.Error)
                     throw item.Exception;
             }
+        }
+        public async override IAsyncEnumerable<(byte[] Key, byte[] Value)> ExportAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            for (int c = 0; c < _read.Length; c++)
+            {
+                await foreach (var b in _read[c].ExportAsync(cancellationToken))
+                    yield return b;
+            }
+        }
+        public override void ImportAsync(IAsyncEnumerable<(byte[] Key, byte[] Value)> values, CancellationToken cancellationToken = default)
+        {
+            _write.ImportAsync(values, cancellationToken);
         }
     }
 }

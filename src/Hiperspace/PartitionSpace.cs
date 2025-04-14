@@ -30,6 +30,42 @@ namespace Hiperspace
             _spaces = aggregates;
         }
 
+        private static int GetHashCode(byte[] key)
+        {
+            HashCode hashCode = new HashCode();
+
+            if (key == null || key.Length == 0 || (key[0] == 0 && key.Length < (sizeof(ulong) + 2)))
+                throw new ArgumentNullException("key null or versioned, without version timestamp");
+
+            if (key[0] == 0)   // versioned
+            {
+                var span = new Span<byte>(key);
+                var slice = span.Slice(1, span.Length - 8); // remove version
+                for (int i = 0; i < slice.Length; i++)
+                {
+                    hashCode.Add(slice[i]);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < key.Length; i++)
+                {
+                    hashCode.Add(key[i]);
+                }
+            }
+
+            return hashCode.ToHashCode();
+        }
+        private static int GetVersionHashCode(byte[] key)
+        {
+            HashCode hashCode = new HashCode();
+            for (int i = 0; i < key.Length; i++)
+            {
+                hashCode.Add(key[i]);
+            }
+            return hashCode.ToHashCode();
+        }
+
         public override Result<byte[]> Bind(byte[] key, byte[] value, object? source)
         {
             var partition = key.GetHashCode() % (_spaces.Length);
@@ -38,12 +74,13 @@ namespace Hiperspace
 
         public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, object? source = null)
         {
-            var partition = key.GetHashCode() % (_spaces.Length);
+
+            var partition = GetHashCode(key) % (_spaces.Length);
             return _spaces[partition].Bind(key, value, version, source);
         }
         public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
         {
-            var partition = key.GetHashCode() % (_spaces.Length);
+            var partition = GetHashCode(key) % (_spaces.Length);
             return _spaces[partition].Bind(key, value, source);
         }
 
@@ -54,12 +91,12 @@ namespace Hiperspace
         }
         public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, object? source = null)
         {
-            var partition = key.GetHashCode() % (_spaces.Length);
+            var partition = GetHashCode(key) % (_spaces.Length);
             return _spaces[partition].BindAsync(key, value, version, source);
         }
         public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
         {
-            var partition = key.GetHashCode() % (_spaces.Length);
+            var partition = GetHashCode(key) % (_spaces.Length);
             return _spaces[partition].BindAsync(key, value, version, source);
         }
 
@@ -942,6 +979,7 @@ namespace Hiperspace
             return _spaces[partition].GetAsync(key, version);
         }
 
+        [Obsolete("Use ExportAsync instead")]
         public override IEnumerable<(byte[], byte[])> Space()
         {
             for (int c = 0; c < _spaces.Length; c++)
@@ -951,6 +989,7 @@ namespace Hiperspace
             }
         }
 
+        [Obsolete("Use ExportAsync instead")]
         public override IAsyncEnumerable<(byte[], byte[])> SpaceAsync(CancellationToken cancellationToken = default)
         {
             return Space().ToAsyncEnumerable(cancellationToken);
@@ -962,6 +1001,41 @@ namespace Hiperspace
             {
                 foreach (var h in _spaces[c].GetHorizons())
                     yield return h;
+            }
+        }
+        public async override IAsyncEnumerable<(byte[] Key, byte[] Value)> ExportAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                await foreach (var b in _spaces[c].ExportAsync(cancellationToken))
+                    yield return b;
+            }
+        }
+        public async override void ImportAsync(IAsyncEnumerable<(byte[] Key, byte[] Value)> values, CancellationToken cancellationToken = default)
+        {
+            var channels = new Channel<(byte[] Key, byte[] Value)>[_spaces.Length];
+            var readers = new IAsyncEnumerable<(byte[] Key, byte[] Value)>[_spaces.Length];
+
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                channels[c] = Channel.CreateUnbounded<(byte[] Key, byte[] Value)>();
+                readers[c] = channels[c].Reader.ReadAllAsync(cancellationToken);
+            }
+
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                var C = c;
+                _ = Task.Run(() => _spaces[C].ImportAsync(readers[C], cancellationToken));
+            }
+
+            await foreach (var b in values.WithCancellation(cancellationToken))
+            {
+                var partition = b.Key.GetHashCode() % (_spaces.Length);
+                await channels[partition].Writer.WriteAsync(b, cancellationToken);
+            }
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                channels[c].Writer.Complete();
             }
         }
     }

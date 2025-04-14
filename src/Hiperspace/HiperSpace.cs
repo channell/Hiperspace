@@ -8,6 +8,7 @@
 using ProtoBuf.Meta;
 using System.IO.Compression;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.Marshalling;
 
 namespace Hiperspace
 {
@@ -217,12 +218,14 @@ namespace Hiperspace
         /// </summary>
         /// <remarks>will be protected in a future release</remarks>
         /// <returns>content of space</returns>
+        [Obsolete($"Use {nameof(ExportAsync)} instead")]
         public abstract IEnumerable<(byte[] Key, byte[] Value)> Space();
         /// <summary>
         /// Async Enumeration of raw values for transfer
         /// </summary>
         /// <remarks>will be protected in a future release</remarks>
         /// <returns>content of space</returns>
+        [Obsolete($"Use {nameof(ExportAsync)} instead")]
         public abstract IAsyncEnumerable<(byte[] Key, byte[] Value)> SpaceAsync(CancellationToken cancellationToken = default);
         /// <summary>
         /// Find all values of space between the key values
@@ -608,7 +611,7 @@ namespace Hiperspace
         {
             using (var zip = new GZipStream(stream, level))
             {
-                foreach (var r in Space())
+                foreach (var r in ExportAsync().ToBlockingEnumerable())
                 {
                     zip.Write(BitConverter.GetBytes(r.Item1.Length));
                     zip.Write(r.Item1);
@@ -622,9 +625,18 @@ namespace Hiperspace
         /// </summary>
         /// <param name="stream"></param>
         /// <param name="level"></param>
-        public Task ZipAsync(Stream stream, CompressionLevel level = CompressionLevel.Fastest)
+        public async Task ZipAsync(Stream stream, CompressionLevel level = CompressionLevel.Fastest)
         {
-            return Task.Run (() => Zip(stream, level));
+            using (var zip = new GZipStream(stream, level))
+            {
+                await foreach (var r in ExportAsync())
+                {
+                    zip.Write(BitConverter.GetBytes(r.Item1.Length));
+                    zip.Write(r.Item1);
+                    zip.Write(BitConverter.GetBytes(r.Item2.Length));
+                    zip.Write(r.Item2);
+                }
+            }
         }
 
         /// <summary>
@@ -682,6 +694,30 @@ namespace Hiperspace
                         }
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Export contents of Hiperspace, for SessionSpace without temp ZipStream
+        /// </summary>
+        /// <remarks>
+        /// virtual will be replaced with abstract when Space() is removed
+        /// </remarks>
+        public virtual IAsyncEnumerable<(byte[] Key, byte[] Value)> ExportAsync(CancellationToken cancellationToken = default)
+        {
+            return Space().ToAsyncEnumerable(cancellationToken);
+        }
+        /// <summary>
+        /// Import into Hiperspace, for SessionSpace without temp ZipStream
+        /// </summary>
+        /// <remarks>
+        /// virtual will be replaced with abstract when Space() is removed
+        /// </remarks>
+        public virtual async void ImportAsync(IAsyncEnumerable<(byte[] Key, byte[] Value)> values, CancellationToken cancellationToken = default)
+        {
+            await foreach(var item in values.WithCancellation(cancellationToken))
+            {
+                await BindAsync(item.Key, item.Value, null);
             }
         }
 

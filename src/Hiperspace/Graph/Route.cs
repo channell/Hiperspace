@@ -61,7 +61,7 @@ namespace Graph
             }
             set
             {
-                if (_bound && _key.Name != value) throw new Hiperspace.ValueMutationException($"Name");
+                if (_bound && _key.Name != value) throw new Hiperspace.ValueMutationException($"CubeName");
                 _key.Name = value;
             }
         }

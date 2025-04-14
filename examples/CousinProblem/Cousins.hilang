@@ -1,9 +1,11 @@
 %domain (Cousins);
 %odata;
 %ids;
+%sql;
+%json;
 
 %function (unary, relation, Cousins.Helper.Relations, List<Path>);  
-%function (unary, allrelation, Cousins.Helper.AllRelations, Set<Graph.TransitiveEdge>);  
+%function (unary, allrelation, Cousins.Helper.AllRelations, Set<Graph.HiperEdge>);  
 
 view Cousins.Edge2 : Edge = Edge() ;
 view Cousins.Edge3 : Edge = Edge() ;
@@ -18,7 +20,7 @@ entity Cousins.Person       : Versioned
       Cousins.Edge2 (From = this,   To = Father, Name = Name, TypeName = "Father"),
       Cousins.Edge3 (From = Father, To = this,   Name = Name, TypeName = "Child"),
       Cousins.Edge4 (From = Mother, To = this,   Name = Name, TypeName = "Child"),
-      Graph.TransitiveEdge = AllRelatives #11
+      Graph.HiperEdge = AllRelatives #11
 (
     Name                    : String #1
 )
