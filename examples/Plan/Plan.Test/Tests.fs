@@ -331,7 +331,7 @@ type  PlanTest (output : ITestOutputHelper) =
 
         let options = JsonSerializerOptions()
         options.ReferenceHandler <- ReferenceHandler.IgnoreCycles
-        let j = JsonSerializer.Serialize(cube, options)
+        let j = JsonSerializer.Serialize(cube, options) 
         let engine = new SQL.Engine (planSpace)
 
         let dict = engine.Execute ("SELECT * FROM SCHEMA_TABLES", null)

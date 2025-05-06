@@ -217,5 +217,14 @@ namespace Hiperspace
             }
             return null;
         }
+        public static string DrillDownSlice(ICubeFact fact, ICubeDimension dimension)
+        {
+            var parts = fact.CubeSlice?.Split(',') ?? Array.Empty<string>();
+            var newParts = new string[parts.Length + 1];
+            parts.CopyTo(newParts, 1);
+            newParts[0] = dimension.CubeSlice;
+            Array.Sort(newParts);
+            return String.Join(',', newParts);
+        }
     }
 }

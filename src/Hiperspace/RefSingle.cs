@@ -50,7 +50,7 @@ namespace Hiperspace
         private TKey _key = default;
 
         public TEntity? Value
-        { 
+        {
             get
             {
                 if (_entity == null)
@@ -69,17 +69,35 @@ namespace Hiperspace
                 }
                 return _entity;
             }
-            // for deserialisation
+            // for deserialization
             set
             {
                 _entity = value;
-                if (SetSpace != null && value != null) 
+                if (SetSpace != null && value != null)
                 {
                     _key = _keyBuilder();
                     _binder(value);
                     SetSpace.Bind(value);
                 }
             }
+        }
+        public async Task<TEntity?> ValueAsync()
+        {
+            if (_entity == null)
+            {
+                if (SetSpace != null)
+                {
+                    _key = _keyBuilder();
+                    _entity = await SetSpace.GetAsync<TKey>(_key);
+                }
+                else  // enable Concrete Elements to expose TEntity rather that KeyRef<> 
+                {
+                    var entity = new TEntity();
+                    if (entity.BindKey(_key))
+                        _entity = entity;
+                }
+            }
+            return _entity;
         }
 
         private Func<TKey> _keyBuilder;

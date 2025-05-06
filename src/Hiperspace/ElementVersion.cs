@@ -5,6 +5,8 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using System.Runtime.CompilerServices;
+
 namespace Hiperspace
 {
     /// <summary>
@@ -24,6 +26,13 @@ namespace Hiperspace
         /// </summary>
         public DateTime? AsWas { get; protected set; }
         public abstract IEnumerable<TEntity> GetVersions();
-        public abstract Task<IEnumerable<TEntity>> GetVersionsAsync();
+
+        /// <remarks>
+        /// Will be replaced with Astract in a future release
+        /// </remarks>
+        public virtual IAsyncEnumerable<TEntity> GetVersionsAsync(CancellationToken cancellationToken = default)
+        {
+            return GetVersions().ToAsyncEnumerable(cancellationToken);
+        }
     }
 }

@@ -37,9 +37,9 @@ namespace Hiperspace
             get => _key; 
             init => _key = value;
         }
-        
-        public TEntity? Value 
-        { 
+
+        public TEntity? Value
+        {
             get
             {
                 if (_entity == null)
@@ -61,6 +61,23 @@ namespace Hiperspace
             {
                 _entity = value;
             }
+        }
+        public async Task<TEntity?> ValueAsync()
+        {
+            if (_entity == null)
+            {
+                if (SetSpace != null)
+                {
+                    _entity = await SetSpace.GetAsync<TKey>(_key);
+                }
+                else  // enable Concrete Elements to expose TEntity rather that KeyRef<>
+                {
+                    var entity = new TEntity();
+                    if (entity.BindKey(_key))
+                        _entity = entity;
+                }
+            }
+            return _entity;
         }
 
         public SetSpace<TEntity>? SetSpace { get; set; }

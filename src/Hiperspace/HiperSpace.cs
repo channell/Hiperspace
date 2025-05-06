@@ -196,7 +196,22 @@ namespace Hiperspace
         /// <returns>array of results</returns>
         public virtual async Task<Result<(byte[] Key, byte[] Value)>[]> BatchBindAsync((byte[] key, byte[] value, object? source)[] batch)
         {
-            return await Task.Run(() => BatchBind(batch));
+            var result = new Result<(byte[] Key, byte[] Value)>[batch.Length];
+
+            for (int c = 0; c < batch.Length; c++)
+            {
+                var value = await BindAsync(batch[c].key, batch[c].value, batch[c].source);
+                result[c] = value.Status switch
+                {
+                    Result.Status.Ok => Result.Ok((batch[c].key, value.Value)),
+                    Result.Status.Skip => Result.Skip((batch[c].key, value.Value)),
+                    _ => Result.Fail((batch[c].key, value.Value), value.Reason)
+                };
+                // do not apply index updates if the main value has failed
+                if (value.Status == Result.Status.Fail)
+                    return result;
+            }
+            return result;
         }
 
         /// <summary>
@@ -206,11 +221,35 @@ namespace Hiperspace
         /// <returns>array of results</returns>
         public virtual async Task<Result<(byte[] Key, byte[] Value)>[]> BatchBindAsync((byte[] key, byte[] value, DateTime version, object? source)[] batch)
         {
-            return await Task.Run(() => BatchBind(batch));
+            var result = new Result<(byte[] Key, byte[] Value)>[batch.Length];
+
+            for (int c = 0; c < batch.Length; c++)
+            {
+                var value = await BindAsync(batch[c].key, batch[c].value, batch[c].version, batch[c].source);
+                result[c] = value.Status switch
+                {
+                    Result.Status.Ok => Result.Ok((batch[c].key, value.Value)),
+                    Result.Status.Skip => Result.Skip((batch[c].key, value.Value)),
+                    _ => Result.Fail((batch[c].key, value.Value), value.Reason)
+                };
+            }
+            return result;
         }
         public virtual async Task<Result<(byte[] Key, byte[] Value)>[]> BatchBindAsync((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)
         {
-            return await Task.Run(() => BatchBind(batch));
+            var result = new Result<(byte[] Key, byte[] Value)>[batch.Length];
+
+            for (int c = 0; c < batch.Length; c++)
+            {
+                var value = await BindAsync(batch[c].key, batch[c].value, batch[c].version, batch[c].priorVersion, batch[c].source);
+                result[c] = value.Status switch
+                {
+                    Result.Status.Ok => Result.Ok((batch[c].key, value.Value)),
+                    Result.Status.Skip => Result.Skip((batch[c].key, value.Value)),
+                    _ => Result.Fail((batch[c].key, value.Value), value.Reason)
+                };
+            }
+            return result;
         }
 
         /// <summary>

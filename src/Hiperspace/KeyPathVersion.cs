@@ -36,8 +36,34 @@ namespace Hiperspace
         public virtual TEntity? Get(ref TKey key, DateTime? version)
         {
             if (!version.HasValue)
-                return Get (ref key);
-            throw new NotImplementedException ();
+                return Get(ref key);
+            else
+            {
+                var item = Get(ref key);
+                if (item != null)
+                    foreach (var v in item.GetVersions())
+                    {
+                        if (v.AsAt <= version)
+                            return v;
+                    }
+            }
+            return null;
+        }
+        public virtual async Task<TEntity?> GetAsync(TKey key, DateTime? version)
+        {
+            if (!version.HasValue)
+                return await GetAsync(key);
+            else
+            {
+                var item = await GetAsync(key);
+                if (item != null)
+                await foreach (var v in item.GetVersionsAsync())
+                {
+                    if (v.AsAt <= version)
+                        return v;
+                }
+            }
+            return null;
         }
     }
 }

@@ -6,15 +6,16 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using System.Collections;
+using System.Runtime.CompilerServices;
 
 namespace Hiperspace
 {
-    public class RefSet<TEntity> : ISet<TEntity>, ICollection<TEntity>, ICollection
+    public class RefSet<TEntity> : ISet<TEntity>, ICollection<TEntity>, ICollection, IEnumerable<TEntity>
         where TEntity : Element<TEntity>, new()
     {
         public readonly HashSet<TEntity> Cached = new HashSet<TEntity>();
         /// <summary>
-        /// For deserialisation
+        /// For deserialization
         /// </summary>
         public RefSet()
         {
@@ -84,30 +85,64 @@ namespace Hiperspace
 
         private ISet<TEntity> Lazy()
         {
-            bool taken = false;
-            _lock.Enter(ref taken);
-            if (taken)
+            if (_new && SetSpace != null)
             {
-                try
+                var template = _template();
+                TEntity[] result = SetSpace.Find(template, true).ToArray();
+
+                if (result != Array.Empty<TEntity>())
                 {
-                    if (_new && SetSpace != null)
+                    bool taken = false;
+                    _lock.Enter(ref taken);
+                    if (taken)
                     {
                         _new = false;
-                        var template = _template();
-                        TEntity[] result = SetSpace.Find(template, true).ToArray();
-                        if (result != Array.Empty<TEntity>())
+                        try
                         {
                             Cached.UnionWith(result.Where(_filter));
                         }
+                        finally
+                        {
+                            _lock.Exit();
+                        }
                     }
-                }
-                finally
-                {
-                    _lock.Exit();
+                    else
+                        throw new LockRecursionException();
                 }
             }
-            else
-                throw new LockRecursionException();
+            return Cached;
+        }
+        private async Task<ISet<TEntity>> LazyAsync(CancellationToken token)
+        {
+            if (_new && SetSpace != null)
+            {
+                var template = _template();
+                var res = new List<TEntity>();
+                await foreach (var en in SetSpace.FindAsync(template, true, token))
+                {
+                    res.Add(en);
+                }
+
+                if (res.Count > 0)
+                {
+                    bool taken = false;
+                    _lock.Enter(ref taken);
+                    if (taken)
+                    {
+                        _new = false;
+                        try
+                        {
+                            Cached.UnionWith(res.Where(_filter));
+                        }
+                        finally
+                        {
+                            _lock.Exit();
+                        }
+                    }
+                    else
+                        throw new LockRecursionException();
+                }
+            }
             return Cached;
         }
 
@@ -463,6 +498,30 @@ namespace Hiperspace
         {
             throw new NotImplementedException();
         }
+
+        class Async : IAsyncEnumerable<TEntity>
+        {
+            private Func<Task<ISet<TEntity>>> _source;
+            public Async(Func<Task<ISet<TEntity>>> source)
+            {
+                _source = source;
+            }
+            public async IAsyncEnumerator<TEntity> GetAsyncEnumerator(CancellationToken cancellationToken = default)
+            {
+                var result = await _source();
+                foreach (var item in result)
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                        yield break;
+                    yield return item;
+                }
+            }
+        }
+        public IAsyncEnumerable<TEntity> AsAsyncEnumerable(CancellationToken cancellationToken)
+        {
+            return new Async(() => LazyAsync(cancellationToken));
+        }
+
         public bool IsSynchronized => true;
 
         public object SyncRoot => Cached;

@@ -35,8 +35,15 @@ namespace Hiperspace
         }
         public abstract Task<bool> BindAsync(TEntity item);
 
- 
+
         public abstract TEntity? Get(ref TKey key);
+        /// <remarks>
+        /// Will be replaced with Astract in a future release
+        /// </remarks>
+        public virtual Task<TEntity?> GetAsync(TKey key)
+        {
+            return Task.FromResult(Get(ref key));
+        }
         public abstract IEnumerable<TEntity> Find(TEntity template);
         public abstract IAsyncEnumerable<TEntity> FindAsync(TEntity template, CancellationToken cancellation = default);
         public abstract IEnumerable<(TEntity Item, double Distance)> Nearest(TEntity template, Vector space, Vector.Method method, int limit);

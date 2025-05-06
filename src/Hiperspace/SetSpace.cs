@@ -95,6 +95,11 @@ namespace Hiperspace
             return Bind(item, true).New;
         }
 
+        public async Task<bool> AddAsync(TEntity item)
+        {
+            return (await BindAsync(item, true)).New;
+        }
+
         public bool Insert(TEntity item)
         {
             var current = Get(item);
@@ -107,12 +112,31 @@ namespace Hiperspace
             }
             return Bind(item, true).Ok;
         }
+        public async Task<bool> InsertAsync(TEntity item)
+        {
+            var current = await GetAsync(item);
+            if (current != null)
+            {
+                if (item.GetType().GetCustomAttribute<VersionedAttribute>() != null)
+                    throw new MutationException($"Cannot insert a new {item.GetType().Name}, use Update(item) instead");
+                else
+                    throw new MutationException($"Cannot insert a new {item.GetType().Name}, value already exists");
+            }
+            return (await BindAsync(item, true)).Ok;
+        }
         public bool Update(TEntity item)
         {
             var current = Get(item);
             if (current == null)
                 throw new MutationException($"Cannot update a {item.GetType().Name}, use Add(item) if an existing value is not needed");
             return Bind(item, true).Ok;
+        }
+        public async Task<bool> UpdateAsync(TEntity item)
+        {
+            var current = await GetAsync(item);
+            if (current == null)
+                throw new MutationException($"Cannot update a {item.GetType().Name}, use Add(item) if an existing value is not needed");
+            return (await BindAsync(item, true)).Ok;
         }
         public bool Delete(TEntity item)
         {
@@ -123,6 +147,21 @@ namespace Hiperspace
                 {
                     item.GetType().GetProperty("Deleted")?.SetValue(item, true);
                     return Bind(item, true).Ok;
+                }
+                else
+                    throw new MutationException($"Cannot insert a new deleted {item.GetType().Name}, value already exists");
+            }
+            throw new MutationException($"Cannot delete {item.GetType().Name}, a value was not found");
+        }
+        public async Task<bool> DeleteAsync(TEntity item)
+        {
+            var current = await GetAsync(item);
+            if (current == null)
+            {
+                if (item.GetType().GetCustomAttribute<VersionedAttribute>() != null)
+                {
+                    item.GetType().GetProperty("Deleted")?.SetValue(item, true);
+                    return (await BindAsync(item, true)).Ok;
                 }
                 else
                     throw new MutationException($"Cannot insert a new deleted {item.GetType().Name}, value already exists");
@@ -198,12 +237,42 @@ namespace Hiperspace
                     {
                         for (int c = 0; c < horizons.Length; c++)
                         {
-                            if (!horizons[c].predicate(e.Item, Space?.ContextLabel, Space?.UserLabel, read))
+                            var horizon = horizons[c];
+                            if (horizon.predicate != null && !horizon.predicate(e.Item, Space?.ContextLabel, Space?.UserLabel, read))
                                 return false;
                         }
                         return true;
                     });
             return entities;
+        }
+        public async IAsyncEnumerable<(TEntity Item, double Distance)> FilterAsync(IAsyncEnumerable<(TEntity Item, double Distance)> entities, bool read = true)
+        {
+            if (horizons != null)
+            {
+                await foreach (var e in entities)
+                {
+                    var valid = true;
+                    for (int c = 0; c < horizons.Length; c++)
+                    {
+                        var horizon = horizons[c];
+                        if (horizon.predicateAsync != null && !(await horizon.predicateAsync(e.Item, Space?.ContextLabel, Space?.UserLabel, read)))
+                        {
+                            valid = false;
+                            Cached.Remove(e.Item);
+                            break;
+                        }
+                    }
+                    if (valid)
+                        yield return e;
+                }
+            }
+            else
+            {
+                await foreach (var e in entities)
+                {
+                    yield return e;
+                }
+            }
         }
         public virtual Result<TEntity> Filter(TEntity entity, bool read = true)
         {
@@ -211,9 +280,25 @@ namespace Hiperspace
             {
                 for (int c = 0; c < horizons.Length; c++)
                 {
-                    if (!horizons[c].predicate(entity, Space?.ContextLabel, Space?.UserLabel, read))
+                    var horizon = horizons[c];
+                    if (horizon.predicate != null && !horizon.predicate(entity, Space?.ContextLabel, Space?.UserLabel, read))
                     {
                         return Result.Fail(entity, horizons[c].Reason);
+                    }
+                }
+            }
+            return Result.Ok(entity);
+        }
+        public virtual async Task<Result<TEntity>> FilterAsync(TEntity entity, bool read = true)
+        {
+            if (horizons != null)
+            {
+                for (int c = 0; c < horizons.Length; c++)
+                {
+                    var horizon = horizons[c];
+                    if (horizon.predicateAsync != null && !(await horizon.predicateAsync(entity, Space?.ContextLabel, Space?.UserLabel, read)))
+                    {
+                        return Result.Fail(entity, horizon.Reason);
                     }
                 }
             }
@@ -222,6 +307,13 @@ namespace Hiperspace
         #endregion
         #region key functions
         public abstract TEntity? Get<TKey>(ref TKey key);
+        /// <remarks>
+        /// Will ve replaced with abstracvt in a future release
+        /// </remarks>
+        public virtual Task<TEntity?> GetAsync<TKey>(TKey key)
+        {
+            return Task.FromResult(Get(ref key));
+        }
 
         #endregion
         #region queryable
@@ -310,6 +402,27 @@ namespace Hiperspace
                 yield return item;
             }
         }
+        class Async : IAsyncEnumerable<TEntity>
+        {
+            private Func<IAsyncEnumerable<TEntity>> _source;
+            public Async(Func<IAsyncEnumerable<TEntity>> source)
+            {
+                _source = source;
+            }
+            public async IAsyncEnumerator<TEntity> GetAsyncEnumerator(CancellationToken cancellationToken = default)
+            {
+                await foreach (var item in _source())
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                        yield break;
+                    yield return item;
+                }
+            }
+        }
+        public IAsyncEnumerable<TEntity> AsAsyncEnumerable(CancellationToken cancellationToken)
+        {
+            return new Async(() => FindAsync(new TEntity(), true, cancellationToken));
+        }
 
         public static Expression<Predicate<TEntity>> True = f => true;
 
@@ -352,6 +465,7 @@ namespace Hiperspace
                 return Explain(entity);
             return (null, null);
         }
+
 
         #endregion
     }
@@ -453,6 +567,19 @@ namespace Hiperspace
 
             template.Bind(this.Space);
             foreach (var item in template.GetVersions())
+            {
+                if (item.AsAt <= version)
+                    return item;
+            }
+            return null;
+        }
+        public virtual async Task<TEntity?> GetAsync(TEntity template, DateTime? version)
+        {
+            if (!version.HasValue)
+                return await GetAsync(template);
+
+            template.Bind(this.Space);
+            await foreach (var item in template.GetVersionsAsync())
             {
                 if (item.AsAt <= version)
                     return item;

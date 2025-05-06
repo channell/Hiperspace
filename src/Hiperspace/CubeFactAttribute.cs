@@ -55,5 +55,10 @@ namespace Hiperspace
         /// Dictionary of measures for this Cube fact
         /// </summary>
         public IDictionary<string, (Aggregate, object)> Measures { get; }
+
+        /// <summary>
+        /// Indicate that the Cube Slice is a Fact rather than a summary for a dimension
+        /// </summary>
+        public Boolean? IsFact { get; set; }
     }
 }
