@@ -187,7 +187,7 @@ namespace Hiperspace
                     if (space.VectorSpaces.TryGetValue(this, out VectorSpace? current) && current != this && current != null)
                         return Result.Skip(current);
                     SetSpace = space.VectorSpaces;
-                    var result = SetSpace.Bind(this);
+                    var result = SetSpace.Bind(this, true, true);
                     if (result.Ok && this == result.Value)
                     {
                         _key.Bind(space);

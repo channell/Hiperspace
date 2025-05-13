@@ -388,22 +388,6 @@ namespace Hiperspace
             return (Array.Empty<byte>(), new DateTime());
         }
 
-        [Obsolete("Use ExportAsync instead")]
-        public override IEnumerable<(byte[], byte[])> Space()
-        {
-            for (int c = 0; c < _read.Length; c++)
-            {
-                foreach (var b in _read[c].Space())
-                    yield return b;
-            }
-        }
-
-        [Obsolete("Use ExportAsync instead")]
-        public override IAsyncEnumerable<(byte[], byte[])> SpaceAsync(CancellationToken cancellationToken = default)
-        {
-            return Space().ToAsyncEnumerable(cancellationToken);
-        }
-
         public override IEnumerable<Horizon> GetHorizons()
         {
             for (int c = 0; c < _read.Length; c++)

@@ -226,5 +226,18 @@ namespace Hiperspace
             Array.Sort(newParts);
             return String.Join(',', newParts);
         }
+
+        public static TDrill DrillDown<TDrill,TKey, TEntity> (ICubeFact source, KeyRef<TKey, TEntity> target, TDrill drilldown)
+            where TKey : struct, IEquatable<TKey>, IComparable<TKey>
+            where TEntity : Element<TEntity>, new()
+        {
+            if (target.Value != null)
+            {
+                var routes = 
+                    source.SubSpace.Routes
+                    .Where
+
+            }
+        }    
     }
 }

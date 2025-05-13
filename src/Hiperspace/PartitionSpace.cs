@@ -979,22 +979,6 @@ namespace Hiperspace
             return _spaces[partition].GetAsync(key, version);
         }
 
-        [Obsolete("Use ExportAsync instead")]
-        public override IEnumerable<(byte[], byte[])> Space()
-        {
-            for (int c = 0; c < _spaces.Length; c++)
-            {
-                foreach (var b in _spaces[c].Space())
-                    yield return b;
-            }
-        }
-
-        [Obsolete("Use ExportAsync instead")]
-        public override IAsyncEnumerable<(byte[], byte[])> SpaceAsync(CancellationToken cancellationToken = default)
-        {
-            return Space().ToAsyncEnumerable(cancellationToken);
-        }
-
         public override IEnumerable<Horizon> GetHorizons()
         {
             for (int c = 0; c < _spaces.Length; c++)

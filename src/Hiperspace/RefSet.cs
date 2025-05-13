@@ -166,7 +166,7 @@ namespace Hiperspace
                     foreach (var en in Cached)
                     {
                         _binder(en);
-                        SetSpace.Bind(en);
+                        SetSpace.Bind(en, true, true);
                     }
                 }
                 finally
@@ -215,7 +215,7 @@ namespace Hiperspace
                     if (SetSpace != null)
                     {
                         _binder(item);
-                        SetSpace.Bind(item);
+                        SetSpace.Bind(item, true, true);
                         if (!Cached.Add(item))
                         {
                             Cached.Remove(item);

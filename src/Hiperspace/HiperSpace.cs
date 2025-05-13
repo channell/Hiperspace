@@ -253,20 +253,6 @@ namespace Hiperspace
         }
 
         /// <summary>
-        /// Enumeration of raw values for transfer
-        /// </summary>
-        /// <remarks>will be protected in a future release</remarks>
-        /// <returns>content of space</returns>
-        [Obsolete($"Use {nameof(ExportAsync)} instead")]
-        public abstract IEnumerable<(byte[] Key, byte[] Value)> Space();
-        /// <summary>
-        /// Async Enumeration of raw values for transfer
-        /// </summary>
-        /// <remarks>will be protected in a future release</remarks>
-        /// <returns>content of space</returns>
-        [Obsolete($"Use {nameof(ExportAsync)} instead")]
-        public abstract IAsyncEnumerable<(byte[] Key, byte[] Value)> SpaceAsync(CancellationToken cancellationToken = default);
-        /// <summary>
         /// Find all values of space between the key values
         /// </summary>
         /// <param name="begin"></param>
@@ -742,10 +728,7 @@ namespace Hiperspace
         /// <remarks>
         /// virtual will be replaced with abstract when Space() is removed
         /// </remarks>
-        public virtual IAsyncEnumerable<(byte[] Key, byte[] Value)> ExportAsync(CancellationToken cancellationToken = default)
-        {
-            return Space().ToAsyncEnumerable(cancellationToken);
-        }
+        public abstract IAsyncEnumerable<(byte[] Key, byte[] Value)> ExportAsync(CancellationToken cancellationToken = default);
         /// <summary>
         /// Import into Hiperspace, for SessionSpace without temp ZipStream
         /// </summary>

@@ -24,15 +24,6 @@ namespace Hiperspace
         /// <param name="read">whether the access is read (i.e. not Bind of a new value)</param>
         /// <returns>true if the element is within the horizon for access</returns>
         public delegate bool Predicate<TEntity>(TEntity entity, string? context, IPrincipal? user, bool read);
-        /// <summary>
-        /// The predicate that determines if an entity is accessible asynchronously
-        /// </summary>
-        /// <param name="entity">the entity passed to the Horizon filter by the set space</param>
-        /// <param name="context">context label assigned to the subspace when created, usually the access role</param>
-        /// <param name="user">Optional security principle of user, that can be used to check IsInRole(String) </param>
-        /// <param name="read">whether the access is read (i.e. not Bind of a new value)</param>
-        /// <returns>true if the element is within the horizon for access</returns>
-        public delegate Task<bool> PredicateAsync<TEntity>(TEntity entity, string? context, IPrincipal? user, bool read);
 
         protected Horizon(Type type)
         {
@@ -57,7 +48,6 @@ namespace Hiperspace
     public class Horizon<TEntity> : Horizon where TEntity : class
     {
         internal Predicate<TEntity>? predicate;
-        internal PredicateAsync<TEntity>? predicateAsync;
 
         /// <summary>
         /// Construct a Horizon with a predicate that does not apply RBAC roles
@@ -71,26 +61,9 @@ namespace Hiperspace
         /// Construct a Horizon with a predicate that does not apply RBAC roles
         /// </summary>
         /// <param name="predicate"></param>
-        public Horizon([NotNull] Func<TEntity, Task<bool>> entityOnlyPredicate) : base(typeof(TEntity))
-        {
-            predicateAsync = (p, s, u, b) => entityOnlyPredicate(p);
-        }
-        /// <summary>
-        /// Construct a Horizon with a predicate that does not apply RBAC roles
-        /// </summary>
-        /// <param name="predicate"></param>
         public Horizon([NotNull] Func<TEntity, bool> entityOnlyPredicate, string reason) : base(typeof(TEntity), reason)
         {
             predicate = (p, s, u, b) => entityOnlyPredicate(p);
-        }
-
-        /// <summary>
-        /// Construct a Horizon with a predicate that does not apply RBAC roles
-        /// </summary>
-        /// <param name="predicate"></param>
-        public Horizon([NotNull] Func<TEntity, Task<bool>> entityOnlyPredicate, string reason) : base(typeof(TEntity), reason)
-        {
-            predicateAsync = (p, s, u, b) => entityOnlyPredicate(p);
         }
 
         /// <summary>
@@ -105,25 +78,9 @@ namespace Hiperspace
         /// Construct a Horizon with a predicate that includes context and read access role
         /// </summary>
         /// <param name="entityContextReadPredicate"></param>
-        public Horizon([NotNull] Func<TEntity, bool, Task<bool>> entityReadPredicate) : base(typeof(TEntity))
-        {
-            predicateAsync = (p, s, u, b) => entityReadPredicate(p, b);
-        }
-        /// <summary>
-        /// Construct a Horizon with a predicate that includes context and read access role
-        /// </summary>
-        /// <param name="entityContextReadPredicate"></param>
         public Horizon([NotNull] Func<TEntity, bool, bool> entityReadPredicate, string reason) : base(typeof(TEntity), reason)
         {
             predicate = (p, s, u, b) => entityReadPredicate(p, b);
-        }
-        /// <summary>
-        /// Construct a Horizon with a predicate that includes context and read access role
-        /// </summary>
-        /// <param name="entityContextReadPredicate"></param>
-        public Horizon([NotNull] Func<TEntity, bool, Task<bool>> entityReadPredicate, string reason) : base(typeof(TEntity), reason)
-        {
-            predicateAsync = (p, s, u, b) => entityReadPredicate(p, b);
         }
         /// <summary>
         /// Construct a Horizon with a predicate that includes context and read access role
@@ -137,25 +94,9 @@ namespace Hiperspace
         /// Construct a Horizon with a predicate that includes context and read access role
         /// </summary>
         /// <param name="entityContextReadPredicate"></param>
-        public Horizon([NotNull] Func<TEntity, string?, bool, Task<bool>> entityContextReadPredicate) : base(typeof(TEntity))
-        {
-            predicateAsync = (p, s, u, b) => entityContextReadPredicate(p, s, b);
-        }
-        /// <summary>
-        /// Construct a Horizon with a predicate that includes context and read access role
-        /// </summary>
-        /// <param name="entityContextReadPredicate"></param>
         public Horizon([NotNull] Func<TEntity, string?, bool, bool> entityContextReadPredicate, string reason) : base(typeof(TEntity), reason)
         {
             predicate = (p, s, u, b) => entityContextReadPredicate(p, s, b);
-        }
-        /// <summary>
-        /// Construct a Horizon with a predicate that includes context and read access role
-        /// </summary>
-        /// <param name="entityContextReadPredicate"></param>
-        public Horizon([NotNull] Func<TEntity, string?, bool, Task<bool>> entityContextReadPredicate, string reason) : base(typeof(TEntity), reason)
-        {
-            predicateAsync = (p, s, u, b) => entityContextReadPredicate(p, s, b);
         }
         /// <summary>
         /// Construct a Horizon with a predicate that includes context, user, and access role
@@ -169,25 +110,9 @@ namespace Hiperspace
         /// Construct a Horizon with a predicate that includes context, user, and access role
         /// </summary>
         /// <param name="entityContextReadUserPredicate"></param>
-        public Horizon([NotNull] PredicateAsync<TEntity> entityContextReadUserPredicate) : base(typeof(TEntity))
-        {
-            predicateAsync = entityContextReadUserPredicate;
-        }
-        /// <summary>
-        /// Construct a Horizon with a predicate that includes context, user, and access role
-        /// </summary>
-        /// <param name="entityContextReadUserPredicate"></param>
         public Horizon([NotNull] Predicate<TEntity> entityContextReadUserPredicate, string reason) : base(typeof(TEntity), reason)
         {
             predicate = entityContextReadUserPredicate;
-        }
-        /// <summary>
-        /// Construct a Horizon with a predicate that includes context, user, and access role
-        /// </summary>
-        /// <param name="entityContextReadUserPredicate"></param>
-        public Horizon([NotNull] PredicateAsync<TEntity> entityContextReadUserPredicate, string reason) : base(typeof(TEntity), reason)
-        {
-            predicateAsync = entityContextReadUserPredicate;
         }
     }
 }

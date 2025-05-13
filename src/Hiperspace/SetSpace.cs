@@ -57,9 +57,9 @@ namespace Hiperspace
         }
         protected SpinLock _lock = new SpinLock();
 
-        public virtual Result<TEntity> Bind(TEntity item, bool cache = true)
+        public virtual Result<TEntity> Bind(TEntity item, bool cache = true, bool read = false)
         {
-            var filtered = Filter(item, false);
+            var filtered = Filter(item, read);
             if (filtered.Fail)
                 return filtered;
 
@@ -92,12 +92,7 @@ namespace Hiperspace
 
         public bool Add(TEntity item)
         {
-            return Bind(item, true).New;
-        }
-
-        public async Task<bool> AddAsync(TEntity item)
-        {
-            return (await BindAsync(item, true)).New;
+            return Bind(item, true, false).New;
         }
 
         public bool Insert(TEntity item)
@@ -110,7 +105,7 @@ namespace Hiperspace
                 else
                     throw new MutationException($"Cannot insert a new {item.GetType().Name}, value already exists");
             }
-            return Bind(item, true).Ok;
+            return Bind(item, true, false).Ok;
         }
         public async Task<bool> InsertAsync(TEntity item)
         {
@@ -122,21 +117,21 @@ namespace Hiperspace
                 else
                     throw new MutationException($"Cannot insert a new {item.GetType().Name}, value already exists");
             }
-            return (await BindAsync(item, true)).Ok;
+            return (Bind(item, true)).Ok;
         }
         public bool Update(TEntity item)
         {
             var current = Get(item);
             if (current == null)
                 throw new MutationException($"Cannot update a {item.GetType().Name}, use Add(item) if an existing value is not needed");
-            return Bind(item, true).Ok;
+            return Bind(item, true, false).Ok;
         }
         public async Task<bool> UpdateAsync(TEntity item)
         {
             var current = await GetAsync(item);
             if (current == null)
                 throw new MutationException($"Cannot update a {item.GetType().Name}, use Add(item) if an existing value is not needed");
-            return (await BindAsync(item, true)).Ok;
+            return (Bind(item, true)).Ok;
         }
         public bool Delete(TEntity item)
         {
@@ -146,7 +141,7 @@ namespace Hiperspace
                 if (item.GetType().GetCustomAttribute<VersionedAttribute>() != null)
                 {
                     item.GetType().GetProperty("Deleted")?.SetValue(item, true);
-                    return Bind(item, true).Ok;
+                    return Bind(item, true, false).Ok;
                 }
                 else
                     throw new MutationException($"Cannot insert a new deleted {item.GetType().Name}, value already exists");
@@ -161,7 +156,7 @@ namespace Hiperspace
                 if (item.GetType().GetCustomAttribute<VersionedAttribute>() != null)
                 {
                     item.GetType().GetProperty("Deleted")?.SetValue(item, true);
-                    return (await BindAsync(item, true)).Ok;
+                    return (Bind(item, true)).Ok;
                 }
                 else
                     throw new MutationException($"Cannot insert a new deleted {item.GetType().Name}, value already exists");
@@ -178,7 +173,7 @@ namespace Hiperspace
         public abstract TEntity? Get(TEntity template);
         public abstract Task<TEntity?> GetAsync(TEntity template);
 
-        public abstract Task<Result<TEntity>> BindAsync(TEntity item, bool cache = true);
+        public abstract Task<Result<TEntity>> BindAsync(TEntity item, bool cache = true, bool read = false);
 
         public abstract void UnionWith(IEnumerable<TEntity> other);
 
@@ -245,35 +240,6 @@ namespace Hiperspace
                     });
             return entities;
         }
-        public async IAsyncEnumerable<(TEntity Item, double Distance)> FilterAsync(IAsyncEnumerable<(TEntity Item, double Distance)> entities, bool read = true)
-        {
-            if (horizons != null)
-            {
-                await foreach (var e in entities)
-                {
-                    var valid = true;
-                    for (int c = 0; c < horizons.Length; c++)
-                    {
-                        var horizon = horizons[c];
-                        if (horizon.predicateAsync != null && !(await horizon.predicateAsync(e.Item, Space?.ContextLabel, Space?.UserLabel, read)))
-                        {
-                            valid = false;
-                            Cached.Remove(e.Item);
-                            break;
-                        }
-                    }
-                    if (valid)
-                        yield return e;
-                }
-            }
-            else
-            {
-                await foreach (var e in entities)
-                {
-                    yield return e;
-                }
-            }
-        }
         public virtual Result<TEntity> Filter(TEntity entity, bool read = true)
         {
             if (horizons != null)
@@ -284,21 +250,6 @@ namespace Hiperspace
                     if (horizon.predicate != null && !horizon.predicate(entity, Space?.ContextLabel, Space?.UserLabel, read))
                     {
                         return Result.Fail(entity, horizons[c].Reason);
-                    }
-                }
-            }
-            return Result.Ok(entity);
-        }
-        public virtual async Task<Result<TEntity>> FilterAsync(TEntity entity, bool read = true)
-        {
-            if (horizons != null)
-            {
-                for (int c = 0; c < horizons.Length; c++)
-                {
-                    var horizon = horizons[c];
-                    if (horizon.predicateAsync != null && !(await horizon.predicateAsync(entity, Space?.ContextLabel, Space?.UserLabel, read)))
-                    {
-                        return Result.Fail(entity, horizon.Reason);
                     }
                 }
             }
@@ -482,10 +433,10 @@ namespace Hiperspace
         }
         public DateTime? DeltaFrom => _DeltaFrom;
 
-        public override Result<TEntity> Bind(TEntity item, bool cache = true)
+        public override Result<TEntity> Bind(TEntity item, bool cache = true, bool read = false)
         {
             TEntity? res;
-            var filtered = Filter(item, false);
+            var filtered = Filter(item, read);
             if (filtered.Fail)
                 return filtered;
             if (Cached.TryGetValue(item, out res))
@@ -541,7 +492,7 @@ namespace Hiperspace
         }
         public new bool Add(TEntity item)
         {
-            return Bind(item, true).Ok;
+            return Bind(item, true, true).Ok;
         }
 
         public virtual Result<TEntity> BindVersion(TEntity item, bool cache = true)

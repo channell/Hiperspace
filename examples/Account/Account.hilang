@@ -38,7 +38,7 @@ entity Acc.Customer : Versioned #3
 ];
 
 "a transaction against account"
-@DeltaIndex(31)
+@DeltaIndex(31), CubeFact(26)
 segment Acc.Transaction : Versioned 
 (
     "when the transaction was authorised"
@@ -49,7 +49,8 @@ segment Acc.Transaction : Versioned
     Amount          : Decimal #4,
 
     "who it was paid to"
-    Payee           : String #5
+    Payee           : String #5,
+    Receipient      : Acc.Customer #11
 }
 [
     Debit           = debit(Amount),
@@ -57,7 +58,7 @@ segment Acc.Transaction : Versioned
 ];
 
 "An Account for a customer"
-@CubeFact(26), CubeDimension
+@CubeDimension
 segment Acc.Account : Versioned 
 (
     Title           : String #2
@@ -90,3 +91,47 @@ aspect Acc.Balance : Versioned
     Current         : Decimal #4
 };
 
+%function ( set, drilldown, Functions.DrillDown);
+
+
+@Versioned
+entity Acc.Transaction_Cube = 
+    Node (SKey = SKey, Name = "Transaction_Fact", TypeName = "Fact")
+
+#45
+(
+    Slice : String #5,
+    Customer : Acc.Customer #6,
+    /*CustomerAccount : CustomerAccount,*/
+    Sector : Acc.Sector #7
+)
+{
+    "debt or credit to account, with respect to the customer position"
+    @CubeMeasure(Aggregate.Sum)
+    Amount          : Decimal #4,
+    Fact = true #9
+}
+[
+    /*
+    Customer_Slice = drilldownslice(this, Customer),
+    Customer_DrillDown : Acc.Transaction_Cube (Slice = Customer_Slice, Customer = Customer, Sector = Sector) #42,
+    CustomerAccount_DrillDown : Acc.Transaction_Cube (Slice = drilldownslice (this, CustomerAccount), Customer = Customer, Sector = Sector) #43,
+    Sector_DrillDown : Acc.Transaction_Cube (Slice = drilldownslice (this, Sector), Customer = Customer, Sector = Sector) #44,
+    */
+    DrillDown : DrillDown<Acc.Transaction_Cube> #59,
+    Customer_DrillDown2 = drilldown(this, DrillDown, Customer)
+/*
+    (* this will not work  without the inteface for HiperEdge *)
+    Customer_Structure : Acc.Transaction_Fact (Customer.Parent = this.Customer),
+*/
+];
+
+segment DrillDown<T> = 
+    Edge (From = owner, To = Target, Name = Slice, TypeName = "DrillDown")
+(
+    Slice : String
+)
+{
+    Target : T,
+    IsFact : Boolean
+}

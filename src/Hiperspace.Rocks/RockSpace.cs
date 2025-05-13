@@ -170,24 +170,6 @@ namespace Hiperspace.Rocks
             return Task.Run(() => Bind(key, value, version, source));
         }
 
-        [Obsolete("Use ExportAsync instead")]
-        public override IEnumerable<(byte[], byte[])> Space()
-        {
-            using (var iter = _db.NewIterator())
-            {
-                while (iter.Valid())
-                {
-                    yield return (iter.Key(), iter.Value());
-                    iter.Next();
-                }
-            }
-        }
-
-        [Obsolete("Use ExportAsync instead")]
-        public override IAsyncEnumerable<(byte[], byte[])> SpaceAsync(CancellationToken cancellationToken = default)
-        {
-            return Space().ToAsyncEnumerable(cancellationToken);
-        }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static int Compare(Span<byte> left, Span<byte> right)
         {

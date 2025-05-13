@@ -226,7 +226,7 @@ namespace Hiperspace
             if (SetSpace != subspace.Nodes)
             {
                 SetSpace = subspace.Nodes;
-                var result = SetSpace.Bind(this);
+                var result = SetSpace.Bind(this, true, true);
                 if (result.Ok && this == result.Value)
                 {
                     Froms.Bind(subspace.Edges);

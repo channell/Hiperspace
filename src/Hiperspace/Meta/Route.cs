@@ -5,11 +5,12 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using System.Collections;
 using System.ComponentModel.Design;
 
 namespace Hiperspace.Meta
 {
-    public class Routes: IDisposable
+    public class Routes: IDisposable, IEnumerable<Route>
     {
         /// <summary>
         /// terminate any cyclic dependency (caused by user extension)
@@ -27,6 +28,63 @@ namespace Hiperspace.Meta
             if (_routes != null)
                 foreach (var d in _routes)
                     d.Dispose();
+        }
+
+        public IEnumerator<Route> ForSource<T> ()
+        {
+            foreach (var i in _routes ?? [])
+            {
+                if ( i.SourceType == typeof(T))
+                {
+                    yield return i;
+                }
+            }
+        }
+        public IEnumerator<Route> ForHierarchy<T>()
+        {
+            foreach (var i in _routes ?? [])
+            {
+                if (i.SourceType == typeof(T) && 
+                    i.TargeType == typeof(T) &&
+                    i.SourceProperties != null &&
+                    i.SourceProperties.Contains("CubeHierarchy") &&
+                    i.TargetProperties != null &&
+                    i.TargetProperties.Contains("CubeHierarchy") &&
+                    i.Many)
+                {
+                    yield return i;
+                }
+            }
+        }
+        public bool IsHierarchy<T>()
+        {
+            foreach (var i in _routes ?? [])
+            {
+                if (i.SourceType == typeof(T) &&
+                    i.TargeType == typeof(T) &&
+                    i.SourceProperties != null &&
+                    i.SourceProperties.Contains("CubeHierarchy") &&
+                    i.TargetProperties != null &&
+                    i.TargetProperties.Contains("CubeHierarchy") &&
+                    i.Many)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public IEnumerator<Route> GetEnumerator()
+        {
+            foreach (var i in _routes ?? [])
+            {
+                yield return i;
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 

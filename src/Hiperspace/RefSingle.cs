@@ -77,7 +77,7 @@ namespace Hiperspace
                 {
                     _key = _keyBuilder();
                     _binder(value);
-                    SetSpace.Bind(value);
+                    SetSpace.Bind(value,true, false);
                 }
             }
         }
@@ -121,7 +121,7 @@ namespace Hiperspace
             if (_entity != null && _entity.SetSpace != setspace)
             {
                 _binder(_entity);
-                setspace.Bind(_entity);
+                setspace.Bind(_entity, true, true);
             }
         }
         public void Unbind(SubSpace subSpace)

@@ -215,7 +215,7 @@ namespace Hiperspace
                     To = value;
                 }
                 SetSpace = subspace.Edges;
-                var result = SetSpace.Bind(this);
+                var result = SetSpace.Bind(this, true, true);
                 return result;
             }
             return Result.Skip(this);

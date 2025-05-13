@@ -5,22 +5,19 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
-using System;
 using System.Buffers.Binary;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Channels;
-using System.Transactions;
 
 namespace Hiperspace
 {
     /// <summary>
-    /// A hiperspace that bulk loads updated from a session
+    /// A special case of Session space for use in Blazor browser applications while 
+    /// Web Assembly does not support threads and asyncronous blocking IO
+    /// A disconnected hiperspace that only searches the session space
     /// </summary>
-    public class SessionSpace : HiperSpace
+    public class BrowserSpace : HiperSpace
     {
         /// <summary>
         /// Rollup function to filter content
@@ -35,7 +32,7 @@ namespace Hiperspace
         public static Rollup RollUpMonths(int n = 1) => (last, current) => !last.HasValue ? true : last.Value.AddMonths(n) < current || last.Value.Month != current.Month ? true : false;
         public static Rollup RollUpDays(double n = 1.0) => (last, current) => !last.HasValue ? true : last.Value.AddDays(n) < current || last.Value.Day != current.Day ? true : false;
         public static Rollup RollUpHours(double n = 1.0) => (last, current) => !last.HasValue ? true : last.Value.AddHours(n) < current || last.Value.Hour != current.Hour ? true : false;
-        public static Rollup RollUpMinutes(double n = 1.0) => (last, current) => !last.HasValue ? true : last.Value.AddMinutes(n) < current || last.Value.Minute != current.Minute? true : false;
+        public static Rollup RollUpMinutes(double n = 1.0) => (last, current) => !last.HasValue ? true : last.Value.AddMinutes(n) < current || last.Value.Minute != current.Minute ? true : false;
         public static Rollup RollUpSeconds(double n = 1.0) => (last, current) => !last.HasValue ? true : last.Value.AddSeconds(n) < current || last.Value.Second != current.Second ? true : false;
 
         private HiperSpace _sessionSpace;
@@ -48,7 +45,7 @@ namespace Hiperspace
         /// </summary>
         /// <param name="sessionSpace">space for local session</param>
         /// <param name="durableSpace">durable backing store</param>
-        public SessionSpace([NotNull] HiperSpace sessionSpace, [NotNull] HiperSpace durableSpace)
+        public BrowserSpace([NotNull] HiperSpace sessionSpace, [NotNull] HiperSpace durableSpace)
         {
             _sessionSpace = sessionSpace;
             _durableSpace = durableSpace;
@@ -62,7 +59,7 @@ namespace Hiperspace
         /// </summary>
         /// <param name="sessionSpace">space for local session</param>
         /// <param name="durableSpace">durable backing store</param>
-        public SessionSpace([NotNull] HiperSpace sessionSpace, [NotNull] HiperSpace durableSpace, Rollup rollup)
+        public BrowserSpace([NotNull] HiperSpace sessionSpace, [NotNull] HiperSpace durableSpace, Rollup rollup)
         {
             _sessionSpace = sessionSpace;
             _durableSpace = durableSpace;
@@ -99,7 +96,7 @@ namespace Hiperspace
         /// <summary>
         /// Abort the session, and do not write changes
         /// </summary>
-        public void Abort ()
+        public void Abort()
         {
             _disposedValue = true;  // prevent write to backing
         }
@@ -120,32 +117,26 @@ namespace Hiperspace
 
         public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, object? source)
         {
-            return _sessionSpace.BindAsync(key, value, source);
+            return _durableSpace.BindAsync(key, value, source);
         }
         public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, object? source = null)
         {
-            return _sessionSpace.BindAsync(key, value, version, source);
+            return _durableSpace.BindAsync(key, value, version, source);
         }
         public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
         {
-            return _sessionSpace.BindAsync(key, value, version, priorVersion, source);
+            return _durableSpace.BindAsync(key, value, version, priorVersion, source);
         }
 
         public override IEnumerable<(byte[], byte[])> Find(byte[] begin, byte[] end)
         {
-            for (int c = 0; c < _spaces.Length; c++)
-            {
-                foreach (var b in _spaces[c].Find(begin, end))
-                    yield return b;
-            }
+            foreach (var b in _sessionSpace.Find(begin, end))
+                yield return b;
         }
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Find(byte[] begin, byte[] end, DateTime? version)
         {
-            for (int c = 0; c < _spaces.Length; c++)
-            {
-                foreach (var b in _spaces[c].Find(begin, end, version))
-                    yield return b;
-            }
+            foreach (var b in _sessionSpace.Find(begin, end, version))
+                yield return b;
         }
 
         public async override IAsyncEnumerable<(byte[], byte[])> FindAsync(byte[] begin, byte[] end, [EnumeratorCancellation] CancellationToken cancellationToken = default)
@@ -167,16 +158,13 @@ namespace Hiperspace
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)
         {
             var ranks = new SortedSet<Nearest>();
-            for (int c = 0; c < _spaces.Length; c++)
-            {
-                foreach (var result in _spaces[c].Nearest(begin, end, version, space, method, limit))
-                    ranks.Add(new Nearest(result));
-            }
+            foreach (var result in _sessionSpace.Nearest(begin, end, version, space, method, limit))
+                ranks.Add(new Nearest(result));
             var keys = limit == 0 ? ranks : ranks.Take(limit);
             foreach (var key in keys)
                 yield return key.ToTuple();
         }
-        public async override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> NearestAsync(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0, [EnumeratorCancellation]CancellationToken cancellationToken = default)
+        public async override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> NearestAsync(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             var ranks = new SortedSet<Nearest>();
             for (int c = 0; c < _spaces.Length; c++)
@@ -190,11 +178,8 @@ namespace Hiperspace
         }
         public override IEnumerable<(byte[] value, DateTime version)> GetVersions(byte[] key)
         {
-            for (int c = 0; c < _spaces.Length; c++)
-            {
-                foreach (var v in _spaces[c].GetVersions(key))
-                    yield return v;
-            }
+            foreach (var v in _sessionSpace.GetVersions(key))
+                yield return v;
         }
 
         public async override IAsyncEnumerable<(byte[] value, DateTime version)> GetVersionsAsync(byte[] key, [EnumeratorCancellation] CancellationToken cancellationToken = default)
@@ -208,26 +193,14 @@ namespace Hiperspace
 
         public override byte[] Get(byte[] key)
         {
-            for (int c = 0; c < _spaces.Length; c++)
-            {
-                var result = _spaces[c].Get(key);
-                if (result != null && result != Array.Empty<byte>())
-                    return result;
-            }
-            return Array.Empty<byte>();
+            return _sessionSpace.Get(key);
         }
         public override (byte[], DateTime) Get(byte[] key, DateTime? version)
         {
-            for (int c = 0; c < _spaces.Length; c++)
-            {
-                var result = _spaces[c].Get(key, version);
-                if (result != default && result.Item1 != Array.Empty<byte>())
-                    return result;
-            }
-            return (Array.Empty<byte>(), new DateTime());
+            return _sessionSpace.Get(key, version);
         }
 
-        public override async Task<byte[]> GetAsync(byte[] key)
+        public async override Task<byte[]> GetAsync(byte[] key)
         {
             for (int c = 0; c < _spaces.Length; c++)
             {
@@ -309,27 +282,14 @@ namespace Hiperspace
 
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Delta(byte[] key, DateTime? version)
         {
-            for (int c = 0; c < _spaces.Length; c++)
-            {
-                foreach (var b in _spaces[c].Delta(key, version))
-                    yield return b;
-            }
-        }
-        public async override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> DeltaAsync(byte[] key, DateTime? version, [EnumeratorCancellation]CancellationToken cancellationToken = default)
-        {
-            for (int c = 0; c < _spaces.Length; c++)
-            {
-                await foreach (var b in _spaces[c].DeltaAsync(key, version))
-                    yield return b;
-            }
+            return _sessionSpace.Delta(key, version);
         }
         public override IEnumerable<Horizon> GetHorizons()
         {
-            for (int c = 0; c < _spaces.Length; c++)
-            {
-                foreach (var h in _spaces[c].GetHorizons())
-                    yield return h;
-            }
+            foreach (var h in _sessionSpace.GetHorizons())
+                yield return h;
+            foreach (var h in _durableSpace.GetHorizons())
+                yield return h;
         }
         public override Result<(byte[] Key, byte[] Value)>[] BatchBind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)
         {
@@ -345,23 +305,19 @@ namespace Hiperspace
         }
         public override Task<Result<(byte[] Key, byte[] Value)>[]> BatchBindAsync((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)
         {
-            return _sessionSpace.BatchBindAsync(batch);
+            return _durableSpace.BatchBindAsync(batch);
         }
         public override Task<Result<(byte[] Key, byte[] Value)>[]> BatchBindAsync((byte[] key, byte[] value, DateTime version, object? source)[] batch)
         {
-            return _sessionSpace.BatchBindAsync(batch);
+            return _durableSpace.BatchBindAsync(batch);
         }
         public override Task<Result<(byte[] Key, byte[] Value)>[]> BatchBindAsync((byte[] key, byte[] value, object? source)[] batch)
         {
-            return _sessionSpace.BatchBindAsync(batch);
+            return _durableSpace.BatchBindAsync(batch);
         }
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindDelta(byte[] begin, DateTime? version, DateTime? DeltaFrom)
         {
-            for (int c = 0; c < _spaces.Length; c++)
-            {
-                foreach (var b in _spaces[c].FindDelta (begin, version, DeltaFrom))
-                    yield return b;
-            }
+            return _sessionSpace.FindDelta(begin, version, DeltaFrom);
         }
         public async override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindDeltaAsync(byte[] begin, DateTime? version, DateTime? DeltaFrom, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
@@ -374,21 +330,13 @@ namespace Hiperspace
 
         public override IEnumerable<(byte[] Key, byte[] Value)> FindIndex(byte[] begin, byte[] end)
         {
-            for (int c = 0; c < _spaces.Length; c++)
-            {
-                foreach (var b in _spaces[c].FindIndex(begin, end))
-                    yield return b;
-            }
+            return _sessionSpace.FindIndex(begin, end);
         }
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindIndex(byte[] begin, byte[] end, DateTime? version)
         {
-            for (int c = 0; c < _spaces.Length; c++)
-            {
-                foreach (var b in _spaces[c].FindIndex(begin, end, version))
-                    yield return b;
-            }
+            return _sessionSpace.FindIndex(begin, end, version);
         }
-        public override async IAsyncEnumerable<(byte[] Key, byte[] Value)> FindIndexAsync(byte[] begin, byte[] end, [EnumeratorCancellation]CancellationToken cancellationToken = default)
+        public async override IAsyncEnumerable<(byte[] Key, byte[] Value)> FindIndexAsync(byte[] begin, byte[] end, [EnumeratorCancellation]CancellationToken cancellationToken = default)
         {
             for (int c = 0; c < _spaces.Length; c++)
             {
@@ -396,7 +344,7 @@ namespace Hiperspace
                     yield return b;
             }
         }
-        public override async IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindIndexAsync(byte[] begin, byte[] end, DateTime? version, [EnumeratorCancellation]CancellationToken cancellationToken = default)
+        public async override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindIndexAsync(byte[] begin, byte[] end, DateTime? version, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             for (int c = 0; c < _spaces.Length; c++)
             {
@@ -406,25 +354,13 @@ namespace Hiperspace
         }
         public override (byte[] Key, byte[] Value)? GetFirst(byte[] begin, byte[] end)
         {
-            for (int c = _spaces.Length -1; c >= 0; c--)
-            {
-                var result = _spaces[c].GetFirst(begin, end);
-                if (result != null)
-                    return result;
-            }
-            return null;
+            return _sessionSpace.GetFirst(begin, end);
         }
         public override (byte[] Key, DateTime AsAt, byte[] Value)? GetFirst(byte[] begin, byte[] end, DateTime? version)
         {
-            for (int c = _spaces.Length - 1; c >= 0; c--)
-            {
-                var result = _spaces[c].GetFirst(begin, end, version);
-                if (result != null)
-                    return result;
-            }
-            return null;
+            return _sessionSpace.GetFirst(begin, end, version);
         }
-        public override async Task<(byte[] Key, byte[] Value)?> GetFirstAsync(byte[] begin, byte[] end)
+        public async override Task<(byte[] Key, byte[] Value)?> GetFirstAsync(byte[] begin, byte[] end)
         {
             for (int c = _spaces.Length - 1; c >= 0; c--)
             {
@@ -434,7 +370,7 @@ namespace Hiperspace
             }
             return null;
         }
-        public override async Task<(byte[] Key, DateTime AsAt, byte[] Value)?> GetFirstAsync(byte[] begin, byte[] end, DateTime? version)
+        public async override Task<(byte[] Key, DateTime AsAt, byte[] Value)?> GetFirstAsync(byte[] begin, byte[] end, DateTime? version)
         {
             for (int c = _spaces.Length - 1; c >= 0; c--)
             {
@@ -446,25 +382,13 @@ namespace Hiperspace
         }
         public override (byte[] Key, byte[] Value)? GetLast(byte[] begin, byte[] end)
         {
-            for (int c = 0; c < _spaces.Length; c++)
-            {
-                var result = _spaces[c].GetLast(begin, end);
-                if (result != null)
-                    return result;
-            }
-            return null;
+            return _sessionSpace.GetLast(begin, end);
         }
         public override (byte[] Key, DateTime AsAt, byte[] Value)? GetLast(byte[] begin, byte[] end, DateTime? version)
         {
-            for (int c = 0; c < _spaces.Length; c++)
-            {
-                var result = _spaces[c].GetLast(begin, end, version);
-                if (result != null)
-                    return result;
-            }
-            return null;
+            return _sessionSpace.GetLast(begin, end, version);
         }
-        public override async Task<(byte[] Key, byte[] Value)?> GetLastAsync(byte[] begin, byte[] end)
+        public async override Task<(byte[] Key, byte[] Value)?> GetLastAsync(byte[] begin, byte[] end)
         {
             for (int c = 0; c < _spaces.Length; c++)
             {
@@ -474,7 +398,7 @@ namespace Hiperspace
             }
             return null;
         }
-        public override async Task<(byte[] Key, DateTime AsAt, byte[] Value)?> GetLastAsync(byte[] begin, byte[] end, DateTime? version)
+        public async override Task<(byte[] Key, DateTime AsAt, byte[] Value)?> GetLastAsync(byte[] begin, byte[] end, DateTime? version)
         {
             for (int c = 0; c < _spaces.Length; c++)
             {
@@ -486,13 +410,9 @@ namespace Hiperspace
         }
         public override IEnumerable<(byte[] key, byte[] value)> GetMany(IEnumerable<byte[]> keys)
         {
-            for (int c = 0; c < _spaces.Length; c++)
-            {
-                foreach (var b in _spaces[c].GetMany(keys))
-                    yield return b;
-            }
+            return _sessionSpace.GetMany(keys);
         }
-        public override async IAsyncEnumerable<(byte[] key, byte[] value)> GetManyAsync(IAsyncEnumerable<byte[]> keys, [EnumeratorCancellation]CancellationToken cancellationToken = default)
+        public async override IAsyncEnumerable<(byte[] key, byte[] value)> GetManyAsync(IAsyncEnumerable<byte[]> keys, [EnumeratorCancellation]CancellationToken cancellationToken = default)
         {
             for (int c = 0; c < _spaces.Length; c++)
             {
@@ -502,13 +422,9 @@ namespace Hiperspace
         }
         public override IEnumerable<(byte[] key, byte[] Value, DateTime version)> GetMany(IEnumerable<byte[]> keys, DateTime? version)
         {
-            for (int c = 0; c < _spaces.Length; c++)
-            {
-                foreach (var b in _spaces[c].GetMany(keys, version))
-                    yield return b;
-            }
+            return _sessionSpace.GetMany(keys, version);
         }
-        public override async IAsyncEnumerable<(byte[] key, byte[] Value, DateTime version)> GetManyAsync(IAsyncEnumerable<byte[]> keys, DateTime? version, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        public async override IAsyncEnumerable<(byte[] key, byte[] Value, DateTime version)> GetManyAsync(IAsyncEnumerable<byte[]> keys, DateTime? version, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             for (int c = 0; c < _spaces.Length; c++)
             {
@@ -518,21 +434,13 @@ namespace Hiperspace
         }
         public override IEnumerable<(byte[] Key, byte[] Value)> Scan(byte[] begin, byte[] end, byte[][] values)
         {
-            for (int c = 0; c < _spaces.Length; c++)
-            {
-                foreach (var b in _spaces[c].Scan(begin, end, values))
-                    yield return b;
-            }
+            return _sessionSpace.Scan(begin, end, values);
         }
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Scan(byte[] begin, byte[] end, byte[][] values, DateTime? version)
         {
-            for (int c = 0; c < _spaces.Length; c++)
-            {
-                foreach (var b in _spaces[c].Scan(begin, end, values, version))
-                    yield return b;
-            }
+            return _sessionSpace.Scan(begin, end, values, version);
         }
-        public override async IAsyncEnumerable<(byte[] Key, byte[] Value)> ScanAsync(byte[] begin, byte[] end, byte[][] values, [EnumeratorCancellation]CancellationToken cancellationToken = default)
+        public async override IAsyncEnumerable<(byte[] Key, byte[] Value)> ScanAsync(byte[] begin, byte[] end, byte[][] values, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             for (int c = 0; c < _spaces.Length; c++)
             {
@@ -540,7 +448,7 @@ namespace Hiperspace
                     yield return b;
             }
         }
-        public override async IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> ScanAsync(byte[] begin, byte[] end, byte[][] values, DateTime? version, [EnumeratorCancellation]CancellationToken cancellationToken = default)
+        public async override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> ScanAsync(byte[] begin, byte[] end, byte[][] values, DateTime? version, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             for (int c = 0; c < _spaces.Length; c++)
             {
@@ -548,7 +456,7 @@ namespace Hiperspace
                     yield return b;
             }
         }
-        public async override IAsyncEnumerable<(byte[] Key, byte[] Value)> ExportAsync([EnumeratorCancellation]CancellationToken cancellationToken = default)
+        public async override IAsyncEnumerable<(byte[] Key, byte[] Value)> ExportAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             (byte[] Key, byte[] Value)? current = null;
             DateTime? last = null;
@@ -579,8 +487,8 @@ namespace Hiperspace
         {
             _sessionSpace.ImportAsync(values, cancellationToken);
         }
-
-        public void SaveChanges (CancellationToken cancellationToken)
+        
+        public void SaveChanges(CancellationToken cancellationToken)
         {
             var elements = _sessionSpace.ExportAsync(cancellationToken);
             _durableSpace.ImportAsync(elements);

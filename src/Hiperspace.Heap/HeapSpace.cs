@@ -101,21 +101,6 @@ namespace Hiperspace.Heap
             return Task.Run(() => Bind(key, value, version, source));
         }
 
-        [Obsolete("Use ExportAsync instead")]
-        public override IEnumerable<(byte[], byte[])> Space()
-        {
-            foreach(var h in _heap)
-            {
-                yield return (h.Key, h.Value);
-            }
-        }
-
-        [Obsolete("Use ExportAsync instead")]
-        public override IAsyncEnumerable<(byte[], byte[])> SpaceAsync(CancellationToken cancellationToken = default)
-        {
-            return Space().ToAsyncEnumerable();
-        }
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static int Compare(Span<byte> left, Span<byte> right)
         {

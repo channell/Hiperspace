@@ -125,18 +125,6 @@ namespace Hiperspace
             return _space.BindAsync(key, value, source);
         }
 
-        [Obsolete("Use ExportAsync instead")]
-        public override IEnumerable<(byte[], byte[])> Space()
-        {
-            return _space.Space();
-        }
-
-        [Obsolete("Use ExportAsync instead")]
-        public override IAsyncEnumerable<(byte[], byte[])> SpaceAsync(CancellationToken cancellationToken = default)
-        {
-            return _space.SpaceAsync(cancellationToken);
-        }
-
         public override IEnumerable<(byte[], byte[])> Find(byte[] begin, byte[] end)
         {
             return _space.Find(begin, end);

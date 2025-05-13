@@ -398,33 +398,6 @@ namespace Hiperspace.Heap
             }
         }
 
-        [Obsolete("Use ExportAsync instead")]
-        public override IEnumerable<(byte[] Key, byte[] Value)> Space()
-        {
-            try
-            {
-                return _primary.Space();
-            }
-            catch (Exception)
-            {
-                Recover();
-                return _primary.Space();
-            }
-        }
-
-        [Obsolete("Use ExportAsync instead")]
-        public override IAsyncEnumerable<(byte[] Key, byte[] Value)> SpaceAsync(CancellationToken cancellationToken = default)
-        {
-            try
-            {
-                return _primary.SpaceAsync(cancellationToken);
-            }
-            catch (Exception)
-            {
-                Recover();
-                return _primary.SpaceAsync(cancellationToken);
-            }
-        }
         public override Result<(byte[] Key, byte[] Value)>[] BatchBind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)
         {
             try

@@ -60,5 +60,29 @@ namespace Hiperspace
         /// Indicate that the Cube Slice is a Fact rather than a summary for a dimension
         /// </summary>
         public Boolean? IsFact { get; set; }
+
+        /// <summary>
+        /// Reference to the SubSpace that the element is a member of
+        /// </summary>
+        public SubSpace SubSpace { get; }
+    }
+
+    /// <summary>
+    /// A typed cube factthat includes the target type
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
+    public interface ICubeFactElement<TEntity> : ICubeFact
+    {
+        /// <summary>
+        /// All drilldown values for this point in a cube
+        /// </summary>
+        public IEnumerable<ICubeFactElement<TEntity>> DrillDown { get; }
+
+
+        /// <summary>
+        /// Merge a drilldown fact into this node at runtime
+        /// </summary>
+        /// <param name="other"></param>
+        public void Merge(ICubeFactElement<TEntity> other);
     }
 }
