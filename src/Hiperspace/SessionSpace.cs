@@ -548,7 +548,8 @@ namespace Hiperspace
                     yield return b;
             }
         }
-        public async override IAsyncEnumerable<(byte[] Key, byte[] Value)> ExportAsync([EnumeratorCancellation]CancellationToken cancellationToken = default)
+
+        public override async IAsyncEnumerable<(byte[] Key, byte[] Value)> ExportAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             (byte[] Key, byte[] Value)? current = null;
             DateTime? last = null;

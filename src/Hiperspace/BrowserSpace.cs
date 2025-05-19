@@ -456,7 +456,8 @@ namespace Hiperspace
                     yield return b;
             }
         }
-        public async override IAsyncEnumerable<(byte[] Key, byte[] Value)> ExportAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
+
+        public override async IAsyncEnumerable<(byte[] Key, byte[] Value)> ExportAsync([EnumeratorCancellation]CancellationToken cancellationToken = default)
         {
             (byte[] Key, byte[] Value)? current = null;
             DateTime? last = null;
@@ -483,11 +484,12 @@ namespace Hiperspace
                 current = item;
             }
         }
+
         public override void ImportAsync(IAsyncEnumerable<(byte[] Key, byte[] Value)> values, CancellationToken cancellationToken = default)
         {
             _sessionSpace.ImportAsync(values, cancellationToken);
         }
-        
+
         public void SaveChanges(CancellationToken cancellationToken)
         {
             var elements = _sessionSpace.ExportAsync(cancellationToken);

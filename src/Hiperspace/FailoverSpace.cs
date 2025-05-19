@@ -806,10 +806,12 @@ namespace Hiperspace.Heap
                 return _primary.ScanAsync(begin, end, values, version, cancellationToken);
             }
         }
+
         public override IAsyncEnumerable<(byte[] Key, byte[] Value)> ExportAsync(CancellationToken cancellationToken = default)
         {
             return _primary.ExportAsync(cancellationToken);
         }
+
         public override void ImportAsync(IAsyncEnumerable<(byte[] Key, byte[] Value)> values, CancellationToken cancellationToken = default)
         {
             _primary.ImportAsync(values, cancellationToken);

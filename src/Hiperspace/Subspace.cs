@@ -388,5 +388,21 @@ namespace Hiperspace
         {
             return await Graph.PathFunctions.PathsAsync(root, new Graph.RouteMap(route), length, targets, cancellationToken);
         }
+
+        /// <summary>
+        /// Export contents of the cache 
+        /// </summary>
+        /// <remarks>
+        /// is usefull for web-assembly/phone clients need to transfer the full set for a use-case
+        /// </remarks>
+        public abstract IAsyncEnumerable<(byte[] Key, byte[] Value, DateTime? AsAt)> ExportCacheAsync(CancellationToken cancellationToken = default);
+        /// <summary>
+        /// Import into SubSpace cache if avialable 
+        /// </summary>
+        /// <param name="cacheOnly">true if the import is only to the cache
+        /// <remarks>
+        /// cachedOnly is usefull for web-assembly/phone clients need to transfer the full set for a use-case
+        /// </remarks>
+        public abstract void ImportCacheAsync(IAsyncEnumerable<(byte[] Key, byte[] Value, DateTime? AsAt)> values, CancellationToken cancellationToken = default);
     }
 }

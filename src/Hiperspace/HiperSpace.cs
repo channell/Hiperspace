@@ -729,19 +729,11 @@ namespace Hiperspace
         /// virtual will be replaced with abstract when Space() is removed
         /// </remarks>
         public abstract IAsyncEnumerable<(byte[] Key, byte[] Value)> ExportAsync(CancellationToken cancellationToken = default);
+
         /// <summary>
         /// Import into Hiperspace, for SessionSpace without temp ZipStream
         /// </summary>
-        /// <remarks>
-        /// virtual will be replaced with abstract when Space() is removed
-        /// </remarks>
-        public virtual async void ImportAsync(IAsyncEnumerable<(byte[] Key, byte[] Value)> values, CancellationToken cancellationToken = default)
-        {
-            await foreach(var item in values.WithCancellation(cancellationToken))
-            {
-                await BindAsync(item.Key, item.Value, null);
-            }
-        }
+        public abstract void ImportAsync(IAsyncEnumerable<(byte[] Key, byte[] Value)> values, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// release all resources

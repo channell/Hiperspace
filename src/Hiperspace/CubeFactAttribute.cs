@@ -61,28 +61,29 @@ namespace Hiperspace
         /// </summary>
         public Boolean? IsFact { get; set; }
 
-        /// <summary>
-        /// Reference to the SubSpace that the element is a member of
-        /// </summary>
-        public SubSpace SubSpace { get; }
     }
 
     /// <summary>
-    /// A typed cube factthat includes the target type
+    /// A typed cube fact that includes the target type
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
-    public interface ICubeFactElement<TEntity> : ICubeFact
+    public interface ICubeFactElement<TEntity> : ICubeFact where TEntity : Element<TEntity>, new()
     {
         /// <summary>
-        /// All drilldown values for this point in a cube
+        /// Reference to the SubSpace that the element is a member of
         /// </summary>
-        public IEnumerable<ICubeFactElement<TEntity>> DrillDown { get; }
-
+        public SetSpace<TEntity> SetSpace{ get; }
 
         /// <summary>
         /// Merge a drilldown fact into this node at runtime
         /// </summary>
-        /// <param name="other"></param>
-        public void Merge(ICubeFactElement<TEntity> other);
+        /// <param name="other">the other fact being added, using Cube Aggregation methods to appy</param>
+        public void Merge(TEntity other);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="other">the other fact being subtracted to produce a delta value</param>
+        public void Delta(TEntity other);
     }
 }

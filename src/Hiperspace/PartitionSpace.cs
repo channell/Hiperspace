@@ -987,7 +987,7 @@ namespace Hiperspace
                     yield return h;
             }
         }
-        public async override IAsyncEnumerable<(byte[] Key, byte[] Value)> ExportAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
+        public override async IAsyncEnumerable<(byte[] Key, byte[] Value)> ExportAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             for (int c = 0; c < _spaces.Length; c++)
             {
@@ -995,7 +995,8 @@ namespace Hiperspace
                     yield return b;
             }
         }
-        public async override void ImportAsync(IAsyncEnumerable<(byte[] Key, byte[] Value)> values, CancellationToken cancellationToken = default)
+
+        public override async void ImportAsync(IAsyncEnumerable<(byte[] Key, byte[] Value)> values, CancellationToken cancellationToken = default)
         {
             var channels = new Channel<(byte[] Key, byte[] Value)>[_spaces.Length];
             var readers = new IAsyncEnumerable<(byte[] Key, byte[] Value)>[_spaces.Length];

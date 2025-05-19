@@ -22,4 +22,17 @@ namespace Hiperspace
             ParentName = parentName;
         }
     }
+
+    /// <summary>
+    /// An element that provides the CubeHierarchyAttribute will implement this 
+    /// interface to navigate to the parent dimension
+    /// </summary>
+    /// <typeparam name="TEntity"></typeparam>
+    public interface ICubeHierarchy<TEntity>
+    {
+        /// <summary>
+        /// The parent element 
+        /// </summary>
+        public TEntity? Parent { get;}
+    }
 }

@@ -7,6 +7,7 @@
 // ---------------------------------------------------------------------------------------
 using System.Diagnostics;
 using System.Numerics;
+using System.Text;
 
 namespace Hiperspace
 {
@@ -217,27 +218,66 @@ namespace Hiperspace
             }
             return null;
         }
-        public static string DrillDownSlice(ICubeFact fact, ICubeDimension dimension)
+
+        public static IEnumerable<TDrill> DrillDown<TDrill, TEntity> (ICubeFact source, TEntity? target, RefSet<TDrill> drilldown)
+            where TEntity : Element<TEntity>, ICubeDimension, new()
+            where TDrill : Element<TDrill>, new()
         {
-            var parts = fact.CubeSlice?.Split(',') ?? Array.Empty<string>();
-            var newParts = new string[parts.Length + 1];
-            parts.CopyTo(newParts, 1);
-            newParts[0] = dimension.CubeSlice;
-            Array.Sort(newParts);
-            return String.Join(',', newParts);
+            // if the dimension already has a value, get any drilldown values of the same type
+            if (target != null)
+            {
+                foreach (var row in drilldown)
+                {
+                    var fact = row as ICubeFact;
+                    if ( fact?.CubeSlice == source.CubeSlice)
+                    {
+                        yield return row;
+                    }
+                }
+            }
+            // if the dimension is empty, get drilldown values adding the slice id
+            else
+            {
+                var template = new TEntity() as ICubeDimension;
+                var parts = source.CubeSlice?.Split(',') ?? Array.Empty<string>();
+                var newParts = new string[parts.Length + 1];
+                parts.CopyTo(newParts, 1);
+                newParts[0] = template.CubeSlice;
+                Array.Sort(newParts);
+                var slice = String.Join(',', newParts);
+
+                foreach (var row in drilldown)
+                {
+                    var fact = row as ICubeFact;
+                    if (fact?.CubeSlice == slice)
+                    {
+                        yield return row;
+                    }
+                }
+            }
         }
 
-        public static TDrill DrillDown<TDrill,TKey, TEntity> (ICubeFact source, KeyRef<TKey, TEntity> target, TDrill drilldown)
-            where TKey : struct, IEquatable<TKey>, IComparable<TKey>
-            where TEntity : Element<TEntity>, new()
+        /// <summary>
+        /// Get the name of a cube observation based on the dimensions provided
+        /// </summary>
+        /// <param name="dimensions">dimensions to the cube</param>
+        /// <returns></returns>
+        public static string CubeName (params ICubeDimension?[]? dimensions)
         {
-            if (target.Value != null)
+            StringBuilder sb = new StringBuilder();
+            if (dimensions == null || dimensions.Length == 0) return string.Empty;
+            for (int i = 0; i < dimensions.Length; i++)
             {
-                var routes = 
-                    source.SubSpace.Routes
-                    .Where
-
+                if (dimensions[i] == null) 
+                    continue;
+                else
+                {
+                    if (sb.Length > 0)
+                        sb.Append(',');
+                    sb.Append($"{dimensions[i]?.CubeSlice}:{dimensions[i]?.SKey}");
+                }
             }
-        }    
+            return sb.ToString();
+        }
     }
 }

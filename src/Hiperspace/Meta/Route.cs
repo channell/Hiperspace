@@ -74,6 +74,25 @@ namespace Hiperspace.Meta
             return false;
         }
 
+        public Route? HierarchyParent<T>()
+        {
+            foreach (var i in _routes ?? [])
+            {
+                if (i.SourceType == typeof(T) &&
+                    i.TargeType == typeof(T) &&
+                    i.SourceProperties != null &&
+                    i.SourceProperties.Contains("CubeHierarchy") &&
+                    i.TargetProperties != null &&
+                    i.TargetProperties.Contains("CubeHierarchy") &&
+                    i.One)
+                {
+                    return i;
+                }
+            }
+            return null;
+        }
+
+
         public IEnumerator<Route> GetEnumerator()
         {
             foreach (var i in _routes ?? [])

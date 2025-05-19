@@ -407,7 +407,7 @@ namespace Hiperspace.Heap
             return GetVersions(key).ToAsyncEnumerable(cancellationToken);
         }
 
-        public async override IAsyncEnumerable<(byte[] Key, byte[] Value)> ExportAsync([EnumeratorCancellation]CancellationToken cancellationToken = default)
+        public async override IAsyncEnumerable<(byte[] Key, byte[] Value)> ExportAsync([EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             await foreach (var h in _heap.ToAsyncEnumerable(cancellationToken))
             {
