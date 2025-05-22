@@ -15,9 +15,9 @@ namespace Hiperspace
         Sum,
         Max,
         Min,
+        Average,
         Count,
-        First,
-        Last
+        AverageTotal  // Measure accumilated to support average aggregation
     }
     /// <summary>
     /// Indicates that this attribute is a measure aggregated in a cube

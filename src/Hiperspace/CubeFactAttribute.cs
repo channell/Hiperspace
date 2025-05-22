@@ -61,29 +61,16 @@ namespace Hiperspace
         /// </summary>
         public Boolean? IsFact { get; set; }
 
-    }
-
-    /// <summary>
-    /// A typed cube fact that includes the target type
-    /// </summary>
-    /// <typeparam name="TEntity"></typeparam>
-    public interface ICubeFactElement<TEntity> : ICubeFact where TEntity : Element<TEntity>, new()
-    {
         /// <summary>
-        /// Reference to the SubSpace that the element is a member of
+        /// Calculate the summary using the the drilldown elements, and measure methods 
         /// </summary>
-        public SetSpace<TEntity> SetSpace{ get; }
-
-        /// <summary>
-        /// Merge a drilldown fact into this node at runtime
-        /// </summary>
-        /// <param name="other">the other fact being added, using Cube Aggregation methods to appy</param>
-        public void Merge(TEntity other);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="other">the other fact being subtracted to produce a delta value</param>
-        public void Delta(TEntity other);
+        /// <remarks>
+        /// Every Cube (that is not a fact) has a set of drilldown links that can be used to retrieve the 
+        /// underlying facts that can be used to calculate a summary.  Calculation of a fact is the same
+        /// as the fact itself.
+        /// The Drilldown is created by the aggregation process that creates the base fact elements
+        /// method.
+        /// </remarks>
+        public ICubeFact Calculate();
     }
 }
