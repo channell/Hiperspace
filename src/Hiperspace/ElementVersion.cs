@@ -19,7 +19,7 @@ namespace Hiperspace
         /// <summary>
         /// Timestamp when this element was created.  Used as part of the stored key for versions in hiperspace
         /// </summary>
-        public DateTime AsAt { get; protected set; }
+        public DateTime AsAt { get; set; }  // changed to allow historical loading of versions and cube calculation
 
         /// <summary>
         /// Timestamp of the version that this element replaced.  Used to implement optimistic concurrency control

@@ -1,0 +1,27 @@
+@CubeDimension, CubeHierarchy(Parent), Versioned
+entity Portfolio (Id : String) { Parent : Portfolio} [Children : Portfolio (Parent = this)];
+
+@CubeDimension
+entity Country (ISO : String) [Instruments : Instrument (Country = this)];
+
+@CubeDimension, CubeHierarchy(Parent), Versioned
+entity Sector (Id : Int32) { Parent : Sector } [Children : Sector (Parent = this), Customers : Customer (Sector = this)];
+
+@CubeDimension, CubeHierarchy(Parent), Versioned
+entity Product (Id : String) { Parent : Product } [Children : Product (Parent = this), ProductInstruments : Instrument (Product = this)];
+entity Account (Id : String) {Customer : Customer};
+entity Customer (Id : String) {Sector : Sector} [Accounts : Account (Customer = this) ];
+entity Instrument (ISIN : String) {Country : Country, Product : Product} [Price : Price, Market = Price.Market];
+
+@DeltaIndex, Versioned
+aspect Price { Market : Decimal };
+
+@CubeFact, DeltaIndex
+entity Contract : Versioned
+	(id : Int64) 
+	{Quantity : Decimal, Instrument : Instrument, Portfolio : Portfolio, Account : Account} 
+	[
+		Market = Instrument.Market, 
+		@CubeMeasure(Aggregate.Sum) 
+		Value = Quantity * Market
+	];

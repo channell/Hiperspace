@@ -10,41 +10,47 @@
     <PackageReadmeFile>readme.md</PackageReadmeFile>
     <Copyright>Cepheis Ltd (C) 2023, 2024, 2025</Copyright>
     <PackageReleaseNotes>
-      https://www.cepheis.com/hiperspace/20250505
+      https://www.cepheis.com/hiperspace/20250606
       # Overview
-      This release is concerned with asynchronous execution, particularly in a Blazor web-assembly environment where all IO must be async to avoid blocking the UI thread.  All Async functions now use underlying async functions rather that dispatching Tasks
+      This release Significantly extends the functionality provided for Cube Analytics by hiperspace and combines streaming recalculation with graph navigation.  The  cube enhancement is detailed on [OLAP](https://www.cepheis.com/hiperspace/use-case-cube) use-case.  To support Cube analytics and code-generation for aggregation service, and  a number of additions were made to [Hipersapce](https://www.nuget.org/packages/Hiperspace) and [HiLang](https://www.nuget.org/packages/HiLang) compiler.
 
-      ### HiperSpace
-      `BatchBindAsync` and `GetAsync` now call the driver async functions
 
-      ### Horizons
-      Horizon filters provide a mechanism to fine-grained access control, and context dependent filterning of content.  The most common filter is to provide logical `delete` to remove deleted elements from from read view, but present for update views.
 
-      Horizon now supports async filters for complex horizons that depend on other elements (that may need to be fetched over the network).
+      -----
 
-      ### KeyRef
-      `KeyRef&lt;&gt;` has the additional method `ValueAsync()` that will fetch a value asyncronously if needed (the value is cached for further reference)
 
-      ### RefSet
-      `RefSet&lt;&gt;` has an additional method `AsAsyncEnumerable(CancellationToken cancellationToken)` that can be used to access elements asyncronously
-
-      ### RefSingle
-      `RefSingle&lt;&gt;` is a special case of KeyRef for aspects (optional one-of) that is bound to the woining element so that it cane be used like a property.  `ValueAsync()` has been added for async access.
+      ## Blazor enhancements
+      This release removes obsolete functions that are no longer used, such as `Space()` which has been replaced by `ExportAsync()` to provide a streaming transfer of updates from a `SessionSpace` for higher performance.
 
       ### SetSpace
-      `SetSpace&lt;&gt;` has additional functions for Async (filter, insert, update, deletem, get) operations without blocking and `AsAsyncEnumerable(CancellationToken cancellationToken)` for asyncronous access to the full set
+      The Bind function now has an addition parameter for read/write so that filter can be used to *delete* elements without the need to open an additional connection
 
-      ## Hilang
-      The language compiler for Hiperspace domain spaces has been updated to generate code that uses async interfaces
+      ### SubSpace
+      In addition to ExportAsync and ImportAsync, SubSpaces now include `ExportCacheAsync` and `ImportCacheAsync` to allow a server gRPC endpoint to select all the elements that are needed for a use-case and send them all in one message to the client.
 
-      Additional functions are provided for async access to the properties that might require network IO.  e.g.
-      ```
-      entity Customer [Accounts : Account];
-      segment Account (...) {...};
-      ```
-      will generate a storage element `CustomerAccounts` with a property `owner : Customer` to access the owner of the segment element.   `CustomerAccounts`  now has an `ownerAsync()` member that retrieves the custoemr asyncronously
+      ### BrowserSpace
+      This new type of space has been created in order to address the limitations of blazer web assembly that does not support synchronous network IO. BrowserSpace will be deprecated once WebAssembly support asynchronous threads.
 
-      This release extends the `Hipperspace` model to better support streaming aggregation of Cube and viewing of aggregates part of graph view.  It also updated `SessionSpace` to use stream replication rather than Zip file compression.
+      Browser space, any synchronous operation, uses only the local changes cache, while asynchronous operations use either the local cache or the remote store
+
+      A matching change has been made to the HiLang code generator to use the local BrowserSpace for synchronous operations while
+
+
+      -----
+
+      ## Cube Changes
+
+      * **CubeFact** property on an Element, now has a mathcing `ICubeFact` inteface and `ICubeDrillDown` for drill-down to further levels of detail
+      * **CubeHierarchy** property identifies a **CubeDimension** that is a hierarchy, with a reference to the member key/value that provides the parent.  This results in as `ICubeHierarchy&lt;&gt;` interface added to the dimension element
+      * **DeltaIndex** property now results in a `IDeltaIndex&lt;&gt;` element added to `RefSet&lt;&gt;` for the elements `SubSpace` collection, to retrieve all values that have changed since the timestamp.  This interface is used by the `Hiperspaced.Meta.Route` map to retrieve all elements that have changed since the last calculation
+      *  **ElementVersion&lt;&gt;** now allows the `AsAt` property to be changed by an application to allow the historical data loading of a Hiperspace for Cube Analytics
+      * **Additional functions** added for `drilldown()` (*from cube to details*) `cubename()` (*for Graph name of a cube observation*) `contextlabel()` (*use context when retrieving cubes* there might be separate summaries for P&amp;L and implied P&amp;L )
+      * **SetSpace&lt;&gt;** now has an additional event `OnMissing` that allows missing cube aggregates to be calculated on-demand, or fetched from an external database
+
+
+      -----
+
+      The change also includes updates to referenced assemblies
     </PackageReleaseNotes>
     <PackageLicenseExpression>GPL-2.0-or-later</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>

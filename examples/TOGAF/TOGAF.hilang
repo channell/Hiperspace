@@ -15,6 +15,22 @@ view Togaf.Edge8  : Edge = Edge();
 view Togaf.Edge9  : Edge = Edge();
 view Togaf.Edge10 : Edge = Edge();
 
+view Edge_ : Edge = Edge();
+
+"Pair of edges between nodes"
+view Edges
+    = Edge  (From = From, To = To, Name = Name, TypeName = FromTypeName), 
+      Edge_ (From = To, To = From, Name = Name, TypeName = ToTypeName)
+(
+    From            : Node      #2,
+    To              : Node      #3,
+    FromTypeName    : String    #4,
+    ToTypeName      : String    #5
+)
+{
+    Name        : String    #6,
+};
+
 @Versioned
 type Togaf.Base 
 (
@@ -43,8 +59,7 @@ value Togaf.GoalRef #651
 
 segment Togaf.Has.Principle : Togaf.Base 
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Principle"),
-      Edge        (From = owner, To = this, Name = Name, TypeName = "AF-Has-Principle"),
-      Togaf.Edge2 (From = this, To = owner, Name = Name, TypeName = "AF-Principle-For") ;
+      Edges       (From = owner, To = this, Name = Name, FromTypeName = "AF-Has-Principle", ToTypeName = "AF-Principle-For" );
 
 segment Togaf.Has.Constraint : Togaf.Base  
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Constraint"),
@@ -97,6 +112,7 @@ type Togaf.General.Base : Togaf.Base, HasVectorSpace
 /* ********************************************************
     Organization 
 ******************************************************** */
+@CubeDimension
 entity Togaf.Organization : Togaf.Base 
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Organization"),
       Edge        ( From = this, To = Parent, TypeName = "AF-Organization-Part"),
@@ -142,6 +158,7 @@ entity Togaf.Business.Actor : Togaf.General.Base
     Involved        : Togaf.Business.ValueStream (Involves = this) #87
 ];
 
+@CubeDimension
 entity Togaf.Business.Function : Togaf.General.Base
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Function"),  
       Edge        ( From = this, To = Parent, TypeName = "AF-Function-Part"),
@@ -160,6 +177,8 @@ entity Togaf.Business.Function : Togaf.General.Base
     Orchestrates    : Togaf.Business.Process (Decomposes = this) #99,
     Involves        : Togaf.Business.CourseOfAction (Involves = this) #100
 ];
+
+@CubeDimension
 entity Togaf.Business.Capability : Togaf.General.Base
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Capability"),  
       Edge        ( From = this, To = Parent, TypeName = "AF-Capability-Part"),
@@ -176,6 +195,7 @@ entity Togaf.Business.Capability : Togaf.General.Base
     Related         : Togaf.Business.CourseOfAction (Enables = this) #115
 ];
 
+@CubeDimension
 entity Togaf.Business.Product : Togaf.General.Base
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Product"),  
       Edge        ( From = this, To = Parent, TypeName = "AF-Product-Part"),
@@ -288,6 +308,7 @@ enum Togaf.Business.EventType
     Intermediate #3    
 };
 
+@CubeDimension
 entity Togaf.Business.Event : Togaf.General.Base
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Event"),
       Edge        ( From = this, To = Trigger, Name = Name, TypeName = "AF-Event-Service"),
@@ -300,6 +321,7 @@ entity Togaf.Business.Event : Togaf.General.Base
     Activities      : Togaf.Business.Activity ( Event = this) #186
 ];
 
+@CubeDimension
 entity Togaf.Business.Process : Togaf.General.Base
     = Node         ( SKey = SKey, Name = Name, TypeName = "AF-Process"),
       Edge         ( From = this, To = Decomposes, Name = Name, TypeName = "AF-Process-Function"),
@@ -375,6 +397,7 @@ entity Togaf.Business.CourseOfAction : Togaf.General.Base
     Service
 ******************************************************** */
 
+@CubeDimension
 entity Togaf.Service : Togaf.General.Base 
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Service"),
       Edge        ( From = this, To = OwnedBy, Name = Name, TypeName = "AF-Service-Organization"),
@@ -450,6 +473,7 @@ entity Togaf.Data.Physical : Togaf.General.Base
 /* ********************************************************
     Application
 ******************************************************** */
+@CubeDimension
 entity Togaf.Application.System : Togaf.General.Base
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-System"),
       Edge        ( From = this, To = Realizes, Name = Name, TypeName = "AF-System-Service"),
@@ -497,6 +521,7 @@ entity Togaf.Application.Deployed : Togaf.General.Base
 /* ********************************************************
     Technology
 ******************************************************** */
+@CubeDimension
 entity Togaf.Technology.Platform : Togaf.General.Base
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Platform"),
       Edge        ( From = this, To = Serves, Name = Name, TypeName = "AF-Platform-Service"),
@@ -509,6 +534,7 @@ entity Togaf.Technology.Platform : Togaf.General.Base
     Defines         : Togaf.Technology.Host (Platform = this) #616
 ];
 
+@CubeDimension
 entity Togaf.Technology.Host : Togaf.General.Base
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Platform"),
       Edge        ( From = this, To = Platform, Name = Name, TypeName = "AF-Host-Platform"),
@@ -531,3 +557,30 @@ entity Togaf.Technology.Instance : Togaf.General.Base
 [
     Hosts           : Togaf.Application.Deployed (Host = this) #639
 ];
+
+/* ********************************************************
+    Financials
+******************************************************** */
+type Togaf.Financial.Allocation : Versioned
+    = Node        ( SKey = SKey, Name = "", TypeName = "AF-Value") #1308
+(
+    Organization    : Togaf.Organization #1,
+    Function        : Togaf.Business.Function #2,
+    Capability      : Togaf.Business.Capability #3,
+    Product         : Togaf.Business.Product #4,
+    Event           : Togaf.Business.Event #5,
+    Process         : Togaf.Business.Process #6,
+    Service         : Togaf.Service #7,
+    System          : Togaf.Application.System #8,
+    Platform        : Togaf.Technology.Platform #9,
+    Host            : Togaf.Technology.Host #10,
+)
+{
+    @CubeMeasure(Aggregate.Sum)
+    Value           : Decimal #12
+};
+
+@CubeFact(1467, 1469)
+entity Togaf.Financial.Cost : Togaf.Financial.Allocation #1309;
+@CubeFact(2042, 2044)
+entity Togaf.Financial.Income : Togaf.Financial.Allocation #1310;

@@ -92,7 +92,7 @@ this is usually related more so to the way you have to manage your time than the
 In this article, we’ll do a deep dive into tasks, show you the best ways to break down larger 
 projects into them, while covering efficient approaches to manage and distribute tasks.
 "
-@DeltaIndex (56) , CubeFact (43) , CubeDimension  /* dimensions for reporting */
+@DeltaIndex (56) , CubeFact(177, 179), CubeDimension  /* dimensions for reporting */
 entity Plan.Tasks.Task     : Versioned
                        = Node (SKey = SKey, Name = Name, TypeName = "Plan-Task"),
                          Edge (From = Project, To = this, TypeName = "Plan-Task", Name = Name),
@@ -138,7 +138,6 @@ entity Plan.Tasks.Task     : Versioned
 
   
     /* BI */
-    @CubeMeasure(Aggregate.First)
     BIWBS       = Parent = null ? Project.WBS + "." + WBS : Parent.BIWBS + "." + WBS,  
     "Cost of prior tasks that can not be recovered"
     @CubeMeasure(Aggregate.Sum)
@@ -238,6 +237,7 @@ such as assigning tasks to individuals based on their skills and availability.
 It helps balance demand and capacity across projects, allowing you to keep tight 
 timelines and manage stakeholder expectations.
 "
+@CubeDimension
 entity Plan.Resource     : Versioned
                      = Node (SKey = SKey, Name = Name, TypeName = "Plan-Resource") #54
 (
@@ -296,7 +296,7 @@ view BI.Item    = Node (SKey = SKey, Name = Name, TypeName = "BI-Cost-" + TypeNa
 "
 Time booking by resources against 
 "
-@DeltaIndex (60) 
+@DeltaIndex (60), CubeFact(157, 159) 
 entity Booking.Timesheet     : Versioned #95
 (
   

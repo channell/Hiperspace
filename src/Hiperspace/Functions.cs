@@ -103,8 +103,8 @@ namespace Hiperspace
                 T result = T.Zero;
                 foreach (var item in source.ToArray())
                 {
-					var last = versionspace?.Get(item, item!.SetSpace!.Space.DeltaFrom);
-					// subtract the prior value if exits to allow the sum to provide the delta
+                    var last = versionspace?.Get(item, item!.SetSpace!.Space.DeltaFrom);
+                    // subtract the prior value if exits to allow the sum to provide the delta
                     if (last != null) result -= func(item);
                     result += func(item);
                 }
@@ -141,7 +141,7 @@ namespace Hiperspace
                 }
                 return returner;
             }
-            else if (source != null) 
+            else if (source != null)
                 return Sum(source, func);
             return T.Zero;
         }
@@ -156,8 +156,8 @@ namespace Hiperspace
                 foreach (var item in source.ToArray())
                 {
                     T result = func(item);
-					var last = versionspace?.Get(item, item!.SetSpace!.Space.DeltaFrom);
-					// subtract the prior value if exits to allow the sum to provide the delta
+                    var last = versionspace?.Get(item, item!.SetSpace!.Space.DeltaFrom);
+                    // subtract the prior value if exits to allow the sum to provide the delta
                     if (last != null) result = T.Min(result, func(item));
                     if (first)
                     {
@@ -171,7 +171,7 @@ namespace Hiperspace
                 }
                 return returner;
             }
-            else if (source != null) 
+            else if (source != null)
                 return Sum(source, func);
             return T.Zero;
         }
@@ -185,8 +185,8 @@ namespace Hiperspace
                 foreach (var item in source.ToArray())
                 {
                     T result = func(item);
-					var last = versionspace?.Get(item, item!.SetSpace!.Space.DeltaFrom);
-					// subtract the prior value if exits to allow the sum to provide the delta
+                    var last = versionspace?.Get(item, item!.SetSpace!.Space.DeltaFrom);
+                    // subtract the prior value if exits to allow the sum to provide the delta
                     if (last != null) result -= T.One;
                     if (result != null && returner != null)
                     {
@@ -195,7 +195,7 @@ namespace Hiperspace
                 }
                 return returner ?? T.Zero;
             }
-            else if (source != null) 
+            else if (source != null)
                 return Sum(source, func);
             return T.Zero;
         }
@@ -219,7 +219,7 @@ namespace Hiperspace
             return null;
         }
 
-        public static IEnumerable<TDrill> DrillDown<TDrill, TEntity> (ICubeFact source, TEntity? target, RefSet<TDrill> drilldown)
+        public static IEnumerable<TDrill> DrillDown<TDrill, TEntity>(ICubeFact source, TEntity? target, RefSet<TDrill> drilldown)
             where TEntity : Element<TEntity>, ICubeDimension, new()
             where TDrill : Element<TDrill>, new()
         {
@@ -228,8 +228,8 @@ namespace Hiperspace
             {
                 foreach (var row in drilldown)
                 {
-                    var fact = row as ICubeFact;
-                    if ( fact?.CubeSlice == source.CubeSlice)
+                    var fact = row as ICubeDrillDown;
+                    if (fact?.To?.CubeSlice == source.CubeSlice)
                     {
                         yield return row;
                     }
@@ -240,16 +240,22 @@ namespace Hiperspace
             {
                 var template = new TEntity() as ICubeDimension;
                 var parts = source.CubeSlice?.Split(',') ?? Array.Empty<string>();
-                var newParts = new string[parts.Length + 1];
-                parts.CopyTo(newParts, 1);
-                newParts[0] = template.CubeSlice;
+                var newParts = new int[parts.Length + 1];
+                for (int c = 1; c < newParts.Length; c++)
+                {
+                    if (int.TryParse(parts[c - 1], out int part))
+                    {
+                        newParts[c] = part;
+                    }
+                }
+                newParts[0] = int.Parse(template.CubeSlice);
                 Array.Sort(newParts);
                 var slice = String.Join(',', newParts);
 
                 foreach (var row in drilldown)
                 {
-                    var fact = row as ICubeFact;
-                    if (fact?.CubeSlice == slice)
+                    var fact = row as ICubeDrillDown;
+                    if (fact?.To?.CubeSlice == slice)
                     {
                         yield return row;
                     }
@@ -262,22 +268,33 @@ namespace Hiperspace
         /// </summary>
         /// <param name="dimensions">dimensions to the cube</param>
         /// <returns></returns>
-        public static string CubeName (params ICubeDimension?[]? dimensions)
+        public static string CubeName(params ICubeDimension?[]? dimensions)
         {
             StringBuilder sb = new StringBuilder();
             if (dimensions == null || dimensions.Length == 0) return string.Empty;
             for (int i = 0; i < dimensions.Length; i++)
             {
-                if (dimensions[i] == null) 
+                if (dimensions[i] == null)
                     continue;
                 else
                 {
                     if (sb.Length > 0)
                         sb.Append(',');
-                    sb.Append($"{dimensions[i]?.CubeSlice}:{dimensions[i]?.SKey}");
+                    sb.Append($"{dimensions[i]?.CubeName}");
                 }
             }
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// Retrieves the context label associated with the SubSpace of the specified element.
+        /// </summary>
+        /// <typeparam name="T">The type of the element, which must inherit from <see cref="Element{T}"/></typeparam>
+        /// <param name="t">The element instance for which to retrieve the context label</param>
+        /// <returns>The context label of the specified element if any</returns>
+        public static string? ContextLabel<T>(T? t) where T : Element<T>, new()
+        {
+            return t?.SetSpace?.Space?.ContextLabel;
         }
     }
 }

@@ -19,11 +19,16 @@ namespace Hiperspace
 
         public delegate void Bound(TEntity entity);
         public delegate void Dependency((TEntity target, Meta.DependencyPath sender) value);
+        public delegate void Missing (TEntity entity);
         /// <summary>
         /// Event to capture Bind Events
         /// </summary>
         public event Bound? OnBind;
         public event Dependency? OnDependency;
+        /// <summary>
+        /// Occurs when a required item is missing in Hiperspace, trigger alternate source
+        /// </summary>
+        public event Missing? OnMissing;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected void RaiseOnbind(TEntity entity)
@@ -35,6 +40,11 @@ namespace Hiperspace
         public void RaiseOnDependency((TEntity target, Meta.DependencyPath sender) value)
         {
             OnDependency?.Invoke((value.target, value.sender));
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void RaiseOnMissing(TEntity target)
+        {
+            OnMissing?.Invoke(target);
         }
 
         public void ForwardEventsFrom(SetSpace<TEntity> source)
@@ -257,11 +267,11 @@ namespace Hiperspace
         }
         #endregion
         #region key functions
-        public abstract TEntity? Get<TKey>(ref TKey key);
+        public abstract TEntity? Get<TKey>(ref TKey key, bool useAlternate = true);
         /// <remarks>
         /// Will ve replaced with abstracvt in a future release
         /// </remarks>
-        public virtual Task<TEntity?> GetAsync<TKey>(TKey key)
+        public virtual Task<TEntity?> GetAsync<TKey>(TKey key, bool useAlternate = true)
         {
             return Task.FromResult(Get(ref key));
         }
@@ -387,21 +397,39 @@ namespace Hiperspace
 
         public bool IsReadOnly => false;
 
-        public virtual TEntity? GetFirst()
+        public virtual TEntity? GetFirst(TEntity? template = null)
         {
-            return Find(new TEntity()).FirstOrDefault();
+            if (template == null)
+                template = new TEntity();
+            return Find(template).FirstOrDefault();
         }
-        public virtual Task<TEntity?> GetFirstAsync()
+        public virtual async Task<TEntity?> GetFirstAsync(TEntity? template = null)
         {
-            return Task.Run(() => GetFirst());
+            if (template == null)
+                template = new TEntity();
+            var result = FindAsync(template).GetAsyncEnumerator();
+            if (await result.MoveNextAsync())
+            {
+                return result.Current;
+            }
+            return null;
         }
-        public virtual TEntity? GetLast()
+        public virtual TEntity? GetLast(TEntity? template = null)
         {
-            return Find(new TEntity()).FirstOrDefault();
+            if (template == null)
+                template = new TEntity();
+            return Find(new TEntity()).LastOrDefault();
         }
-        public virtual Task<TEntity?> GetLastAsync()
+        public virtual async Task<TEntity?> GetLastAsync(TEntity? template = null)
         {
-            return Task.Run(() => GetLast());
+            if (template == null)
+                template = new TEntity();
+            TEntity? result = null;
+            await foreach (var item in FindAsync(template, true))
+            {
+                result = item;
+            }
+            return result;
         }
 
         public ISetQuery SetQuery()

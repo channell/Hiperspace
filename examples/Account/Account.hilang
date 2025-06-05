@@ -19,7 +19,7 @@ entity Acc.Sector : Versioned #30
 ];
 
 "A Customer"
-@CubeDimension, CubeHierarchy                           /* For aggregation testing */
+@CubeDimension, CubeHierarchy(Parent)
 entity Acc.Customer : Versioned #3 
 (
     " name  of the customer"
@@ -28,13 +28,13 @@ entity Acc.Customer : Versioned #3
 {
     Address         : String #3,
     SSN             : String #4,
-    Parent		    : Acc.Customer #5,                  /* For aggregation testing */
+    Parent		    : Acc.Customer #5,
     Sector          : Acc.Sector #11 
 }
 [
     "Account that the customer owns"
     Accounts        : Acc.Account #20, 
-    Children        : Acc.Customer (Parent = this) #27  /* For aggregation testing */
+    Children        : Acc.Customer (Parent = this) #27
 ];
 
 "a transaction against account"
@@ -46,6 +46,7 @@ segment Acc.Transaction : Versioned
 )
 {
     "debt or credit to account, with respect to the customer position"
+    @CubeMeasure(Aggregate.Sum)
     Amount          : Decimal #4,
 
     "who it was paid to"
@@ -91,48 +92,3 @@ aspect Acc.Balance : Versioned
     Current         : Decimal #4
 };
 
-%function ( set, drilldown, Functions.DrillDown);
-
-
-@Versioned
-entity Acc.Transaction_Cube = 
-    Node (SKey = SKey, Name = "Transaction_Fact", TypeName = "Fact")
-
-#45
-(
-    Slice : String #5,
-    Customer : Acc.Customer #6,
-    /*CustomerAccount : CustomerAccount,*/
-    Sector : Acc.Sector #7
-)
-{
-    "debt or credit to account, with respect to the customer position"
-    @CubeMeasure(Aggregate.Sum)
-    Amount          : Decimal #4,
-    Fact = true #9
-}
-[
-    /*
-    Customer_Slice = drilldownslice(this, Customer),
-    Customer_DrillDown : Acc.Transaction_Cube (Slice = Customer_Slice, Customer = Customer, Sector = Sector) #42,
-    CustomerAccount_DrillDown : Acc.Transaction_Cube (Slice = drilldownslice (this, CustomerAccount), Customer = Customer, Sector = Sector) #43,
-    Sector_DrillDown : Acc.Transaction_Cube (Slice = drilldownslice (this, Sector), Customer = Customer, Sector = Sector) #44,
-    */
-    DrillDown : DrillDown<Acc.Transaction_Cube> #59,
-    Customer_DrillDown2 = drilldown(this, Customer, DrillDown)
-/*
-    (* this will not work  without the inteface for HiperEdge *)
-    Customer_Structure : Acc.Transaction_Fact (Customer.Parent = this.Customer),
-*/
-];
-
-segment DrillDown<T> = 
-    Node (SKey = Skey Name = Slice, TypeName = "DrillDown"),
-    Edge (From = owner, To = Target, Name = Slice, TypeName = "DrillDown")
-(
-    Slice : String
-)
-{
-    Target : T,
-    IsFact : Boolean
-}

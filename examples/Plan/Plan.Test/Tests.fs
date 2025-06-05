@@ -315,7 +315,7 @@ type  PlanTest (output : ITestOutputHelper) =
         let cube = 
     //            let ck          (p : Plan.Project) = CubeKey ([|p.BKey|])
             let fact        (p, (sc : decimal, ac : decimal, pc : decimal, ic : decimal, e : decimal)) = 
-                let f = Plan.Tasks.Task_Fact ()
+                let f = Plan.Tasks.Task_Cube ()
                 f.CubeSlice <- ""
                 f.Project <- p
                 f.SunkCost <- sc
@@ -327,7 +327,7 @@ type  PlanTest (output : ITestOutputHelper) =
             cubesource
             |> Seq.map      fact
         cube
-        |> Seq.iter     (fun f -> planSpace.Task_Facts.Add f |> ignore)
+        |> Seq.iter     (fun f -> planSpace.Task_Cubes.Add f |> ignore)
 
         let options = JsonSerializerOptions()
         options.ReferenceHandler <- ReferenceHandler.IgnoreCycles

@@ -7,6 +7,7 @@
 // ---------------------------------------------------------------------------------------
 using System.Collections;
 using System.ComponentModel.Design;
+using System.Net.Http.Headers;
 
 namespace Hiperspace.Meta
 {
@@ -111,10 +112,12 @@ namespace Hiperspace.Meta
     {
         protected bool disposedValue;
 
-        public Type SourceType { get; set; }
-        public Type TargeType { get; set; }
-        public string[]? SourceProperties { get; set; }
-        public string[]? TargetProperties { get; set; }
+        public Type SourceType { get; init; }
+        public Type TargeType { get; init; }
+        public string[]? SourceProperties { get; init; }
+        public string[]? TargetProperties { get; init; }
+
+        public string? FieldName { get; init; }
 
         public Route(Type targeType, Type sourceType)
         {
@@ -141,33 +144,82 @@ namespace Hiperspace.Meta
 
         public abstract object? OneValue(object source);
         public abstract IEnumerable<object>? ManyValue (object source);
+        public abstract IEnumerable DeltaObject(DateTime deltaFrom);
+
+        public static Route<TSource, TTarget> Combine<TSource, TTransitive, TTarget>(Route<TSource, TTransitive> source, Route<TTransitive, TTarget> dest)
+            where TSource : Element<TSource>, new()
+            where TTarget : Element<TTarget>, new()
+            where TTransitive : Element<TTransitive>, new()
+        {
+            if (dest._one != null && source._one != null)
+            {
+                return new Route<TSource, TTarget>(source._sourceSet, s => dest._one(source._one(s)!), source.SourceProperties!, dest.TargetProperties!, dest.FieldName);
+            }
+            else if (dest._many != null && source._one != null)
+            {
+                return new Route<TSource, TTarget>(source._sourceSet, s => dest._many(source._one(s)!)!, source.SourceProperties!, dest.TargetProperties!, dest.FieldName);
+            }
+            else if (dest._many != null && source._many != null)
+            {
+                Func<TSource, IEnumerable<TTarget>> func = s =>
+                {
+                    List<TTarget> targets = new List<TTarget>();
+                    foreach (var transitive in source._many(s) ?? Enumerable.Empty<TTransitive>())
+                    {
+                        foreach (var target in dest._many(transitive) ?? Enumerable.Empty<TTarget>())
+                        {
+                            targets.Add(target);
+                        }
+                    }
+                    return targets;
+                };
+                return new Route<TSource, TTarget>(source._sourceSet, func, source.SourceProperties!, dest.TargetProperties!, dest.FieldName);
+            }
+            else
+                throw new NotImplementedException($"Cannot combine routes from {nameof(TSource)} through {nameof(TTransitive)} to {nameof(TTarget)}");
+        }
+        public static Route CombineRoute(Route source, Route dest)
+        {
+            if ( source.TargeType == dest.SourceType)
+            {
+                var method = typeof(Route).GetMethod(nameof(Combine))?.MakeGenericMethod(new[] { source.SourceType, source.TargeType, dest.TargeType });
+                if (method != null)
+                {
+                    var result = method.Invoke(null, new[] { source, dest }) as Route;
+                    if (result != null) return result;
+                }
+            }
+            throw new NotImplementedException($"Cannot combine routes from {source.SourceType.Name} through {source.TargeType.Name} to {dest.TargeType.Name}");
+        }
     }
 
     public class Route<TSource, TTarget> : Route
         where TSource : Element<TSource>, new()
         where TTarget : Element<TTarget>, new()
     {
-        internal Func<TSource, RefSet<TTarget>?>? _many;
+        internal Func<TSource, IEnumerable<TTarget>?>? _many;
         internal Func<TSource, TTarget?>? _one;
         internal SetSpace<TSource> _sourceSet;
 
-        public Route(SetSpace<TSource> sourceSet, Func<TSource, RefSet<TTarget>> routes, string[] sourceProperties, string[] targetProperties)
+        public Route(SetSpace<TSource> sourceSet, Func<TSource, IEnumerable<TTarget>> routes, string[] sourceProperties, string[] targetProperties, string? fieldName = null)
             : base(typeof(TTarget), typeof(TSource))
         {
             _many = routes;
             _sourceSet = sourceSet;
             SourceProperties = sourceProperties;
             TargetProperties = targetProperties;
+            FieldName = fieldName;
         }
-        public Route(SetSpace<TSource> sourceSet, Func<TSource, TTarget?> routes, string[] sourceProperties, string[] targetProperties)
+        public Route(SetSpace<TSource> sourceSet, Func<TSource, TTarget?> routes, string[] sourceProperties, string[] targetProperties, string? fieldName = null)
             : base(typeof(TTarget), typeof(TSource))
         {
             _one = routes;
             _sourceSet = sourceSet;
             SourceProperties = sourceProperties;
             TargetProperties = targetProperties;
+            FieldName = fieldName;
         }
-        public Route(SetSpace<TSource> sourceSet, Func<TSource, RefSet<TTarget>> routes)
+        public Route(SetSpace<TSource> sourceSet, Func<TSource, IEnumerable<TTarget>> routes)
             : base(typeof(TTarget), typeof(TSource))
         {
             _many = routes;
@@ -192,6 +244,51 @@ namespace Hiperspace.Meta
         public override bool One => _one != null;
 
         public override bool Many => _many != null;
+
+        public static bool IsElementVersionType()
+        {
+            var tSource = typeof(TSource);
+            var elementVersionType = typeof(ElementVersion<>).MakeGenericType(tSource);
+            return elementVersionType.IsAssignableFrom(tSource);
+        }
+
+        public IEnumerable<TTarget> Delta(DateTime deltaFrom)
+        {
+            if (_sourceSet is IDeltaIndex<TSource> versionedSet)
+            {
+                if (_one != null)
+                {
+                    foreach (var source in versionedSet.Delta(new TSource(), deltaFrom))
+                    {
+                        var result = _one(source);
+                        if (result != null)
+                            yield return result;
+                    }
+                }
+                else if (_many != null)
+                {
+                    foreach (var source in versionedSet.Delta(new TSource(), deltaFrom))
+                    {
+                        var targets = _many(source);
+                        if (targets != null)
+                        {
+                            foreach (var target in targets)
+                            {
+                                yield return target;
+                            }
+                        }
+                    }
+                }
+                else
+                    yield break;
+            }
+            else
+                yield break;
+        }
+        public override IEnumerable DeltaObject(DateTime deltaFrom)
+        {
+            return Delta(deltaFrom).Cast<object>();
+        }
 
         public TTarget? OneValue (TSource source)
         {

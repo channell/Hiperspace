@@ -16,6 +16,7 @@ namespace Hiperspace
     public class CubeFactAttribute : Attribute
     {
         public CubeFactAttribute(int id) : base() { }
+        public CubeFactAttribute(int id, int drillId) : base() { }
         public CubeFactAttribute() : base() { }
     }
     /// <summary>
@@ -72,5 +73,23 @@ namespace Hiperspace
         /// method.
         /// </remarks>
         public ICubeFact Calculate();
+
+        public IEnumerable<ICubeDrillDown> DrillDown { get; }
+    }
+
+    /// <summary>
+    /// Represents a drilldown operation within a cube structure, providing access hierarchy and other dimensions
+    /// </summary>
+    public interface ICubeDrillDown
+    {
+        /// <summary>
+        /// the owner of this drilldown segment <see cref="ICubeFact"/> 
+        /// </summary>
+        public ICubeFact owner { get; }
+
+        /// <summary>
+        /// the target cube that is either a a levewl down in a hierarchy, another dimension or a fact
+        /// </summary>
+        public ICubeFact To { get; }
     }
 }

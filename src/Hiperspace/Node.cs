@@ -107,6 +107,7 @@ namespace Hiperspace
                     return obj
                         .GetType()
                         .GetProperties()
+                        .Where(pi => pi.CanRead && pi.Name != "SetSpace" && pi.Name != "SKey")
                         .Select(pi => (pi.Name, pi.GetValue(obj)))
                         .ToArray();
                 }
