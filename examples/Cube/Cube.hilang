@@ -17,7 +17,7 @@ entity Instrument (ISIN : String) {Country : Country, Product : Product} [Price 
 aspect Price { Market : Decimal };
 
 @CubeFact, DeltaIndex
-entity Contract : Versioned
+entity Contract : Versioned = Valued (name = "some", Value = Value, Deleted = Deleted)
 	(id : Int64) 
 	{Quantity : Decimal, Instrument : Instrument, Portfolio : Portfolio, Account : Account} 
 	[
@@ -25,3 +25,9 @@ entity Contract : Versioned
 		@CubeMeasure(Aggregate.Sum) 
 		Value = Quantity * Market
 	];
+
+@CubeFact, DeltaIndex
+view Valued : Versioned
+	(name : String) 
+	{Value : Decimal} ;
+
