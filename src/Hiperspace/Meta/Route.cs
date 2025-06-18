@@ -153,15 +153,26 @@ namespace Hiperspace.Meta
         {
             if (dest._one != null && source._one != null)
             {
-                return new Route<TSource, TTarget>(source._sourceSet, s => dest._one(source._one(s)!), source.SourceProperties!, dest.TargetProperties!, dest.FieldName);
+                /*        internal Func<TSource, IEnumerable<TTarget>?>? _many;
+                        internal Func<TSource, TTarget?>? _one;
+                */
+                Func<TTransitive, TTarget?> destFunc = dest._one;
+                Func<TSource, TTransitive?> sourceFunc = source._one;
+                Func<TSource, TTarget?> transitativeFunc = s => destFunc(sourceFunc(s)!);
+                return new Route<TSource, TTarget>(source._sourceSet, transitativeFunc, source.SourceProperties!, dest.TargetProperties!, dest.FieldName);
             }
             else if (dest._many != null && source._one != null)
             {
-                return new Route<TSource, TTarget>(source._sourceSet, s => dest._many(source._one(s)!)!, source.SourceProperties!, dest.TargetProperties!, dest.FieldName);
+                Func<TTransitive, IEnumerable<TTarget>?> destFunc = dest._many;
+                Func<TSource, TTransitive?> sourceFunc = source._one;
+                Func<TSource, IEnumerable<TTarget>?> transitativeFunc = s => destFunc(sourceFunc(s)!);
+                return new Route<TSource, TTarget>(source._sourceSet, transitativeFunc!, source.SourceProperties!, dest.TargetProperties!, dest.FieldName);
             }
             else if (dest._many != null && source._many != null)
             {
-                Func<TSource, IEnumerable<TTarget>> func = s =>
+                Func<TTransitive, IEnumerable<TTarget>?> destFunc = dest._many;
+                Func<TSource, IEnumerable<TTransitive>?> sourceFunc = source._many;
+                Func<TSource, IEnumerable<TTarget>> transitativeFunc = s =>
                 {
                     List<TTarget> targets = new List<TTarget>();
                     foreach (var transitive in source._many(s) ?? Enumerable.Empty<TTransitive>())
@@ -173,7 +184,7 @@ namespace Hiperspace.Meta
                     }
                     return targets;
                 };
-                return new Route<TSource, TTarget>(source._sourceSet, func, source.SourceProperties!, dest.TargetProperties!, dest.FieldName);
+                return new Route<TSource, TTarget>(source._sourceSet, transitativeFunc, source.SourceProperties!, dest.TargetProperties!, dest.FieldName);
             }
             else
                 throw new NotImplementedException($"Cannot combine routes from {nameof(TSource)} through {nameof(TTransitive)} to {nameof(TTarget)}");

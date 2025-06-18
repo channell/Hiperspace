@@ -586,5 +586,26 @@ namespace Hiperspace
                 }
             }
         }
+
+        /// <summary>
+        /// Gets or sets the value using indexing syntax
+        /// </summary>
+        /// <param name="index">The value to use for key comparision</param>
+        /// <returns></returns>
+        public T? this[T index]
+        {   
+            get
+            {
+                if (TryGetValue(index, out T? result))
+                    return result;
+                else
+                    return null;
+            }
+            set
+            {
+                if (value != null)
+                    Replace(value);
+            }
+        }
     }
 }

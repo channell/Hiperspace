@@ -18,44 +18,27 @@
     <RepositoryUrl>https://github.com/channell/Hiperspace</RepositoryUrl>
     <Nullable>enable</Nullable>
     <LangVersion>13.0</LangVersion>
-    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20250606
+    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20250618
 # Overview
-This release Significantly extends the functionality provided for Cube Analytics by hiperspace and combines streaming recalculation with graph navigation.  The  cube enhancement is detailed on [OLAP](https://www.cepheis.com/hiperspace/use-case-cube) use-case.  To support Cube analytics and code-generation for aggregation service, and  a number of additions were made to [Hipersapce](https://www.nuget.org/packages/Hiperspace) and [HiLang](https://www.nuget.org/packages/HiLang) compiler.
+This release is a minor enhancement to Hiperspace to support the generation of streaming cube aggregation processed by `Hiperspace.DB` for real-time analytics.  Any Hiperspace that has `CubeDimension` and `CubeFact` with `CubeMeasure` are calculated in near real-time when hosted by `Hiperspace.DB`.  Stream aggregation is processed by compiled code, using the compiled access-methods of `HiperSpace` with various frequencies.
 
-
-
------
-
-
-## Blazor enhancements
-This release removes obsolete functions that are no longer used, such as `Space()` which has been replaced by `ExportAsync()` to provide a streaming transfer of updates from a `SessionSpace` for higher performance.
-
-### SetSpace
-The Bind function now has an addition parameter for read/write so that filter can be used to *delete* elements without the need to open an additional connection
-
-### SubSpace
-In addition to ExportAsync and ImportAsync, SubSpaces now include `ExportCacheAsync` and `ImportCacheAsync` to allow a server gRPC endpoint to select all the elements that are needed for a use-case and send them all in one message to the client.
-
-### BrowserSpace
-This new type of space has been created in order to address the limitations of blazer web assembly that does not support synchronous network IO. BrowserSpace will be deprecated once WebAssembly support asynchronous threads.
-
-Browser space, any synchronous operation, uses only the local changes cache, while asynchronous operations use either the local cache or the remote store
-
-A matching change has been made to the HiLang code generator to use the local BrowserSpace for synchronous operations while 
+| Type |│| When |│| Trigger  |│|Notes |
+|-|-|-|-|-|-|-|
+| Full  |│| Often Daily  |│| Scheduled  |│| reaggregates the base level of Cube fact |
+| Delta  |│| Continuous  |│| Whenever a fact changes  |│| aggregates the facts and summaries affected by the change to the fact, *but no others* |
+| Dependency  |│| Continuous  |│| Whenever a `@DeltaIndex` element references by a fact changes  |│| aggregates the facts and summaries affected by the change to a fact dependency, *but no others*  |
+| Related  |│| Frequently  |│|  Whenever a `@DeltaIndex` element related is some way to fact changes |│| aggregates the facts and summaries affected by the change, *but no others*  |
+| Dimension |│| Frequently |│| Change to a dimension with a  `@DeltaIndex` changes  |│| Clears any summaries that might now be invalid due to restructure |
+| |│| as needed |│| read |│| Any summaries that are not currently stored are recalculated from base facts |
 
 
 -----
 
-## Cube Changes 
-
-* **CubeFact** property on an Element, now has a mathcing `ICubeFact` inteface and `ICubeDrillDown` for drill-down to further levels of detail
-* **CubeHierarchy** property identifies a **CubeDimension** that is a hierarchy, with a reference to the member key/value that provides the parent.  This results in as `ICubeHierarchy&lt;&gt;` interface added to the dimension element
-* **DeltaIndex** property now results in a `IDeltaIndex&lt;&gt;` element added to `RefSet&lt;&gt;` for the elements `SubSpace` collection, to retrieve all values that have changed since the timestamp.  This interface is used by the `Hiperspaced.Meta.Route` map to retrieve all elements that have changed since the last calculation
-*  **ElementVersion&lt;&gt;** now allows the `AsAt` property to be changed by an application to allow the historical data loading of a Hiperspace for Cube Analytics 
-* **Additional functions** added for `drilldown()` (*from cube to details*) `cubename()` (*for Graph name of a cube observation*) `contextlabel()` (*use context when retrieving cubes* there might be separate summaries for P&amp;L and implied P&amp;L )
-* **SetSpace&lt;&gt;** now has an additional event `OnMissing` that allows missing cube aggregates to be calculated on-demand, or fetched from an external database
-
-
+Hiper cubes are also graphs:
+* Every `CubeDimension` that provides a `Node` view, also has a *Cube* `Edge` to each of the Cubes created for each `CubeFact`
+* Every **Cube** has a *Dimension* `Edge` to each  `CubeDimension` that describes a `CubeFact`
+* Every **Cube** has a *Drilldown* `Edge`s for each *dimension* of the **Cube**, that either adds a *dimension* to the summary or drills down through the *dimension* hierarchy
+ 
 -----
 
 The change also includes updates to referenced assemblies

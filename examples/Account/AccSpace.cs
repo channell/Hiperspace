@@ -8,8 +8,36 @@ using System.Threading.Tasks;
 
 namespace Acc
 {
+
     public partial class AccSpace
     {
+        private static SortedDictionary<string, Horizon[]> Roles = new()
+        {
+            {
+                "", new Horizon[] // default role
+                {
+                    new Horizon<Customer> (p => p.Deleted == false),
+                    new Horizon<CustomerAccount> (p => p.Deleted == false),
+                    new Horizon<CustomerAccountBalance> (p => p.Deleted == false),
+                    new Horizon<CustomerAccountTransaction> (p => p.Deleted == false),
+                }
+            },
+            {
+                "read", new Horizon[]
+                {
+                    new Horizon<Customer> (p => p.Deleted == false),
+                    new Horizon<CustomerAccount> (p => p.Deleted == false),
+                    new Horizon<CustomerAccountBalance> (p => p.Deleted == false),
+                    new Horizon<CustomerAccountTransaction> (p => p.Deleted == false),
+                }
+            },
+            {
+                "WRITE", new Horizon[]
+                {
+                }
+            }
+        };
+
         public static Horizon[] constraints =
         [
             new Horizon<Acc.CustomerAccountTransaction>(r => r.At > r?.owner?.Balance?.When && 
@@ -19,8 +47,8 @@ namespace Acc
             new Horizon<Acc.CustomerAccount>(a => a.Title != null),
             new Horizon<Acc.CustomerAccountBalance>(b => b.When != null && b.Current != null)
         ];
-
-        public AccSpace (HiperSpace space, DateTime? dateTime) : this (space, constraints, dateTime) { }
+        public AccSpace(string Role, HiperSpace space, DateTime? AsAt = null, DateTime? DeltaFrom = null) : this(space, Roles[Role ?? ""], AsAt, DeltaFrom) { }
+        public AccSpace(HiperSpace space, DateTime? dateTime) : this(space, constraints, dateTime) { }
         public static AccSpace Make (HiperSpace space) { return new AccSpace (space, constraints); }
     }
 

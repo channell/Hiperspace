@@ -280,7 +280,7 @@ namespace Hiperspace
                 {
                     if (sb.Length > 0)
                         sb.Append(',');
-                    sb.Append($"{dimensions[i]?.CubeName}");
+                    sb.Append($"{dimensions[i]?.CubeName}:{dimensions[i]?.SKey}");
                 }
             }
             return sb.ToString();
