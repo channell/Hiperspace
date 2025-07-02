@@ -9,30 +9,39 @@
     <Copyright>Cepheis Ltd (C) 2023, 2024, 2025</Copyright>
     <LangVersion>13.0</LangVersion>
     <PackageReleaseNotes>
-      https://www.cepheis.com/hiperspace/20250618
-      # Overview
-      This release is a minor enhancement to Hiperspace to support the generation of streaming cube aggregation processed by `Hiperspace.DB` for real-time analytics.  Any Hiperspace that has `CubeDimension` and `CubeFact` with `CubeMeasure` are calculated in near real-time when hosted by `Hiperspace.DB`.  Stream aggregation is processed by compiled code, using the compiled access-methods of `HiperSpace` with various frequencies.
+      ## Overview
 
-      | Type |│| When |│| Trigger  |│|Notes |
-      |-|-|-|-|-|-|-|
-      | Full  |│| Often Daily  |│| Scheduled  |│| reaggregates the base level of Cube fact |
-      | Delta  |│| Continuous  |│| Whenever a fact changes  |│| aggregates the facts and summaries affected by the change to the fact, *but no others* |
-      | Dependency  |│| Continuous  |│| Whenever a `@DeltaIndex` element references by a fact changes  |│| aggregates the facts and summaries affected by the change to a fact dependency, *but no others*  |
-      | Related  |│| Frequently  |│|  Whenever a `@DeltaIndex` element related is some way to fact changes |│| aggregates the facts and summaries affected by the change, *but no others*  |
-      | Dimension |│| Frequently |│| Change to a dimension with a  `@DeltaIndex` changes  |│| Clears any summaries that might now be invalid due to restructure |
-      | |│| as needed |│| read |│| Any summaries that are not currently stored are recalculated from base facts |
+      This release adds the **@CubeExtent** property for post-aggregation calcualted properties of *HiperCubes*.
+
+      For the Cube fact
+
+      ```
+      @DeltaIndex, CubeFact
+      segment Account.Transaction : Versioned
+      (
+      "when the transaction was authorised"
+      At              : DateTime
+      )
+      {
+      "average amount"
+      @CubeMeasure(Aggregate.Average)
+      Amount          : Decimal
+      };
+
+      ```
 
 
-      -----
+      Amount is transformed in observations
 
-      Hiper cubes are also graphs:
-      * Every `CubeDimension` that provides a `Node` view, also has a *Cube* `Edge` to each of the Cubes created for each `CubeFact`
-      * Every **Cube** has a *Dimension* `Edge` to each  `CubeDimension` that describes a `CubeFact`
-      * Every **Cube** has a *Drilldown* `Edge`s for each *dimension* of the **Cube**, that either adds a *dimension* to the summary or drills down through the *dimension* hierarchy
+      | Properrty | Name| Expression |
+      |-|-|-|
+      | @CubeMeasure(Aggregate.AverageTotal) | Amount_Sum||
+      | @CubeExtent | Amount|Amount2_Sum / this.Facts|
 
-      -----
 
-      The change also includes updates to referenced assemblies
+      ### CubeExtent language support
+
+      The `CubeExtent` property has been added to the **HiLang** schema language to support complex aggregation of quantitative observations for {*PFE*, *RWA*, etc} aggregation without the ned for additional support in the `Hiperspace.DB` aggregation service
     </PackageReleaseNotes>
     <PackageLicenseExpression>GPL-2.0-or-later</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>

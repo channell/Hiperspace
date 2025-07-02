@@ -54,8 +54,12 @@ segment Acc.Transaction : Versioned
     Receipient      : Acc.Customer #11
 }
 [
+    @CubeExtent
     Debit           = debit(Amount),
-    Credit          = credit(Amount) 
+    @CubeExtent
+    Credit          = credit(Amount),
+    @CubeMeasure(Aggregate.Average)
+    Amount2         = Amount
 ];
 
 "An Account for a customer"

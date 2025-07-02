@@ -8,28 +8,13 @@
 namespace Hiperspace
 {
     /// <summary>
-    /// Aggregation methods used for cube calculations. 
-    /// </summary>
-    public enum Aggregate
-    {
-        Sum,
-        Max,
-        Min,
-        Average,
-        Count,
-        AverageTotal  // Measure accumilated to support average aggregation
-    }
-    /// <summary>
-    /// Indicates that this attribute is a measure aggregated in a cube
+    /// Indicates that this attribute is an extension to measures, used to add calculated methods that extend measures
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class CubeMeasureAttribute : Attribute
+    public class CubeExtentAttribute : Attribute
     {
-        public CubeMeasureAttribute(Aggregate type) : base()
+        public CubeExtentAttribute() : base()
         {
-            Type = type;
         }
-
-        public Aggregate Type { get; init; }
     }
 }
