@@ -28,9 +28,9 @@ namespace Hiperspace.Meta
         {
             Parameters = Parameters ?? new Name[0];
             if (!Reference.Equals(other.Reference)) return false;
-            if (Parameters.Length != 0 && other.Parameters.Length == 0) return false;
-            if (Parameters.Length == 0 && other.Parameters.Length != 0) return false;
-            if (Parameters != null && other.Parameters != null)
+            if (Parameters.Length != 0 && other.Parameters?.Length == 0) return false;
+            if (Parameters.Length == 0 && other.Parameters?.Length > 0) return false;
+            if (other.Parameters != null)
             {
                 if (Parameters.Length != other.Parameters.Length) return false;
                 for (int c = 0; c < Parameters.Length; ++c)
@@ -42,7 +42,7 @@ namespace Hiperspace.Meta
         }
         public override int GetHashCode()
         {
-            Parameters = Parameters ?? new Name[0];
+            Parameters ??= new Name[0];
             var hc = new HashCode();
             hc.Add(Reference);
             if (Parameters != null)

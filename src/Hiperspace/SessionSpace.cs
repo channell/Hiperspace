@@ -5,6 +5,7 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using Hiperspace.Meta;
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -585,6 +586,24 @@ namespace Hiperspace
         {
             var elements = _sessionSpace.ExportAsync(cancellationToken);
             _durableSpace.ImportAsync(elements);
+        }
+
+        public override MetaModel? GetMetaModel()
+        {
+            return _durableSpace.GetMetaModel();
+        }
+        public override Task<MetaModel?> GetMetaModelAsync()
+        {
+            return _durableSpace.GetMetaModelAsync();
+        }
+
+        public override bool SetMetaModel(MetaModel metaModel)
+        {
+            return _durableSpace.SetMetaModel(metaModel);
+        }
+        public override Task<bool> SetMetaModelAsync(MetaModel metaModel)
+        {
+            return _durableSpace.SetMetaModelAsync(metaModel);
         }
     }
 }

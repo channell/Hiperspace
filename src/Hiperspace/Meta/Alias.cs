@@ -7,6 +7,7 @@
 // ---------------------------------------------------------------------------------------
 
 using ProtoBuf;
+using System.Collections;
 
 namespace Hiperspace.Meta
 {
@@ -48,6 +49,16 @@ namespace Hiperspace.Meta
                 hc.Add(Parameters[c].GetHashCode());
 
             return hc.ToHashCode();
+        }
+        public IEnumerable<(int id, string reason)> Difference(string path, Alias other)
+        {
+            Parameters = Parameters ?? new Relation[0];
+
+            var map = other.Parameters.ToDictionary(i => i.Id);
+            for (int c = 0; c < Parameters.Length; c++)
+                if (map.TryGetValue(Parameters[c].Id, out Relation value))
+                    foreach (var diff in Parameters[c].Difference($"{path}.{Name}", value))
+                        yield return diff;
         }
     }
 }

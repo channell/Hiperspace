@@ -5,6 +5,7 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using Hiperspace.Meta;
 using System;
 using System.Buffers.Binary;
 using System.Diagnostics;
@@ -23,11 +24,24 @@ namespace Hiperspace
     {
         private HiperSpace[] _spaces;
 
+
         public PartitionSpace([NotNull] HiperSpace[] aggregates)
         {
             if (aggregates.Length < 2)
                 throw new ArgumentException($"{nameof(PartitionSpace)} should have at least two spaces");
             _spaces = aggregates;
+        }
+        public override BaseTypeModel? TypeModel
+        {
+            get
+            {
+                return _spaces[0].TypeModel;
+            }
+            set
+            {
+                for (int c = 0; c < _spaces.Length; c++)
+                    _spaces[c].TypeModel = value;
+            }
         }
 
         private static int GetHashCode(byte[] key)
@@ -1022,6 +1036,48 @@ namespace Hiperspace
             {
                 channels[c].Writer.Complete();
             }
+        }
+
+        public override MetaModel? GetMetaModel()
+        {
+            return _spaces?.FirstOrDefault()?.GetMetaModel()!;
+        }
+
+        public override async Task<MetaModel?> GetMetaModelAsync()
+        {
+            return await _spaces[0].GetMetaModelAsync();
+        }
+
+        public override bool SetMetaModel(MetaModel metaModel)
+        {
+            var currents = _spaces.Select(s => (s, s.GetMetaModel()));
+            var updated = _spaces.Select(s => s.SetMetaModel(metaModel)).Where (t => !t).Count();
+            if (updated > 0)
+            {
+                foreach (var c in currents)
+                {
+                    var (s, m) = c;
+                    s?.SetMetaModel(m!);
+                }
+                return false;
+            }
+            return true;
+        }
+        public override Task<bool> SetMetaModelAsync (MetaModel metaModel)
+        {
+            var currents = _spaces.Select(async s => (s, await s.GetMetaModelAsync()));
+            var tasks = _spaces.Select(s => s.SetMetaModelAsync(metaModel));
+            var updated = tasks.Select(async t => await t).Where(t => !t.Result).Count();
+            if (updated > 0)
+            {
+                foreach (var c in currents)
+                {
+                    var (s, m) = c.Result;
+                    s?.SetMetaModel(m!);
+                }
+                return Task.FromResult(false);
+            }
+            return Task.FromResult(true);
         }
     }
 }

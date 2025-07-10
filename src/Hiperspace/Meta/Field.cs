@@ -40,5 +40,11 @@ namespace Hiperspace.Meta
             hc.Add(Id);
             return hc.ToHashCode();
         }
+        public IEnumerable<(int id, string reason)> Difference(string path, Field other)
+        {
+
+            if (!DataType.Equals(other.DataType))
+                yield return (Id, $"{path}.{Name} dataType changed from {DataType.Reference} to {other.DataType.Reference}");
+        }
     }
 }

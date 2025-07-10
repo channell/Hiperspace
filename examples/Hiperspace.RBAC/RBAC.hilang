@@ -124,7 +124,7 @@ segment Access.RBAC.Permission : Versioned, Access.RBAC.Permissioned
                                  Edge2 (From = Item, To = owner, Name = Item.Subject, TypeName = TypeName + "|From")
 (
     " Identify all the resource item. "
-    Item        : Access.RBAC.Resource #1,
+    Item        : Access.RBAC.Resource #12,
  
     " The permission being granted create, update, delete. "
     Right       : Access.RBAC.PermissionType #2
@@ -134,17 +134,17 @@ segment Access.RBAC.Permission : Versioned, Access.RBAC.Permissioned
     Approval    : Set<Ref<Access.RBAC.Group>> #3,
  
     " The set of roles that are required to approve this permission before it is used. "
-    Required    = Item.Approvers,
+    Required    = Item.Approvers #8,
 
     " Flag for Horizon conditions to hide unapproved permission requests. "
-    Approved    = approved (Approval, Required),
+    Approved    = approved (Approval, Required) #9,
 
     " Validation criteria to implement standard constraint rules. "
     Valid       = owner = null || 
                   Item = null ||
                   CanUpdate = false ||
                   CanDelete = false
-                  ? false : true
+                  ? false : true #10
 }
 [
     TypeName    = "RBAC-Permission",
@@ -312,7 +312,7 @@ Any security principal (group, user or role) can be a member of a role - it is s
 segment Access.RBAC.RoleMember : Versioned, Access.RBAC.Permissioned  
 (
     " Reference to the role that this group user or role is a member of "
-    Role        : Access.RBAC.Role #1
+    Role        : Access.RBAC.Role #7
 ) 
 {
     " Validation criteria to implement standard constraints. "
@@ -320,7 +320,7 @@ segment Access.RBAC.RoleMember : Versioned, Access.RBAC.Permissioned
                   Role = null || 
                   CanUpdate = false ||
                   CanDelete = false
-                  ? false : true
+                  ? false : true #6
 }
 [
     TypeName    = "RBAC-Role-Member",

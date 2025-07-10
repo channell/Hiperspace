@@ -37,5 +37,11 @@ namespace Hiperspace.Meta
         {
             return HashCode.Combine(Name, DataType, Id);
         }
+        public IEnumerable<(int id, string reason)> Difference(string path, Relation other)
+        {
+
+            if (!DataType.Equals(other.DataType))
+                yield return (Id, $"{path}.{Name} dataType changed from {DataType} to {other.DataType}");
+        }
     }
 }

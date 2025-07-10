@@ -41,6 +41,10 @@ namespace Hiperspace.Rocks
             {
                 throw;
             }
+            catch (MetaModelException)
+            {
+                throw;
+            }
             catch 
             {
                 _db = Open(path, metaModel, !compress, read);
@@ -59,32 +63,11 @@ namespace Hiperspace.Rocks
                 ? RocksDb.OpenReadOnly (option, path, false)
                 : RocksDb.Open(option, path);
 
-            if (metaModel != null ) 
+            if (metaModel != null)
             {
-                var mk = new byte[] { 0x00, 0x00 };
-                var stored = Get(mk);    // no proto message starts with 0x00
-                if (stored != null) 
-                {
-                    var current = Hiperspace.Space.FromValue<MetaModel>(TypeModel, stored);
-                    if (current != null)
-                    {
-                        if (!current.Equals(metaModel))
-                        {
-                            Dispose();
-                            throw new MutationException("The MetaModel provided is not compatible with the HyperSpace");
-                        }
-                        if (current.GetHashCode() != metaModel.GetHashCode())   // additions
-                        {
-                            metaModel.Merge(current);
-                            var bytes = metaModel.Bytes;
-                            _db.Put(mk, bytes);
-                        }
-                    }
-                }
-                else
-                {
-                    Bind(mk, metaModel.Bytes);
-                }
+                var (success, model) = ApplyMetaModel(metaModel);
+                if (!success)
+                    throw new MetaModelException(metaModel, model);
             }
             return _db;
         }
@@ -231,6 +214,7 @@ namespace Hiperspace.Rocks
             RaiseOnAfterFind(ref begin, ref end);
         }
         private static byte[] FF = new byte[] { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
+
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Find(byte[] begin, byte[] end, DateTime? version)
         {
             RaiseOnBeforeFind(ref begin, ref end);
@@ -521,18 +505,6 @@ namespace Hiperspace.Rocks
             return GetVersions(key).ToAsyncEnumerable(cancellationToken);
         }
 
-        /*        public override IEnumerable<(byte[], byte[])> Space()
-        {
-            using (var iter = _db.NewIterator())
-            {
-                while (iter.Valid())
-                {
-                    yield return (iter.Key(), iter.Value());
-                    iter.Next();
-                }
-            }
-        }
-*/
         private IEnumerable<(byte[], byte[])> Export()
         {
             using (var iter = _db.NewIterator())
@@ -586,6 +558,40 @@ namespace Hiperspace.Rocks
 
                 _disposedValue = true;
             }
+        }
+        public override MetaModel? GetMetaModel()
+        {
+            var mk = new byte[] { 0x00, 0x00 };
+            var stored = Get(mk);    // no proto message starts with 0x00
+            if (stored != null)
+            {
+                return Hiperspace.Space.FromValue<MetaModel>(TypeModel, stored);
+            }
+            return null;
+        }
+        public override async Task<MetaModel?> GetMetaModelAsync()
+        {
+            var mk = new byte[] { 0x00, 0x00 };
+            var stored = await GetAsync(mk);    // no proto message starts with 0x00
+            if (stored != null)
+            {
+                return Hiperspace.Space.FromValue<MetaModel>(TypeModel, stored);
+            }
+            return null;
+
+        }
+
+        public override bool SetMetaModel(MetaModel metaModel)
+        {
+            var mk = new byte[] { 0x00, 0x00 };
+            var result = Bind(mk, metaModel.Bytes);
+            return result.Ok;
+        }
+        public override async Task<bool> SetMetaModelAsync(MetaModel metaModel)
+        {
+            var mk = new byte[] { 0x00, 0x00 };
+            var result = await BindAsync(mk, metaModel.Bytes, null);
+            return result.Ok;
         }
     }
 }

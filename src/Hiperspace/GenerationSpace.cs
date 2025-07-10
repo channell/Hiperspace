@@ -5,6 +5,7 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using Hiperspace.Meta;
 using System.Buffers.Binary;
 using System.ComponentModel.Design;
 using System.Diagnostics;
@@ -1092,6 +1093,24 @@ namespace Hiperspace
         public override void ImportAsync(IAsyncEnumerable<(byte[] Key, byte[] Value)> values, CancellationToken cancellationToken = default)
         {
             _write.ImportAsync(values, cancellationToken);
+        }
+
+        public override MetaModel? GetMetaModel()
+        {
+            return _write.GetMetaModel();
+        }
+        public override Task<MetaModel?> GetMetaModelAsync()
+        {
+            return _write.GetMetaModelAsync();
+        }
+
+        public override bool SetMetaModel(MetaModel metaModel)
+        {
+            return _write.SetMetaModel(metaModel);
+        }
+        public override Task<bool> SetMetaModelAsync(MetaModel metaModel)
+        {
+            return _write.SetMetaModelAsync(metaModel);
         }
     }
 }

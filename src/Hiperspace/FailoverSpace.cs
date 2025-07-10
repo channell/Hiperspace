@@ -1,4 +1,5 @@
-﻿using System.Buffers.Binary;
+﻿using Hiperspace.Meta;
+using System.Buffers.Binary;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
@@ -815,6 +816,24 @@ namespace Hiperspace.Heap
         public override void ImportAsync(IAsyncEnumerable<(byte[] Key, byte[] Value)> values, CancellationToken cancellationToken = default)
         {
             _primary.ImportAsync(values, cancellationToken);
+        }
+
+        public override MetaModel? GetMetaModel()
+        {
+            return _primary.GetMetaModel();
+        }
+        public override Task<MetaModel?> GetMetaModelAsync()
+        {
+            return _primary.GetMetaModelAsync();
+        }
+
+        public override bool SetMetaModel(MetaModel metaModel)
+        {
+            return _primary.SetMetaModel(metaModel);
+        }
+        public override Task<bool> SetMetaModelAsync(MetaModel metaModel)
+        {
+            return _primary.SetMetaModelAsync(metaModel);
         }
     }
 }

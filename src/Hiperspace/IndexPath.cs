@@ -17,7 +17,7 @@ namespace Hiperspace
             _keyPath = keypath;
         }
 
-        public abstract byte[] IndexBytes(TEntity item);
+        public abstract byte[] IndexBytes(TEntity item, (int key, (int member, int key)[] values)[] metaMap);
         public abstract bool IsSargable(TEntity item);
 
         public abstract void Bind(TEntity item);

@@ -56,20 +56,34 @@ namespace Hiperspace
         }
         public static TProto FromKey<TProto>(TypeModel? model, byte[] bytes, (int key, (int member, int key)[] values)[] map)
         {
-            if (model == null) throw new TypeModelException();
-            var lpv = Vpl2lpv(bytes, map);
-            var protoStream = new MemoryStream(lpv);
-            protoStream.Position = 0;
-            var key = model.Deserialize<TProto>(protoStream);
-            return key;
+            try
+            {
+                if (model == null) throw new TypeModelException();
+                var lpv = Vpl2lpv(bytes, map);
+                var protoStream = new MemoryStream(lpv);
+                protoStream.Position = 0;
+                var key = model.Deserialize<TProto>(protoStream);
+                return key;
+            }
+            catch (Exception ex)
+            {
+                throw new DataMapException(typeof(TProto), bytes, ex);
+            }
         }
         public static TProto FromVectorKey<TProto>(TypeModel? model, byte[] bytes, (int key, (int member, int key)[] values)[] map)
         {
-            if (model == null) throw new TypeModelException();
-            var result = new byte[bytes.Length - 1];
-            var span = new Span<byte>(bytes, 1, bytes.Length - 1);
-            span.CopyTo(result);
-            return FromKey<TProto>(model, result, map);
+            try
+            {
+                if (model == null) throw new TypeModelException();
+                var result = new byte[bytes.Length - 1];
+                var span = new Span<byte>(bytes, 1, bytes.Length - 1);
+                span.CopyTo(result);
+                return FromKey<TProto>(model, result, map);
+            }
+            catch (Exception ex)
+            {
+                throw new DataMapException(typeof(TProto), bytes, ex);
+            }
         }
         public static TProto FromValue<TProto>(TypeModel? model, byte[] bytes)
         {
@@ -222,6 +236,7 @@ namespace Hiperspace
                         bytes[s++] = source[p++];
                         break;
                     case 1: // I64
+                        if (s + sizeof(Int64) > source.Length) return new byte[source.Length];
                         var tspan = new Span<byte>(bytes, s, sizeof(Int64));
                         var sspan = new Span<byte>(bytes, p, sizeof(Int64));
                         sspan.CopyTo(tspan);

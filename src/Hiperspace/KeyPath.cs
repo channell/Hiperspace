@@ -12,9 +12,9 @@ namespace Hiperspace
         where TKey : struct
     {
         protected SetSpace<TEntity> _setSpace;
-        public readonly HiperSpace Space;
+        public readonly SubSpace Space;
         public KeyPath
-            ( HiperSpace space
+            ( SubSpace space
             , SetSpace<TEntity> setSpace
             )
         {
@@ -22,7 +22,7 @@ namespace Hiperspace
             Space = space;
         }
 
-        public abstract byte[] KeyBytes(TEntity item);
+        public abstract byte[] KeyBytes(TEntity item, (int key, (int member, int key)[] values)[] metamap);
         public abstract byte[] ValueBytes(TEntity item);
 
         public abstract bool IsGetable(TEntity item);

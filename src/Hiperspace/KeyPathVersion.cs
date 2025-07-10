@@ -15,7 +15,7 @@ namespace Hiperspace
         protected DateTime? _AsAt;
         protected DateTime? _DeltaFrom;
         public KeyPathVersion
-            ( HiperSpace space
+            ( SubSpace space
             , SetSpace<TEntity> setSpace
             , DateTime? AsAt
             , DateTime? DeltaFrom = null

@@ -5,6 +5,7 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using Hiperspace.Meta;
 using ProtoBuf.Meta;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
@@ -76,6 +77,30 @@ namespace Hiperspace
                 return Array.Empty<Horizon>();
         }
 
+        /// <summary>
+        /// The meta map is a optimised map used to serialise and deserialise the byte[], for range based access 
+        /// within the key store. protobuf messages are transformed from length-prefix value to value prefix length 
+        /// using this map
+        /// </summary>
+        public virtual (int key, (int member, int key)[] values)[] MetaMap { get; }
+
+        /// <summary>
+        /// Asynchronously retrieves metadata mappings 
+        /// </summary>
+        /// <returns>
+        /// A task representing the asynchronous operation. The result contains an array of tuples,  where each tuple
+        /// includes a key and an array of values associated with that key.  Each value is represented as a tuple
+        /// containing a member and a key. Returns <see langword="null"/> if no metadata mappings are available.
+        /// </returns>
+        /// <remarks>
+        /// This method must be overriden for remote clients that can not performed syncronous IO to the server
+        /// </remarks>
+        public virtual Task<(int key, (int member, int key)[] values)[]> MetaMapAsync()
+        {
+            return Task.FromResult(MetaMap);
+        }
+
+
         private void SubSpace_OnAfterGet(ref byte[] key, ref byte[] value)
         {
         }
@@ -125,7 +150,7 @@ namespace Hiperspace
             return _space.BindAsync(key, value, source);
         }
 
-        public override IEnumerable<(byte[], byte[])> Find(byte[] begin, byte[] end)
+        public override IEnumerable<(byte[] Key, byte[] Value)> Find(byte[] begin, byte[] end)
         {
             return _space.Find(begin, end);
         }
@@ -135,7 +160,7 @@ namespace Hiperspace
             return _space.Find(begin, end, version);
         }
 
-        public override IAsyncEnumerable<(byte[], byte[])> FindAsync(byte[] begin, byte[] end, CancellationToken cancellationToken = default)
+        public override IAsyncEnumerable<(byte[] Key, byte[] Value)> FindAsync(byte[] begin, byte[] end, CancellationToken cancellationToken = default)
         {
             return _space.FindAsync(begin, end, cancellationToken);
         }
@@ -404,5 +429,23 @@ namespace Hiperspace
         /// cachedOnly is usefull for web-assembly/phone clients need to transfer the full set for a use-case
         /// </remarks>
         public abstract void ImportCacheAsync(IAsyncEnumerable<(byte[] Key, byte[] Value, DateTime? AsAt)> values, CancellationToken cancellationToken = default);
+
+        public override MetaModel? GetMetaModel()
+        {
+            return _space.GetMetaModel();
+        }
+        public override Task<MetaModel?> GetMetaModelAsync()
+        {
+            return _space.GetMetaModelAsync();
+        }
+
+        public override bool SetMetaModel(MetaModel metaModel)
+        {
+            return _space.SetMetaModel(metaModel);
+        }
+        public override Task<bool> SetMetaModelAsync(MetaModel metaModel)
+        {
+            return _space.SetMetaModelAsync(metaModel);
+        }
     }
 }

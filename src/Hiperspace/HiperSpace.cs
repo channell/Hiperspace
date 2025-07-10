@@ -5,6 +5,7 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using Hiperspace.Meta;
 using ProtoBuf.Meta;
 using System.IO.Compression;
 using System.Runtime.CompilerServices;
@@ -764,6 +765,118 @@ namespace Hiperspace
         public virtual IEnumerable<Horizon> GetHorizons()
         {
             return Enumerable.Empty<Horizon>();
+        }
+
+        /// <summary>
+        /// Get the metamodel currently stored in a durable space
+        /// </summary>
+        /// <returns></returns>
+        public abstract MetaModel? GetMetaModel();
+
+        /// <summary>
+        /// Get the metamodel currently stored in a durable space asyncronously
+        /// </summary>
+        /// <returns></returns>
+        public abstract Task<MetaModel?> GetMetaModelAsync();
+
+        /// <summary>
+        /// Set the meta model of the space if the store is durable
+        /// </summary>
+        /// <param name="metaModel">meta model of the subspace assembly</param>
+        /// <returns>success</returns>
+        public abstract bool SetMetaModel(MetaModel metaModel);
+        /// <summary>
+        /// Set the meta model of the space if the store is durable asyncronously
+        /// </summary>
+        /// <param name="metaModel">meta model of the subspace assembly</param>
+        /// <returns>success</returns>
+        public abstract Task<bool> SetMetaModelAsync(MetaModel metaModel);
+
+        /// <summary>
+        /// Apply the metamodel from the assembly to the hiperspace
+        /// </summary>
+        /// <param name="metaModel">meta model of the subspace assembly</param>
+        /// <param name="merge">true if the current model should be merged into the historical model in the store</param>
+        /// <returns>sucess</returns>
+        public (bool success, MetaModel model) ApplyMetaModel(MetaModel metaModel)
+        {
+            var current = GetMetaModel();
+            if (current == null)
+            {
+                return (SetMetaModel(metaModel), metaModel);
+            }
+            else
+            {
+                return ApplyMetaModel(metaModel, current);
+            }
+        }
+        public (bool success, MetaModel model) ApplyMetaModel(MetaModel metaModel, MetaModel current)
+        {
+            // new hiperspace
+            if (current == null)
+            {
+                return (SetMetaModel(metaModel), metaModel);
+            }
+            else
+            {
+                // is it an incompatible metamodel, due to type redefinition
+                if (!metaModel.Equals(current))
+                {
+                    return (false, current);
+                }
+                // changed model
+                if (current.GetHashCode() != metaModel.GetHashCode())
+                {
+                    // merge legacy elements
+                    metaModel.Merge(current);
+                    return (SetMetaModel(metaModel), metaModel);
+                }
+                else
+                    return (true, metaModel);
+            }
+        }
+        /// <summary>
+        /// Apply the metamodel from the assembly to the hiperspace
+        /// </summary>
+        /// <param name="metaModel">meta model of the subspace assembly</param>
+        /// <param name="merge">true if the current model should be merged into the historical model in the store</param>
+        /// <returns>sucess</returns>
+        public async Task<(bool success, MetaModel model)> ApplyMetaModelAsync(MetaModel metaModel)
+        {
+            var current = GetMetaModel();
+            if (current == null)
+            {
+                return (await SetMetaModelAsync(metaModel), metaModel);
+            }
+            else
+            {
+                return await ApplyMetaModelAsync(metaModel, current);
+            }
+        }
+        public async Task<(bool success, MetaModel model)> ApplyMetaModelAsync(MetaModel metaModel, MetaModel current)
+        {
+            // new hiperspace
+            if (current == null)
+            {
+                return (await SetMetaModelAsync(metaModel), metaModel);
+            }
+            else
+            {
+                // is it an incompatible metamodel, due to type redefinition
+                if (!current.Equals(metaModel))
+                {
+                    return (false, metaModel);
+                }
+                // changed model
+                if (current.GetHashCode() != metaModel.GetHashCode())
+                {
+                    // merge legacy elements
+                    metaModel.Merge(current);
+                    return (await SetMetaModelAsync(metaModel), metaModel);
+                }
+                else
+                    return (true, metaModel);
+            }
         }
     }
 }

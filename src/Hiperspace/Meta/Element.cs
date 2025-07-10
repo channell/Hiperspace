@@ -45,20 +45,28 @@ namespace Hiperspace.Meta
             if (Category != other.Category) return false;
             if (Versioned != other.Versioned) return false;
 
-            var keymap = other.Keys.ToDictionary(i => i.Id);
-            for (int c = 0; c < Keys.Length; c++)
-                if (keymap.TryGetValue(Keys[c].Id, out Field value))
-                    if (!Keys[c].Equals(value)) return false;
+            if (other.Keys != null)
+            {
+                var keymap = other.Keys.ToDictionary(i => i.Id);
+                for (int c = 0; c < Keys.Length; c++)
+                    if (keymap.TryGetValue(Keys[c].Id, out Field value))
+                        if (!Keys[c].Equals(value)) return false;
+            }
 
-            var valuemap = other.Values.ToDictionary(i => i.Id); 
-            for (int c = 0; c < Values.Length; c++)
-                if (valuemap.TryGetValue(Values[c].Id, out Field value))
-                    if (!Values[c].Equals(value)) return false;
-
-            var indexmap = other.Index.ToDictionary(i => i.Id);
-            for (int c = 0; c < Index.Length; c++)
-                if (indexmap.TryGetValue(Index[c].Id, out Alias value))
-                    if (!Index[c].Equals (value)) return false;
+            if (other.Values != null)
+            {
+                var valuemap = other.Values.ToDictionary(i => i.Id);
+                for (int c = 0; c < Values.Length; c++)
+                    if (valuemap.TryGetValue(Values[c].Id, out Field value))
+                        if (!Values[c].Equals(value)) return false;
+            }
+            if (other.Index != null)
+            {
+                var indexmap = other.Index.ToDictionary(i => i.Id);
+                for (int c = 0; c < Index.Length; c++)
+                    if (indexmap.TryGetValue(Index[c].Id, out Alias value))
+                        if (!Index[c].Equals(value)) return false;
+            }
 
             return true;
         }
@@ -85,26 +93,69 @@ namespace Hiperspace.Meta
 
         public void Merge (Element other)
         {
-            Keys = Keys ?? new Field[0];
-            Values = Values ?? new Field[0];
-            Index = Index ?? new Alias[0];
-            var keymap = Keys.ToDictionary(i => i.Id);
-            for (int c = 0; c < other.Keys.Length; c++)
-                if (!keymap.ContainsKey(other.Keys[c].Id))
-                    keymap[other.Keys[c].Id] = other.Keys[c];
-            Keys = keymap.Select(p => p.Value).ToArray();
+            Keys ??= new Field[0];
+            Values ??= new Field[0];
+            Index ??= new Alias[0];
 
-            var valuemap = Values.ToDictionary(i => i.Id);
-            for (int c = 0; c < other.Values.Length; c++)
-                if (!valuemap.ContainsKey(other.Values[c].Id))
-                    valuemap[other.Values[c].Id] = other.Values[c];
-            Values = valuemap.Select(p => p.Value).ToArray();
+            if (other.Keys != null)
+            {
+                var keymap = Keys.ToDictionary(i => i.Id);
+                for (int c = 0; c < other.Keys.Length; c++)
+                    if (!keymap.ContainsKey(other.Keys[c].Id))
+                        keymap[other.Keys[c].Id] = other.Keys[c];
+                Keys = keymap.Select(p => p.Value).ToArray();
+            }
 
-            var indexmap = Index.ToDictionary(i => i.Id);
-            for (int c = 0; c < other.Index.Length; c++)
-                if (!indexmap.ContainsKey(other.Index[c].Id))
-                    indexmap[other.Index[c].Id] = other.Index[c];
-            Index = indexmap.Select(p => p.Value).ToArray();
+            if (other.Values != null)
+            {
+                var valuemap = Values.ToDictionary(i => i.Id);
+                for (int c = 0; c < other.Values.Length; c++)
+                    if (!valuemap.ContainsKey(other.Values[c].Id))
+                        valuemap[other.Values[c].Id] = other.Values[c];
+                Values = valuemap.Select(p => p.Value).ToArray();
+            }
+
+            if (other.Index != null)
+            {
+                var indexmap = Index.ToDictionary(i => i.Id);
+                for (int c = 0; c < other.Index.Length; c++)
+                    if (!indexmap.ContainsKey(other.Index[c].Id))
+                        indexmap[other.Index[c].Id] = other.Index[c];
+                Index = indexmap.Select(p => p.Value).ToArray();
+            }
+        }
+
+        public IEnumerable<(int id, string reason)> Difference(Element other)
+        {
+            if (Category != other.Category) yield return (Id, $"{Name.Reference} category changed from {Category} to {other.Category}");
+            if (Versioned != other.Versioned) yield return (Id, $"{Name.Reference} versioned changed from {Versioned} to {other.Versioned}");
+
+            if (other.Keys != null)
+            {
+                var keymap = other.Keys.ToDictionary(i => i.Id);
+                for (int c = 0; c < Keys.Length; c++)
+                    if (keymap.TryGetValue(Keys[c].Id, out Field value))
+                        foreach (var diff in Keys[c].Difference(Name.Reference, value))
+                            yield return diff;
+            }
+
+            if (other.Values != null)
+            {
+                var valuemap = other.Values.ToDictionary(i => i.Id);
+                for (int c = 0; c < Values.Length; c++)
+                    if (valuemap.TryGetValue(Values[c].Id, out Field value))
+                        foreach (var diff in Values[c].Difference(Name.Reference, value))
+                            yield return diff;
+            }
+
+            if (other.Index != null)
+            {
+                var indexmap = other.Index.ToDictionary(i => i.Id);
+                for (int c = 0; c < Index.Length; c++)
+                    if (indexmap.TryGetValue(Index[c].Id, out Alias value))
+                        foreach (var diff in Index[c].Difference(Name.Reference, value))
+                            yield return diff;
+            }
         }
     }
 }

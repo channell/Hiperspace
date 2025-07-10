@@ -5,6 +5,7 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using Hiperspace.Meta;
 using System.Buffers.Binary;
 using System.Collections;
 using System.Diagnostics;
@@ -527,5 +528,27 @@ namespace Hiperspace.Heap
             return sb.ToString();
         }
 #endif
+
+        /// <summary>
+        /// HeapSpace does not need a MetaModel since it is not durable
+        /// </summary>
+        /// <returns>null</returns>
+        public override MetaModel? GetMetaModel()
+        {
+            return null;
+        }
+        public override Task<MetaModel?> GetMetaModelAsync()
+        {
+            return Task.FromResult<MetaModel?>(null);
+        }
+
+        public override bool SetMetaModel(MetaModel metaModel)
+        {
+            return true;
+        }
+        public override Task<bool> SetMetaModelAsync(MetaModel metaModel)
+        {
+            return Task.FromResult(true);
+        }
     }
 }

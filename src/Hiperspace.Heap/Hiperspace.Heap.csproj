@@ -11,37 +11,40 @@
     <PackageReleaseNotes>
       ## Overview
 
-      This release adds the **@CubeExtent** property for post-aggregation calcualted properties of *HiperCubes*.
+      **Hiperspace** is uses [protobuf](https://protobuf.dev/) wire-format to serialize **elements** in the domain **SubSpace**
+      for persistence is a *key/value* *(primarily [RocksDB](https://rocksdb.org/))* with *minimal* transformation, and no padding.
 
-      For the Cube fact
-
-      ```
-      @DeltaIndex, CubeFact
-      segment Account.Transaction : Versioned
-      (
-      "when the transaction was authorised"
-      At              : DateTime
-      )
-      {
-      "average amount"
-      @CubeMeasure(Aggregate.Average)
-      Amount          : Decimal
-      };
-
-      ```
+      The schema can evolve without the need to alter an historically, using two rules:
+      * #id numeric aliases for {entities, segments, aspects, keys, values, indexes} are never reused
+      * The datatype of {keys, values} are never changed (*other than by renaming items*)
 
 
-      Amount is transformed in observations
+      ### MetaModel
 
-      | Properrty | Name| Expression |
-      |-|-|-|
-      | @CubeMeasure(Aggregate.AverageTotal) | Amount_Sum||
-      | @CubeExtent | Amount|Amount2_Sum / this.Facts|
+      The `MetaModel` contains a list of all the *Element* types stored within a Hiperspace and the data types of each *key*
+      and *value*.  The `MetaModel` is eternal - additional *Element* are added as tyhe schema changes, but never removed, to ensure that
+      older build can still read the data that they understand.
+
+      When a **Hiperspace** is opened, the domain `MetaModel` is compared with the `MetaModel` stored in the **Hiperspace** to ensure the
+      above rules have not been compromised.  All read and write after open uses the wire-format directly without transformation from store
+      through to client application (including browser web-assembly).
+
+      ### MetaMap
+
+      To support range access, the bytes in wire-format for keys are reordered to place message lengths at the end of the `byte[]`
+      for each key.  This is especially important for *segments* (*where the parent knows only the `owner` part of the key, and *indexes*).
+
+      The `MetaMap` is an ordered array of #id and mapping of *key/value* #id to the element #id of references.  The `MetaMap` is coded
+      in the domain assembly.  This release adds the capability to remove key references without the need to crerate a new element type, by
+      regenerating the `MetaMap` from the `MetaModel` stored in **Hiperspace**.
 
 
-      ### CubeExtent language support
+      ### Change
 
-      The `CubeExtent` property has been added to the **HiLang** schema language to support complex aggregation of quantitative observations for {*PFE*, *RWA*, etc} aggregation without the ned for additional support in the `Hiperspace.DB` aggregation service
+      This release changes the method signatures {`KeyPath`, `IndexPath`} to support a MetaMap built at load-time, and
+      adds additional abstract methods to the `Hiperspace` to load and merge `MetaModel`.
+
+      The `MetaModelException` exception type has been added to provide detailed diagnostics, if the `MetaModel` is not compatible.
     </PackageReleaseNotes>
     <PackageLicenseExpression>GPL-2.0-or-later</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
