@@ -20,7 +20,11 @@ namespace Hiperspace
     public abstract class SubSpace : HiperSpace, IQueryProvider
     {
         protected HiperSpace _space;
-        internal Horizon[]? Horizon;
+        private Horizon[]? _Horizon;
+        /// <summary>
+        /// Allow domian specific subspaces to override the horizon with domain critieria conditional on Context
+        /// </summary>
+        public virtual Horizon[]? Horizon { get => _Horizon; init { _Horizon = value; } }
         protected DateTime? _version;
         protected DateTime? _delta;
         protected TypeModel _model;
@@ -64,6 +68,18 @@ namespace Hiperspace
             }
             _version = AsAt;
             _delta = DeltaFrom;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SubSpace"/> class with the specified parameters, to simplify dynanmic construction 
+        /// </summary>
+        /// <param name="parameters">The parameters used to configure the <see cref="SubSpace"/> instance, including space, horizon, and labels.</param>
+        protected SubSpace (SubSpaceParameters parameters) : this(parameters.Space, parameters.Horizon, parameters.AsAt, parameters.DeltaFrom)
+        {
+            ContextLabel = parameters.ContextLabel;
+            UserLabel = parameters.UserLabel;
+            RemoteLabel = parameters.RemoteLabel;
+            _space = parameters.Space;
         }
         /// <summary>
         /// Get all Horizon filters from referenced spaces

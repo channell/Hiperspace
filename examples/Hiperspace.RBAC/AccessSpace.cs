@@ -1,4 +1,5 @@
 ﻿using Hiperspace;
+using static Access.AccessSpace;
 
 namespace Access
 {
@@ -45,6 +46,17 @@ namespace Access
             new Horizon<RBAC.Resource>((i,context,read) => context == "ILoad" || (i.Valid == true && i.Deleted == false)),
         ];
 
+        public override Horizon[]? Horizon
+        {
+            get => ContextLabel switch
+            {
+                "Write" => Write(_realm!),
+                "Read" => Read(_realm!),
+                _ => null,
+            };
+            init => base.Horizon = value;
+        }
+
         /// <summary>
         /// Construct with predefined CQRS mode
         /// </summary>
@@ -52,7 +64,7 @@ namespace Access
         /// <param name="mode">read or write</param>
         /// <param name="AsAt">snapshot date</param>
         public AccessSpace(HiperSpace space, Mode mode, RBAC.Realm realm, DateTime? AsAt = null) 
-            : this(space, (mode == Mode.Write ? Write(realm) : (mode == Mode.Read ? Read (realm) : null)), AsAt)
+            : this(space, null, AsAt)
         {
             ContextLabel = mode.ToString();
             _realm = realm;

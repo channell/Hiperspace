@@ -7,10 +7,6 @@ using System.Threading.Tasks;
 
 namespace Togaf
 {
-    class ΣxecSQLPlan
-    {
-    }
-
     public partial class TogafSpace
     {
         private static SortedDictionary<string, Horizon[]> Roles = new()
@@ -411,7 +407,14 @@ namespace Togaf
                     new Horizon<Technology.PlatformPrinciple> (i => i.ValidBase == true)                }
             }
         };
-        public TogafSpace(string Role, HiperSpace space, DateTime? AsAt = null, DateTime? DeltaFrom = null) : this(space, Roles[Role ?? ""], AsAt, DeltaFrom)
+
+        public override Horizon[]? Horizon 
+        { 
+            get => base.Horizon == null ? Roles[ContextLabel ?? ""] : Roles[ContextLabel ?? ""].Union(base.Horizon).ToArray(); 
+            init => base.Horizon = value; 
+        }
+
+        public TogafSpace(string Role, HiperSpace space, DateTime? AsAt = null, DateTime? DeltaFrom = null) : this(space, null, AsAt, DeltaFrom)
         {
             var empty = Organizations.GetFirst();
             if (empty != null)
@@ -430,6 +433,7 @@ namespace Togaf
                     OwnedBy = org.Value
                 });
             }
+            ContextLabel = Role;
         }
     }
 }

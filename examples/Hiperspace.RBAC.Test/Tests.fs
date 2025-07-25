@@ -25,6 +25,7 @@ type RBACTest (output : ITestOutputHelper) =
     let IloadSpace () = 
         let heap = new Hiperspace.Heap.HeapSpace ()
         let access = new Access.AccessSpace (heap)
+        //let access = new Access.AccessSpace (heap, ContextLabel = "Write")
 
         let realmseed =
             Access.RBAC.Realm 

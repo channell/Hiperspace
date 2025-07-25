@@ -53,17 +53,26 @@ namespace Hiperspace
             if (OnDependency != null) source.OnDependency += RaiseOnDependency;
         }
 
-        protected Horizon<TEntity>[]? horizons;
+        private Horizon<TEntity>[]? _horizons;
+        protected Horizon<TEntity>[]? Horizons
+        {             
+            get
+            {
+                if (_horizons == null)
+                {
+                    _horizons = Space?.Horizon?
+                        .Where(h => h.Type == typeof(TEntity))
+                        .Select(i => ((Horizon<TEntity>)i))
+                        .ToArray();
+                }
+                return _horizons;
+            }
+        }
         public SubSpace Space { get; set; }
         public SetSpace(SubSpace space, IQueryProvider provider)
         {
             Space = space;
             Provider = provider ?? throw new ArgumentNullException(nameof(provider));
-            if (space.Horizon != null)
-                horizons = space.Horizon
-                    .Where(h => h.Type == typeof(TEntity))
-                    .Select(i => ((Horizon<TEntity>)i))
-                    .ToArray();
         }
         protected SpinLock _lock = new SpinLock();
 
@@ -220,6 +229,7 @@ namespace Hiperspace
 
         public IEnumerable<TEntity> Filter(IEnumerable<TEntity> entities, bool read = true)
         {
+            var horizons = Horizons;
             if (horizons != null)
                 return entities
                     .Where(e =>
@@ -236,6 +246,7 @@ namespace Hiperspace
         }
         public IEnumerable<(TEntity Item, double Distance)> Filter(IEnumerable<(TEntity Item, double Distance)> entities, bool read = true)
         {
+            var horizons = Horizons;
             if (horizons != null)
                 return entities
                     .Where(e =>
@@ -252,6 +263,7 @@ namespace Hiperspace
         }
         public virtual Result<TEntity> Filter(TEntity entity, bool read = true)
         {
+            var horizons = Horizons;
             if (horizons != null)
             {
                 for (int c = 0; c < horizons.Length; c++)

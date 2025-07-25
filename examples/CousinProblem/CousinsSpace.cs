@@ -32,8 +32,9 @@ public partial class CousinsSpace
             }
         }
     };
+    public override Horizon[]? Horizon { get => base.Horizon == null ? Roles[ContextLabel ?? ""] : Roles[ContextLabel ?? ""].Union(base.Horizon).ToArray(); init => base.Horizon = value; }
 
-    public CousinsSpace(string Role, HiperSpace space, DateTime? AsAt = null, DateTime? DeltaFrom = null) : this(space, Roles[Role ?? ""], AsAt, DeltaFrom)
+    public CousinsSpace(string Role, HiperSpace space, DateTime? AsAt = null, DateTime? DeltaFrom = null) : this(space, null, AsAt, DeltaFrom)
     {
         // bootstrap
         var sample = Persons.Find(new Person { }).FirstOrDefault();
@@ -55,5 +56,6 @@ public partial class CousinsSpace
             };
             tree.ForEach(p => Persons.Bind(p, false));
         }
+        ContextLabel = Role ?? "";
     }
 }

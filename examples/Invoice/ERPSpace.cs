@@ -22,9 +22,12 @@ namespace ERP
             new Horizon<Order>          (i => i.Valid == true),
         };
 
+        public override Horizon[]? Horizon { get => base.Horizon == null ? constraints : constraints.Union(base.Horizon).ToArray(); init => base.Horizon = value; }
+
         public ERPSpace(HiperSpace space, DateTime? AsAt = null, DateTime? DeltaFrom = null) 
-            : this(space, constraints, AsAt, DeltaFrom)        
+            : this(space, null, AsAt, DeltaFrom)        
         { }
+
     }
     internal static class ERPFunctions
     {

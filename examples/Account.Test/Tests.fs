@@ -123,7 +123,7 @@ type  AccountTest (output : ITestOutputHelper) =
 
         output.WriteLine "\nBefore snapshot"
         output.WriteLine "Name, Title, At, Movement, AsAt "
-        use snap = new AccSpace(accSpace, beforeAdd)
+        use snap = new AccSpace(accSpace, null, beforeAdd)
 
         let trans = List.ofSeq snap.CustomerAccountTransactions
         trans.Length.Should().Be(5, "") |> ignore

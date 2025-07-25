@@ -47,9 +47,10 @@ namespace Acc
             new Horizon<Acc.CustomerAccount>(a => a.Title != null),
             new Horizon<Acc.CustomerAccountBalance>(b => b.When != null && b.Current != null)
         ];
-        public AccSpace(string Role, HiperSpace space, DateTime? AsAt = null, DateTime? DeltaFrom = null) : this(space, Roles[Role ?? ""], AsAt, DeltaFrom) { }
-        public AccSpace(HiperSpace space, DateTime? dateTime) : this(space, constraints, dateTime) { }
-        public static AccSpace Make (HiperSpace space) { return new AccSpace (space, constraints); }
+
+        public override Horizon[]? Horizon { get => base.Horizon == null ? constraints : constraints.Union(base.Horizon).ToArray(); init => base.Horizon = value; }
+        public static AccSpace Make (HiperSpace space) { return new AccSpace (space); }
+
     }
 
     public partial class CustomerAccount
