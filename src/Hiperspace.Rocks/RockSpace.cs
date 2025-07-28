@@ -39,10 +39,12 @@ namespace Hiperspace.Rocks
             }
             catch (MutationException)
             {
+                Dispose();
                 throw;
             }
             catch (MetaModelException)
             {
+                Dispose();
                 throw;
             }
             catch 

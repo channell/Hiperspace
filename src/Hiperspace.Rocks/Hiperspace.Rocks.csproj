@@ -9,44 +9,102 @@
     <PackageIcon>Hiper.png</PackageIcon>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
     <Copyright>Cepheis Ltd (C) 2023, 2024, 2025</Copyright>
-    <PackageReleaseNotes>
-      ## Overview
+    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20250728
+## Overview
 
-      **Hiperspace** is uses [protobuf](https://protobuf.dev/) wire-format to serialize **elements** in the domain **SubSpace**
-      for persistence is a *key/value* *(primarily [RocksDB](https://rocksdb.org/))* with *minimal* transformation, and no padding.
+This release changes the way the horizons are selected for domain subspaces to allow for streamlines application of constrains.  Horizons performed two roles within hyperspace. To apply constraints that apply to a model and to filter content that should not be visible to a community of users:
 
-      The schema can evolve without the need to alter an historically, using two rules:
-      * #id numeric aliases for {entities, segments, aspects, keys, values, indexes} are never reused
-      * The datatype of {keys, values} are never changed (*other than by renaming items*)
+* Constraint horizon include mandatory fields and referential integrity.  They are configurable (*optional*) so that a separate definitions are not needed for logging error.  traditional best-practice is to catch any validation or reference constraint errors and log the source message (*normally JSON or XML text*) to a seperate store for investingation by 3rd line support.  With Hiperspace there are two options: use the same schema, but a separate hiperspace that does not apply constraints, or hide the stored until the referenced element is available.
+* Visibility horizons *hide* data from retrieval - the best example is the **Deleted** pattern that *appears* to remove data from the subspace, but still available to historical versions before the *delete*
 
+Typically, the choice of which constraints to apply is driven by the `ContextLabel` for seperate domains (e.g. independent price verification, or approval)  or using `UserLabel` to apply permission using role-based access control.  The internal `Horizon[]?` array has been changed to an overridable property that can be customized for the domain.
 
-      ### MetaModel
+### SubSpaceParameters 
+This structure enabled all SubSpace properties to be set in the construction of a domain `SubSpace`, and available to the construction of each `SetSpace` for domain elements.
 
-      The `MetaModel` contains a list of all the *Element* types stored within a Hiperspace and the data types of each *key*
-      and *value*.  The `MetaModel` is eternal - additional *Element* are added as tyhe schema changes, but never removed, to ensure that
-      older build can still read the data that they understand.
+```
+/// <summary>
+/// Represents the traits of a subspace, including filters, versioning, and security labels.
+/// </summary>
+/// <remarks>
+/// Provides a generic initialisation of the subspace when dynamically Instantiated.   
+/// </remarks> 
+public struct SubSpaceParameters
+{
+    /// <summary>
+    /// The HiperSpace that provides storage services to this SubSpace
+    /// </summary>
+    public HiperSpace Space;
+    /// <summary>
+    /// Horizon filters for the subspace <see cref="Horizon" />
+    /// </summary>
+    public Horizon[]? Horizon;
+    /// <summary>
+    /// The version of the subspace, used to determine if the subspace is up to date
+    /// </summary>
+    public DateTime? AsAt;
+    /// <summary>
+    /// The delta from which the subspace was created, used to determine if the subspace is up to date
+    /// </summary>
+    public DateTime? DeltaFrom;
+    /// <summary>
+    /// Label applied to the subspace for security verification in Horizon filters
+    /// </summary>
+    public string? ContextLabel;
+    /// <summary>
+    /// Label applied to the subspace for fine grained access control
+    /// </summary>
+    public IPrincipal? UserLabel;
+    /// <summary>
+    /// Was the subspace opened by a remote client, and need to have Horizon security re-applied 
+    /// </summary>
+    public bool RemoteLabel;
+}
+```
 
-      When a **Hiperspace** is opened, the domain `MetaModel` is compared with the `MetaModel` stored in the **Hiperspace** to ensure the
-      above rules have not been compromised.  All read and write after open uses the wire-format directly without transformation from store
-      through to client application (including browser web-assembly).
+The primary motive for this change is to support `Hiperspace.DB` streaming aggregation, which takes the `ContextLabel` from configuration and used `AsAt` parameters for *time-travel/temporal* views to calculate a Cube *delta* for the *facts* that have changed in the last few seconds.
 
-      ### MetaMap
+### MetaModelException
+Hiperspace uses the rule that #id aliases can never change once they have been opened with a durable Hiperspace.  This release add an explanatory exception to guide the resolution of any incompatible changes.  Consider the examples of `Quantity : Int32 #5` that need to change to a Decimal but triggers a `MetaModelException` of changed to `Quantity : Decimal #5`.  This can be accomplished with `{ Quantity_V1 : Int32 #5, Quantity_V2 : Decimal #6 } [Quantity = Quantity_V2 = null ?  Quantity_V1 :  Quantity_V2]` for compatible access with both versions, or `Quantity : Decimal #6` after a data migration update.
 
-      To support range access, the bytes in wire-format for keys are reordered to place message lengths at the end of the `byte[]`
-      for each key.  This is especially important for *segments* (*where the parent knows only the `owner` part of the key, and *indexes*).
+## HiLang
+The Private Space Language parser has been updated to generate the additional `SubSpaceParameters` constructor.
 
-      The `MetaMap` is an ordered array of #id and mapping of *key/value* #id to the element #id of references.  The `MetaMap` is coded
-      in the domain assembly.  This release adds the capability to remove key references without the need to crerate a new element type, by
-      regenerating the `MetaMap` from the `MetaModel` stored in **Hiperspace**.
+The code generator has also been updated to order view extensions to avoid the need order specific coding, and add a validation rule that elements that provide `HiperEdge` view must also provide `Edge` view.
 
+The [TOGAF Sample](https://github.com/channell/Hiperspace/blob/master/examples/TOGAF/TOGAF.hilang) now includes *bi-directional Edges* in the patterm
+```
+/* another Edge that inherits from Edge and can be viewed as an Edge */
+view Edge_ : Edge = Edge();
 
-      ### Change
+"Pair of edges between nodes"
+view Edges
+    = Edge  (From = From, To = To, Name = Name, TypeName = FromTypeName), 
+      Edge_ (From = To, To = From, Name = Name, TypeName = ToTypeName)
+(
+    From            : Node      #2,
+    To              : Node      #3,
+    FromTypeName    : String    #4,
+    ToTypeName      : String    #5
+)
+{
+    Name        : String    #6,
+};
 
-      This release changes the method signatures {`KeyPath`, `IndexPath`} to support a MetaMap built at load-time, and
-      adds additional abstract methods to the `Hiperspace` to load and merge `MetaModel`.
+entity Togaf.Business.Driver : Togaf.General.Base
+    = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Driver"),    
+      Edges       ( From = this, To = MotivatedBy, FromTypeName = "AF-Driver-Organization", ToTypeName = "AF-Organization-Driver") #76
+{
+    MotivatedBy     : Togaf.Organization #5
+}
+```
+The *Togaf Business Driver* provides an directed *Edge* to *Togaf Organization* that it is *Motivated By* **and**  directed *Edge* from  *Togaf Organization*  to *Togaf Business Driver*.
 
-      The `MetaModelException` exception type has been added to provide detailed diagnostics, if the `MetaModel` is not compatible.
-    </PackageReleaseNotes>
+## RockSpace
+The [Hiperspace.Rocks](https://www.nuget.org/packages/Hiperspace.Rocks) driver has been updated to raise ` MetaModelException` if an incompatible change has been made to the schema model.
+
+[Hiperspace.Rocks](https://www.nuget.org/packages/Hiperspace.Rocks) has also been updated to [RocksDB](https://rocksdb.org/) version 10.
+</PackageReleaseNotes>
     <PackageLicenseExpression>GPL-2.0-or-later</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
