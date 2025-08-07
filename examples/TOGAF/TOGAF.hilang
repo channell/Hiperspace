@@ -136,7 +136,8 @@ entity Togaf.Business.Driver : Togaf.General.Base
     MotivatedBy     : Togaf.Organization #5
 }
 [
-    Creates         : Togaf.Business.Goal ( By = this ) #75
+    Creates         : Togaf.Business.Goal ( By = this ) #75,
+    SameName        : Togaf.Business.Driver (Name = Name) #1374
 ];
 
 entity Togaf.Business.Actor : Togaf.General.Base
@@ -147,7 +148,8 @@ entity Togaf.Business.Actor : Togaf.General.Base
 }
 [
     Performs        : Togaf.Has.Activity #414,
-    Involved        : Togaf.Business.ValueStream (Involves = this) #87
+    Involved        : Togaf.Business.ValueStream (Involves = this) #87,
+    SameName        : Togaf.Business.Actor (Name = Name) #1384
 ];
 
 @CubeDimension
@@ -164,7 +166,8 @@ entity Togaf.Business.Function : Togaf.General.Base
 [
     Children        : Togaf.Business.Function (Parent = this) #98,
     Orchestrates    : Togaf.Business.Process (Decomposes = this) #99,
-    Involves        : Togaf.Business.CourseOfAction (Involves = this) #100
+    Involves        : Togaf.Business.CourseOfAction (Involves = this) #100,
+    SameName        : Togaf.Business.Function (Name = Name) #1394
 ];
 
 @CubeDimension
@@ -180,7 +183,8 @@ entity Togaf.Business.Capability : Togaf.General.Base
     Operated        : Togaf.Business.Process (Operates = this) #112,
     Delivered       : Togaf.Business.Function (Delivers = this) #113,
     EnabledBy       : Togaf.Business.ValueStream (Enables = this) #114,
-    Related         : Togaf.Business.CourseOfAction (Enables = this) #115
+    Related         : Togaf.Business.CourseOfAction (Enables = this) #115,
+    SameName        : Togaf.Business.Capability (Name = Name) #1404
 ];
 
 @CubeDimension
@@ -194,7 +198,8 @@ entity Togaf.Business.Product : Togaf.General.Base
 }
 [
     Children        : Togaf.Business.Product (Parent = this) #126,
-    ProvidedBy      : Togaf.Business.Process (Provides = this) #127
+    ProvidedBy      : Togaf.Business.Process (Provides = this) #127,
+    SameName        : Togaf.Business.Product (Name = Name) #1414
 ];
 
 entity Togaf.Business.Goal : Togaf.General.Base
@@ -205,7 +210,8 @@ entity Togaf.Business.Goal : Togaf.General.Base
 }
 [
     RealizedBy      : Togaf.Business.Objective (For = this) #138,
-    Follows         : Togaf.Business.CourseOfAction (Leads = this) #139
+    Follows         : Togaf.Business.CourseOfAction (Leads = this) #139,
+    SameName        : Togaf.Business.Goal (Name = Name) #1424
 ];
 
 entity Togaf.Business.Objective : Togaf.General.Base
@@ -215,7 +221,8 @@ entity Togaf.Business.Objective : Togaf.General.Base
     For             : Togaf.Business.Goal #5
 }
 [
-    Measured        : Togaf.Business.Measure ( For = this ) #150
+    Measured        : Togaf.Business.Measure ( For = this ) #150,
+    SameName        : Togaf.Business.Objective (Name = Name) #1434
 ];
 
 entity Togaf.Business.Measure : Togaf.General.Base
@@ -228,7 +235,8 @@ entity Togaf.Business.Measure : Togaf.General.Base
     Tracks          : Togaf.Service #7
 }
 [
-    Observation     : Togaf.History.Measure #323 
+    Observation     : Togaf.History.Measure #323,
+    SameName        : Togaf.Business.Measure (Name = Name) #1444
 ];
 
 segment Togaf.History.Measure
@@ -265,7 +273,8 @@ entity Togaf.Business.Activity : Togaf.General.Base
 }
 [
     Before          : Togaf.Business.Activity (After = this) #173,
-    Originates      : Togaf.Data.Entity(Originator = this) #174
+    Originates      : Togaf.Data.Entity(Originator = this) #174,
+    SameName        : Togaf.Business.Activity (Name = Name) #1455
 ];
 
 segment Togaf.Has.Activity : Many<Togaf.Business.Activity>
@@ -293,7 +302,8 @@ entity Togaf.Business.Event : Togaf.General.Base
     Trigger         : Togaf.Service #6
 }
 [
-    Activities      : Togaf.Business.Activity ( Event = this) #186
+    Activities      : Togaf.Business.Activity ( Event = this) #186,
+    SameName        : Togaf.Business.Event (Name = Name) #1466
 ];
 
 @CubeDimension
@@ -313,7 +323,8 @@ entity Togaf.Business.Process : Togaf.General.Base
     Realizes        : Togaf.Business.ValueStream #10
 }
 [
-    Steps           : Togaf.Business.Activity (Part = this) #197
+    Steps           : Togaf.Business.Activity (Part = this) #197,
+    SameName        : Togaf.Business.Process (Name = Name) #1476
 ];
 
 entity Togaf.Business.Control : Togaf.General.Base
@@ -325,7 +336,8 @@ entity Togaf.Business.Control : Togaf.General.Base
 }
 [
     Includes        : Togaf.Business.Control (PartOf = this) #208,
-    Governs         : Togaf.Business.Process (Governed = this) #209
+    Governs         : Togaf.Business.Process (Governed = this) #209,
+    SameName        : Togaf.Business.Control (Name = Name) #1486
 ];
 
 entity Togaf.Business.ValueStream : Togaf.General.Base
@@ -341,7 +353,8 @@ entity Togaf.Business.ValueStream : Togaf.General.Base
 }
 [
     Children        : Togaf.Business.ValueStream (Parent = this) #220,
-    RealizedBy      : Togaf.Business.Process (Realizes = this) #221
+    RealizedBy      : Togaf.Business.Process (Realizes = this) #221,
+    SameName        : Togaf.Business.ValueStream (Name = Name) #1496
 ];
 
 entity Togaf.Business.CourseOfAction : Togaf.General.Base
@@ -354,7 +367,10 @@ entity Togaf.Business.CourseOfAction : Togaf.General.Base
     Enables         : Togaf.Business.Capability #6,
     Leads           : Togaf.Business.Goal #7,
     Involves        : Togaf.Business.Function #8
-};
+}
+[
+    SameName        : Togaf.Business.CourseOfAction (Name = Name) #1506
+];
 
 /* ********************************************************
     Service
@@ -372,7 +388,8 @@ entity Togaf.Service : Togaf.General.Base
     Triggers        : Togaf.Business.Event ( Trigger = this) #31,
     UsedBy          : Togaf.Business.Activity ( Uses = this) #32,
     Provides        : Togaf.Data.Entity(Provider = this) #33,
-    ProvidedBy      : Togaf.Application.System ( Realizes = this) #34
+    ProvidedBy      : Togaf.Application.System ( Realizes = this) #34,
+    SameName        : Togaf.Service (Name = Name) #1328
 ];
 
 /* ********************************************************
@@ -389,7 +406,8 @@ entity Togaf.Data.Entity: Togaf.General.Base
 }
 [
     Logical         : Togaf.Data.Logical (Encapsulate = this) #455,
-    DataUsage       : Togaf.Data.Usage (Entity = this) #456
+    DataUsage       : Togaf.Data.Usage (Entity = this) #456,
+    SameName        : Togaf.Data.Entity (Name = Name) #1755   
 ];
 
 entity Togaf.Data.Usage : Togaf.Base
@@ -402,7 +420,10 @@ entity Togaf.Data.Usage : Togaf.Base
 )
 {
     Comment         : String #7
-};
+}
+[
+    SameName        : Togaf.Data.Usage (Name = Name) #1757
+];
 
 entity Togaf.Data.Logical : Togaf.General.Base
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Logical"),
@@ -413,7 +434,8 @@ entity Togaf.Data.Logical : Togaf.General.Base
     Component       : Togaf.Application.Component #6
 }
 [
-    Instantiate     : Togaf.Data.Physical (Instantiate = this) #469
+    Instantiate     : Togaf.Data.Physical (Instantiate = this) #469,
+    SameName        : Togaf.Data.Logical (Name = Name) #1767
 ];
 
 entity Togaf.Data.Physical : Togaf.General.Base
@@ -423,7 +445,10 @@ entity Togaf.Data.Physical : Togaf.General.Base
 {
     Instantiate     : Togaf.Data.Logical #5,
     Deployed        : Togaf.Application.Deployed #6
-};
+}
+[
+    SameName        : Togaf.Data.Physical (Name = Name) #1777
+];
 /* ********************************************************
     Application
 ******************************************************** */
@@ -438,7 +463,8 @@ entity Togaf.Application.System : Togaf.General.Base
 }
 [
     SystemUsage     : Togaf.Data.Usage (System = this) #535,
-    ImplementedBy   : Togaf.Application.Component (Implements = this) #536
+    ImplementedBy   : Togaf.Application.Component (Implements = this) #536,
+    SameName        : Togaf.Application.System (Name = Name) #1838
 ];
 
 entity Togaf.Application.Component: Togaf.General.Base
@@ -451,7 +477,8 @@ entity Togaf.Application.Component: Togaf.General.Base
 }
 [
     ComponentUsage  : Togaf.Data.Logical (Component = this) #547,
-    DeployedBy      : Togaf.Application.Deployed (Deployes = this) #548
+    DeployedBy      : Togaf.Application.Deployed (Deployes = this) #548,
+    SameName        : Togaf.Application.Component (Name = Name) #1848
 ];
 
 entity Togaf.Application.Deployed : Togaf.General.Base
@@ -463,7 +490,8 @@ entity Togaf.Application.Deployed : Togaf.General.Base
     Host            : Togaf.Technology.Instance #6
 }
 [
-    Usage           : Togaf.Data.Physical (Deployed = this) #559
+    Usage           : Togaf.Data.Physical (Deployed = this) #559,
+    SameName        : Togaf.Application.Deployed (Name = Name) #1858
 ];
 
 /* ********************************************************
@@ -478,7 +506,8 @@ entity Togaf.Technology.Platform : Togaf.General.Base
 }
 [
     Hosts           : Togaf.Application.System (Platform = this) #615,
-    Defines         : Togaf.Technology.Host (Platform = this) #616
+    Defines         : Togaf.Technology.Host (Platform = this) #616,
+    SameName        : Togaf.Technology.Platform (Name = Name) #1919   
 ];
 
 @CubeDimension
@@ -500,7 +529,8 @@ entity Togaf.Technology.Instance : Togaf.General.Base
     Host            : Togaf.Technology.Host #5
 }
 [
-    Hosts           : Togaf.Application.Deployed (Host = this) #639
+    Hosts           : Togaf.Application.Deployed (Host = this) #639,
+    SameName        : Togaf.Technology.Instance (Name = Name) #1938
 ];
 
 /* ********************************************************
@@ -526,10 +556,41 @@ type Togaf.Financial.Allocation : Versioned
     @CubeMeasure(Aggregate.Sum)
     CapX            : Decimal #13,
     @CubeMeasure(Aggregate.Sum)
-    Hours           : Int64 #14
+    OpeX            : Decimal #15,
+    @CubeMeasure(Aggregate.Sum)
+    Hours           : Int64 #14,
+
 };
 
 @CubeFact(1467, 1469)
 entity Togaf.Financial.Cost : Togaf.Financial.Allocation #1309;
 @CubeFact(2042, 2044)
 entity Togaf.Financial.Income : Togaf.Financial.Allocation #1310;
+
+@CubeFact(2629, 2631)
+entity Togaf.Complexity : Versioned
+    = Node        ( SKey = SKey, Name = "", TypeName = "AF-Complexity") #1330 
+(
+    Organization    : Togaf.Organization #1,
+    Function        : Togaf.Business.Function #2,
+    Capability      : Togaf.Business.Capability #3,
+    Product         : Togaf.Business.Product #4,
+    Event           : Togaf.Business.Event #5,
+    Process         : Togaf.Business.Process #6,
+    Service         : Togaf.Service #7,
+    System          : Togaf.Application.System #8,
+    Platform        : Togaf.Technology.Platform #9,
+    Host            : Togaf.Technology.Host #10,
+)
+{
+    @CubeMeasure(Aggregate.Sum)
+    E               : Decimal #12,
+    @CubeMeasure(Aggregate.Sum)
+    N               : Decimal #13,
+    @CubeMeasure(Aggregate.Sum)
+    P               : Decimal #14
+}
+[
+    @CubeExtent
+    M               = E - N + (2 * P)
+];

@@ -196,7 +196,25 @@ namespace Hiperspace
 
         public abstract void UnionWith(IEnumerable<TEntity> other);
 
+        /// <summary>
+        /// Does the template contain part of the key that can be used for used as a find a subset of elements
+        /// either by the key or an index
+        /// </summary>
+        /// <param name="template"></param>
+        /// <returns></returns>
         public abstract bool IsSargable(TEntity template);
+
+        /// <summary>
+        /// Would the set return no elements for the template Node provided
+        /// </summary>
+        /// <param name="node">node pattern provided</param>
+        /// <returns>true if it can be skipped</returns>
+        /// <remarks>
+        /// If the Element provides the Node view TypeName = "Person" (static value), 
+        /// any template with a different value with return no elements 
+        /// </remarks>
+        public virtual bool IsSkippable(object template) => false;
+
         public abstract IEnumerable<TEntity> Find(TEntity template, bool cache = true);
 
         public abstract IAsyncEnumerable<TEntity> FindAsync(TEntity template, bool cache = true, CancellationToken cancellationToken = default);

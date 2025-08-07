@@ -203,7 +203,7 @@ namespace Hiperspace
         }
         public int Count => Lazy().Count();
 
-        public void Add (TEntity item)
+        public void Add(TEntity item)
         {
             bool taken = false;
             _lock.Enter(ref taken);
@@ -216,6 +216,43 @@ namespace Hiperspace
                     {
                         _binder(item);
                         SetSpace.Bind(item, true, true);
+                        if (!Cached.Add(item))
+                        {
+                            Cached.Remove(item);
+                            Cached.Add(item);
+                        }
+                    }
+                    else
+                    {
+                        _binder(item);
+                        if (!Cached.Add(item))
+                        {
+                            Cached.Remove(item);
+                            Cached.Add(item);
+                        }
+                    }
+                }
+                finally
+                {
+                    _lock.Exit();
+                }
+            }
+            else
+                throw new LockRecursionException();
+        }
+        public async Task AddAsync(TEntity item)
+        {
+            bool taken = false;
+            _lock.Enter(ref taken);
+            if (taken)
+            {
+                try
+                {
+                    _new = false;
+                    if (SetSpace != null)
+                    {
+                        _binder(item);
+                        await SetSpace.BindAsync(item, true, true);
                         if (!Cached.Add(item))
                         {
                             Cached.Remove(item);
