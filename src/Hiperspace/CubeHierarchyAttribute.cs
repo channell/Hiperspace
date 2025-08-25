@@ -34,5 +34,5 @@ namespace Hiperspace
         /// The parent element 
         /// </summary>
         public TEntity? Parent { get;}
-    }
+    }   
 }

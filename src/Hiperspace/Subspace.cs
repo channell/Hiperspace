@@ -22,7 +22,7 @@ namespace Hiperspace
         protected HiperSpace _space;
         private Horizon[]? _Horizon;
         /// <summary>
-        /// Allow domian specific subspaces to override the horizon with domain critieria conditional on Context
+        /// Allow domain specific subspaces to override the horizon with domain critieria conditional on Context
         /// </summary>
         public virtual Horizon[]? Horizon { get => _Horizon; init { _Horizon = value; } }
         protected DateTime? _version;

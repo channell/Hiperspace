@@ -114,6 +114,12 @@ namespace Hiperspace
             return Bind(item, true, false).New;
         }
 
+        public async Task<bool> AddAsync(TEntity item)
+        {
+            var result = await BindAsync(item, true, false);
+            return result.New;
+        }
+
         public bool Insert(TEntity item)
         {
             var current = Get(item);
