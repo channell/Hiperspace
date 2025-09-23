@@ -8,43 +8,97 @@
     <Description>Hiperspace heap store for session, edge and testing purposes</Description>
     <Copyright>Cepheis Ltd (C) 2023, 2024, 2025</Copyright>
     <LangVersion>13.0</LangVersion>
-    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20250807
+    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20250923
 ## Overview
 
-Partition elimination is an advanced feature in SQL relational databases, that skip access to a partition view when the optimizer can determine that it will not return any values.  This release adds the feature to Hiperspace views to skip `SetSpace` access that is not needed, *most commonly for Graph queries*
+This release introduces three new features for references to views, the `Any` polymorphic union type and `Get&lt;TEntity&gt;(string sid)` function.   Together they provide the `Hiperspace.DB` functionality to combine any number of Hiperspaces in a single  Graph view without duplication or copying.
 
-### SQL Views
+
+-----
+
+
+### View References
+
+Views in Hiperspace are generated to combine all *entities, segments, aspects and views* that can be projected as the view, but also provide an additional role for sub-types and complex associations.
+
+All references in `Hiperspace` can be navigated to either *elements* key or an index that matches the predicate used to reference it. The [last release](https://www.cepheis.com/hiperspace/20250807) completed the optimization of view access to parts, this release adds indexing to efficiently access view items with criteria other than the key.
+
+#### Indexed views
+Consider the example of a Trading problem where **Trades** are booked in  a **Book**, but each trade type {Fixed Income, Forex, Equity}  can have specific properties for the product traded.   When the view is referenced by a member other than the key (*Book in this example*), an index is created to efficiently access the set of matching values.
 ```
-/* for the view */
-CREATE VIEW costs AS
-SELECT cost, 'Sales' as area FROM sales_costs UNION
-SELECT cost, 'Operations' as area FROM ops_costs UNION
-SELECT cost, 'Assets' as area FROM asset_costs ;
-
-/* queried as */
-SELECT cost FROM costs WHERE area = 'Sales';
-
-/* will skip the query ops_costs and asset_costs since it will return no rows */
+view Banking.Trade (Id : String) {Book : Banking.Book};
+entity Banking.FI.Trade : Banking.Trade = Banking.Trade();
+entity Banking.FX.Trade : Banking.Trade = Banking.Trade();
+entity Banking.EQ.Trade : Banking.Trade = Banking.Trade();
+entity Banking.Book (Id : String) [Trades : Banking.Trade (Book = this)];
 ```
+`Trades : Trade (Book = this)`selects the set of Trade that have a reference to `this` Book.  This access causes an index to be created in the view `Trade` that is inherited by each implementation.
 
-### Hiperspace Views
-Hiperspace views provide the same function, but rather than define a view separately, the view definition is part `element` definition, with the view  being created as a union of all the `elements` { `entity`, `segment`, `aspect`, `view` } that provide the `view`.
+#### Sub type
+[image]Sites/hiperspace/diagrams/trade.svg[/image]
 
-```
-segment Togaf.Has.Requirement : Togaf.Base 
-    = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Requirement"),
-      Edges       (From = owner, To = this, Name = Name, FromTypeName = "AF-Has-Requirement", ToTypeName = "AF-Requirement-For") ;
-```
-defines a `segment` named `Togaf.Has.Requirement` *that can be viewed* as a `Node` with the `TypeName` "AF-Requirement".  Within the [TOGAF](https://github.com/channell/Hiperspace/blob/master/examples/TOGAF/TOGAF.hilang) sample there are 
-**201**  elements that *can be viewed* as a `Node`, all of which are included in the `SubSpace` view `Nodes`.  
+This [UML](https://en.wikipedia.org/wiki/Unified_Modeling_Language) diagram represents the logical view of the `.hilang` schema above.  When a relational database is used, one of three strategies are normally followed:
+* **Direct**: Each entity {Trade, FI_Trade, FX_Trade, EQ_Trade} is mapped separately, and joined as needed
+* **Down** denormalization: Properties of the parent are duplicated in each of the sub-types and with context specific joining
+* **Up** denormalization: Properties of each sub-type are added to the base type (optionally with *aliases* for duplicate names) 
 
-Prior to this release a LINQ query `from node in Nodes where node.TypeName  == "AF-Requirement";` would scan all **201** `SetSpace` before filtering to include only *requirements*, but will now skip the scan of the other **200** types.  This is especially useful for graph data-explorer browsers that will typically search for a single source node type
+Hiperspace does not need denormalization the elements because types can inherit from a base type.  The code `entity FX_Trade : Trade = Trade;` states that the *entity* **FX_Trade** *inherits*(:) from **Trade** *and can be viewed*(=) as a **Trade**
 
-This is implemented with the `SetSpace&lt;&gt;` function `public virtual bool IsSkippable(object template) =&gt; false;` that is overridden in **HiLang** generated code, and used by all `View` Sets
+In the example above, each sub-type will be queried in parallel using the index on the **Book** reference
 
-## RefSet&lt;&gt;
-The `RefSet&lt;&gt;` collection of references to segments or other entities (via index) has been updated to include `AddAsync`  to simplify the addition of a segment reference when used from a web-assembly client.
+##### Modelled as Aspect
+The schema could also have been modelled using *aspect* rather than *realization*, depending on business  requirement, e.g. 
+* *Convertible* where final exchange is either equity or cash
+* *Hybrid* where cashflow is calculated from either from a yield-curve or equity price
+* *Participation* where the equity price uses FX exchange rates
 
+ [image]Sites/hiperspace/diagrams/trade2.svg[/image]
+ ```
+entity Banking.Trade (Id : String) {Book : Banking.Book} 
+ [FI : Banking.FI.Trade, FX : Banking.FX.Trade, EQ : Banking.EQ.Trade];
+aspect Banking.FI.Trade;
+aspect Banking.FX.Trade;
+aspect Banking.EQ.Trade;
+entity Banking.Book (Id : String) [Trades : Banking.Trade (Book = this)];
+ ```
+ **Aspects** *appear* to be properties of the *owning*  entity,  so the choice has minimal impact on usage ( `Banking.FI.Trade { YieldCurve = ... }` vs `Banking.Trade { FI = new Banking.FI.Trade { YieldCurve = ...}}`)
+ 
+
+#### Segment / Aspect reference
+Segments and Aspects are *owned* by the `entity, segment, aspect` that references them as an extension.  They appear (*to users *) as a set property for segments, and  value property for aspects, with the `owner` added *transparently* when a value is assigned.
+
+[image]Sites/hiperspace/diagrams/segment.svg[/image]
+
+ ```
+ entity Customer [Accounts : Has];
+ segment Has (Account : Account);
+ entity Account [HasCustomer : Has (Account = this)];
+ ```
+`HiLang` translates the segment `Has` into an element `CustomerHas` (adding the key `owner : Customer`), and the segment `Has` is transformed into a *view* that `CustomerHas` provides.  If there are no other implementations of `Has` (*e.g. for a sub-account of Account*) the view is *pruned* and not generated.
+
+In this example `Has` is referenced by `Account` to provide a link from `Account` to `Customer` using the `HasCustomerIndex`.  As a `segment`/`aspect` can be applied to any stored element, `Has` view includes  the key `owner : Any` which in this case can be *cast* to `Customer`.
+
+-----
+
+### Any
+The new type `Any` has been introduced to support `segment`/`aspect` views, and can be converted to any of the domain types like a `union` in F#.  Unlike `object`, `Any` can be serialized and used anywhere in the schema, when a generic reference is required.  `Any` is code generated by `HiLang` to include a constructor for the each of the domain types, together will *cast* operators to convert to each of the domain types.  Elements also include a *cast* operator to convert to an `Any` when assigned.
+
+`Any` uses constructors and conversion operators  to behave like a base type for any domain element `Any value = customer` *will use Customer’s operator Any function*, `Customer? value = any` *will use Any’s operator Customer function* to return the value or `null`.  Explicit cast functions are crerted for each *element* that could be stored.. for the *Customer* type it includes
+* **Customer()** : cast the Any to a customer or null
+* **CustomerAsync()** : async function to return the value (*especially usefull for WebAssembly where network read may be required*)
+
+`Any` includes the functions
+* `Type AnyType()`to inspect the content of the `Any` class for match/switch statement
+* `bool Is&lt;T&gt;()` : returns true if the content of the `Any` is of type `T`
+* `T? As&lt;T&gt;()` : returns the value of the `Any` cast to the type `T` 
+* `Task&lt;T?&gt; AsAsync&lt;T&gt;()` : returns the value of the `Any` cast to the type `T` using an async network call if necassary 
+
+-----
+
+### Get(string sid)
+`SubSpace` provides an `object? Get (string sid)` function that can be used to get an element in Hiperspace without knowing the type, just using the stringified key of the element.  This function is now obsolete and has been replaced by `TEntity Get&lt;TEntity&gt;(string sid)` that allows the desired type to be retrieved.
+
+This method was added for `Hiperspace.DB` that includes `GraphSpace` to aggregate `Node`/`Edge`/`HiperEdge` across domains.  For `GraphSpace` it is necessary to call `Get()` with the `SKey` of a `Node` and then cast to `Node` which was not possible with `object` because *elements* do not need be viewable as a `Node`.  `GraphSpace` uses `Get&lt;Node&gt;(skey)` for the lookup.
 </PackageReleaseNotes>
     <PackageLicenseExpression>GPL-2.0-or-later</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>

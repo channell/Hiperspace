@@ -88,7 +88,7 @@ namespace Hiperspace
             get
             {
                 if (_Object == null || _Object.Target == null)
-                    _Object = new WeakReference(SetSpace?.Space?.Get(SKey));
+                    _Object = new WeakReference(SetSpace?.Space?.Get<object>(SKey));
                 return _Object.Target;
             }
         }
@@ -319,5 +319,18 @@ namespace Hiperspace
         }
         #endregion
 
+        /// <summary>
+        /// Apply any filters in teh tempate that were not saragable in an index seek
+        /// </summary>
+        /// <param name="other">the template for the search</param>
+        /// <param name="read">for compatability with HiLang generaterdf methods</param>
+        /// <returns>true if it matched the provided values of the template</returns>
+        public bool Filter(Node other, bool read)
+        {
+            if (other._value.TypeName != null && this._value.TypeName != null && this._value.TypeName != other._value.TypeName) return false;
+            if (other._key.SKey != null && this._key.SKey != null && this._key.SKey != other._key.SKey) return false;
+            if (other._value.Name != null && this._value.Name != null && this._value.Name != other._value.Name) return false;
+            return true;
+        }
     }
 }

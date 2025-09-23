@@ -89,12 +89,21 @@ namespace Hiperspace.Meta
 
         public (int key, (int member, int key)[] values)[] MetaMap()
         {
+            var any = new Meta.Element[]
+            {
+                new Meta.Element
+                {
+                    Category = "Type",
+                    Id = 0,
+                    Name = new Name { Reference = "Any"}
+                }
+            };
             var stores =
                 (from e in Elements
                  where e.Category == "EntityImpl" || e.Category == "SegmentImpl" || e.Category == "AspectImpl"
                  orderby e.Id
                  select e
-                ).ToArray();
+                ).Union(any).ToArray();
 
             var indexes = 
                 (from e in Elements

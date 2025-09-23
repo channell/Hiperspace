@@ -300,5 +300,21 @@ namespace Hiperspace
                 return !left.Equals(right);
         }
         #endregion
+
+        /// <summary>
+        /// Apply any filters in teh tempate that were not saragable in an index seek
+        /// </summary>
+        /// <param name="other">the template for the search</param>
+        /// <param name="read">for compatability with HiLang generaterdf methods</param>
+        /// <returns>true if it matched the provided values of the template</returns>
+        public bool Filter(Edge other, bool read)
+        {
+            if (other._key.From != null && this._key.From != null && this._key.From != other._key.From) return false;
+            if (other._key.To != null && this._key.To != null && this._key.To != other._key.To) return false;
+            if (other._value.Name != null && read && this._value.Name != null && this._value.Name != other._value.Name) return false;
+            if (other._key.TypeName != null && this._key.TypeName != null && this._key.TypeName != other._key.TypeName) return false;
+            return true;
+        }
+
     }
 }

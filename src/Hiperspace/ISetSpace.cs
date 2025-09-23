@@ -5,12 +5,14 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using System.Collections;
+
 namespace Hiperspace
 {
     /// <summary>
     /// Common functions that all SetSpaces provide
     /// </summary>
-    public interface ISetSpace
+    public interface ISetSpace 
     {
         /// <summary>
         /// Reference to the subspace for this set
@@ -29,5 +31,7 @@ namespace Hiperspace
         /// <param name="template">The template object.</param>
         /// <returns>A tuple containing the explanation query.</returns>
         public (string?, string?) Explain(object template);
+
+        public IQueryable Runnable();
     }
 }

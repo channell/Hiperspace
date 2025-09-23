@@ -433,6 +433,8 @@ namespace Hiperspace
 
         public bool IsReadOnly => false;
 
+        public IQueryable Runnable() => Find(new TEntity { }).AsQueryable();
+
         public virtual TEntity? GetFirst(TEntity? template = null)
         {
             if (template == null)

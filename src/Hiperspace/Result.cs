@@ -70,6 +70,7 @@ namespace Hiperspace
         internal Result(Exception? exception = null)
         {
             _exception = exception;
+            Status = Result.Status.Error;   
         }
 
         public T Value 

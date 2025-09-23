@@ -9,8 +9,10 @@ entity Sector (Id : Int32) { Parent : Sector } [Children : Sector (Parent = this
 
 @CubeDimension, CubeHierarchy(Parent), Versioned
 entity Product (Id : String) { Parent : Product } [Children : Product (Parent = this), ProductInstruments : Instrument (Product = this)];
-entity Account (Id : String) {Customer : Customer};
-entity Customer (Id : String) {Sector : Sector} [Accounts : Account (Customer = this) ];
+entity Account (Id : String) {Customer : Customer} [FirstAccount : First.Acc (Account = this) ];
+entity Customer (Id : String) {Sector : Sector} [Accounts : Account (Customer = this), FirstAccount : First.Acc ];
+aspect First.Acc { Account : Account };
+
 entity Instrument (ISIN : String) {Country : Country, Product : Product} [Price : Price, Market = Price.Market];
 
 @DeltaIndex, Versioned
@@ -28,5 +30,10 @@ entity Contract : Versioned = Valued (name = "some", Value = Value, Deleted = De
 
 view Valued : Versioned
 	(name : String) 
-	{Value : Decimal} ;
+	{Value : Decimal};
 
+view Banking.Trade (Id : String) {Book : Banking.Book};
+entity Banking.FI.Trade : Banking.Trade = Banking.Trade();
+entity Banking.FX.Trade : Banking.Trade = Banking.Trade();
+entity Banking.EQ.Trade : Banking.Trade = Banking.Trade();
+entity Banking.Book (Id : String) [Trades : Banking.Trade (Book = this)];

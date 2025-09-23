@@ -54,7 +54,7 @@ namespace Hiperspace
         /// <param name="DeltaFrom">Timestamp that versions must be after</param>
         protected SubSpace(HiperSpace space, Horizon[]? horizon, DateTime? AsAt = null, DateTime? DeltaFrom = null) : this(space)
         {
-            var baseHorizon = space.GetHorizons().ToArray();
+            var baseHorizon = space?.GetHorizons()?.ToArray();
             if (baseHorizon != null && baseHorizon != Array.Empty<Horizon>())
             {
                 if (horizon is null)
@@ -145,7 +145,26 @@ namespace Hiperspace
         /// </summary>
         /// <param name="skey">a base64 encoding of a key structure</param>
         /// <returns>the object from one of the setspaces in the subspace</returns>
+        [Obsolete("Use Get<object>(sid) instead")]
         public abstract object? Get(string sid);
+
+        /// <summary>
+        /// Retrieves a node associated with the specified identifier.
+        /// </summary>
+        /// <remarks>
+        /// This method will be overridden in generated domain space to provide to use each Elements cast operator to convert to a node.
+        /// The default implementation can't use the implicit operqator, and returns a value only if the concrete object is already of the target type
+        /// <returns>The typed object associated with the specified identifier, or <see langword="null"/> if it is missing or can't be cast to the type</returns>
+        public virtual TEntity? Get<TEntity>(string sid) where TEntity : class
+        {
+#pragma warning disable CS0618
+            var result = Get(sid);
+#pragma warning restore CS0618
+            if (result is TEntity entity)
+                return entity;
+            else
+                return null;
+        }
         public bool ISChild(SubSpace space)
         {
             if (space == this)

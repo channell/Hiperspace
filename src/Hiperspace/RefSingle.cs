@@ -35,9 +35,8 @@ namespace Hiperspace
             _key = current._key;
             _keyBuilder = current._keyBuilder;
             _binder = current._binder;
-            SetSpace = current.SetSpace;
             Value = value;
-
+            if (current.SetSpace != null) Bind(current.SetSpace); 
         }
         public RefSingle<TKey, TEntity> Replace(TEntity? value)
         {

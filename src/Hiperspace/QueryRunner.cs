@@ -29,6 +29,10 @@ namespace Hiperspace
             {
                 return Expression.Constant(sj.Runnable.AsQueryable());
             }
+            else if (node?.Value is ISetSpace sp)
+            {
+                return Expression.Constant(sp.Runnable());
+            }
             else
                 return node!;
         }
