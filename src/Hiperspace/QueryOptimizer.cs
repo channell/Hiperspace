@@ -494,7 +494,7 @@ namespace Hiperspace
 
         private TreeType PushTree(Expression node, TreeType.PathType type)
         {
-            if (Tree.TryPeek(out TreeType? parent))
+            if (Tree.TryPeek(out TreeType? parent) && parent != null)
             {
                 var result = parent.Next(node);
                 result.Type = type;
@@ -515,10 +515,10 @@ namespace Hiperspace
             if (Tree.TryPeek(out TreeType? current))
             {
                 Tree.Pop();
-                if (Tree.TryPeek(out TreeType? parent))
+                if (Tree.TryPeek(out TreeType? parent) && parent != null)
                 {
-                    if (current.Target != null && parent.Target == null)
-                        parent.Target = current.Target;
+                    if (current?.Target != null && parent?.Target == null && parent != null)
+                        parent.Target = current?.Target;
                 }
             }
         }
@@ -554,9 +554,9 @@ namespace Hiperspace
                 path.Arguments = args;
                 args[0] = Visit(node.Arguments[0]);
                 args[1] = Visit(node.Arguments[1]);
-                var from = path.Children[0].FromSet;
-                var join = path.Children[0].FromJoin;
-                var alias = path.Children[1].SetName;
+                var from = path.Children.Count > 0 ? path.Children[0].FromSet : null;
+                var join = path.Children.Count > 0 ? path.Children[0].FromJoin : null;
+                var alias = path.Children.Count > 1 ? path.Children[1].SetName : null;
                 if (from != null && alias != null)
                 {
                     from.Alias = alias;

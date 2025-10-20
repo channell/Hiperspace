@@ -147,10 +147,6 @@ namespace Hiperspace
         protected void VisitQuery(ISetQuery sq, object? template = null)
         {
             var (path, name) = template == null ? sq.Explain() : sq.Explain(template);
-            var next = sq.IsJoin ? new Explain() { Area = "Loop", Message = name } : new Explain() { Area = path, Message = name + " as " + sq.Alias };
-            next.Children.Add(GetTemplate(sq.Template, template));
-            var current = _stack.Peek();
-            current.Children.Add(next);
         }
 
         /// <summary>

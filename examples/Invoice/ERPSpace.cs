@@ -16,7 +16,7 @@ namespace ERP
             new Horizon<Tax>            (i => i.Valid == true),
             new Horizon<Shipping>       (i => i.Valid == true),
             new Horizon<Product>        (i => i.Valid == true),
-            new Horizon<ProductPrice>   (i => i.Valid == true),
+            new Horizon<Price>          (i => i.Valid == true),
             new Horizon<Shipping>       (i => i.Valid == true),
             new Horizon<Salesperson>    (i => i.Valid == true),
             new Horizon<Order>          (i => i.Valid == true),

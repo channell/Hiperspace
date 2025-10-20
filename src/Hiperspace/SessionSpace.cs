@@ -605,5 +605,15 @@ namespace Hiperspace
         {
             return _durableSpace.SetMetaModelAsync(metaModel);
         }
+
+        public override Task<byte[]> InvokeAsync(byte[] key, CancellationToken token = default)
+        {
+            return _durableSpace.InvokeAsync(key);
+        }
+
+        public override IAsyncEnumerable<byte[]> InvokeStreamAsync(byte[] key, CancellationToken token = default)
+        {
+            return _durableSpace.InvokeStreamAsync(key, token);
+        }
     }
 }

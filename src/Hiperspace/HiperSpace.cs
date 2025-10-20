@@ -878,5 +878,19 @@ namespace Hiperspace
                     return (true, metaModel);
             }
         }
+
+        /// <summary>
+        /// Async Remote invoke functionality on a server for a message
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public virtual Task<byte[]> InvokeAsync(byte[] key, CancellationToken token = default) => Task.FromResult(key);
+
+        /// <summary>
+        /// Streams a sequence of byte arrays asynchronously from a server using the key.
+        /// </summary>
+        /// <param name="key">The initial byte array to include in the streamed sequence.</param>
+        /// <returns>An asynchronous sequence of byte arrays, beginning with the specified <paramref name="key"/>.</returns>
+        public virtual IAsyncEnumerable<byte[]> InvokeStreamAsync(byte[] key, CancellationToken token = default) => new byte[][] { key }.ToAsyncEnumerable();
     }
 }

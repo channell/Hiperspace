@@ -30,7 +30,7 @@ namespace Plan
         ];
         private static Horizon[] _financeonly =
         [
-            new Horizon<Tasks.TaskActual>(p => p.Approval?.Contains("Finance") == true)
+            new Horizon<Tasks.Actual>(p => p.Approval?.Contains("Finance") == true)
         ];
         protected static Horizon[] _finance =
             _read.Union(_financeonly).ToArray();

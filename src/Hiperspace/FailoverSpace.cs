@@ -835,5 +835,15 @@ namespace Hiperspace.Heap
         {
             return _primary.SetMetaModelAsync(metaModel);
         }
+
+        public override Task<byte[]> InvokeAsync(byte[] key, CancellationToken token = default)
+        {
+            return _primary.InvokeAsync(key);
+        }
+
+        public override IAsyncEnumerable<byte[]> InvokeStreamAsync(byte[] key, CancellationToken token = default)
+        {
+            return _primary.InvokeStreamAsync(key, token);
+        }
     }
 }

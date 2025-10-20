@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace ERP.Sales
 {
-    public partial class OrderInvoice
+    public partial class Invoice
     {
         /// <summary>
         /// Snapshot the order financials
         /// </summary>
         /// <param name="order"></param>
-        public OrderInvoice(Order order) 
+        public Invoice(Order order) 
         { 
             Commission = order.Commission;
             Cost = order.Cost;

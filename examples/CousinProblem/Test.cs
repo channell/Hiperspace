@@ -226,7 +226,7 @@ namespace CousinProblem
                             where r.Name == "Lucy"
                             select r).FirstOrDefault();
 
-                lucy!.Stored.Add(new PersonStored
+                lucy!.Stored.Add(new Graph.TransitiveSegment
                 {
                     Route = relation
                 });

@@ -7,10 +7,12 @@
 // ---------------------------------------------------------------------------------------
 
 using ProtoBuf;
+using System.Diagnostics;
 
 namespace Hiperspace.Meta
 {
     [ProtoContract]
+    [DebuggerDisplay("Element {Name.Reference} {Category} ({Id})")]
     public struct Element : IEquatable<Element>
     {
         [ProtoMember(1)]
@@ -155,6 +157,35 @@ namespace Hiperspace.Meta
                     if (indexmap.TryGetValue(Index[c].Id, out Alias value))
                         foreach (var diff in Index[c].Difference(Name.Reference, value))
                             yield return diff;
+            }
+        }
+        public IEnumerable<(int id, string reason)> Warning(Element other)
+        {
+            if (other.Keys != null)
+            {
+                var keymap = other.Keys.ToDictionary(i => i.Name);
+                for (int c = 0; c < Keys.Length; c++)
+                    if (keymap.TryGetValue(Keys[c].Name, out Field value))
+                        if (Keys[c].Id != value.Id)
+                            yield return (Keys[c].Id, $"{Name.Reference}.{Keys[c].Name} key id changed from {Keys[c].Id} to {value.Id}");
+            }
+
+            if (other.Values != null)
+            {
+                var valuemap = other.Values.ToDictionary(i => i.Name);
+                for (int c = 0; c < Values.Length; c++)
+                    if (valuemap.TryGetValue(Values[c].Name, out Field value))
+                        if (Values[c].Id != value.Id)
+                            yield return (Values[c].Id, $"{Name.Reference}.{Values[c].Name} value id changed from {Values[c].Id} to {value.Id}");
+            }
+
+            if (other.Index != null)
+            {
+                var indexmap = other.Index.ToDictionary(i => i.Name);
+                for (int c = 0; c < Index.Length; c++)
+                    if (indexmap.TryGetValue(Index[c].Name, out Alias value))
+                        if (Index[c].Id != value.Id)
+                            yield return (Index[c].Id, $"{Name.Reference}.{Index[c].Name} index id changed from {Index[c].Id} to {value.Id}");
             }
         }
     }

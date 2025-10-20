@@ -11,6 +11,7 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Security.Principal;
 using System.Threading.Channels;
+using System.Threading.Tasks;
 
 namespace Hiperspace
 {
@@ -81,6 +82,38 @@ namespace Hiperspace
             RemoteLabel = parameters.RemoteLabel;
             _space = parameters.Space;
         }
+
+        /// <summary>
+        /// All Subspaces can reuse the same metamap 
+        /// </summary>
+        protected (int key, (int member, int key)[] values)[]? SharedMetaMap;
+
+        /// <summary>
+        /// Create a session subspace that uses this subspace to provider storage
+        /// </summary>
+        /// <remarks>
+        /// the function is virtual to allow reflection free cllone by domain spaces
+        /// </remarks>
+        /// <returns>subspace</returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        public virtual SubSpace Session()
+        {
+            var parameters = new SubSpaceParameters()
+            {
+                Space = this,
+                AsAt = _version,
+                DeltaFrom = _delta,
+                ContextLabel = ContextLabel,
+                UserLabel = UserLabel,
+                RemoteLabel = RemoteLabel
+            };
+            var constructor = this.GetType().GetConstructor(new Type[] { typeof(SubSpaceParameters) });
+            if (constructor == null)
+                throw new InvalidOperationException($"SubSpace {this.GetType().FullName} must have a constructor that takes a single SubSpaceParameters argument");
+            var subspace = (SubSpace)constructor.Invoke(new object[] { parameters });
+            return subspace;
+        }
+
         /// <summary>
         /// Get all Horizon filters from referenced spaces
         /// </summary>
@@ -141,30 +174,14 @@ namespace Hiperspace
 #pragma warning restore CS8618 // Nodes and Edges will be constructed from domain
 
         /// <summary>
-        /// Get an object using the stringified key, regardless of type
-        /// </summary>
-        /// <param name="skey">a base64 encoding of a key structure</param>
-        /// <returns>the object from one of the setspaces in the subspace</returns>
-        [Obsolete("Use Get<object>(sid) instead")]
-        public abstract object? Get(string sid);
-
-        /// <summary>
         /// Retrieves a node associated with the specified identifier.
         /// </summary>
         /// <remarks>
         /// This method will be overridden in generated domain space to provide to use each Elements cast operator to convert to a node.
         /// The default implementation can't use the implicit operqator, and returns a value only if the concrete object is already of the target type
         /// <returns>The typed object associated with the specified identifier, or <see langword="null"/> if it is missing or can't be cast to the type</returns>
-        public virtual TEntity? Get<TEntity>(string sid) where TEntity : class
-        {
-#pragma warning disable CS0618
-            var result = Get(sid);
-#pragma warning restore CS0618
-            if (result is TEntity entity)
-                return entity;
-            else
-                return null;
-        }
+        public abstract TEntity? Get<TEntity>(string sid) where TEntity : class;
+
         public bool ISChild(SubSpace space)
         {
             if (space == this)
@@ -481,6 +498,72 @@ namespace Hiperspace
         public override Task<bool> SetMetaModelAsync(MetaModel metaModel)
         {
             return _space.SetMetaModelAsync(metaModel);
+        }
+
+        /// <summary>
+        /// Default implementaiton is to pass down the stack of spaces
+        /// </summary>
+        /// <param name="key">key</param>
+        /// <returns>key or value</returns>
+        /// <remarks>
+        /// Generated implementation will use wire layout struct and TypeModel to deserialise, then call 
+        /// the Domain specifc implmentation that runs on a server
+        /// </remarks>
+        public override Task<byte[]> InvokeAsync(byte[] key, CancellationToken token = default)
+        {
+            return _space.InvokeAsync(key, token);
+        }
+
+        /// <summary>
+        /// Default implementaiton is to pass down the stack of spaces
+        /// </summary>
+        /// <param name="key">key</param>
+        /// <returns>key or value</returns>
+        /// <remarks>
+        /// Generated implementation will use wire layout struct and TypeModel to deserialise, then call 
+        /// the Domain specifc implmentation that runs on a server
+        /// </remarks>
+        public override IAsyncEnumerable<byte[]> InvokeStreamAsync(byte[] key, CancellationToken token = default)
+        {
+            return _space.InvokeStreamAsync(key, token);
+        }
+
+        /// <summary>
+        /// Async Remote invoke functionality on a server for a message
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public async Task<TMessage> InvokeAsync<TMessage>(TMessage item, CancellationToken token = default) 
+            where TMessage : class, IMessage
+        {
+            if (item == null) throw new ArgumentNullException(nameof(item));
+            if (TypeModel == null) throw new InvalidOperationException("TypeModel is not initialized in SubSpace");
+
+            var key = item.KeyBytes(TypeModel);
+            var io = await _space.InvokeAsync(key, token);
+            var result = item.WithValue<TMessage>(TypeModel, io);
+            result.Bind(this);
+            return result;
+        }
+
+        /// <summary>
+        /// Streams a sequence of byte arrays asynchronously from a server using the key.
+        /// </summary>
+        /// <param name="key">The initial byte array to include in the streamed sequence.</param>
+        /// <returns>An asynchronous sequence of byte arrays, beginning with the specified <paramref name="key"/>.</returns>
+        public async IAsyncEnumerable<TMessage> InvokeStreamAsync<TMessage>(TMessage item, [EnumeratorCancellation]CancellationToken token = default) 
+            where TMessage : class, IMessage
+        {
+            if (item == null) throw new ArgumentNullException(nameof(item));
+            if (TypeModel == null) throw new InvalidOperationException("TypeModel is not initialized in SubSpace");
+
+            var key = item.KeyBytes(TypeModel);
+            await foreach (var io in _space.InvokeStreamAsync(key, token))
+            {
+                var result = item.WithValue<TMessage>(TypeModel, io);
+                result.Bind(this);
+                yield return result;
+            }
         }
     }
 }

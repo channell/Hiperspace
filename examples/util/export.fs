@@ -18,7 +18,7 @@ open Log
 open System.Linq
 open Hiperspace
 
-let dirOperation tabs (o : ElementOperation) =
+let dirOperation tabs (o : Operation) =
     printfn "%s%s" tabs o.Name
 
 let dirAttribute tabs (a : Attribute) =
@@ -139,7 +139,7 @@ let jsonrocks (space : SparxSpace) =
 let sqlGraph (ctx : Context) = 
     log $"SQL graph"
     let withOperations (e : Element) =
-        query {for o in ctx.ElementOperations.AsNoTracking() do
+        query {for o in ctx.Operations.AsNoTracking() do
                 where (o.owner_Id.Value = e.Id.Value)
                 select o}
         |> Seq.toArray

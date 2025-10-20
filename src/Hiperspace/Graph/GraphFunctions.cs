@@ -177,7 +177,10 @@ namespace Graph
                 }
             }
             // if this edge is in the set of target types
-            if (edge?.To?.TypeName != null && (targets == null || targets.Contains(edge.To.TypeName)))
+            if (edge != null &&
+                route.Match(edge) == true && 
+                edge?.To?.TypeName != null && 
+                (targets == null || targets.Contains(edge.To.TypeName)))
             {
                 await channel.Writer.WriteAsync(Result.Ok(path));
             }

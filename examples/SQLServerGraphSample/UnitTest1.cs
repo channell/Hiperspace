@@ -140,8 +140,8 @@ namespace SQLServerGraphSample
                     people.ForEach(p => dom.Persons.Add(p));
                     cities.ForEach(c => dom.Citys.Add(c));
                     resteraunts.ForEach(r => dom.Restaurants.Add(r));
-                    likes.ForEach(l => dom.PersonLikes.Add(new PersonLike { owner = l.p, Restaurant = l.r, Rating = l.n }));
-                    friends.ForEach(f => dom.PersonFriends.Add(new PersonFriend { owner_Id = f.p, Of_Id = f.f }));
+                    likes.ForEach(l => dom.Likess.Add(new Likes { owner = l.p, Restaurant = l.r, Rating = l.n }));
+                    friends.ForEach(f => dom.Friends.Add(new Friend { owner_Id = f.p, Of_Id = f.f }));
 
                     /*-- Find Restaurants that John likes
                     SELECT Restaurant.name
@@ -179,7 +179,7 @@ namespace SQLServerGraphSample
                         foreach (var l in
                             John.Friends
                             .Select(f => f?.Of)
-                            .Aggregate(new List<PersonLike>(), (a, f) => { if (f?.Likes != null) a.AddRange(f.Likes); return a; })
+                            .Aggregate(new List<Likes>(), (a, f) => { if (f?.Likes != null) a.AddRange(f.Likes); return a; })
                             .Select(l => l.Restaurant?.Name))
                         {
                             _output.WriteLine($"\t{l}");
@@ -195,8 +195,8 @@ namespace SQLServerGraphSample
                             _output.WriteLine($"\t{p.Name}");
 
                         _output.WriteLine($"{DateTime.Now.TimeOfDay.ToString()} Fiend paths (join)");
-                        Func<PersonFriend, string> fname = e => e.owner?.Name ?? "";
-                        var frields = dom.PersonFriends.ToArray();
+                        Func<Friend, string> fname = e => e.owner?.Name ?? "";
+                        var frields = dom.Friends.ToArray();
                         var q =
                             (from p in frields
                              join p2 in frields on p.Of equals p2.owner
@@ -215,10 +215,10 @@ namespace SQLServerGraphSample
                         foreach (var l in q)
                             _output.WriteLine(l);
 
-                        var q2 = from p in dom.PersonFriends
-                                 join p2 in dom.PersonFriends on p.Of equals p2.owner
-                                 join p3 in dom.PersonFriends on p2.Of equals p3.owner
-                                 join p4 in dom.PersonFriends on p3.Of equals p4.owner
+                        var q2 = from p in dom.Friends
+                                 join p2 in dom.Friends on p.Of equals p2.owner
+                                 join p3 in dom.Friends on p2.Of equals p3.owner
+                                 join p4 in dom.Friends on p3.Of equals p4.owner
                                  where p2.owner != p.owner
                                     && p3.owner != p2.owner
                                     && p4.owner != p3.owner

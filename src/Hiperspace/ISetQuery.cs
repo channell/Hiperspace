@@ -31,21 +31,9 @@ namespace Hiperspace
         public object Space { get; }
 
         /// <summary>
-        /// Joins the current query with another query using the specified join conditions.
-        /// </summary>
-        /// <param name="left">The left query to join.</param>
-        /// <param name="joins">The list of join conditions.</param>
-        public void Join(ISetQuery left, List<(PropertyInfo left, PropertyInfo right)> joins);
-
-        /// <summary>
         /// Gets the type of the elements in the query.
         /// </summary>
         public Type ElementType { get; }
-
-        /// <summary>
-        /// Gets a value indicating whether the query is a join query.
-        /// </summary>
-        public bool IsJoin { get; }
 
         /// <summary>
         /// Explains the query.

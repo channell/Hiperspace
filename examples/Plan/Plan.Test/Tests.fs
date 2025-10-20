@@ -216,14 +216,14 @@ type  PlanTest (output : ITestOutputHelper) =
             task.Resources.Refresh ()       // refresh triggers re-fetch for next reference
             task.Resources |> Seq.iter (fun r -> r.Timesheets.Refresh())
             let actual =
-                Plan.Tasks.TaskActual 
+                Plan.Tasks.Actual 
                     (
                     owner = task,
                     Duration = task.Duration,
                     Close = DateTime(DateTime.Now.Year, 1, 1),
                     Cost = task.ImpliedCost 
                     )
-                |> planSpace.TaskActuals.Bind
+                |> planSpace.Actuals.Bind
                 |> result
             task.Actual <- actual
             actual

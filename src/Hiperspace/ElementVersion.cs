@@ -34,5 +34,19 @@ namespace Hiperspace
         {
             return GetVersions().ToAsyncEnumerable(cancellationToken);
         }
+
+        /// <summary>
+        /// Make this version editable, and disconnect from the active subspace.
+        /// </summary>
+        /// <remarks>This method updates the <c>AsAt</c> timestamp to the current UTC time and retains the
+        /// previous timestamp in <c>AsWas</c>.  If the <c>SetSpace</c> property is set and its <c>Space</c> value is
+        /// not <c>null</c>, the method unbinds the associated space.</remarks>
+        public void Edit()
+        {
+            AsWas = AsAt;
+            AsAt = DateTime.UtcNow;
+            if (SetSpace?.Space is not null)
+                Unbind(SetSpace.Space);
+        }
     }
 }

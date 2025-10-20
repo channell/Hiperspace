@@ -7,10 +7,12 @@
 // ---------------------------------------------------------------------------------------
 
 using ProtoBuf;
+using System.Diagnostics;
 
 namespace Hiperspace.Meta
 {
     [ProtoContract]
+    [DebuggerDisplay("Field {Name} {DataType.Reference} ({Id})")]
     public struct Field : IEquatable<Field>
     {
         [ProtoMember(1)]

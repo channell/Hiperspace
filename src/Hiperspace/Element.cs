@@ -11,11 +11,10 @@ namespace Hiperspace
     /// Base class for all Hiperspace elements 
     /// </summary>
     /// <typeparam name="TEntity">An element that inherits from Element<TEntity></typeparam>
-    public abstract class Element<TEntity> : 
-        IEquatable<TEntity>, 
-        IComparable<TEntity>, 
-        IComparable
-        where TEntity : Element<TEntity>, new()
+    public abstract class Element<TEntity> :
+        IEquatable<TEntity>,
+        IComparable<TEntity>,
+        IComparable, IElement where TEntity : Element<TEntity>, new()
     {
         public abstract Result<TEntity> Bind(SubSpace subSpace);
         public abstract void Unbind(SubSpace subSpace);
@@ -32,7 +31,7 @@ namespace Hiperspace
 
         public abstract string SKey { get; set; }
 
-        public static implicit operator Result<Element<TEntity>> (Element<TEntity> element)
+        public static implicit operator Result<Element<TEntity>>(Element<TEntity> element)
         {
             return Result.Ok(element);
         }
@@ -53,5 +52,10 @@ namespace Hiperspace
         /// <typeparam name="TKey">type of the KeyRef key</typeparam>
         /// <param name="key">key value help by KeyRef<></param>
         public virtual bool BindKey<TKey>(TKey key) => false;
+
+        public virtual TView? Cast<TView>() where TView : class
+        {
+            return this as TView;
+        }
     }
 }

@@ -90,7 +90,7 @@ namespace Invoice
                 Name = "Computer",
                 Tax = new ERP.Finance.Tax { Id = 5 },
                 Shipping = 20m,
-                Price = new ERP.Products.ProductPrice
+                Price = new ERP.Products.Price
                 {
                     Name = "Standard",
                     Sell = 1_000m,
@@ -107,7 +107,7 @@ namespace Invoice
                 prod.Price!.Buy.Should().Be(500m);
                 prod.Price.Sell.Should().Be(1_000m);
 
-                read.ProductPrices.Update (new ProductPrice(prod.Price)
+                read.Prices.Update (new Price(prod.Price)
                 {
                     Buy = 700m
                 });
@@ -120,7 +120,7 @@ namespace Invoice
 
                     using (var snap = new ERPSpace(_space, inflated.GetVersions().First().AsAt))
                     {
-                        var price = snap.ProductPrices.Where(pp => pp.owner == new Product { Id = 4 }).First();
+                        var price = snap.Prices.Where(pp => pp.owner == new Product { Id = 4 }).First();
                         price.Buy.Should().Be(500m, because: "date is before inflation");
                     }
                 }

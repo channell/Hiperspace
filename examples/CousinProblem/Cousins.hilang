@@ -49,3 +49,16 @@ entity Cousins.Path         : Edge = Edge () #12
     Edge                    : Edge #10 ,
     Source                  : Cousins.Path #11
 };
+
+segment Graph.TransitiveSegment
+(
+    Route                   : Graph.Route #2
+)
+{
+    Length				    : Int32 #3,
+    Targets				    : Set<String> #4   
+}
+[
+    @Once
+    Paths				    = Paths (owner, Route, Length, Targets)
+];

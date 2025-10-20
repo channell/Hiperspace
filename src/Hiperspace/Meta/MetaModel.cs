@@ -63,6 +63,10 @@ namespace Hiperspace.Meta
                     hc.Add(Elements[c].GetHashCode());
             return hc.ToHashCode();
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="other"></param>
         public void Merge(MetaModel other)
         {
             if (other.Elements != null && Elements != null)
@@ -120,41 +124,78 @@ namespace Hiperspace.Meta
                  select (r, r)
                 ).ToArray();
 
+            // get all the id for this name
+            var dict =
+                (from s in stores
+                 group s by s.Name.Reference into g
+                 select (g.Key, g.Select(e => e.Id).Distinct().ToHashSet())
+                ).ToDictionary(p => p.Key, p => p.Item2);
 
-            var dict = stores.ToDictionary(p => p.Name.Reference, p => p.Id);
 
-            var result = new List<(int key, (int member, int key)[] values)>
+            var aggregator = new Func<List<(int key, int value)>, 
+                                      List<(int key, int value)>, 
+                                      List<(int key, int value)>>
+                ((current, next) =>
             {
-                (0, roots)
-            };
+                current.AddRange(next);
+                return current;
+            });
 
             var fieldMaps =
-                (from e in stores
-                 let keys = e.Keys ?? new Field[0]
-                 select (e.Id, (from k in keys
-                                where dict.ContainsKey(k.DataType.Reference)
-                                let id = dict[k.DataType.Reference]
-                                orderby id
-                                select (k.Id, id)
-                                ).ToArray()
-                 ));
+                (from r in 
+                    (from e in stores
+                     let keys = e.Keys ?? new Field[0]
+                     let values = 
+                        (from k in keys
+                         where dict.ContainsKey(k.DataType.Reference)
+                         let id = 
+                            (from i in dict[k.DataType.Reference]
+                             orderby i
+                             select (k.Id, i)
+                            ).ToList()
+                         orderby k.Id
+                         select id
+                        ).Aggregate(new(), aggregator)
+                     orderby e.Id
+                     select (e.Id, values.ToArray())
+                    )
+                 orderby r.Id
+                 select (r.Id, r.Item2)
+                ).ToArray();
 
             var indexMaps =
-                (from i in indexes
-                 let Pamrameters = i.Parameters ?? new Relation[0]
-                 select (i.Id, (from p in Pamrameters
-                                where dict.ContainsKey(p.DataType.Reference)
-                                let id = dict[p.DataType.Reference]
-                                orderby id
-                                select (p.Id, id)
-                                ).ToArray()
-                 ));
+                (from r in 
+                    (from i in indexes
+                     let parameters = i.Parameters ?? new Relation[0]
+                     let values = 
+                        (from p in parameters
+                         where dict.ContainsKey(p.DataType.Reference)
+                         let id = 
+                            (from i in dict[p.DataType.Reference]
+                             orderby i
+                             select (p.Id, i)
+                            ).ToList()
+                         orderby p.Id
+                         select id
+                        ).Aggregate(new(), aggregator)
+                     orderby i.Id
+                     select (i.Id, values.ToArray())
+                    )
+                 orderby r.Id
+                 select (r.Id, r.Item2)
+                ).ToArray();
 
             var maps =
                 (from r in (fieldMaps.Union(indexMaps))
                  orderby r.Item1
                  select r
                 ).ToArray();
+
+            var result = new List<(int key, (int member, int key)[] values)>
+            {
+                (0, roots)
+            };
+
             result.AddRange(maps);
 
             return result.ToArray();
@@ -165,12 +206,34 @@ namespace Hiperspace.Meta
             var map = other.Elements?.ToDictionary(p => p.Id) ?? default;
 
             if (Elements != null && map != null)
+            {
                 for (int c = 0; c < Elements.Length; c++)
+                {
                     if (map.TryGetValue(Elements[c].Id, out Element value))
                     {
                         foreach (var diff in Elements[c].Difference(value))
                             yield return diff;
                     }
+                }
+            }
+        }
+        public IEnumerable<(int id, string reason)> Warning(MetaModel other)
+        {
+            var map = other.Elements?.ToDictionary(p => p.Name.Reference) ?? default;
+
+            if (Elements != null && map != null)
+            {
+                for (int c = 0; c < Elements.Length; c++)
+                {
+                    if (map.TryGetValue(Elements[c].Name.Reference, out Element value))
+                    {
+                        if (Elements[c].Id != value.Id)
+                            yield return (Elements[c].Id, $"{Elements[c].Name.Reference} name changed to existing element id {value.Id}");
+                        foreach (var diff in Elements[c].Warning(value))
+                            yield return diff;
+                    }
+                }
+            }
         }
     }
 }

@@ -38,8 +38,6 @@ namespace Hiperspace
 
         public object Space => _runQuery.Space;
 
-        public bool IsJoin => _runQuery.IsJoin;
-
         public (string?, string?) Explain()
         {
             return _runQuery.Explain();
@@ -53,12 +51,6 @@ namespace Hiperspace
         public IEnumerator<TEntity> GetEnumerator()
         {
             return _runQuery.GetEnumerator();
-        }
-
-        [Obsolete]
-        public void Join(ISetQuery left, List<(PropertyInfo left, PropertyInfo right)> joins)
-        {
-            _runQuery.Join(left, joins);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -84,16 +76,6 @@ namespace Hiperspace
         public string? Alias { get; set; }
         public Type ElementType => typeof(TEntity);
 
-        private ISetQuery? _left;
-        private List<(PropertyInfo left, PropertyInfo right)>? _joins;
-
-        [Obsolete]
-        public void Join (ISetQuery left, List<(PropertyInfo left, PropertyInfo right)> joins)
-        {
-            _left = left;
-            _joins = joins;
-        }
-
         public IEnumerator<TEntity> GetEnumerator()
         {
             return _setSpace.Find(_template, true).GetEnumerator();
@@ -103,8 +85,6 @@ namespace Hiperspace
         {
             return GetEnumerator();
         }
-        public bool IsJoin => _left != null;
-
         public object Space => _setSpace.Space;
 
         public (string?, string?) Explain()

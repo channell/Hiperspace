@@ -8,10 +8,12 @@
 
 using ProtoBuf;
 using System.Collections;
+using System.Diagnostics;
 
 namespace Hiperspace.Meta
 {
     [ProtoContract]
+    [DebuggerDisplay("Alias {Name} ({Id})")]
     public struct Alias : IEquatable<Alias>
     {
         [ProtoMember(1)]

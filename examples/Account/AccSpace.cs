@@ -17,18 +17,18 @@ namespace Acc
                 "", new Horizon[] // default role
                 {
                     new Horizon<Customer> (p => p.Deleted == false),
-                    new Horizon<CustomerAccount> (p => p.Deleted == false),
-                    new Horizon<CustomerAccountBalance> (p => p.Deleted == false),
-                    new Horizon<CustomerAccountTransaction> (p => p.Deleted == false),
+                    new Horizon<Account> (p => p.Deleted == false),
+                    new Horizon<Balance> (p => p.Deleted == false),
+                    new Horizon<Transaction> (p => p.Deleted == false),
                 }
             },
             {
                 "read", new Horizon[]
                 {
                     new Horizon<Customer> (p => p.Deleted == false),
-                    new Horizon<CustomerAccount> (p => p.Deleted == false),
-                    new Horizon<CustomerAccountBalance> (p => p.Deleted == false),
-                    new Horizon<CustomerAccountTransaction> (p => p.Deleted == false),
+                    new Horizon<Account> (p => p.Deleted == false),
+                    new Horizon<Balance> (p => p.Deleted == false),
+                    new Horizon<Transaction> (p => p.Deleted == false),
                 }
             },
             {
@@ -40,12 +40,12 @@ namespace Acc
 
         public static Horizon[] constraints =
         [
-            new Horizon<Acc.CustomerAccountTransaction>(r => r.At > r?.owner?.Balance?.When && 
+            new Horizon<Acc.Transaction>(r => r.At > r?.owner?.Balance?.When && 
                                                                r.Amount != null &&
                                                                r.owner != null),
             new Horizon<Acc.Customer> (c => c.Name != null),
-            new Horizon<Acc.CustomerAccount>(a => a.Title != null),
-            new Horizon<Acc.CustomerAccountBalance>(b => b.When != null && b.Current != null)
+            new Horizon<Acc.Account>(a => a.Title != null),
+            new Horizon<Acc.Balance>(b => b.When != null && b.Current != null)
         ];
 
         public override Horizon[]? Horizon { get => base.Horizon == null ? constraints : constraints.Union(base.Horizon).ToArray(); init => base.Horizon = value; }
@@ -53,12 +53,12 @@ namespace Acc
 
     }
 
-    public partial class CustomerAccount
+    public partial class Account
     {
         public void Rollup ()
         {
             var when = Transactions.Select(t => t.At).Max();
-            Balance = new CustomerAccountBalance { When = when, Current = this.CurrentBalance };
+            Balance = new Balance { When = when, Current = this.CurrentBalance };
         }
     }
 }

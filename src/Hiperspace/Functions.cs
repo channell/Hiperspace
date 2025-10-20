@@ -296,5 +296,16 @@ namespace Hiperspace
         {
             return t?.SetSpace?.Space?.ContextLabel;
         }
+
+        /// <summary>
+        /// Make a reference to a Node defined in another database
+        /// </summary>
+        /// <param name="skey">The SKey of the external node</param>
+        /// <returns>An external node with the specified SKey, or null if the SKey is missing</returns>
+        public static Node? ExternalNode (string? skey)
+        {
+            if (string.IsNullOrWhiteSpace(skey)) return null;
+            return new Node { SKey = skey };
+        }
     }
 }

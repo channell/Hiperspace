@@ -11,6 +11,7 @@ using ProtoBuf;
 namespace Hiperspace.Meta
 {
     [ProtoContract]
+    [System.Diagnostics.DebuggerDisplay("Relation {Name} {DataType.Reference} ({Id})")]
     public struct Relation : IEquatable<Relation>
     {
         [ProtoMember(1)]

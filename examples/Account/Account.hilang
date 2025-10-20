@@ -96,3 +96,21 @@ aspect Acc.Balance : Versioned
     Current         : Decimal #4
 };
 
+/* **********************************************************************
+API for remote execution
+********************************************************************** */
+message API.CustomerCube #49
+( 
+    Customer        : Acc.Customer #1
+)
+{
+    CustomerTree    : List<Acc.Customer> #2,
+    Sector          : List<Acc.Sector> #3,
+    Accounts        : List<Acc.Account> #4 ,
+
+    "Using the generated cube element from Transaction and its dimensions"
+    Cube            : List<Acc.Transaction_Cube> #5,
+
+    "Using the generated cube drilldown from cube"
+    Drilldown       : List<Acc.Transaction_CubeDrillDown> #6
+};
