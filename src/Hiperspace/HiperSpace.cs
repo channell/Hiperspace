@@ -884,7 +884,7 @@ namespace Hiperspace
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public virtual Task<byte[]> InvokeAsync(byte[] key, CancellationToken token = default) => Task.FromResult(key);
+        public virtual Task<byte[]> InvokeAsync(byte[] key, CancellationToken token = default) => Task.FromResult(Array.Empty<byte>());
 
         /// <summary>
         /// Streams a sequence of byte arrays asynchronously from a server using the key.

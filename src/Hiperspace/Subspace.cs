@@ -10,8 +10,6 @@ using ProtoBuf.Meta;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Security.Principal;
-using System.Threading.Channels;
-using System.Threading.Tasks;
 
 namespace Hiperspace
 {
@@ -533,30 +531,39 @@ namespace Hiperspace
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public async Task<TMessage> InvokeAsync<TMessage>(TMessage item, CancellationToken token = default) 
+        public async Task<TMessage> Invoke<TMessage>(TMessage item, CancellationToken token = default) 
             where TMessage : class, IMessage
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
             if (TypeModel == null) throw new InvalidOperationException("TypeModel is not initialized in SubSpace");
 
+            item.Bind(this);
             var key = item.KeyBytes(TypeModel);
             var io = await _space.InvokeAsync(key, token);
-            var result = item.WithValue<TMessage>(TypeModel, io);
-            result.Bind(this);
-            return result;
+            if (io != null && io.Length != 0)
+            {
+                var result = item.WithValue<TMessage>(TypeModel, io);
+                result.Bind(this);
+                return result;
+            }
+            else 
+            {
+                var result = await item.InvokeAsync(token) as TMessage;
+                return result!;
+            }
         }
-
         /// <summary>
         /// Streams a sequence of byte arrays asynchronously from a server using the key.
         /// </summary>
         /// <param name="key">The initial byte array to include in the streamed sequence.</param>
         /// <returns>An asynchronous sequence of byte arrays, beginning with the specified <paramref name="key"/>.</returns>
-        public async IAsyncEnumerable<TMessage> InvokeStreamAsync<TMessage>(TMessage item, [EnumeratorCancellation]CancellationToken token = default) 
+        public async IAsyncEnumerable<TMessage> InvokeStream<TMessage>(TMessage item, [EnumeratorCancellation]CancellationToken token = default) 
             where TMessage : class, IMessage
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
             if (TypeModel == null) throw new InvalidOperationException("TypeModel is not initialized in SubSpace");
 
+            item.Bind(this);
             var key = item.KeyBytes(TypeModel);
             await foreach (var io in _space.InvokeStreamAsync(key, token))
             {
