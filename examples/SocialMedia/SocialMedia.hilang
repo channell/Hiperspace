@@ -1,0 +1,229 @@
+%domain(SocialMedia);
+
+%function(unary, distance, SocialMedia.Functions.Distance, Double);
+
+aspect Social.Media.Location : Versioned
+{
+	Latitude	: Double,
+	Longitude	: Double
+};
+
+type Social.Media.Located : HasVectorSpace
+{
+	CreatedDate	: DateTime,
+	BrowserUsed	: String,
+	LocationIP	: String,
+}
+[
+	Location	: Social.Media.Location
+];
+
+entity Social.Media.Person : Social.Media.Located, Versioned
+	= Node ()
+(
+	Id		: Guid
+)
+{
+	FirstName	: String,
+	LastName	: String,
+	Gender		: String,
+	Birthday	: DateTime,
+	Email		: Set<String>,
+	Speaks		: Set<String>
+}
+[
+	Interest	: Social.Media.Interest,
+	Follows		: Social.Media.Follows,
+	Friends		: Social.Media.Friend,
+	StudyAt		: Social.Media.At<Social.Media.University>,
+	WorkAt		: Social.Media.At<Social.Media.Company>,
+	Posts		: Social.Media.Post (Creator = this),
+
+	Name		= FirstName + " " + LastName,
+	TypeName	= "Person",
+
+	/* indexes */
+	"Q1 index"
+	ByFirstName	: Social.Media.Person (FirstName = FirstName),
+	"Q1 index"
+	ByLastName	: Social.Media.Person (LastName = LastName)
+];
+
+segment Social.Media.Follows : Versioned
+	= Edge (From = owner, To = Person, Name = Name, TypeName = "Follows")
+(
+	Person		: Social.Media.Person
+)
+[
+	Name		= Person.Name
+];
+
+segment Social.Media.Friend: Versioned
+	= Edge (From = owner, To = Person, Name = Name, TypeName = "Knows")
+(
+	Person		: Social.Media.Person
+)
+[
+	Name		= Person.Name,
+	Distance	= distance (owner, Person)
+];
+segment Social.Media.Likes : Versioned
+	= Edge (From = owner, To = Post, Name = Content, TypeName = "Likes")
+(
+	Post		: Social.Media.Post
+)
+[
+	Content		= Post.Content
+];
+
+segment Social.Media.Interest
+(
+	Tag		: Social.Media.Tag
+);
+
+entity Social.Media.Tag
+	= Node ()
+(
+	Name		: String
+)
+{
+	Class		: Social.Media.TagClass
+}
+[
+	TypeName	= "Tag"
+];
+
+entity Social.Media.TagClass
+	= Node (),
+	  Edge (From = this, To = IsSubClassOf, Name = Name, TypeName = "IsSubClassOf")
+(
+	Name		: String
+)
+{
+	IsSubClassOf	: Social.Media.TagClass
+}
+[
+	SubClassses		: Social.Media.TagClass (IsSubClassOf = this),
+	TypeName		= "TagClass"
+];
+
+entity Social.Media.Forum : Versioned
+	= Node ()
+(
+	Id				: Guid
+)
+{
+	Title			: String,
+	CreationDate	: DateTime,
+	Moderator		: Social.Media.Person
+}
+[
+	TypeName		= "Forum",
+	Name			= Title
+
+];
+
+segment Social.Media.Member
+	= Edge (From = owner, To = Person, Name = Name, TypeName = "Member")
+(
+	Person			: Social.Media.Person
+)
+[
+	Name			= Person.Name
+];
+
+segment Social.Media.HasTag
+(
+	Tag		: Social.Media.Tag
+);
+
+type Social.Media.Message : Social.Media.Located
+{
+	LocatedIn		: Social.Media.Country
+};
+
+
+entity Social.Media.Post : Social.Media.Message, Versioned
+	= Node ()
+(
+	Id				: Guid
+)
+{
+	Creator			: Social.Media.Person,
+	Forum			: Social.Media.Forum,
+	Content			: String,
+	Language		: String,
+	Image			: String,
+}
+[
+	HasTag			: Social.Media.HasTag,
+	Replies			: Social.Media.Comment,
+	Name			= Content,
+	TypeName		= "Post"
+];
+
+segment Social.Media.Comment : Social.Media.Message, Versioned
+	= Edge (From = owner, To = Creator, Name = Content, TypeName = "Comment")
+(
+	Creator			: Social.Media.Person,
+)
+{
+	Content			: String
+};
+
+type Social.Media.Named
+(
+	Name			: String,
+);
+
+entity Social.Media.Country : Social.Media.Named
+	= Node ()
+{
+	Continent		: Social.Media.Continent
+}
+[
+	Cities			: Social.Media.City (Country = this),
+	TypeName		= "Country"
+];
+
+entity Social.Media.City : Social.Media.Named
+	= Node (), Edge (From = this, To = Country, Name = Country.Name, TypeName = "Part Of")
+{
+	Country			: Social.Media.Country
+}
+[
+	TypeName		= "City"
+];
+
+entity Social.Media.Continent : Social.Media.Named
+	= Node ()
+[
+	TypeName		= "Continent"
+];
+
+entity Social.Media.Company : Social.Media.Named
+	= Node ()
+{
+	Location		: Social.Media.City
+}
+[
+	TypeName		= "Company"
+];
+
+entity Social.Media.University : Social.Media.Named
+	= Node ()
+{
+	Location		: Social.Media.City
+}
+[
+	TypeName		= "University"
+];
+
+segment Social.Media.At<T>
+(
+	Value			: T
+)
+{
+	FromDate		: DateTime,		
+	ToDate			: DateTime
+};

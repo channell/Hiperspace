@@ -5,6 +5,7 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using Graph;
 using ProtoBuf;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
@@ -114,6 +115,155 @@ namespace Hiperspace
                 else 
                     return Array.Empty<(string,object?)>();
             }
+        }
+
+        /// <summary>
+        /// Treat the Edges of TypeName as a HiperEdge and find all transitive paths for that type
+        /// </summary>
+        /// <param name="TypeName">The Edge type name</param>
+        /// <param name="length">the maximum length of the path</param>
+        /// <param name="targets">only return HiperEdges that end with a Node of the type matching one of these types</param>
+        /// <returns>The full set of HiperEdges for this path</returns>
+        public HashSet<HiperEdge> HiperEdges(string TypeName, int? length = null, HashSet<string>? targets = null)
+        {
+            var route = new Route
+            {
+                Name = TypeName,
+                Rules = new HashSet<Rule>
+                {
+                    new Rule
+                    {
+                        FromType = "*",
+                        EdgeType = TypeName,
+                        ToType = "*"
+                    }
+                }
+            };
+            if (SetSpace?.Space != null)
+                return SetSpace.Space.FindPaths(this, route, length, targets);
+            else
+                return PathFunctions.Paths(this, route, length, targets);
+        }
+
+        /// <summary>
+        /// Create an inline HiperName from TypeNames and find all transitive paths for that type
+        /// </summary>
+        /// <param name="HiperName">The name of the HiperEdge being infered from the Edge TyopeNames</param>
+        /// <param name="TypeNames">the set of Edge TypeNames that make up this HiperEdge</param>
+        /// <param name="length">the maximum length of the path</param>
+        /// <param name="targets">only return HiperEdges that end with a Node of the type matching one of these types</param>
+        /// <returns>The full set of HiperEdges for this path</returns>
+        public HashSet<HiperEdge> HiperEdges(string HiperName, IEnumerable<string> TypeNames, int? length = null, HashSet<string>? targets = null)
+        {
+            var route = new Route
+            {
+                Name = TypeName,
+                Rules = new HashSet<Rule> (TypeNames.Select( tn => new Rule
+                {
+                    FromType = "*",
+                    EdgeType = tn,
+                    ToType = "*"
+                }))
+            };
+            if (SetSpace?.Space != null)
+                return SetSpace.Space.FindPaths(this, route, length, targets);
+            else
+                return PathFunctions.Paths(this, route, length, targets);
+        }
+
+        /// <summary>
+        /// Treat the Edges of TypeName as a HiperEdge and find all transitive paths for that type
+        /// </summary>
+        /// <param name="TypeName">the name given to this transitative hiperedge</param>
+        /// <param name="rules">the set of meta edges (start-node type, end-node type, edge type) rules that define the transitative path</param>
+        /// <param name="length">the maximum length of the path</param>
+        /// <param name="targets">only return HiperEdges that end with a Node of the type matching one of these types</param>
+        /// <returns>The full set of HiperEdges for this path</returns>
+        public HashSet<HiperEdge> HiperEdges(string TypeName, HashSet<Rule> rules, int? length = null, HashSet<string>? targets = null)
+        {
+            var route = new Route
+            {
+                Name = TypeName,
+                Rules = rules
+            };
+            if (SetSpace?.Space != null)
+                return SetSpace.Space.FindPaths(this, route, length, targets);
+            else
+                return PathFunctions.Paths(this, route, length, targets);
+        }
+
+        /// <summary>
+        /// Treat the Edges of TypeName as a HiperEdge and find all transitive paths for that type
+        /// </summary>
+        /// <param name="TypeName">The Edge type name</param>
+        /// <param name="length">the maximum length of the path</param>
+        /// <param name="targets">only return HiperEdges that end with a Node of the type matching one of these types</param>
+        /// <returns>The full set of HiperEdges for this path</returns>
+        public async Task<HashSet<Graph.HiperEdge>> HiperEdgesAsync(string TypeName, int? length = null, HashSet<string>? targets = null, CancellationToken cancellationToken = default)
+        {
+            var route = new Route
+            {
+                Name = TypeName,
+                Rules = new HashSet<Rule>
+                {
+                    new Rule
+                    {
+                        FromType = "*",
+                        EdgeType = TypeName,
+                        ToType = "*"
+                    }
+                }
+            };
+            if (SetSpace?.Space != null)
+                return await SetSpace.Space.FindPathsAsync(this, route, length, targets);
+            else
+                return await PathFunctions.PathsAsync(this, route.Map!, length, targets);
+        }
+
+        /// <summary>
+        /// Create an inline HiperName from TypeNames and find all transitive paths for that type
+        /// </summary>
+        /// <param name="HiperName">The name of the HiperEdge being infered from the Edge TyopeNames</param>
+        /// <param name="TypeNames">the set of Edge TypeNames that make up this HiperEdge</param>
+        /// <param name="length">the maximum length of the path</param>
+        /// <param name="targets">only return HiperEdges that end with a Node of the type matching one of these types</param>
+        /// <returns>The full set of HiperEdges for this path</returns>
+        public async Task<HashSet<HiperEdge>> HiperEdgesAsync(string HiperName, IEnumerable<string> TypeNames, int? length = null, HashSet<string>? targets = null, CancellationToken cancellationToken = default)
+        {
+            var route = new Route
+            {
+                Name = HiperName,
+                Rules = new HashSet<Rule>(TypeNames.Select(tn => new Rule
+                {
+                    FromType = "*",
+                    EdgeType = tn,
+                    ToType = "*"
+                }))
+            };
+            if (SetSpace?.Space != null)
+                return await SetSpace.Space.FindPathsAsync(this, route, length, targets);
+            else
+                return await PathFunctions.PathsAsync(this, route.Map!, length, targets);
+        }
+        /// <summary>
+        /// Treat the Edges of TypeName as a HiperEdge and find all transitive paths for that type
+        /// </summary>
+        /// <param name="TypeName">the name given to this transitative hiperedge</param>
+        /// <param name="rules">the set of meta edges (start-node type, end-node type, edge type) rules that define the transitative path</param>
+        /// <param name="length">the maximum length of the path</param>
+        /// <param name="targets">only return HiperEdges that end with a Node of the type matching one of these types</param>
+        /// <returns>The full set of HiperEdges for this path</returns>
+        public async Task<HashSet<Graph.HiperEdge>> HiperEdgesAsync(string TypeName, HashSet<Rule> rules, int? length = null, HashSet<string>? targets = null, CancellationToken cancellationToken = default)
+        {
+            var route = new Route
+            {
+                Name = TypeName,
+                Rules = rules
+            };
+            if (SetSpace?.Space != null)
+                return await SetSpace.Space.FindPathsAsync(this, route, length, targets);
+            else
+                return await PathFunctions.PathsAsync(this, route.Map!, length, targets);
         }
 
         #region state
@@ -320,7 +470,7 @@ namespace Hiperspace
         #endregion
 
         /// <summary>
-        /// Apply any filters in teh tempate that were not saragable in an index seek
+        /// Apply any filters in the tempate that were not saragable in an index seek
         /// </summary>
         /// <param name="other">the template for the search</param>
         /// <param name="read">for compatability with HiLang generaterdf methods</param>

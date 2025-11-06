@@ -447,7 +447,7 @@ public class BaseTypeModel
         int num;
         while ((num = state.ReadFieldHeader()) > 0)
         {
-            if (num == 2)
+            if (num == 5)
             {
                 string text = state.ReadString(null);
                 if (text != null)
@@ -466,7 +466,7 @@ public class BaseTypeModel
     void ISerializer<Edge.ValueType>.Write(ref ProtoWriter.State state, Edge.ValueType value)
     {
         string? name = value.Name;
-        state.WriteString(2, name, null);
+        state.WriteString(1, name, null);
     }
 
     Node.KeyType ISerializer<Node.KeyType>.Read(ref ProtoReader.State state, Node.KeyType value)
@@ -562,8 +562,44 @@ public class BaseTypeModel
     }
     Node ISerializer<Node>.Read(ref ProtoReader.State state, Node item)
     {
-        item._key = ((ISerializer<Node.KeyType>)this).Read(ref state, item._key);
-        item._value = ((ISerializer<Node.ValueType>)this).Read(ref state, item._value);
+        item = item ?? new();
+        int num;
+        while ((num = state.ReadFieldHeader()) > 0)
+        {
+            switch (num)
+            {
+                case 1:
+                    {
+                        string text = state.ReadString(null);
+                        if (text != null)
+                        {
+                            item._key.SKey = text;
+                        }
+                        break;
+                    }
+                case 2:
+                    {
+                        string text = state.ReadString(null);
+                        if (text != null)
+                        {
+                            item._value.Name = text;
+                        }
+                        break;
+                    }
+                case 3:
+                    {
+                        string text = state.ReadString(null);
+                        if (text != null)
+                        {
+                            item._value.TypeName = text;
+                        }
+                        break;
+                    }
+                default:
+                    state.SkipField();
+                    break;
+            }
+        }
         return item;
     }
     void ISerializer<Node>.Write(ref ProtoWriter.State state, Node item)
@@ -679,7 +715,6 @@ public class BaseTypeModel
         }
     }
 
-
     KeyRef<Edge.KeyType, Edge> ISerializer<KeyRef<Edge.KeyType, Edge>>.Read(ref ProtoReader.State state, KeyRef<Edge.KeyType, Edge> item)
     {
         var value = item.Key;
@@ -726,20 +761,55 @@ public class BaseTypeModel
         }
         if (value.To.HasValue)
         {
-            state.WriteMessage<KeyRef<Node.KeyType, Node>>(2, (SerializerFeatures)0, value.To.Value, (ISerializer<KeyRef<Node.KeyType, Node>>)this);
+            state.WriteMessage<KeyRef<Node.KeyType, Node>>(3, (SerializerFeatures)0, value.To.Value, (ISerializer<KeyRef<Node.KeyType, Node>>)this);
         }
         string? typeName = value.TypeName;
         state.WriteString(4, typeName, null);
     }
 
-    public void Write(ref ProtoWriter.State state, KeyRef<Edge.KeyType, Edge> value)
-    {
-        throw new NotImplementedException();
-    }
     Edge ISerializer<Edge>.Read(ref ProtoReader.State state, Edge item)
     {
-        item._key = ((ISerializer<Edge.KeyType>)this).Read(ref state, item._key);
-        item._value = ((ISerializer<Edge.ValueType>)this).Read(ref state, item._value);
+        item = item ?? new();
+        int num;
+        while ((num = state.ReadFieldHeader()) > 0)
+        {
+            switch (num)
+            {
+                case 2:
+                    {
+                        KeyRef<Node.KeyType, Node> valueOrDefault = item._key.From.GetValueOrDefault();
+                        item._key.From = state.ReadMessage<KeyRef<Node.KeyType, Node>>((SerializerFeatures)0, valueOrDefault, (ISerializer<KeyRef<Node.KeyType, Node>>)this);
+                        break;
+                    }
+                case 3:
+                    {
+                        KeyRef<Node.KeyType, Node> valueOrDefault = item._key.To.GetValueOrDefault();
+                        item._key.To = state.ReadMessage<KeyRef<Node.KeyType, Node>>((SerializerFeatures)0, valueOrDefault, (ISerializer<KeyRef<Node.KeyType, Node>>)this);
+                        break;
+                    }
+                case 4:
+                    {
+                        string text = state.ReadString(null);
+                        if (text != null)
+                        {
+                            item._key.TypeName = text;
+                        }
+                        break;
+                    }
+                case 5:
+                    {
+                        string text = state.ReadString(null);
+                        if (text != null)
+                        {
+                            item._value.Name = text;
+                        }
+                        break;
+                    }
+                default:
+                    state.SkipField();
+                    break;
+            }
+        }
         return item;
     }
     void ISerializer<Edge>.Write(ref ProtoWriter.State state, Edge item)
@@ -872,10 +942,6 @@ public class BaseTypeModel
                     break;
                 case 10:
                     {
-                        //KeyRef<Edge.KeyType, Edge> key = new();
-                        //key = state.ReadMessage<KeyRef<Edge.KeyType, Edge>>(SerializerFeatures.CategoryRepeated, key, this);
-                        //value.Edge = key;
-                        // read the full object
                         Edge edge = new();
                         edge = state.ReadMessage<Edge>(SerializerFeatures.CategoryRepeated, edge, this);
                         value.Edge = edge;
@@ -883,10 +949,6 @@ public class BaseTypeModel
                     break;
                 case 11:
                     {
-                        //KeyRef<Graph.Path.KeyType, Graph.Path> key = new();
-                        //key = state.ReadMessage<KeyRef<Graph.Path.KeyType, Graph.Path>>(SerializerFeatures.CategoryRepeated, key, this);
-                        //value.Source = key;
-                        // read the full object
                         Graph.HiperEdge path = new();
                         path = state.ReadMessage<Graph.HiperEdge>(SerializerFeatures.CategoryRepeated, path, this);
                         value.Source = path;
@@ -911,14 +973,10 @@ public class BaseTypeModel
         state.WriteString(5, value.Name);
         if (value.Edge != null && value.Edge.Value.Value != null)
         {
-            //state.WriteMessage<KeyRef<Edge.KeyType, Edge>>(10, SerializerFeatures.CategoryRepeated, value.Edge.Value, this);
-            // write the full object
             state.WriteMessage<Edge>(10, SerializerFeatures.CategoryRepeated, value.Edge.Value.Value, this);
         }
         if (value.Source != null && value.Source.Value.Value != null)
         {
-            //state.WriteMessage<KeyRef<Graph.Path.KeyType, Graph.Path>>(11, SerializerFeatures.CategoryRepeated, value.Source.Value, this);
-            // write the full object
             state.WriteMessage<Graph.HiperEdge>(11, SerializerFeatures.CategoryRepeated, value.Source.Value.Value, this);
         }
         if (value.Width != null)
@@ -944,10 +1002,6 @@ public class BaseTypeModel
 
                 case 2:
                     {
-                        //KeyRef<Node.KeyType, Node> key = new();
-                        //key = state.ReadMessage<KeyRef<Node.KeyType, Node>>(SerializerFeatures.CategoryRepeated, key, this);
-                        //value.From = key;
-                        //read the full object
                         Node node = new();
                         node = state.ReadMessage<Node>(SerializerFeatures.CategoryRepeated, node, this);
                         value.From = node;
@@ -955,10 +1009,6 @@ public class BaseTypeModel
                     break;
                 case 3:
                     {
-                        //KeyRef<Node.KeyType, Node> key = new();
-                        //key = state.ReadMessage<KeyRef<Node.KeyType, Node>>(SerializerFeatures.CategoryRepeated, key, this);
-                        //value.To = key;
-                        //read the full object
                         Node node = new();
                         node = state.ReadMessage<Node>(SerializerFeatures.CategoryRepeated, node, this);
                         value.To = node;
@@ -981,14 +1031,10 @@ public class BaseTypeModel
 
         if (value.From != null && value.From.Value.Value != null)
         {
-            //state.WriteMessage<KeyRef<Node.KeyType, Node>>(2, SerializerFeatures.CategoryRepeated, value.From.Value, this);
-            //write the full object
             state.WriteMessage<Node>(2, SerializerFeatures.CategoryRepeated, value.From.Value.Value, this);
         }
         if (value.To != null && value.To.Value.Value != null)
         {
-            //state.WriteMessage<KeyRef<Node.KeyType, Node>>(3, SerializerFeatures.CategoryRepeated, value.To.Value, this);
-            //write the full object
             state.WriteMessage<Node>(3, SerializerFeatures.CategoryRepeated, value.To.Value.Value, this);
         }
         state.WriteString(4, value.TypeName);
@@ -996,8 +1042,59 @@ public class BaseTypeModel
 
     Graph.HiperEdge ISerializer<Graph.HiperEdge>.Read(ref ProtoReader.State state, Graph.HiperEdge item)
     {
-        item._key = ((ISerializer<Graph.HiperEdge.KeyType>)this).Read(ref state, item._key);
-        item._value = ((ISerializer<Graph.HiperEdge.ValueType>)this).Read(ref state, item._value);
+        item = item ?? new();
+        int num;
+        while ((num = state.ReadFieldHeader()) > 0)
+        {
+            switch (num)
+            {
+
+                case 2:
+                    {
+                        KeyRef<Node.KeyType, Node> key = new();
+                        key = state.ReadMessage<KeyRef<Node.KeyType, Node>>(SerializerFeatures.CategoryRepeated, key, this);
+                        item._key.From = key;
+                    }
+                    break;
+                case 3:
+                    {
+                        KeyRef<Node.KeyType, Node> key = new();
+                        key = state.ReadMessage<KeyRef<Node.KeyType, Node>>(SerializerFeatures.CategoryRepeated, key, this);
+                        item._key.To = key;
+                    }
+                    break;
+                case 4:
+                    item._key.TypeName = state.ReadString();
+                    break;
+                case 5:
+                    item._value.Name = state.ReadString();
+                    break;
+                case 10:
+                    {
+                        Edge edge = new();
+                        edge = state.ReadMessage<Edge>(SerializerFeatures.CategoryRepeated, edge, this);
+                        item._value.Edge = edge;
+                    }
+                    break;
+                case 11:
+                    {
+                        Graph.HiperEdge path = new();
+                        path = state.ReadMessage<Graph.HiperEdge>(SerializerFeatures.CategoryRepeated, path, this);
+                        item._value.Source = path;
+                    }
+                    break;
+                case 13:
+                    item._value.Width = state.ReadInt32();
+                    break;
+                case 14:
+                    item._value.Length = state.ReadInt32();
+                    break;
+
+                default:
+                    state.SkipField();
+                    break;
+            }
+        }
         return item;
     }
     void ISerializer<Graph.HiperEdge>.Write(ref ProtoWriter.State state, Graph.HiperEdge item)

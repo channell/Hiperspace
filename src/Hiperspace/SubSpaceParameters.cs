@@ -47,6 +47,11 @@ namespace Hiperspace
         public bool RemoteLabel;
 
         /// <summary>
+        /// Gets or sets the service provider used to resolve application services.
+        /// </summary>
+        public IServiceProvider? ServiceProvider;
+
+        /// <summary>
         /// Associates the specified <see cref="HiperSpace"/> with the current <see cref="SubSpaceParameters"/> instance.
         /// </summary>
         /// <param name="space">The <see cref="HiperSpace"/> to associate with this instance. Cannot be null.</param>
@@ -122,6 +127,16 @@ namespace Hiperspace
         public SubSpaceParameters WithRemoteLabel(bool remoteLabel)
         {
             RemoteLabel = remoteLabel;
+            return this;
+        }
+        /// <summary>
+        /// Sets the service provider and returns the updated <see cref="SubSpaceParameters"/> instance.
+        /// </summary>
+        /// <param name="services">The <see cref="IServiceProvider"/> to associate with this instance.</param>
+        /// <returns>Copy of the current <see cref="SubSpaceParameters"/> instance with the updated service provider.</returns>
+        public SubSpaceParameters WithServiceProvider(IServiceProvider services)
+        {
+            ServiceProvider = services;
             return this;
         }
     }

@@ -63,6 +63,39 @@ namespace CousinProblem
         }
 
         [Fact]
+        public void TestDecendants()
+        {
+            using (var space = new CousinsSpace(_space))
+            {
+                var eve = space.Persons.Get(new Person { Name = "Eve" })!;
+                Node node = eve;
+                var descendants = node.HiperEdges("Child");
+
+                foreach (var child in descendants)
+                {
+                    _output.WriteLine($"{child.From?.Name} ({child.From?.TypeName}) has {child.TypeName} to {child.To?.Name} ({child.To?.TypeName}) with Length {child.Length} and Wdith {child.Width}");
+                }
+                descendants?.Count.Should().Be(9);
+            }
+        }
+        [Fact]
+        public void TestAncestors()
+        {
+            using (var space = new CousinsSpace(_space))
+            {
+                var lucy = space.Persons.Get(new Person { Name = "Lucy" })!;
+                Node node = lucy;
+                var ancestors = node.HiperEdges("Ancestors", new[] {"Mother", "Father" });
+
+                foreach (var child in ancestors)
+                {
+                    _output.WriteLine($"{child.From?.Name} ({child.From?.TypeName}) has {child.TypeName} to {child.To?.Name} ({child.To?.TypeName})with Length {child.Length} and Wdith {child.Width}");
+                }
+                ancestors?.Count.Should().Be(4);
+            }
+        }
+
+        [Fact]
         public void TestEdge()
         {
             using (var space = new CousinsSpace(_space))

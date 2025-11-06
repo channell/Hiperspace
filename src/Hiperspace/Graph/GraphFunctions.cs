@@ -51,10 +51,21 @@ namespace Graph
             , int? length = null
             , HashSet<string>? targets = null)
         {
-            if (root != null && root.SetSpace != null)
+            if (root != null && route != null && root.SetSpace != null)
                 return root.SetSpace.Space.FindPaths(root, route, length, targets);
             else
-                return Paths(root, route, length, targets);
+                return new HashSet<HiperEdge>();
+        }
+        public static async Task<HashSet<HiperEdge>> PathsRemoteAsync
+            (Node? root
+            , Route? route
+            , int? length = null
+            , HashSet<string>? targets = null)
+        {
+            if (root != null && route != null && root.SetSpace != null)
+                return await root.SetSpace.Space.FindPathsAsync (root, route.Value, length, targets);
+            else
+                return new HashSet<HiperEdge>();
         }
 
         public static async Task<HashSet<HiperEdge>> PathsAsync

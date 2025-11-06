@@ -219,18 +219,29 @@ namespace Hiperspace.Meta
         }
         public IEnumerable<(int id, string reason)> Warning(MetaModel other)
         {
-            var map = other.Elements?.ToDictionary(p => p.Name.Reference) ?? default;
+
+            var map = 
+                other
+                .Elements?
+                .GroupBy(p => p.Name.Reference)
+                .ToDictionary(p => p.Key, v => v.ToDictionary(k => k.Id, v => v)) ?? default;
 
             if (Elements != null && map != null)
             {
                 for (int c = 0; c < Elements.Length; c++)
                 {
-                    if (map.TryGetValue(Elements[c].Name.Reference, out Element value))
+                    if (map.TryGetValue(Elements[c].Name.Reference, out var value))
                     {
-                        if (Elements[c].Id != value.Id)
-                            yield return (Elements[c].Id, $"{Elements[c].Name.Reference} name changed to existing element id {value.Id}");
-                        foreach (var diff in Elements[c].Warning(value))
-                            yield return diff;
+                        if (!value.ContainsKey(Elements[c].Id))
+                        {
+                            foreach (var row in value)
+                            {
+                                if (Elements[c].Id != row.Value.Id)
+                                    yield return (Elements[c].Id, $"{Elements[c].Name.Reference} name changed to existing element id {row.Value.Id}");
+                                foreach (var diff in Elements[c].Warning(row.Value))
+                                    yield return diff;
+                            }
+                        }
                     }
                 }
             }

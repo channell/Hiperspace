@@ -9,102 +9,94 @@
     <PackageIcon>Hiper.png</PackageIcon>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
     <Copyright>Cepheis Ltd (C) 2023, 2024, 2025</Copyright>
-    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20251020
+    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20251106
 ## Overview
 
-This release introduced the **message**  element for client/server scenarios where you might want to run a  query on a server and transfer only the final results to a client.  This is especially useful for whole graph queries that select every element that is related to the subject ***node*** for a *butterfly* view.
+This release builds on the functionality provided by **message** to execute queries on a remote **Hiperspace.DB** and return the full set of *elements* back to a client without the need to return every intermediate object necessary.  The prime example is the **Hiperspace.DB** opening page, which displays a summary bar-graphs of the number of **nodes** and **edges** in each database, and validates that *changes* to the (compiled) schema for databases does not change the definition of an already stored *element set.*
 
------
+The *graph-view* functionality of **Hiperspace.DB** uses `HiperEdge` functions to recursively search (*in parallel*) all `Node` types that satisfy the view criteria and display as a navigable [SVG](https://en.wikipedia.org/wiki/SVG) graph of connections.  These capabilities use the [`GraphFunctions`](https://github.com/channell/Hiperspace/blob/master/src/Hiperspace/Graph/GraphFunctions.cs) to search Nodes using message-keys *sent* to teh server and message-value *provided* on completion together with rendering information for `Node` *shapes* and *color*.
 
-## Message
-The [HiLang Message](https://www.cepheis.com/hiperspace/message) page goes into detail about the structure of *messages*.. but it is worth referring to an example for clarity. The `CustomerCube` *message*  takes a reference to a *Customer* and returns all the information need to display a *hipercube* in a [Web Assembly](https://webassembly.org/) browser client, transfered with [Protobuf](https://protobuf.dev/) compression between client and server
+To support these use-cases, a couple of enhancements have been added to [Hiperspace](https://www.nuget.org/packages/Hiperspace/) and [HiLang](https://www.nuget.org/packages/HiLang) to better support the functions.
+
+### SubSpace
+`IServiceProvider` is  an interface on the .NET Platform to inject *Services* into components ([IoC](https://en.wikipedia.org/wiki/Inversion_of_control)) at runtime.  A ServiceProvider property has been added to `SubSpace` to enable messages to enlist functionality when a message is received, and a parameter added to `SubSpaceParameters` for *domain space* construction.
+
+`FindPaths` and `FindPathsAsync` functions now have *domain-specific* implementations that use a ***message*** to transmit the call through to a server where the parallel recursive search can be efficiently executed close the data, using many of the cores of the server.
+
+### Node
+The `Node` element has been extended to include additional functions that provide `HiperEdge`  search for related nodes across transitive edges
+
+|Name| Description |
+|-|-|-|-|-|
+| HiperEdges|Treat the TypeName parameter as a HiperEdge and find all matching|
+| HiperEdgesAsync|as above, but non-blocking (especially for Blazor web clients)|
+
+
 ```
-message API.CustomerCube
-( 
-    Customer        : Acc.Customer #1
-)
-{
-    CustomerTree    : List&lt;Acc.Customer&gt; #2,
-    Sector          : List&lt;Acc.Sector&gt; #3,
-    Accounts        : List&lt;Acc.Account&gt; #4 ,
+        /// &lt;summary&gt;
+        /// Treat the Edges of TypeName as a HiperEdge and find all transitive paths for that type
+        /// &lt;/summary&gt;
+        /// &lt;param name="TypeName"&gt;The Edge type name&lt;/param&gt;
+        /// &lt;param name="length"&gt;the maximum length of the path&lt;/param&gt;
+        /// &lt;param name="targets"&gt;only return HiperEdges that end with a Node of the type matching one of these types&lt;/param&gt;
+        /// &lt;returns&gt;The full set of HiperEdges for this path&lt;/returns&gt;
+        public HashSet&lt;HiperEdge&gt; HiperEdges(string TypeName, int? length = null, HashSet&lt;string&gt;? targets = null)
 
-    "Using the generated cube element from Transaction and its dimensions"
-    Cube            : List&lt;Acc.Transaction_Cube&gt; #5,
+        /// &lt;summary&gt;
+        /// Create an inline HiperName from TypeNames and find all transitive paths for that type
+        /// &lt;/summary&gt;
+        /// &lt;param name="HiperName"&gt;The name of the HiperEdge being infered from the Edge TyopeNames&lt;/param&gt;
+        /// &lt;param name="TypeNames"&gt;the set of Edge TypeNames that make up this HiperEdge&lt;/param&gt;
+        /// &lt;param name="length"&gt;the maximum length of the path&lt;/param&gt;
+        /// &lt;param name="targets"&gt;only return HiperEdges that end with a Node of the type matching one of these types&lt;/param&gt;
+        /// &lt;returns&gt;The full set of HiperEdges for this path&lt;/returns&gt;
+        public HashSet&lt;HiperEdge&gt; HiperEdges(string HiperName, IEnumerable&lt;string&gt; TypeNames, int? length = null, HashSet&lt;string&gt;? targets = null)
 
-    "Using the generated cube drilldown from cube"
-    Drilldown       : List&lt;Acc.Transaction_CubeDrillDown&gt; #6
-};
+        /// &lt;summary&gt;
+        /// Treat the Edges of TypeName as a HiperEdge and find all transitive paths for that type
+        /// &lt;/summary&gt;
+        /// &lt;param name="TypeName"&gt;the name given to this transitative hiperedge&lt;/param&gt;
+        /// &lt;param name="rules"&gt;the set of meta edges (start-node type, end-node type, edge type) rules that define the transitative path&lt;/param&gt;
+        /// &lt;param name="length"&gt;the maximum length of the path&lt;/param&gt;
+        /// &lt;param name="targets"&gt;only return HiperEdges that end with a Node of the type matching one of these types&lt;/param&gt;
+        /// &lt;returns&gt;The full set of HiperEdges for this path&lt;/returns&gt;
+        public HashSet&lt;HiperEdge&gt; HiperEdges(string TypeName, HashSet&lt;Rule&gt; rules, int? length = null, HashSet&lt;string&gt;? targets = null)
+
+        /// &lt;summary&gt;
+        /// Treat the Edges of TypeName as a HiperEdge and find all transitive paths for that type
+        /// &lt;/summary&gt;
+        /// &lt;param name="TypeName"&gt;The Edge type name&lt;/param&gt;
+        /// &lt;param name="length"&gt;the maximum length of the path&lt;/param&gt;
+        /// &lt;param name="targets"&gt;only return HiperEdges that end with a Node of the type matching one of these types&lt;/param&gt;
+        /// &lt;returns&gt;The full set of HiperEdges for this path&lt;/returns&gt;
+        public async Task&lt;HashSet&lt;Graph.HiperEdge&gt;&gt; HiperEdgesAsync(string TypeName, int? length = null, HashSet&lt;string&gt;? targets = null, CancellationToken cancellationToken = default)
+
+        /// &lt;summary&gt;
+        /// Create an inline HiperName from TypeNames and find all transitive paths for that type
+        /// &lt;/summary&gt;
+        /// &lt;param name="HiperName"&gt;The name of the HiperEdge being infered from the Edge TyopeNames&lt;/param&gt;
+        /// &lt;param name="TypeNames"&gt;the set of Edge TypeNames that make up this HiperEdge&lt;/param&gt;
+        /// &lt;param name="length"&gt;the maximum length of the path&lt;/param&gt;
+        /// &lt;param name="targets"&gt;only return HiperEdges that end with a Node of the type matching one of these types&lt;/param&gt;
+        /// &lt;returns&gt;The full set of HiperEdges for this path&lt;/returns&gt;
+        public async Task&lt;HashSet&lt;HiperEdge&gt;&gt; HiperEdgesAsync(string HiperName, IEnumerable&lt;string&gt; TypeNames, int? length = null, HashSet&lt;string&gt;? targets = null, CancellationToken cancellationToken = default)
+
+        /// &lt;summary&gt;
+        /// Treat the Edges of TypeName as a HiperEdge and find all transitive paths for that type
+        /// &lt;/summary&gt;
+        /// &lt;param name="TypeName"&gt;the name given to this transitative hiperedge&lt;/param&gt;
+        /// &lt;param name="rules"&gt;the set of meta edges (start-node type, end-node type, edge type) rules that define the transitative path&lt;/param&gt;
+        /// &lt;param name="length"&gt;the maximum length of the path&lt;/param&gt;
+        /// &lt;param name="targets"&gt;only return HiperEdges that end with a Node of the type matching one of these types&lt;/param&gt;
+        /// &lt;returns&gt;The full set of HiperEdges for this path&lt;/returns&gt;
+        public async Task&lt;HashSet&lt;Graph.HiperEdge&gt;&gt; HiperEdgesAsync(string TypeName, HashSet&lt;Rule&gt; rules, int? length = null, HashSet&lt;string&gt;? targets = null, CancellationToken cancellationToken = default)
 ```
-**NB** `Cube            : List&lt;Acc.Transaction_Cube&gt;` is a *physical* element, generated from the `Transaction` *@Fact* property, and including the *@Dimension*  {*Customer, Account, Sector*} and *@Measure* analysis properties
+The [Test cases](https://github.com/channell/Hiperspace/blob/master/examples/CousinProblem/Test.cs) demonstrate the use of these functions to provide *server-side* search for relations. The first example treats "Child" as a transitive `HiperEdge`, while the second infers an "Ancestors" `HiperEdge` from either *Mother* or *Father*.
 
-When the schema is compiled with [HiLang](https://www.nuget.org/packages/HiLang/), implementations are not provided for 
 ```
-namespace API
-{
-    public partial class CustomerCube : IMessage
-    {
-        public Task&lt;IMessage&gt; InvokeAsync(CancellationToken token = default)
-        {
-        }
-        public async IAsyncEnumerable&lt;IMessage&gt; InvokeStreamAsync([EnumeratorCancellation]CancellationToken token = default)
-        {
-            yield return await InvokeAsync(token);
-        }
-    }
-}
+                var descendants = node.HiperEdges("Child");
+                var ancestors = node.HiperEdges("Ancestors", new[] {"Mother", "Father" });
 ```
-which must be added to the schema project to provide implementation for the server-side functions
-
------
-
-### HiperSpace
- `HiperSpace` has two additional methods that transfer messages through the layers of Hiperspaces, until a server `SubSpace` is found that will execute the message, and return the value
- ```
-        public virtual Task&lt;byte[]&gt; InvokeAsync(byte[] key, CancellationToken token = default) =&gt; Task.FromResult(key);
-        public virtual IAsyncEnumerable&lt;byte[]&gt; InvokeStreamAsync(byte[] key, CancellationToken token = default) =&gt; new byte[][] { key }.ToAsyncEnumerable();
-```
- 
- ### SubSpace
- `SubSpace` has the above functions (*because they also implement* `HiperSpace`), plus the domain specific functions needed for code like `var msg = await space.InvokeAsync(new CustomerCube {Customer = myCust}); to be executed on a client.
- 
- ```
-        public async Task&lt;TMessage&gt; InvokeAsync&lt;TMessage&gt;(TMessage item, CancellationToken token = default) 
-            where TMessage : class, IMessage
-        public async IAsyncEnumerable&lt;TMessage&gt; InvokeStreamAsync&lt;TMessage&gt;(TMessage item, [EnumeratorCancellation]CancellationToken token = default) 
-```
-There are no equivalent synchronous messages handling functions because the only reason for using messages is to perform query processing on a server, and Blazor client cannot use any blocking operations.
-
-With this release the *obsolete* function `public abstract object? Get(string sid);`  has been removed, and `Get&lt;object?&gt;(string sid)` should be used instead.
-
-
------
-
-#### Domain implementation
-The Domain implementation of `SubSpace` (*generated by HiLang*) includes logic to execute the message logic in the first *domain Space* that has the `RemoteLabel` set to true.  Generated HiLang schema will not compile until the `InvokeAsync` and `InvokeStreamAsync` functions have been added by the implementor.
-
-
------
-
-### HiLang
-
-HiLang `segment` (*many*) and `aspect` (*optionally one*) can be applied to any `entity` to extend the definition of the entity with information that is versioned separately.  Consider the example of [TOGAF](https://github.com/channell/Hiperspace/blob/master/examples/TOGAF/TOGAF.hilang) where every entity type can include any  number of ***Gaps*** each of which have separate storage and references to their `owner` with navigation from the `owner` using the ***Gap*** property. 
-
-[HiLang](https://www.nuget.org/packages/HiLang/) Generates {*ServiceGap, DriverGap, ActorGap, FunctionGap, CapabilityGap, ProductGap, GoalGap, ObjectiveGap, MeasureGap, ActivityGap, EventGap, ProcessGap, ControlGap, ValueStreamGap, CourseOfActionGap, EntityGap, LogicalGap, PhysicalGap, SystemGap, ComponentGap, DeployedGap, PlatformGap, HostGap, InstanceGap*} to provide storage for entity specific versions of the ***Gap***, and *View* to bring togther every different implementation for query together.
-
-When *segment*/*aspect* is only used in a single comtext, we can end-up with very long segment implementation names like `CustomerAccountTransaction` when `Customer` has many `Account` *segments* , which has many `Transaction` segments.  To minimise the generated classes, an additional *step* has been added to HiLang to remove the generated prefix when a segment is only used in one context.
-
-This version changes `CustomerAccountTransaction`  to `Transaction`.  If we subsequently need to add the segment to another *entity*, the prefix would be added back to distinguish different owners of `Transaction`.
-
-**NB** Hiperspace does not  store the name of the *element* with every instance (only the #id is stored), so any change will be transparent. 
-
-
------
-
-### LatestSpace
-`LatestSpace` is a specialisation fo HeapSpace, that discards history to reduce memory usage.  the main use-case is with  Blazor Web-Assembly clients that have no interest in the history of an Element, but need to hold the durable representation for synchronization at the end of a session.
-
-## References
-References to other libraries have been updated
 </PackageReleaseNotes>
     <PackageLicenseExpression>GPL-2.0-or-later</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>

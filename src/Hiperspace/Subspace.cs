@@ -38,6 +38,11 @@ namespace Hiperspace
         /// </summary>
         public IPrincipal? UserLabel { get; set; }
 
+        /// <summary>
+        /// Hold a reference to the IoC service provider to enable "stored procedures" (IMessage implementations)
+        /// to access registered services that can provide additional functionality when the message is invoked
+        /// </summary>
+        public IServiceProvider? ServiceProvider { get; init; }
 
         /// <summary>
         /// Was the subspace opened by a remote client, and need to have Horizon security re-applied 
@@ -79,6 +84,7 @@ namespace Hiperspace
             UserLabel = parameters.UserLabel;
             RemoteLabel = parameters.RemoteLabel;
             _space = parameters.Space;
+            ServiceProvider = parameters.ServiceProvider;
         }
 
         /// <summary>
@@ -103,7 +109,8 @@ namespace Hiperspace
                 DeltaFrom = _delta,
                 ContextLabel = ContextLabel,
                 UserLabel = UserLabel,
-                RemoteLabel = RemoteLabel
+                RemoteLabel = RemoteLabel,
+                ServiceProvider = ServiceProvider
             };
             var constructor = this.GetType().GetConstructor(new Type[] { typeof(SubSpaceParameters) });
             if (constructor == null)
@@ -179,7 +186,21 @@ namespace Hiperspace
         /// The default implementation can't use the implicit operqator, and returns a value only if the concrete object is already of the target type
         /// <returns>The typed object associated with the specified identifier, or <see langword="null"/> if it is missing or can't be cast to the type</returns>
         public abstract TEntity? Get<TEntity>(string sid) where TEntity : class;
-
+        
+        /// <summary>
+        /// Retrieves an entity of the specified type by its unique identifier asynchronously.
+        /// </summary>
+        /// <remarks>
+        /// TODO!! change to abstract in the next release
+        /// </remarks>
+        /// <param name="sid">The unique identifier of the entity to retrieve. Cannot be null or empty</param>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the entity of type <typeparamref
+        /// name="TEntity"/> if found; otherwise, <see langword="null"/>.</returns>
+        public virtual Task<TEntity?> GetAsync<TEntity>(string sid) where TEntity : class
+        {
+            return Task.FromResult(Get<TEntity>(sid));
+        }
         public bool ISChild(SubSpace space)
         {
             if (space == this)

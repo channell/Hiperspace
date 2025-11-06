@@ -24,10 +24,9 @@ namespace ERP
 
         public override Horizon[]? Horizon { get => base.Horizon == null ? constraints : constraints.Union(base.Horizon).ToArray(); init => base.Horizon = value; }
 
-        public ERPSpace(HiperSpace space, DateTime? AsAt = null, DateTime? DeltaFrom = null) 
-            : this(space, null, AsAt, DeltaFrom)        
+        public ERPSpace(HiperSpace space, DateTime? AsAt = null, DateTime? DeltaFrom = null)
+            : this(space, null, AsAt, DeltaFrom)
         { }
-
     }
     internal static class ERPFunctions
     {
