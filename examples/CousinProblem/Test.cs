@@ -272,14 +272,14 @@ namespace CousinProblem
                             var p = r;
                             if (p != null)
                                 _output.WriteLine($"From {p.From?.Name} To {p.To?.Name} Length {p.Length} Width {p.Width}");
-                            var arrow = $"\t{p.To?.Name} ({p.Edge?.TypeName})";
-                            var source = p.Source;
+                            var arrow = $"\t{p?.To?.Name} ({p?.Edge?.TypeName})";
+                            var source = p?.Source;
                             while (source != null) 
                             {
                                 arrow = arrow + $" <- {source.To?.Name} ({source.Edge?.TypeName})";
                                 source = source.Source;
                             }
-                            arrow = arrow + $" <- {p.From?.Name}";
+                            arrow = arrow + $" <- {p?.From?.Name}";
 
                             _output.WriteLine(arrow);
                         }

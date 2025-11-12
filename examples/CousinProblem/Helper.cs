@@ -12,7 +12,7 @@ namespace Cousins //Problem
     {
         internal static HashSet<HiperEdge> AllRelations(Person person)
         {
-            Node node = person;
+            Node node = person!;
 
             var route = new Route
             {
@@ -32,7 +32,7 @@ namespace Cousins //Problem
         /// <returns></returns>
         internal static List<Path> Relations(Person person)
         {
-            Node node = person;
+            Node node = person!;
             var result = new List<Path>();
             foreach (var edge in node.Froms)
             {

@@ -104,7 +104,7 @@ namespace Hiperspace
                 {
                     if (_target != null)
                         return _target;
-                    foreach(var child in Children)
+                    foreach(var child in Children.ToArray())
                     {
                         var result = child.Target;
                         if (result != null)
@@ -124,7 +124,7 @@ namespace Hiperspace
                 {
                     if (_PropertyInfo != null)
                         return _PropertyInfo;
-                    foreach (var child in Children)
+                    foreach (var child in Children.ToArray())
                     {
                         var result = child.PropertyInfo;
                         if (result != null)
@@ -141,7 +141,7 @@ namespace Hiperspace
             {
                 if (_PropertyInfo != null)
                     yield return (ParentSetName, _PropertyInfo);
-                foreach (var child in Children)
+                foreach (var child in Children.ToArray())
                 {
                     foreach (var item in child.GetProperties())
                     {
@@ -157,7 +157,7 @@ namespace Hiperspace
                 if (_PropertyInfo != null)
                     return true;
 
-                foreach (var child in Children)
+                foreach (var child in Children.ToArray())
                 {
                     if (child.HasPropertyNotComposite())
                         return true;
@@ -169,7 +169,7 @@ namespace Hiperspace
             {
                 if (current.Type == PathType.New)
                 {
-                    foreach (var child in current.Children)
+                    foreach (var child in current.Children.ToArray())
                     {
                         foreach (var item in CompositeKeys(child))
                         {
@@ -181,7 +181,7 @@ namespace Hiperspace
                 }
                 else
                 {
-                    foreach (var child in current.Children)
+                    foreach (var child in current.Children.ToArray())
                     {
                         foreach (var item in CompositeKeys(child))
                         {
@@ -220,7 +220,7 @@ namespace Hiperspace
                 {
                     if (_FieldInfo != null)
                         return _FieldInfo;
-                    foreach (var child in Children)
+                    foreach (var child in Children.ToArray())
                     {
                         var result = child.FieldInfo;
                         if (result != null)
@@ -240,7 +240,7 @@ namespace Hiperspace
                 {
                     if (_Value != null)
                         return _Value;
-                    foreach (var child in Children)
+                    foreach (var child in Children.ToArray())
                     {
                         var result = child.Value;
                         if (result != null)
@@ -313,7 +313,7 @@ namespace Hiperspace
                 {
                     if (_ClosureType != null)
                         return _ClosureType;
-                    foreach (var child in Children)
+                    foreach (var child in Children.ToArray())
                     {
                         var result = child.ClosureType;
                         if (result != null)
@@ -333,7 +333,7 @@ namespace Hiperspace
                 {
                     if (_LambdaExpression != null)
                         return _LambdaExpression;
-                    foreach (var child in Children)
+                    foreach (var child in Children.ToArray())
                     {
                         var result = child.LambdaExpression;
                         if (result != null)
@@ -354,7 +354,7 @@ namespace Hiperspace
                 {
                     if (_SetName != null)
                         return _SetName;
-                    foreach (var child in Children)
+                    foreach (var child in Children.ToArray())
                     {
                         var result = child.SetName;
                         if (result != null)
@@ -468,7 +468,7 @@ namespace Hiperspace
                 if (Children.Count > 0)
                 {
                     sb.Append($"{indent}Children:[");
-                    foreach (var item in Children)
+                    foreach (var item in Children.ToArray())
                     {
                         sb.Append(indent);
                         sb.Append(item.ToString(level + 1));
@@ -637,14 +637,17 @@ namespace Hiperspace
 
                 var leftSelectors = path.Children[2].GetSelectors().ToArray();
                 var rightProperties = path.Children[3].GetProperties().ToArray();
-                if (leftSelectors.Length != rightProperties.Length)
-                    throw new ArgumentException("Join predicates must be equal on left and right");
+
                 var joins = new List<((string alias, ValueGetter property) left, (string alias, PropertyInfo property) right)>();
 
-                for (int c = 0; c < leftSelectors.Length; c++)
-                {
-                    joins.Add((leftSelectors[c], rightProperties[c]));
-                }
+                // if they don't match it is because a SetSpace is being joined to an non-SetSpace ()
+                // e.g. a collections such as an array -> a join condition can not be created to optimise the 
+                // join, and must be performed by LINQ from the result
+                if (leftSelectors.Length == rightProperties.Length)     // if they don't match, one of th
+                    for (int c = 0; c < leftSelectors.Length; c++)
+                    {
+                        joins.Add((leftSelectors[c], rightProperties[c]));
+                    }
 
                 args[4] = Visit(node.Arguments[4]);
                 var closure = path.Children[4].ClosureType;
