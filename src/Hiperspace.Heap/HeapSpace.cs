@@ -46,7 +46,7 @@ namespace Hiperspace.Heap
             BinaryPrimitives.WriteUInt64BigEndian(new Span<byte>(fullkey, fullkey.Length - sizeof(long), sizeof(long)), toend);
 
             var (cur, v) = Get(key, version);
-            if (cur != null)
+            if (cur is not null)
             {
                 if (v == version)
                     return Result.Skip(cur);
@@ -71,7 +71,7 @@ namespace Hiperspace.Heap
             BinaryPrimitives.WriteUInt64BigEndian(new Span<byte>(fullkey, fullkey.Length - sizeof(long), sizeof(long)), toend);
 
             var (cur, v) = Get(key, version);
-            if (cur != null)
+            if (cur is not null)
             {
                 if (v == version)
                     return Result.Skip(cur);
@@ -204,7 +204,7 @@ namespace Hiperspace.Heap
                     }
                     else if (lastVersion != 0)
                     {
-                        if (lastValue != null)
+                        if (lastValue is not null)
                             yield return (lastKey, new DateTime(lastVersion), lastValue);
                         lastKey = keypart;
                         lastVersion = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(row.Key, row.Key.Length - sizeof(ulong), sizeof(ulong))));
@@ -212,7 +212,7 @@ namespace Hiperspace.Heap
                     }
                 }
             }
-            if (lastVersion != 0 && lastValue != null)
+            if (lastVersion != 0 && lastValue is not null)
             {
                 yield return (lastKey, new DateTime(lastVersion), lastValue);
             }
@@ -448,7 +448,7 @@ namespace Hiperspace.Heap
 
             private bool Equals([NotNullWhen(true)] object? other, IEqualityComparer comparer)
             {
-                if (other == null) return false;
+                if (other is null) return false;
 
                 if (!(other is HeapNode objTuple))
                 {
@@ -472,7 +472,7 @@ namespace Hiperspace.Heap
 
             private int CompareTo(object? other, IComparer comparer)
             {
-                if (other == null) return 1;
+                if (other is null) return 1;
 
                 if (!(other is HeapNode objTuple))
                 {

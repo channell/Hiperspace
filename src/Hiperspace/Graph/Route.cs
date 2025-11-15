@@ -124,7 +124,7 @@ namespace Graph
             }
             public override bool Equals(Object? other)
             {
-                if (other == null) return false;
+                if (other is null) return false;
                 if (other is KeyType) return Equals((KeyType)other);
                 return false;
             }
@@ -158,13 +158,13 @@ namespace Graph
             public static bool operator <(KeyType left, KeyType right)
             {
 
-                if (left.Name != null && left.Name.CompareTo(right.Name) < 0) return true;
+                if (left.Name is not null && left.Name.CompareTo(right.Name) < 0) return true;
                 return false;
             }
             public static bool operator >(KeyType left, KeyType right)
             {
 
-                if (left.Name != null && left.Name.CompareTo(right.Name) > 0) return true;
+                if (left.Name is not null && left.Name.CompareTo(right.Name) > 0) return true;
                 return false;
             }
         }
@@ -184,14 +184,14 @@ namespace Graph
             public void Bind(SubSpace space)
             {
 
-                if (Rules != null) foreach (var p1 in Rules) p1.Bind(space);
+                if (Rules is not null) foreach (var p1 in Rules) p1.Bind(space);
 
             }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void Unbind(SubSpace space)
             {
 
-                if (Rules != null) foreach (var p1 in Rules) p1.Unbind(space);
+                if (Rules is not null) foreach (var p1 in Rules) p1.Unbind(space);
             }
             public bool Equals(ValueType other)
             {
@@ -200,7 +200,7 @@ namespace Graph
             }
             public override bool Equals(Object? other)
             {
-                if (other == null) return false;
+                if (other is null) return false;
                 if (other is ValueType) return Equals((ValueType)other);
                 return false;
             }
@@ -239,7 +239,7 @@ namespace Graph
         {
             get
             {
-                if (_Map == null)
+                if (_Map is null)
                     _Map = Graph.PathFunctions.CompileRoute(this);
                 return _Map;
             }
@@ -279,19 +279,19 @@ namespace Graph
         }
         public bool Equals(Route? other)
         {
-            if (other == null)
+            if (other is null)
                 return false;
             return (_key == other.Value._key && _value == other.Value._value);
         }
         public override bool Equals(Object? other)
         {
-            if (other == null) return false;
+            if (other is null) return false;
             if (other is Route) return Equals((Route)other);
             return false;
         }
         public int CompareTo(Route? other)
         {
-            if (other == null)
+            if (other is null)
                 throw new ArgumentNullException(nameof(other));
             if (_key < other.Value._key)
                 return -1;

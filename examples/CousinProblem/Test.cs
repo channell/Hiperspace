@@ -45,8 +45,8 @@ namespace CousinProblem
             {
                 var gendererror =
                     (from p in space.Persons
-                     where p.Father != null && p.Father.Gender != null && p.Father.Gender != Gender.Male ||
-                            p.Mother != null && p.Mother.Gender != null && p.Mother.Gender != Gender.Female
+                     where p.Father is not null && p.Father.Gender is not null && p.Father.Gender != Gender.Male ||
+                            p.Mother is not null && p.Mother.Gender is not null && p.Mother.Gender != Gender.Female
                      select new { p.Name, Mine = p.Gender, father = p.Father, mother = p.Mother }
                     ).ToList();
                 gendererror.ForEach(r => _output.WriteLine($"{r.Name} ({r.Mine}) has father {r.father.Name} and mother {r.mother.Name}"));
@@ -114,7 +114,7 @@ namespace CousinProblem
             {
                 var lines =
                     (from e in space.Edges
-                     where e.From != null && e.To != null
+                     where e.From is not null && e.To is not null
                      select e
                     ).ToList();
 
@@ -177,7 +177,7 @@ namespace CousinProblem
                         }
                     }
                     var edges = (from r in space.Edges
-                                 where r.From != null && r.To != null
+                                 where r.From is not null && r.To is not null
                                  select r).ToArray();
                     for (var i = 0; i < edges.Length; i++)
                     {
@@ -265,16 +265,16 @@ namespace CousinProblem
                 });
                 foreach (var path in lucy.Stored)
                 {
-                    if (path.Paths != null)
+                    if (path.Paths is not null)
                     { 
                         foreach (var r in path.Paths)
                         {
                             var p = r;
-                            if (p != null)
+                            if (p is not null)
                                 _output.WriteLine($"From {p.From?.Name} To {p.To?.Name} Length {p.Length} Width {p.Width}");
                             var arrow = $"\t{p?.To?.Name} ({p?.Edge?.TypeName})";
                             var source = p?.Source;
-                            while (source != null) 
+                            while (source is not null) 
                             {
                                 arrow = arrow + $" <- {source.To?.Name} ({source.Edge?.TypeName})";
                                 source = source.Source;

@@ -212,7 +212,7 @@ namespace Hiperspace
             for (int c = 0; c < _spaces.Length; c++)
             {
                 var result = _spaces[c].Get(key);
-                if (result != null && result != Array.Empty<byte>())
+                if (result is not null && result != Array.Empty<byte>())
                     return result;
             }
             return Array.Empty<byte>();
@@ -233,7 +233,7 @@ namespace Hiperspace
             for (int c = 0; c < _spaces.Length; c++)
             {
                 var result = await _spaces[c].GetAsync(key);
-                if (result != null && result != Array.Empty<byte>())
+                if (result is not null && result != Array.Empty<byte>())
                     return result;
             }
             return Array.Empty<byte>();
@@ -410,7 +410,7 @@ namespace Hiperspace
             for (int c = _spaces.Length -1; c >= 0; c--)
             {
                 var result = _spaces[c].GetFirst(begin, end);
-                if (result != null)
+                if (result is not null)
                     return result;
             }
             return null;
@@ -420,7 +420,7 @@ namespace Hiperspace
             for (int c = _spaces.Length - 1; c >= 0; c--)
             {
                 var result = _spaces[c].GetFirst(begin, end, version);
-                if (result != null)
+                if (result is not null)
                     return result;
             }
             return null;
@@ -430,7 +430,7 @@ namespace Hiperspace
             for (int c = _spaces.Length - 1; c >= 0; c--)
             {
                 var result = await _spaces[c].GetFirstAsync(begin, end);
-                if (result != null)
+                if (result is not null)
                     return result;
             }
             return null;
@@ -440,7 +440,7 @@ namespace Hiperspace
             for (int c = _spaces.Length - 1; c >= 0; c--)
             {
                 var result = await _spaces[c].GetFirstAsync(begin, end, version);
-                if (result != null)
+                if (result is not null)
                     return result;
             }
             return null;
@@ -450,7 +450,7 @@ namespace Hiperspace
             for (int c = 0; c < _spaces.Length; c++)
             {
                 var result = _spaces[c].GetLast(begin, end);
-                if (result != null)
+                if (result is not null)
                     return result;
             }
             return null;
@@ -460,7 +460,7 @@ namespace Hiperspace
             for (int c = 0; c < _spaces.Length; c++)
             {
                 var result = _spaces[c].GetLast(begin, end, version);
-                if (result != null)
+                if (result is not null)
                     return result;
             }
             return null;
@@ -470,7 +470,7 @@ namespace Hiperspace
             for (int c = 0; c < _spaces.Length; c++)
             {
                 var result = await _spaces[c].GetLastAsync(begin, end);
-                if (result != null)
+                if (result is not null)
                     return result;
             }
             return null;
@@ -480,7 +480,7 @@ namespace Hiperspace
             for (int c = 0; c < _spaces.Length; c++)
             {
                 var result = await _spaces[c].GetLastAsync(begin, end, version);
-                if (result != null)
+                if (result is not null)
                     return result;
             }
             return null;

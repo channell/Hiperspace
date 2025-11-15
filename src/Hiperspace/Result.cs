@@ -85,9 +85,9 @@ namespace Hiperspace
         { 
             get 
             {
-                if (_value == null)
+                if (_value is null)
                 {
-                    if (Exception != null)
+                    if (Exception is not null)
                         throw Exception;
                     else
                         throw new NullReferenceException(Reason);
@@ -99,7 +99,7 @@ namespace Hiperspace
         {
             get
             {
-                if (_exception != null)
+                if (_exception is not null)
                     return _exception;
                 if (Status == Result.Status.Error)
                     return new Exception(Reason);

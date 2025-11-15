@@ -26,7 +26,7 @@ namespace Hiperspace.Meta
 
         public void Dispose()
         {
-            if (_routes != null)
+            if (_routes is not null)
                 foreach (var d in _routes)
                     d.Dispose();
         }
@@ -47,9 +47,9 @@ namespace Hiperspace.Meta
             {
                 if (i.SourceType == typeof(T) && 
                     i.TargeType == typeof(T) &&
-                    i.SourceProperties != null &&
+                    i.SourceProperties is not null &&
                     i.SourceProperties.Contains("CubeHierarchy") &&
-                    i.TargetProperties != null &&
+                    i.TargetProperties is not null &&
                     i.TargetProperties.Contains("CubeHierarchy") &&
                     i.Many)
                 {
@@ -63,9 +63,9 @@ namespace Hiperspace.Meta
             {
                 if (i.SourceType == typeof(T) &&
                     i.TargeType == typeof(T) &&
-                    i.SourceProperties != null &&
+                    i.SourceProperties is not null &&
                     i.SourceProperties.Contains("CubeHierarchy") &&
-                    i.TargetProperties != null &&
+                    i.TargetProperties is not null &&
                     i.TargetProperties.Contains("CubeHierarchy") &&
                     i.Many)
                 {
@@ -81,9 +81,9 @@ namespace Hiperspace.Meta
             {
                 if (i.SourceType == typeof(T) &&
                     i.TargeType == typeof(T) &&
-                    i.SourceProperties != null &&
+                    i.SourceProperties is not null &&
                     i.SourceProperties.Contains("CubeHierarchy") &&
-                    i.TargetProperties != null &&
+                    i.TargetProperties is not null &&
                     i.TargetProperties.Contains("CubeHierarchy") &&
                     i.One)
                 {
@@ -151,7 +151,7 @@ namespace Hiperspace.Meta
             where TTarget : Element<TTarget>, new()
             where TTransitive : Element<TTransitive>, new()
         {
-            if (dest._one != null && source._one != null)
+            if (dest._one is not null && source._one is not null)
             {
                 /*        internal Func<TSource, IEnumerable<TTarget>?>? _many;
                         internal Func<TSource, TTarget?>? _one;
@@ -161,14 +161,14 @@ namespace Hiperspace.Meta
                 Func<TSource, TTarget?> transitativeFunc = s => destFunc(sourceFunc(s)!);
                 return new Route<TSource, TTarget>(source._sourceSet, transitativeFunc, source.SourceProperties!, dest.TargetProperties!, dest.FieldName);
             }
-            else if (dest._many != null && source._one != null)
+            else if (dest._many is not null && source._one is not null)
             {
                 Func<TTransitive, IEnumerable<TTarget>?> destFunc = dest._many;
                 Func<TSource, TTransitive?> sourceFunc = source._one;
                 Func<TSource, IEnumerable<TTarget>?> transitativeFunc = s => destFunc(sourceFunc(s)!);
                 return new Route<TSource, TTarget>(source._sourceSet, transitativeFunc!, source.SourceProperties!, dest.TargetProperties!, dest.FieldName);
             }
-            else if (dest._many != null && source._many != null)
+            else if (dest._many is not null && source._many is not null)
             {
                 Func<TTransitive, IEnumerable<TTarget>?> destFunc = dest._many;
                 Func<TSource, IEnumerable<TTransitive>?> sourceFunc = source._many;
@@ -194,10 +194,10 @@ namespace Hiperspace.Meta
             if ( source.TargeType == dest.SourceType)
             {
                 var method = typeof(Route).GetMethod(nameof(Combine))?.MakeGenericMethod(new[] { source.SourceType, source.TargeType, dest.TargeType });
-                if (method != null)
+                if (method is not null)
                 {
                     var result = method.Invoke(null, new[] { source, dest }) as Route;
-                    if (result != null) return result;
+                    if (result is not null) return result;
                 }
             }
             throw new NotImplementedException($"Cannot combine routes from {source.SourceType.Name} through {source.TargeType.Name} to {dest.TargeType.Name}");
@@ -252,9 +252,9 @@ namespace Hiperspace.Meta
             Dispose();
         }
 
-        public override bool One => _one != null;
+        public override bool One => _one is not null;
 
-        public override bool Many => _many != null;
+        public override bool Many => _many is not null;
 
         public static bool IsElementVersionType()
         {
@@ -267,21 +267,21 @@ namespace Hiperspace.Meta
         {
             if (_sourceSet is IDeltaIndex<TSource> versionedSet)
             {
-                if (_one != null)
+                if (_one is not null)
                 {
                     foreach (var source in versionedSet.Delta(new TSource(), deltaFrom))
                     {
                         var result = _one(source);
-                        if (result != null)
+                        if (result is not null)
                             yield return result;
                     }
                 }
-                else if (_many != null)
+                else if (_many is not null)
                 {
                     foreach (var source in versionedSet.Delta(new TSource(), deltaFrom))
                     {
                         var targets = _many(source);
-                        if (targets != null)
+                        if (targets is not null)
                         {
                             foreach (var target in targets)
                             {
@@ -303,7 +303,7 @@ namespace Hiperspace.Meta
 
         public TTarget? OneValue (TSource source)
         {
-            if (_one != null)
+            if (_one is not null)
                 return _one(source);
             else
                 return default;
@@ -311,7 +311,7 @@ namespace Hiperspace.Meta
         }
         public IEnumerable<TTarget>? ManyValue (TSource source)
         {
-            if (_many != null)
+            if (_many is not null)
                 return _many(source);
             else
                 return default;

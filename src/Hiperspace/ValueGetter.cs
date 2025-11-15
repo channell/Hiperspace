@@ -52,7 +52,7 @@ namespace Hiperspace
         public ValueGetter Index(object index)
         {
             var i = index as int?;
-            if (i != null)
+            if (i is not null)
             {
                 return new ValueGetter(index: i, prior: this);
             }
@@ -76,15 +76,15 @@ namespace Hiperspace
             {
                 var result = _prior?.Name ?? "";
 
-                if (_field != null)
+                if (_field is not null)
                     result += "." + _field.Name;
-                else if (_property != null)
+                else if (_property is not null)
                     result += "." + _property.Name;
-                else if (_index != null)
+                else if (_index is not null)
                     result += "[" + _index.ToString() + "]";
-                else if (_key != null && !string.IsNullOrEmpty(_key.Name))
+                else if (_key is not null && !string.IsNullOrEmpty(_key.Name))
                     result += "[" + _key.Name + "]";
-                else if (_value != null)
+                else if (_value is not null)
                     result += "." + _value.ToString();
                 return result;
             }
@@ -93,7 +93,7 @@ namespace Hiperspace
         public object? GetValue(object? source = null)
         {
             object? result;
-            if (_prior != null)
+            if (_prior is not null)
             {
                 result = _prior.GetValue(source);
             }
@@ -102,31 +102,31 @@ namespace Hiperspace
                 result = source;
             }
 
-            if (_field != null && result != null)
+            if (_field is not null && result is not null)
             {
                 result = _field.GetValue(result);
             }
-            else if (_property != null && result != null)
+            else if (_property is not null && result is not null)
             {
                 result = _property.GetValue(result);
             }
-            else if (_index != null && result != null)
+            else if (_index is not null && result is not null)
             {
                 var list = result as System.Collections.IList;
-                if (list != null)
+                if (list is not null)
                 {
                     result = list[_index.Value];
                 }
             }
-            else if (_key != null && result != null)
+            else if (_key is not null && result is not null)
             {
                 var dict = result as System.Collections.IDictionary;
-                if (dict != null)
+                if (dict is not null)
                 {
                     result = dict[_key];
                 }
             }
-            else if (_value != null && source == null)
+            else if (_value is not null && source is null)
             {
                 result = _value;
             }

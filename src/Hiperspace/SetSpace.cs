@@ -49,8 +49,8 @@ namespace Hiperspace
 
         public void ForwardEventsFrom(SetSpace<TEntity> source)
         {
-            if (OnBind != null) source.OnBind += RaiseOnbind;
-            if (OnDependency != null) source.OnDependency += RaiseOnDependency;
+            if (OnBind is not null) source.OnBind += RaiseOnbind;
+            if (OnDependency is not null) source.OnDependency += RaiseOnDependency;
         }
 
         private Horizon<TEntity>[]? _horizons;
@@ -58,7 +58,7 @@ namespace Hiperspace
         {             
             get
             {
-                if (_horizons == null)
+                if (_horizons is null)
                 {
                     _horizons = Space?.Horizon?
                         .Where(h => h.Type == typeof(TEntity))
@@ -123,9 +123,9 @@ namespace Hiperspace
         public bool Insert(TEntity item)
         {
             var current = Get(item);
-            if (current != null)
+            if (current is not null)
             {
-                if (item.GetType().GetCustomAttribute<VersionedAttribute>() != null)
+                if (item.GetType().GetCustomAttribute<VersionedAttribute>() is not null)
                     throw new MutationException($"Cannot insert a new {item.GetType().Name}, use Update(item) instead");
                 else
                     throw new MutationException($"Cannot insert a new {item.GetType().Name}, value already exists");
@@ -135,9 +135,9 @@ namespace Hiperspace
         public async Task<bool> InsertAsync(TEntity item)
         {
             var current = await GetAsync(item);
-            if (current != null)
+            if (current is not null)
             {
-                if (item.GetType().GetCustomAttribute<VersionedAttribute>() != null)
+                if (item.GetType().GetCustomAttribute<VersionedAttribute>() is not null)
                     throw new MutationException($"Cannot insert a new {item.GetType().Name}, use Update(item) instead");
                 else
                     throw new MutationException($"Cannot insert a new {item.GetType().Name}, value already exists");
@@ -147,23 +147,23 @@ namespace Hiperspace
         public bool Update(TEntity item)
         {
             var current = Get(item);
-            if (current == null)
+            if (current is null)
                 throw new MutationException($"Cannot update a {item.GetType().Name}, use Add(item) if an existing value is not needed");
             return Bind(item, true, false).Ok;
         }
         public async Task<bool> UpdateAsync(TEntity item)
         {
             var current = await GetAsync(item);
-            if (current == null)
+            if (current is null)
                 throw new MutationException($"Cannot update a {item.GetType().Name}, use Add(item) if an existing value is not needed");
             return (Bind(item, true)).Ok;
         }
         public bool Delete(TEntity item)
         {
             var current = Get(item);
-            if (current == null)
+            if (current is null)
             {
-                if (item.GetType().GetCustomAttribute<VersionedAttribute>() != null)
+                if (item.GetType().GetCustomAttribute<VersionedAttribute>() is not null)
                 {
                     item.GetType().GetProperty("Deleted")?.SetValue(item, true);
                     return Bind(item, true, false).Ok;
@@ -176,9 +176,9 @@ namespace Hiperspace
         public async Task<bool> DeleteAsync(TEntity item)
         {
             var current = await GetAsync(item);
-            if (current == null)
+            if (current is null)
             {
-                if (item.GetType().GetCustomAttribute<VersionedAttribute>() != null)
+                if (item.GetType().GetCustomAttribute<VersionedAttribute>() is not null)
                 {
                     item.GetType().GetProperty("Deleted")?.SetValue(item, true);
                     return (Bind(item, true)).Ok;
@@ -254,7 +254,7 @@ namespace Hiperspace
         public IEnumerable<TEntity> Filter(IEnumerable<TEntity> entities, bool read = true)
         {
             var horizons = Horizons;
-            if (horizons != null)
+            if (horizons is not null)
                 return entities
                     .Where(e =>
                     {
@@ -271,14 +271,14 @@ namespace Hiperspace
         public IEnumerable<(TEntity Item, double Distance)> Filter(IEnumerable<(TEntity Item, double Distance)> entities, bool read = true)
         {
             var horizons = Horizons;
-            if (horizons != null)
+            if (horizons is not null)
                 return entities
                     .Where(e =>
                     {
                         for (int c = 0; c < horizons.Length; c++)
                         {
                             var horizon = horizons[c];
-                            if (horizon.predicate != null && !horizon.predicate(e.Item, Space?.ContextLabel, Space?.UserLabel, read))
+                            if (horizon.predicate is not null && !horizon.predicate(e.Item, Space?.ContextLabel, Space?.UserLabel, read))
                                 return false;
                         }
                         return true;
@@ -288,12 +288,12 @@ namespace Hiperspace
         public virtual Result<TEntity> Filter(TEntity entity, bool read = true)
         {
             var horizons = Horizons;
-            if (horizons != null)
+            if (horizons is not null)
             {
                 for (int c = 0; c < horizons.Length; c++)
                 {
                     var horizon = horizons[c];
-                    if (horizon.predicate != null && !horizon.predicate(entity, Space?.ContextLabel, Space?.UserLabel, read))
+                    if (horizon.predicate is not null && !horizon.predicate(entity, Space?.ContextLabel, Space?.UserLabel, read))
                     {
                         return Result.Fail(entity, horizons[c].Reason);
                     }
@@ -437,13 +437,13 @@ namespace Hiperspace
 
         public virtual TEntity? GetFirst(TEntity? template = null)
         {
-            if (template == null)
+            if (template is null)
                 template = new TEntity();
             return Find(template).FirstOrDefault();
         }
         public virtual async Task<TEntity?> GetFirstAsync(TEntity? template = null)
         {
-            if (template == null)
+            if (template is null)
                 template = new TEntity();
             var result = FindAsync(template).GetAsyncEnumerator();
             if (await result.MoveNextAsync())
@@ -454,13 +454,13 @@ namespace Hiperspace
         }
         public virtual TEntity? GetLast(TEntity? template = null)
         {
-            if (template == null)
+            if (template is null)
                 template = new TEntity();
             return Find(new TEntity()).LastOrDefault();
         }
         public virtual async Task<TEntity?> GetLastAsync(TEntity? template = null)
         {
-            if (template == null)
+            if (template is null)
                 template = new TEntity();
             TEntity? result = null;
             await foreach (var item in FindAsync(template, true))

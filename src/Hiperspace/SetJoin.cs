@@ -125,18 +125,18 @@ namespace Hiperspace
 
         private IEnumerable<KeyValuePair<string, ISetQuery>> buildSource (ISetJoin join)
         {
-            if (join.Inner != null)
+            if (join.Inner is not null)
             {
                 foreach (var source in buildSource(join.Inner))
                 {
                     yield return source;
                 }
             }
-            if (join.Left != null && join.Left.Alias != null && join.Left != null)
+            if (join.Left is not null && join.Left.Alias is not null && join.Left is not null)
             {
                 yield return KeyValuePair.Create(join.Left.Alias, join.Left);
             }
-            if (join.Right != null && join.Right.Alias != null && join.Right != null)
+            if (join.Right is not null && join.Right.Alias is not null && join.Right is not null)
             {
                 yield return KeyValuePair.Create(join.Right.Alias, join.Right);
             }
@@ -151,11 +151,11 @@ namespace Hiperspace
 
         public IEnumerator<TResult> GetEnumerator()
         {
-            if (_setLeft != null)
+            if (_setLeft is not null)
             {
                 foreach (var left in _left)
                 {
-                    if (_setRight != null)
+                    if (_setRight is not null)
                     {
                         foreach (var j in _joins)
                         {
@@ -176,11 +176,11 @@ namespace Hiperspace
                     }
                 }
             }
-            else if (_setJoin != null)
+            else if (_setJoin is not null)
             {
                 foreach (var left in _left)
                 {
-                    if (_setRight != null)
+                    if (_setRight is not null)
                     {
                         //!var tuple = UnpackElements(left).ToArray();
                         foreach (var j in _joins)
@@ -212,12 +212,12 @@ namespace Hiperspace
         public QueryExplain.Explain Explain()
         {
             var result = new QueryExplain.Explain() { Area = "Join" };
-            if (_setLeft != null)
+            if (_setLeft is not null)
             {
                 var (path, name) = _setLeft.Explain();
                 result.Children.Add(new QueryExplain.Explain() { Area = path, Message = name });
             }
-            if (_setRight != null)
+            if (_setRight is not null)
             {
                 var (path, name) = _setRight.Explain();
                 result.Children.Add(new QueryExplain.Explain() { Area = path, Message = name });

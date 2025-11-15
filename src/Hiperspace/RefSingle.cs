@@ -36,11 +36,11 @@ namespace Hiperspace
             _keyBuilder = current._keyBuilder;
             _binder = current._binder;
             Value = value;
-            if (current.SetSpace != null) Bind(current.SetSpace); 
+            if (current.SetSpace is not null) Bind(current.SetSpace); 
         }
         public RefSingle<TKey, TEntity> Replace(TEntity? value)
         {
-            if (value != null)
+            if (value is not null)
                 return new RefSingle<TKey, TEntity>(this, value);
             return this;
         }
@@ -52,9 +52,9 @@ namespace Hiperspace
         {
             get
             {
-                if (_entity == null)
+                if (_entity is null)
                 {
-                    if (SetSpace != null)
+                    if (SetSpace is not null)
                     {
                         _key = _keyBuilder();
                         _entity = SetSpace.Get<TKey>(ref _key);
@@ -72,7 +72,7 @@ namespace Hiperspace
             set
             {
                 _entity = value;
-                if (SetSpace != null && value != null)
+                if (SetSpace is not null && value is not null)
                 {
                     _key = _keyBuilder();
                     _binder(value);
@@ -82,9 +82,9 @@ namespace Hiperspace
         }
         public async Task<TEntity?> ValueAsync()
         {
-            if (_entity == null)
+            if (_entity is null)
             {
-                if (SetSpace != null)
+                if (SetSpace is not null)
                 {
                     _key = _keyBuilder();
                     _entity = await SetSpace.GetAsync<TKey>(_key);
@@ -107,7 +107,7 @@ namespace Hiperspace
         {
             _keyBuilder = keyBuilder;
             _binder = binder;
-            if (_entity != null) 
+            if (_entity is not null) 
             {
                 _binder(_entity);
             }
@@ -117,7 +117,7 @@ namespace Hiperspace
         public void Bind(SetSpace<TEntity> setspace)
         {
             SetSpace = setspace;
-            if (_entity != null && _entity.SetSpace != setspace)
+            if (_entity is not null && _entity.SetSpace != setspace)
             {
                 _binder(_entity);
                 setspace.Bind(_entity, true, true);
@@ -127,7 +127,7 @@ namespace Hiperspace
         {
             if (SetSpace?.Space == subSpace)
             {
-                if (_entity != null && _entity?.SetSpace?.Space == subSpace)
+                if (_entity is not null && _entity?.SetSpace?.Space == subSpace)
                     _entity.Unbind(subSpace);
                 SetSpace = null;
             }

@@ -253,7 +253,7 @@ namespace Hiperspace.Heap
 
             private bool Equals([NotNullWhen(true)] object? other, IEqualityComparer comparer)
             {
-                if (other == null) return false;
+                if (other is null) return false;
 
                 if (!(other is HeapNode objTuple))
                 {
@@ -277,7 +277,7 @@ namespace Hiperspace.Heap
 
             private int CompareTo(object? other, IComparer comparer)
             {
-                if (other == null) return 1;
+                if (other is null) return 1;
 
                 if (!(other is HeapNode objTuple))
                 {

@@ -17,7 +17,7 @@ namespace Hiperspace
             where T : INumber<T>, new()
         {
             T result = T.Zero;
-            if (source != null)
+            if (source is not null)
                 foreach (var item in source.ToArray())
                 {
                     result += func(item);
@@ -29,7 +29,7 @@ namespace Hiperspace
         {
             T result = T.Zero;
             T count = T.Zero;
-            if (source != null)
+            if (source is not null)
                 foreach (var item in source.ToArray())
                 {
                     result += func(item);
@@ -42,7 +42,7 @@ namespace Hiperspace
         {
             bool first = true;
             T returner = T.Zero;
-            if (source != null)
+            if (source is not null)
                 foreach (var item in source.ToArray())
                 {
                     T result = func(item);
@@ -63,7 +63,7 @@ namespace Hiperspace
         {
             bool first = true;
             T returner = T.Zero;
-            if (source != null)
+            if (source is not null)
                 foreach (var item in source.ToArray())
                 {
                     T result = func(item);
@@ -83,11 +83,11 @@ namespace Hiperspace
             where T : INumber<T>, new()
         {
             T returner = T.Zero;
-            if (source != null)
+            if (source is not null)
                 foreach (var item in source.ToArray())
                 {
                     T result = func(item);
-                    if (result != null && returner != null)
+                    if (result is not null && returner is not null)
                     {
                         returner = returner + T.One;
                     }
@@ -105,12 +105,12 @@ namespace Hiperspace
                 {
                     var last = versionspace?.Get(item, item!.SetSpace!.Space.DeltaFrom);
                     // subtract the prior value if exits to allow the sum to provide the delta
-                    if (last != null) result -= func(item);
+                    if (last is not null) result -= func(item);
                     result += func(item);
                 }
                 return result;
             }
-            else if (source != null)
+            else if (source is not null)
                 return Sum(source, func);
             return T.Zero;
         }
@@ -128,7 +128,7 @@ namespace Hiperspace
                     T result = func(item);
                     var last = versionspace?.Get(item, item!.SetSpace!.Space.DeltaFrom);
                     // subtract the prior value if exits to allow the sum to provide the delta
-                    if (last != null) result = T.Max(result, func(item));
+                    if (last is not null) result = T.Max(result, func(item));
                     if (first)
                     {
                         first = false;
@@ -141,7 +141,7 @@ namespace Hiperspace
                 }
                 return returner;
             }
-            else if (source != null)
+            else if (source is not null)
                 return Sum(source, func);
             return T.Zero;
         }
@@ -158,7 +158,7 @@ namespace Hiperspace
                     T result = func(item);
                     var last = versionspace?.Get(item, item!.SetSpace!.Space.DeltaFrom);
                     // subtract the prior value if exits to allow the sum to provide the delta
-                    if (last != null) result = T.Min(result, func(item));
+                    if (last is not null) result = T.Min(result, func(item));
                     if (first)
                     {
                         first = false;
@@ -171,7 +171,7 @@ namespace Hiperspace
                 }
                 return returner;
             }
-            else if (source != null)
+            else if (source is not null)
                 return Sum(source, func);
             return T.Zero;
         }
@@ -187,15 +187,15 @@ namespace Hiperspace
                     T result = func(item);
                     var last = versionspace?.Get(item, item!.SetSpace!.Space.DeltaFrom);
                     // subtract the prior value if exits to allow the sum to provide the delta
-                    if (last != null) result -= T.One;
-                    if (result != null && returner != null)
+                    if (last is not null) result -= T.One;
+                    if (result is not null && returner is not null)
                     {
                         returner = returner + T.One;
                     }
                 }
                 return returner ?? T.Zero;
             }
-            else if (source != null)
+            else if (source is not null)
                 return Sum(source, func);
             return T.Zero;
         }
@@ -203,7 +203,7 @@ namespace Hiperspace
         public static T? First<T>(SetSpace<T> source)
             where T : Element<T>, new()
         {
-            if (source != null)
+            if (source is not null)
             {
                 return source.GetFirst();
             }
@@ -212,7 +212,7 @@ namespace Hiperspace
         public static T? Last<T>(SetSpace<T> source)
             where T : Element<T>, new()
         {
-            if (source != null)
+            if (source is not null)
             {
                 return source.GetLast();
             }
@@ -224,7 +224,7 @@ namespace Hiperspace
             where TDrill : Element<TDrill>, new()
         {
             // if the dimension already has a value, get any drilldown values of the same type
-            if (target != null)
+            if (target is not null)
             {
                 foreach (var row in drilldown)
                 {
@@ -271,10 +271,10 @@ namespace Hiperspace
         public static string CubeName(params ICubeDimension?[]? dimensions)
         {
             StringBuilder sb = new StringBuilder();
-            if (dimensions == null || dimensions.Length == 0) return string.Empty;
+            if (dimensions  is null || dimensions.Length == 0) return string.Empty;
             for (int i = 0; i < dimensions.Length; i++)
             {
-                if (dimensions[i] == null)
+                if (dimensions[i]  is null)
                     continue;
                 else
                 {

@@ -44,7 +44,7 @@ namespace Togaf
         }
         public static HashSet<Togaf.GoalRef> Goals(HashSet<Graph.HiperEdge>? edges)
         {
-            if (edges == null) return new HashSet<Togaf.GoalRef>();
+            if (edges is null) return new HashSet<Togaf.GoalRef>();
             return 
                 edges
                 .Where(edge => edge.TypeName == "AF-Goal" && edge.To?.Object is Togaf.Business.Goal)

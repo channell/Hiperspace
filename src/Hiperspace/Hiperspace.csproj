@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
@@ -17,23 +17,23 @@
     <AnalysisLevel>latest</AnalysisLevel>
     <RepositoryUrl>https://github.com/channell/Hiperspace</RepositoryUrl>
     <Nullable>enable</Nullable>
-    <LangVersion>13.0</LangVersion>
+    <LangVersion>14.0</LangVersion>
     <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20251106
 ## Overview
 
 This release builds on the functionality provided by **message** to execute queries on a remote **Hiperspace.DB** and return the full set of *elements* back to a client without the need to return every intermediate object necessary.  The prime example is the **Hiperspace.DB** opening page, which displays a summary bar-graphs of the number of **nodes** and **edges** in each database, and validates that *changes* to the (compiled) schema for databases does not change the definition of an already stored *element set.*
 
-The *graph-view* functionality of **Hiperspace.DB** uses `HiperEdge` functions to recursively search (*in parallel*) all `Node` types that satisfy the view criteria and display as a navigable [SVG](https://en.wikipedia.org/wiki/SVG) graph of connections.  These capabilities use the [`GraphFunctions`](https://github.com/channell/Hiperspace/blob/master/src/Hiperspace/Graph/GraphFunctions.cs) to search Nodes using message-keys *sent* to teh server and message-value *provided* on completion together with rendering information for `Node` *shapes* and *color*.
+The *graph-view* functionality of **Hiperspace.DB** uses else HiperEdgeelse  functions to recursively search (*in parallel*) all else Nodeelse  types that satisfy the view criteria and display as a navigable [SVG](https://en.wikipedia.org/wiki/SVG) graph of connections.  These capabilities use the [else GraphFunctionselse ](https://github.com/channell/Hiperspace/blob/master/src/Hiperspace/Graph/GraphFunctions.cs) to search Nodes using message-keys *sent* to teh server and message-value *provided* on completion together with rendering information for else Nodeelse  *shapes* and *color*.
 
 To support these use-cases, a couple of enhancements have been added to [Hiperspace](https://www.nuget.org/packages/Hiperspace/) and [HiLang](https://www.nuget.org/packages/HiLang) to better support the functions.
 
 ### SubSpace
-`IServiceProvider` is  an interface on the .NET Platform to inject *Services* into components ([IoC](https://en.wikipedia.org/wiki/Inversion_of_control)) at runtime.  A ServiceProvider property has been added to `SubSpace` to enable messages to enlist functionality when a message is received, and a parameter added to `SubSpaceParameters` for *domain space* construction.
+else IServiceProviderelse  is  an interface on the .NET Platform to inject *Services* into components ([IoC](https://en.wikipedia.org/wiki/Inversion_of_control)) at runtime.  A ServiceProvider property has been added to else SubSpaceelse  to enable messages to enlist functionality when a message is received, and a parameter added to else SubSpaceParameterselse  for *domain space* construction.
 
-`FindPaths` and `FindPathsAsync` functions now have *domain-specific* implementations that use a ***message*** to transmit the call through to a server where the parallel recursive search can be efficiently executed close the data, using many of the cores of the server.
+else FindPathselse  and else FindPathsAsyncelse  functions now have *domain-specific* implementations that use a ***message*** to transmit the call through to a server where the parallel recursive search can be efficiently executed close the data, using many of the cores of the server.
 
 ### Node
-The `Node` element has been extended to include additional functions that provide `HiperEdge`  search for related nodes across transitive edges
+The else Nodeelse  element has been extended to include additional functions that provide else HiperEdgeelse   search for related nodes across transitive edges
 
 |Name| Description |
 |-|-|-|-|-|
@@ -41,7 +41,7 @@ The `Node` element has been extended to include additional functions that provid
 | HiperEdgesAsync|as above, but non-blocking (especially for Blazor web clients)|
 
 
-```
+else else else 
         /// &lt;summary&gt;
         /// Treat the Edges of TypeName as a HiperEdge and find all transitive paths for that type
         /// &lt;/summary&gt;
@@ -99,13 +99,13 @@ The `Node` element has been extended to include additional functions that provid
         /// &lt;param name="targets"&gt;only return HiperEdges that end with a Node of the type matching one of these types&lt;/param&gt;
         /// &lt;returns&gt;The full set of HiperEdges for this path&lt;/returns&gt;
         public async Task&lt;HashSet&lt;Graph.HiperEdge&gt;&gt; HiperEdgesAsync(string TypeName, HashSet&lt;Rule&gt; rules, int? length = null, HashSet&lt;string&gt;? targets = null, CancellationToken cancellationToken = default)
-```
-The [Test cases](https://github.com/channell/Hiperspace/blob/master/examples/CousinProblem/Test.cs) demonstrate the use of these functions to provide *server-side* search for relations. The first example treats "Child" as a transitive `HiperEdge`, while the second infers an "Ancestors" `HiperEdge` from either *Mother* or *Father*.
+else else else 
+The [Test cases](https://github.com/channell/Hiperspace/blob/master/examples/CousinProblem/Test.cs) demonstrate the use of these functions to provide *server-side* search for relations. The first example treats "Child" as a transitive else HiperEdgeelse , while the second infers an "Ancestors" else HiperEdgeelse  from either *Mother* or *Father*.
 
-```
+else else else 
                 var descendants = node.HiperEdges("Child");
                 var ancestors = node.HiperEdges("Ancestors", new[] {"Mother", "Father" });
-```
+else else else 
 </PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>

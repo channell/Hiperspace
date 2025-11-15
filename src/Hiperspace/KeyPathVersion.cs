@@ -40,7 +40,7 @@ namespace Hiperspace
             else
             {
                 var item = Get(ref key);
-                if (item != null)
+                if (item is not null)
                     foreach (var v in item.GetVersions())
                     {
                         if (v.AsAt <= version)
@@ -56,7 +56,7 @@ namespace Hiperspace
             else
             {
                 var item = await GetAsync(key);
-                if (item != null)
+                if (item is not null)
                 await foreach (var v in item.GetVersionsAsync())
                 {
                     if (v.AsAt <= version)

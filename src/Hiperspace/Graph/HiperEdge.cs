@@ -49,7 +49,7 @@ namespace Graph
             _key = source._key;
             _value = source._value;
 
-            if (space != null)
+            if (space is not null)
                 Bind(space);
         }
 
@@ -62,7 +62,7 @@ namespace Graph
             }
             set
             {
-                if (SetSpace != null && _key.From != value) throw new Hiperspace.ValueMutationException("From");
+                if (SetSpace is not null && _key.From != value) throw new Hiperspace.ValueMutationException("From");
                 _key.From = value;
             }
         }
@@ -83,7 +83,7 @@ namespace Graph
             }
             set
             {
-                if (SetSpace != null && _key.To != value) throw new Hiperspace.ValueMutationException("To");
+                if (SetSpace is not null && _key.To != value) throw new Hiperspace.ValueMutationException("To");
                 _key.To = value;
             }
         }
@@ -104,7 +104,7 @@ namespace Graph
             }
             set
             {
-                if (SetSpace != null && _key.TypeName != value) throw new Hiperspace.ValueMutationException($"TypeName");
+                if (SetSpace is not null && _key.TypeName != value) throw new Hiperspace.ValueMutationException($"TypeName");
                 _key.TypeName = value;
             }
         }
@@ -119,7 +119,7 @@ namespace Graph
             }
             set
             {
-                if (SetSpace != null && _value.Name != value) throw new Hiperspace.ValueMutationException($"CubeName");
+                if (SetSpace is not null && _value.Name != value) throw new Hiperspace.ValueMutationException($"CubeName");
                 _value.Name = value;
             }
         }
@@ -134,7 +134,7 @@ namespace Graph
             }
             set
             {
-                if (SetSpace != null && _value.Edge != value) throw new Hiperspace.ValueMutationException("Edge");
+                if (SetSpace is not null && _value.Edge != value) throw new Hiperspace.ValueMutationException("Edge");
                 _value.Edge = value;
             }
         }
@@ -149,7 +149,7 @@ namespace Graph
             }
             set
             {
-                if (SetSpace != null && _value.Source != value) throw new Hiperspace.ValueMutationException("Source");
+                if (SetSpace is not null && _value.Source != value) throw new Hiperspace.ValueMutationException("Source");
                 _value.Source = value;
             }
         }
@@ -164,7 +164,7 @@ namespace Graph
             }
             set
             {
-                if (SetSpace != null && _value.Width != value) throw new Hiperspace.ValueMutationException($"Width");
+                if (SetSpace is not null && _value.Width != value) throw new Hiperspace.ValueMutationException($"Width");
                 _value.Width = value;
             }
         }
@@ -179,7 +179,7 @@ namespace Graph
             }
             set
             {
-                if (SetSpace != null && _value.Length != value) throw new Hiperspace.ValueMutationException($"Length");
+                if (SetSpace is not null && _value.Length != value) throw new Hiperspace.ValueMutationException($"Length");
                 _value.Length = value;
             }
         }
@@ -208,14 +208,14 @@ namespace Graph
 
                 if (!(From.HasValue)) return false;
                 if (!(To.HasValue)) return false;
-                if (TypeName == null || TypeName == default) return false;
+                if (TypeName is null || TypeName == default) return false;
                 return true;
             }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public bool IsSargable()
             {
 
-                if (From != null && From?.Key.IsSargable() == true) return true;
+                if (From is not null && From?.Key.IsSargable() == true) return true;
                 return false;
             }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -259,7 +259,7 @@ namespace Graph
             }
             public override bool Equals(Object? other)
             {
-                if (other == null) return false;
+                if (other is null) return false;
                 if (other is KeyType) return Equals((KeyType)other);
                 return false;
             }
@@ -300,7 +300,7 @@ namespace Graph
 
                 if (left.From < right.From) return true;
                 if (left.To < right.To) return true;
-                if (left.TypeName != null && left.TypeName.CompareTo(right.TypeName) < 0) return true;
+                if (left.TypeName is not null && left.TypeName.CompareTo(right.TypeName) < 0) return true;
                 return false;
             }
             public static bool operator >(KeyType left, KeyType right)
@@ -308,7 +308,7 @@ namespace Graph
 
                 if (left.From > right.From) return true;
                 if (left.To > right.To) return true;
-                if (left.TypeName != null && left.TypeName.CompareTo(right.TypeName) > 0) return true;
+                if (left.TypeName is not null && left.TypeName.CompareTo(right.TypeName) > 0) return true;
                 return false;
             }
 
@@ -397,9 +397,9 @@ namespace Graph
         /// <returns>Collection of all the edges</returns>
         public IEnumerable<Edge> AllEdges()
         {
-            if (Edge != null)
+            if (Edge is not null)
                 yield return Edge;
-            if (Source != null)
+            if (Source is not null)
                 foreach (var item in Source.AllEdges())
                     yield return item;
         }
@@ -417,12 +417,12 @@ namespace Graph
         {
             if (root)
             {
-                if (From != null)
+                if (From is not null)
                     yield return From;
-                if (To != null)
+                if (To is not null)
                     yield return To;
             }
-            if (Source != null)
+            if (Source is not null)
                 foreach (var item in Source.InnerAllNodes(false))
                     yield return item;
         }
@@ -436,7 +436,7 @@ namespace Graph
 #pragma warning disable CS8603
 #pragma warning disable CS8604
 
-            if (item == null) return null!;
+            if (item is null) return null!;
             var view = new Edge
             {
 
@@ -453,7 +453,7 @@ namespace Graph
         }
         public static implicit operator KeyRef<Edge.KeyType, Edge>(HiperEdge? key)
         {
-            if (key != null)
+            if (key is not null)
                 return (Edge)key;
             else
                 return default;
@@ -462,15 +462,15 @@ namespace Graph
         {
             var item = this;
 
-            if (that.SKey != null)
+            if (that.SKey is not null)
                 item.SKey = that.SKey;
-            if (that.From != null)
+            if (that.From is not null)
                 item.From = new(that.From);
-            if (that.To != null)
+            if (that.To is not null)
                 item.To = new(that.To);
-            if (that.TypeName != null)
+            if (that.TypeName is not null)
                 item.TypeName = that.TypeName;
-            if (that.Name != null)
+            if (that.Name is not null)
                 item.Name = that.Name;
         }
         #endregion
@@ -482,11 +482,11 @@ namespace Graph
         {
 
 
-            if (Width == null)
+            if (Width is null)
             {
                 Width = 1;
             }
-            if (Length == null)
+            if (Length is null)
             {
                 Length = 1;
             }
@@ -531,19 +531,19 @@ namespace Graph
         }
         public override bool Equals(Object? other)
         {
-            if (other == null) return false;
+            if (other is null) return false;
             if (other is HiperEdge) return Equals((HiperEdge)other);
             return false;
         }
         public override bool Equals(HiperEdge? other)
         {
-            if (ReferenceEquals(null, other))
+            if (other is null)
                 return false;
             return (_key == other._key);
         }
         public override int CompareTo(HiperEdge? other)
         {
-            if (ReferenceEquals(null, other))
+            if (other is null)
                 throw new ArgumentNullException(nameof(other));
             if (_key < other._key)
                 return -1;
@@ -568,20 +568,20 @@ namespace Graph
         }
         public static implicit operator KeyRef<KeyType, HiperEdge>?(HiperEdge? other)
         {
-            if (!ReferenceEquals(null, other))
+            if (other is not null)
                 return other.self;
             return null;
         }
         internal bool Filter(HiperEdge other, bool read)
         {
 
-            if (other.From != null && this.From != null && this.From != other.From) return false;
-            if (other.To != null && this.To != null && this.To != other.To) return false;
-            if (other.TypeName != null && this.TypeName != null && this.TypeName != other.TypeName) return false;
+            if (other.From is not null && this.From is not null && this.From != other.From) return false;
+            if (other.To is not null && this.To is not null && this.To != other.To) return false;
+            if (other.TypeName is not null && this.TypeName is not null && this.TypeName != other.TypeName) return false;
 
-            if (other.Name != null && this.Name != null && this.Name != other.Name) return false;
-            if (other.Edge != null && this.Edge != null && this.Edge != other.Edge) return false;
-            if (other.Source != null && this.Source != null && this.Source != other.Source) return false;
+            if (other.Name is not null && this.Name is not null && this.Name != other.Name) return false;
+            if (other.Edge is not null && this.Edge is not null && this.Edge != other.Edge) return false;
+            if (other.Source is not null && this.Source is not null && this.Source != other.Source) return false;
             return true;
         }
         public override bool BindKey<TKey>(TKey key)
@@ -595,18 +595,18 @@ namespace Graph
         }
         public static bool operator ==(HiperEdge? left, HiperEdge? right)
         {
-            if (ReferenceEquals(null, left) && ReferenceEquals(null, right))
+            if (left is null && right is null)
                 return true;
-            else if (ReferenceEquals(null, left) || ReferenceEquals(null, right))
+            else if (left is null || right is null)
                 return false;
             else
                 return left.Equals(right);
         }
         public static bool operator !=(HiperEdge? left, HiperEdge? right)
         {
-            if (ReferenceEquals(null, left) && ReferenceEquals(null, right))
+            if (left is null && right is null)
                 return false;
-            else if (ReferenceEquals(null, left) || ReferenceEquals(null, right))
+            else if (left is null || right is null)
                 return true;
             else
                 return !left.Equals(right);

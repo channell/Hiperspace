@@ -40,7 +40,7 @@ namespace Graph
             , int? length = null
             , HashSet<string>? targets = null)
         {
-            if (root == null || route == null)
+            if (root is null || route is null)
                 return new HashSet<HiperEdge>();
             else
                 return new HashSet<HiperEdge>(PathsAsync(root, new RouteMap(route), length, targets).GetAwaiter().GetResult());
@@ -51,7 +51,7 @@ namespace Graph
             , int? length = null
             , HashSet<string>? targets = null)
         {
-            if (root != null && route != null && root.SetSpace != null)
+            if (root is not null && route is not null && root.SetSpace is not null)
                 return root.SetSpace.Space.FindPaths(root, route, length, targets);
             else
                 return new HashSet<HiperEdge>();
@@ -62,7 +62,7 @@ namespace Graph
             , int? length = null
             , HashSet<string>? targets = null)
         {
-            if (root != null && route != null && root.SetSpace != null)
+            if (root is not null && route is not null && root.SetSpace is not null)
                 return await root.SetSpace.Space.FindPathsAsync (root, route.Value, length, targets);
             else
                 return new HashSet<HiperEdge>();
@@ -81,7 +81,7 @@ namespace Graph
             HashSet<HiperEdge> result = new HashSet<HiperEdge>();
             foreach (var edge in root.Froms)
             {
-                if (edge != null)
+                if (edge is not null)
                 {
                     dispatched.Increment();
                     _ = Task.Run(async () =>
@@ -105,7 +105,7 @@ namespace Graph
                 {
                     if (result.TryGetValue(item.Value, out var path))
                     {
-                        if (path != null)
+                        if (path is not null)
                         {
                             if (path.Length > item.Value.Length)
                             {
@@ -145,9 +145,9 @@ namespace Graph
             , HashSet<string>? targets
             , CancellationToken cancellationToken = default)
         {
-            if (edge == null ||
+            if (edge is null ||
                 root == edge.To ||
-                root == edge.From && source != null ||
+                root == edge.From && source is not null ||
                 recursion >= length ||
                 edge.InPath(source))
                 return;
@@ -163,13 +163,13 @@ namespace Graph
                 Width = 1
             };
             var from = edge?.To?.Froms.ToArray();
-            if (from != null && from.Length > 0)
+            if (from is not null && from.Length > 0)
             {
                 foreach (var next in from)
                 {
-                    if (next != null)
+                    if (next is not null)
                     {
-                        if ((recursion + 1 <= length || length == null) && route.Match(next) == true)
+                        if ((recursion + 1 <= length || length is null) && route.Match(next) == true)
                         {
                             dispatched.Increment();
                             _ = Task.Run(async () =>
@@ -188,17 +188,17 @@ namespace Graph
                 }
             }
             // if this edge is in the set of target types
-            if (edge != null &&
+            if (edge is not null &&
                 route.Match(edge) == true && 
-                edge?.To?.TypeName != null && 
-                (targets == null || targets.Contains(edge.To.TypeName)))
+                edge?.To?.TypeName is not null && 
+                (targets is null || targets.Contains(edge.To.TypeName)))
             {
                 await channel.Writer.WriteAsync(Result.Ok(path));
             }
         }
         public static bool InPath(this Edge edge, HiperEdge? path)
         {
-            if (path == null)
+            if (path is null)
                 return false;
             else if (edge == path.Edge ||
                      edge.To == path.Edge?.From)
@@ -232,7 +232,7 @@ namespace Graph
             HashSet<HiperEdge> result = new HashSet<HiperEdge>();
             foreach (var edge in root.Froms)
             {
-                if (edge != null)
+                if (edge is not null)
                 {
                     dispatched.Increment();
                     _ = Task.Run(async () =>
@@ -291,19 +291,19 @@ namespace Graph
             {
                 await channel.Writer.WriteAsync(Result.Ok(path));
             }
-            else if (edge == null ||
+            else if (edge is null ||
                 recursion >= length ||
                 edge.InPath(source))
                 return;
 
             var from = edge?.To?.Froms.ToArray();
-            if (from != null && from.Length > 0)
+            if (from is not null && from.Length > 0)
             {
                 foreach (var next in from)
                 {
-                    if (next != null)
+                    if (next is not null)
                     {
-                        if ((recursion + 1 <= length || length == null) && route.Match(next) == true)
+                        if ((recursion + 1 <= length || length is null) && route.Match(next) == true)
                         {
                             dispatched.Increment();
                             _ = Task.Run(async () =>

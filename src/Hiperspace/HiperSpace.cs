@@ -32,27 +32,27 @@ namespace Hiperspace
         public event AfterFind? OnAfterFind;
         protected void RaiseOnBind(byte[] key, byte[] value, object? entity)
         {
-            if (OnBind != null && entity != null)
+            if (OnBind is not null && entity is not null)
                 OnBind(key, value, entity);
         }
         protected void RaiseOnBeforeGet(ref byte[] key)
         {
-            if (OnBeforeGet != null)
+            if (OnBeforeGet is not null)
                 OnBeforeGet(ref key);
         }
         protected void RaiseOnAfterGet(ref byte[] key, ref byte[] value)
         {
-            if (OnAfterGet != null)
+            if (OnAfterGet is not null)
                 OnAfterGet(ref key, ref value);
         }
         protected void RaiseOnBeforeFind(ref byte[] key, ref byte[] value)
         {
-            if (OnBeforeFind != null)
+            if (OnBeforeFind is not null)
                 OnBeforeFind(ref key, ref value);
         }
         protected void RaiseOnAfterFind(ref byte[] key, ref byte[] value)
         {
-            if (OnAfterFind != null)
+            if (OnAfterFind is not null)
                 OnAfterFind(ref key, ref value);
         }
 
@@ -801,7 +801,7 @@ namespace Hiperspace
         public (bool success, MetaModel model) ApplyMetaModel(MetaModel metaModel)
         {
             var current = GetMetaModel();
-            if (current == null)
+            if (current  is null)
             {
                 return (SetMetaModel(metaModel), metaModel);
             }
@@ -813,7 +813,7 @@ namespace Hiperspace
         public (bool success, MetaModel model) ApplyMetaModel(MetaModel metaModel, MetaModel current)
         {
             // new hiperspace
-            if (current == null)
+            if (current  is null)
             {
                 return (SetMetaModel(metaModel), metaModel);
             }
@@ -844,7 +844,7 @@ namespace Hiperspace
         public async Task<(bool success, MetaModel model)> ApplyMetaModelAsync(MetaModel metaModel)
         {
             var current = GetMetaModel();
-            if (current == null)
+            if (current  is null)
             {
                 return (await SetMetaModelAsync(metaModel), metaModel);
             }
@@ -856,7 +856,7 @@ namespace Hiperspace
         public async Task<(bool success, MetaModel model)> ApplyMetaModelAsync(MetaModel metaModel, MetaModel current)
         {
             // new hiperspace
-            if (current == null)
+            if (current  is null)
             {
                 return (await SetMetaModelAsync(metaModel), metaModel);
             }

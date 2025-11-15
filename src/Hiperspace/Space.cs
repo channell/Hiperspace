@@ -25,7 +25,7 @@ namespace Hiperspace
         }
         public static byte[] KeyBytes<TProto>(TypeModel? model, TProto proto, (int key, (int member, int key)[] values)[] map)
         {
-            if (model == null) throw new TypeModelException();
+            if (model  is null) throw new TypeModelException();
             var ms = new MemoryStream();
             model.Serialize(ms, proto); 
             ms.Position = 0;
@@ -39,7 +39,7 @@ namespace Hiperspace
         }
         public static byte[] VectorKeyBytes<TProto>(TypeModel? model, TProto proto, (int key, (int member, int key)[] values)[] map)
         {
-            if (model == null) throw new TypeModelException();
+            if (model  is null) throw new TypeModelException();
             var bytes = KeyBytes(model, proto, map);
             var result = new byte[bytes.Length + 1];
             var span = new Span<byte>(result, 1, bytes.Length);
@@ -48,7 +48,7 @@ namespace Hiperspace
         }
         public static byte[] ValueBytes<TProto>(TypeModel? model, TProto proto, bool eof = false)
         {
-            if (model == null) throw new TypeModelException();
+            if (model  is null) throw new TypeModelException();
             var ms = new MemoryStream();
             model.Serialize(ms, proto);
             ms.Position = 0;
@@ -58,7 +58,7 @@ namespace Hiperspace
         {
             try
             {
-                if (model == null) throw new TypeModelException();
+                if (model  is null) throw new TypeModelException();
                 var lpv = Vpl2lpv(bytes, map);
                 var protoStream = new MemoryStream(lpv);
                 protoStream.Position = 0;
@@ -74,7 +74,7 @@ namespace Hiperspace
         {
             try
             {
-                if (model == null) throw new TypeModelException();
+                if (model  is null) throw new TypeModelException();
                 var result = new byte[bytes.Length - 1];
                 var span = new Span<byte>(bytes, 1, bytes.Length - 1);
                 span.CopyTo(result);
@@ -87,7 +87,7 @@ namespace Hiperspace
         }
         public static TProto FromValue<TProto>(TypeModel? model, byte[] bytes)
         {
-            if (model == null) throw new TypeModelException();
+            if (model  is null) throw new TypeModelException();
             var protoStream = new MemoryStream(bytes);
             protoStream.Position = 0;
             return model.Deserialize<TProto>(protoStream);

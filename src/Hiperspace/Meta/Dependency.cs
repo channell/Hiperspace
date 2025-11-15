@@ -30,14 +30,14 @@ namespace Hiperspace.Meta
         public bool Contains(object sender)
         {
             if (Sender.Equals(sender)) return true;
-            if (From != null) return From.Contains(sender);
+            if (From is not null) return From.Contains(sender);
             return false;
         }
         public int Length
         {
             get
             {
-                if (From == null) return 1;
+                if (From is null) return 1;
                 return From.Length;
             }
         }
@@ -46,7 +46,7 @@ namespace Hiperspace.Meta
             get
             {
                 yield return Sender;
-                if (From != null)
+                if (From is not null)
                     foreach (var o in From.Path)
                         yield return o;
             }
@@ -106,7 +106,7 @@ namespace Hiperspace.Meta
 
         public IDisposable Subscribe<TTarget>(IObserver<(TTarget target, DependencyPath sender)> observer)
         {
-            if (_dependencies != null)
+            if (_dependencies is not null)
             {
                 var source =
                     _dependencies
@@ -122,7 +122,7 @@ namespace Hiperspace.Meta
 
         public void Dispose()
         {
-            if (_dependencies != null)
+            if (_dependencies is not null)
                 foreach (var d in _dependencies)
                     d.Dispose();
         }
@@ -170,7 +170,7 @@ namespace Hiperspace.Meta
         {
             _dependency = dependency;
             _sourceSet = sourceSet;
-            if (sourceSet != null)
+            if (sourceSet is not null)
             {
                 sourceSet.OnDependency += OnDependency;
             }
@@ -178,13 +178,13 @@ namespace Hiperspace.Meta
         
         private void OnDependency((TSource source, DependencyPath sender) value)
         {
-            if (OnTrigger != null || Dependencies._eventSubscriptions > 0)
+            if (OnTrigger is not null || Dependencies._eventSubscriptions > 0)
             {
-                if (value.source != null)
+                if (value.source is not null)
                 {
                     var target = _dependency(value.source);
-                    if (target != null && value.sender.Contains(target)) return;
-                    if (target != null)
+                    if (target is not null && value.sender.Contains(target)) return;
+                    if (target is not null)
                     {
                         OnTrigger?.Invoke((target, value.sender));
                         target?.SetSpace?.RaiseOnDependency((target, new DependencyPath(target, value.sender)));
@@ -215,7 +215,7 @@ namespace Hiperspace.Meta
 
             public void Dispose()
             {
-                if (_sink != null)
+                if (_sink is not null)
                     _source.OnTrigger -= OnNext;
                 Interlocked.Decrement(ref Dependencies._eventSubscriptions);
                 GC.SuppressFinalize(this);
@@ -258,7 +258,7 @@ namespace Hiperspace.Meta
         {
             if (!disposedValue)
             {
-                if (disposing && _sourceSet != null)
+                if (disposing && _sourceSet is not null)
                 {
                     _sourceSet.OnDependency -= OnDependency;
                 }

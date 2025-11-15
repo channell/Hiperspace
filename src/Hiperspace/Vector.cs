@@ -40,14 +40,14 @@ namespace Hiperspace
 
         public bool IsInt(int l)
         {
-            if (Ints == null || Ints.Length != l)
+            if (Ints is null || Ints.Length != l)
                 return false;
             return true;
         }
 
         public bool IsFloat(int l)
         {
-            if (Floats == null || Floats.Length != l)
+            if (Floats is null || Floats.Length != l)
                 return false;
             return true;
         }
@@ -55,7 +55,7 @@ namespace Hiperspace
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Float()
         {
-            if (Ints != null && Floats == null)
+            if (Ints is not null && Floats is null)
             {
                 Floats = new float[Ints.Length];
                 for (int c = 0; c < Ints.Length; c++)
@@ -75,9 +75,9 @@ namespace Hiperspace
         {
             Float();
 
-            if (Floats != null)
+            if (Floats is not null)
             {
-                if (Floats.Length == 0 || other.Floats == null || Floats.Length != other.Floats.Length)
+                if (Floats.Length == 0 || other.Floats is null || Floats.Length != other.Floats.Length)
                     return null;
                 switch (method)
                 {
@@ -111,7 +111,7 @@ namespace Hiperspace
         }
         public override bool Equals(Object? other)
         {
-            if (other == null) return false;
+            if (other is null) return false;
             if (other is Vector) return Equals((Vector)other);
             return false;
         }
@@ -131,7 +131,7 @@ namespace Hiperspace
         }
         public static bool operator ==(Vector left, Vector right)
         {
-            if (left.Ints != null && right.Ints != null)
+            if (left.Ints is not null && right.Ints is not null)
             {
                 if (left.Ints.Length != right.Ints.Length) 
                     return false;
@@ -141,7 +141,7 @@ namespace Hiperspace
                     if (!eq) return false;
                 }
             }
-            else if (left.Floats != null && right.Floats != null)
+            else if (left.Floats is not null && right.Floats is not null)
             {
                 if (left.Floats.Length != right.Floats.Length)
                     return false;
@@ -159,7 +159,7 @@ namespace Hiperspace
         }
         public static bool operator <(Vector left, Vector right)
         {
-            if (left.Ints != null && right.Ints != null)
+            if (left.Ints is not null && right.Ints is not null)
             {
                 if (left.Ints.Length != right.Ints.Length)
                     return false;
@@ -169,7 +169,7 @@ namespace Hiperspace
                     if (!cmp) return false;
                 }
             }
-            else if (left.Floats != null && right.Floats != null)
+            else if (left.Floats is not null && right.Floats is not null)
             {
                 if (left.Floats.Length != right.Floats.Length)
                     return false;
@@ -183,7 +183,7 @@ namespace Hiperspace
         }
         public static bool operator >(Vector left, Vector right)
         {
-            if (left.Ints != null && right.Ints != null)
+            if (left.Ints is not null && right.Ints is not null)
             {
                 if (left.Ints.Length != right.Ints.Length)
                     return false;
@@ -193,7 +193,7 @@ namespace Hiperspace
                     if (!cmp) return false;
                 }
             }
-            else if (left.Floats != null && right.Floats != null)
+            else if (left.Floats is not null && right.Floats is not null)
             {
                 if (left.Floats.Length != right.Floats.Length)
                     return false;

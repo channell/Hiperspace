@@ -353,7 +353,7 @@ namespace Hiperspace
             for (int c = 0; c < _read.Length; c++)
             {
                 var result = _read[c].Get(key);
-                if (result != null && result != Array.Empty<byte>())
+                if (result is not null && result != Array.Empty<byte>())
                     return result;
             }
             return Array.Empty<byte>();
@@ -374,7 +374,7 @@ namespace Hiperspace
             for (int c = 0; c < _read.Length; c++)
             {
                 var result = await _read[c].GetAsync(key);
-                if (result != null && result != Array.Empty<byte>())
+                if (result is not null && result != Array.Empty<byte>())
                     return result;
             }
             return Array.Empty<byte>();
