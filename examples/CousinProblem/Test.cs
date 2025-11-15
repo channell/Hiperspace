@@ -45,8 +45,8 @@ namespace CousinProblem
             {
                 var gendererror =
                     (from p in space.Persons
-                     where p.Father is not null && p.Father.Gender is not null && p.Father.Gender != Gender.Male ||
-                            p.Mother is not null && p.Mother.Gender is not null && p.Mother.Gender != Gender.Female
+                     where p.Father != null && p.Father.Gender != null && p.Father.Gender != Gender.Male ||
+                            p.Mother != null && p.Mother.Gender != null && p.Mother.Gender != Gender.Female
                      select new { p.Name, Mine = p.Gender, father = p.Father, mother = p.Mother }
                     ).ToList();
                 gendererror.ForEach(r => _output.WriteLine($"{r.Name} ({r.Mine}) has father {r.father.Name} and mother {r.mother.Name}"));
@@ -68,7 +68,7 @@ namespace CousinProblem
             using (var space = new CousinsSpace(_space))
             {
                 var eve = space.Persons.Get(new Person { Name = "Eve" })!;
-                Node node = eve;
+                Node node = eve!;
                 var descendants = node.HiperEdges("Child");
 
                 foreach (var child in descendants)
@@ -84,7 +84,7 @@ namespace CousinProblem
             using (var space = new CousinsSpace(_space))
             {
                 var lucy = space.Persons.Get(new Person { Name = "Lucy" })!;
-                Node node = lucy;
+                Node node = lucy!;
                 var ancestors = node.HiperEdges("Ancestors", new[] {"Mother", "Father" });
 
                 foreach (var child in ancestors)
@@ -112,9 +112,13 @@ namespace CousinProblem
         {
             using (var space = new CousinsSpace(_space))
             {
+                var l = space.Edges.ToArray();
+                var l2 = (from e in space.Edges select e).ToArray();
+                var l3 = (from e in space.Edges where e.From != null select e).ToArray();
+                var l4 = (from e in space.Edges where e.To != null select e).ToArray();
                 var lines =
                     (from e in space.Edges
-                     where e.From is not null && e.To is not null
+                     where e.From != null && e.To != null
                      select e
                     ).ToList();
 
@@ -177,7 +181,7 @@ namespace CousinProblem
                         }
                     }
                     var edges = (from r in space.Edges
-                                 where r.From is not null && r.To is not null
+                                 where r.From != null && r.To != null
                                  select r).ToArray();
                     for (var i = 0; i < edges.Length; i++)
                     {

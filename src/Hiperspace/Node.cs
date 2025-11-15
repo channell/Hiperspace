@@ -460,7 +460,7 @@ namespace Hiperspace
         }
         public static bool operator !=(Node? left, Node? right)
         {
-            if (left is not null && right is null)
+            if (left is null && right is null)
                 return false;
             else if (left is null || right is null)
                 return true;
