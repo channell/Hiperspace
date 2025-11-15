@@ -18,94 +18,21 @@
     <RepositoryUrl>https://github.com/channell/Hiperspace</RepositoryUrl>
     <Nullable>enable</Nullable>
     <LangVersion>14.0</LangVersion>
-    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20251106
+    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20251115
 ## Overview
 
-This release builds on the functionality provided by **message** to execute queries on a remote **Hiperspace.DB** and return the full set of *elements* back to a client without the need to return every intermediate object necessary.  The prime example is the **Hiperspace.DB** opening page, which displays a summary bar-graphs of the number of **nodes** and **edges** in each database, and validates that *changes* to the (compiled) schema for databases does not change the definition of an already stored *element set.*
+This version updates to .NET 10 and modernizes the code to use `name != null` and `ReferenceEquals(name, null)` 
+to `name is not null`.
 
-The *graph-view* functionality of **Hiperspace.DB** uses else HiperEdgeelse  functions to recursively search (*in parallel*) all else Nodeelse  types that satisfy the view criteria and display as a navigable [SVG](https://en.wikipedia.org/wiki/SVG) graph of connections.  These capabilities use the [else GraphFunctionselse ](https://github.com/channell/Hiperspace/blob/master/src/Hiperspace/Graph/GraphFunctions.cs) to search Nodes using message-keys *sent* to teh server and message-value *provided* on completion together with rendering information for else Nodeelse  *shapes* and *color*.
+The `is null` and `is not null` patterns are **billed** as
+provide a clearer and more concise way to check for null values in C#. This change enhances readability and aligns with current C# best practices.
 
-To support these use-cases, a couple of enhancements have been added to [Hiperspace](https://www.nuget.org/packages/Hiperspace/) and [HiLang](https://www.nuget.org/packages/HiLang) to better support the functions.
+but the main advantage is that:
+* You don't need to include `ReferenceEquals` in any `operator ==` overload.
+* `name is not null` is the same for reference (*class*) and value (*struct*) objects instead of `ReferenceEquals(name, null)` for classes and `!name.HasValue` for nullable values.
 
-### SubSpace
-else IServiceProviderelse  is  an interface on the .NET Platform to inject *Services* into components ([IoC](https://en.wikipedia.org/wiki/Inversion_of_control)) at runtime.  A ServiceProvider property has been added to else SubSpaceelse  to enable messages to enlist functionality when a message is received, and a parameter added to else SubSpaceParameterselse  for *domain space* construction.
-
-else FindPathselse  and else FindPathsAsyncelse  functions now have *domain-specific* implementations that use a ***message*** to transmit the call through to a server where the parallel recursive search can be efficiently executed close the data, using many of the cores of the server.
-
-### Node
-The else Nodeelse  element has been extended to include additional functions that provide else HiperEdgeelse   search for related nodes across transitive edges
-
-|Name| Description |
-|-|-|-|-|-|
-| HiperEdges|Treat the TypeName parameter as a HiperEdge and find all matching|
-| HiperEdgesAsync|as above, but non-blocking (especially for Blazor web clients)|
-
-
-else else else 
-        /// &lt;summary&gt;
-        /// Treat the Edges of TypeName as a HiperEdge and find all transitive paths for that type
-        /// &lt;/summary&gt;
-        /// &lt;param name="TypeName"&gt;The Edge type name&lt;/param&gt;
-        /// &lt;param name="length"&gt;the maximum length of the path&lt;/param&gt;
-        /// &lt;param name="targets"&gt;only return HiperEdges that end with a Node of the type matching one of these types&lt;/param&gt;
-        /// &lt;returns&gt;The full set of HiperEdges for this path&lt;/returns&gt;
-        public HashSet&lt;HiperEdge&gt; HiperEdges(string TypeName, int? length = null, HashSet&lt;string&gt;? targets = null)
-
-        /// &lt;summary&gt;
-        /// Create an inline HiperName from TypeNames and find all transitive paths for that type
-        /// &lt;/summary&gt;
-        /// &lt;param name="HiperName"&gt;The name of the HiperEdge being infered from the Edge TyopeNames&lt;/param&gt;
-        /// &lt;param name="TypeNames"&gt;the set of Edge TypeNames that make up this HiperEdge&lt;/param&gt;
-        /// &lt;param name="length"&gt;the maximum length of the path&lt;/param&gt;
-        /// &lt;param name="targets"&gt;only return HiperEdges that end with a Node of the type matching one of these types&lt;/param&gt;
-        /// &lt;returns&gt;The full set of HiperEdges for this path&lt;/returns&gt;
-        public HashSet&lt;HiperEdge&gt; HiperEdges(string HiperName, IEnumerable&lt;string&gt; TypeNames, int? length = null, HashSet&lt;string&gt;? targets = null)
-
-        /// &lt;summary&gt;
-        /// Treat the Edges of TypeName as a HiperEdge and find all transitive paths for that type
-        /// &lt;/summary&gt;
-        /// &lt;param name="TypeName"&gt;the name given to this transitative hiperedge&lt;/param&gt;
-        /// &lt;param name="rules"&gt;the set of meta edges (start-node type, end-node type, edge type) rules that define the transitative path&lt;/param&gt;
-        /// &lt;param name="length"&gt;the maximum length of the path&lt;/param&gt;
-        /// &lt;param name="targets"&gt;only return HiperEdges that end with a Node of the type matching one of these types&lt;/param&gt;
-        /// &lt;returns&gt;The full set of HiperEdges for this path&lt;/returns&gt;
-        public HashSet&lt;HiperEdge&gt; HiperEdges(string TypeName, HashSet&lt;Rule&gt; rules, int? length = null, HashSet&lt;string&gt;? targets = null)
-
-        /// &lt;summary&gt;
-        /// Treat the Edges of TypeName as a HiperEdge and find all transitive paths for that type
-        /// &lt;/summary&gt;
-        /// &lt;param name="TypeName"&gt;The Edge type name&lt;/param&gt;
-        /// &lt;param name="length"&gt;the maximum length of the path&lt;/param&gt;
-        /// &lt;param name="targets"&gt;only return HiperEdges that end with a Node of the type matching one of these types&lt;/param&gt;
-        /// &lt;returns&gt;The full set of HiperEdges for this path&lt;/returns&gt;
-        public async Task&lt;HashSet&lt;Graph.HiperEdge&gt;&gt; HiperEdgesAsync(string TypeName, int? length = null, HashSet&lt;string&gt;? targets = null, CancellationToken cancellationToken = default)
-
-        /// &lt;summary&gt;
-        /// Create an inline HiperName from TypeNames and find all transitive paths for that type
-        /// &lt;/summary&gt;
-        /// &lt;param name="HiperName"&gt;The name of the HiperEdge being infered from the Edge TyopeNames&lt;/param&gt;
-        /// &lt;param name="TypeNames"&gt;the set of Edge TypeNames that make up this HiperEdge&lt;/param&gt;
-        /// &lt;param name="length"&gt;the maximum length of the path&lt;/param&gt;
-        /// &lt;param name="targets"&gt;only return HiperEdges that end with a Node of the type matching one of these types&lt;/param&gt;
-        /// &lt;returns&gt;The full set of HiperEdges for this path&lt;/returns&gt;
-        public async Task&lt;HashSet&lt;HiperEdge&gt;&gt; HiperEdgesAsync(string HiperName, IEnumerable&lt;string&gt; TypeNames, int? length = null, HashSet&lt;string&gt;? targets = null, CancellationToken cancellationToken = default)
-
-        /// &lt;summary&gt;
-        /// Treat the Edges of TypeName as a HiperEdge and find all transitive paths for that type
-        /// &lt;/summary&gt;
-        /// &lt;param name="TypeName"&gt;the name given to this transitative hiperedge&lt;/param&gt;
-        /// &lt;param name="rules"&gt;the set of meta edges (start-node type, end-node type, edge type) rules that define the transitative path&lt;/param&gt;
-        /// &lt;param name="length"&gt;the maximum length of the path&lt;/param&gt;
-        /// &lt;param name="targets"&gt;only return HiperEdges that end with a Node of the type matching one of these types&lt;/param&gt;
-        /// &lt;returns&gt;The full set of HiperEdges for this path&lt;/returns&gt;
-        public async Task&lt;HashSet&lt;Graph.HiperEdge&gt;&gt; HiperEdgesAsync(string TypeName, HashSet&lt;Rule&gt; rules, int? length = null, HashSet&lt;string&gt;? targets = null, CancellationToken cancellationToken = default)
-else else else 
-The [Test cases](https://github.com/channell/Hiperspace/blob/master/examples/CousinProblem/Test.cs) demonstrate the use of these functions to provide *server-side* search for relations. The first example treats "Child" as a transitive else HiperEdgeelse , while the second infers an "Ancestors" else HiperEdgeelse  from either *Mother* or *Father*.
-
-else else else 
-                var descendants = node.HiperEdges("Child");
-                var ancestors = node.HiperEdges("Ancestors", new[] {"Mother", "Father" });
-else else else 
+## References
+Reference libraries have also been updated
 </PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
