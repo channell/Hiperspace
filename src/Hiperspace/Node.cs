@@ -38,7 +38,7 @@ namespace Hiperspace
         {
             _key = source._key;
             _value = source._value;
-            if (space != null)
+            if (space is not null)
                 Bind(space);
         }
 
@@ -53,7 +53,7 @@ namespace Hiperspace
             get => _key.SKey;
             set
             {
-                if (SetSpace != null && _key.SKey != value) throw new Hiperspace.MutationException($"SKey can not be changed once bound to a Space");
+                if (SetSpace is not null && _key.SKey != value) throw new Hiperspace.MutationException($"SKey can not be changed once bound to a Space");
                 _key.SKey = value;
             }
         }
@@ -62,7 +62,7 @@ namespace Hiperspace
             get => _value.Name;
             set
             {
-                if (SetSpace != null && _value.Name != value) throw new Hiperspace.MutationException($"CubeName can not be changed once bound to a Space");
+                if (SetSpace is not null && _value.Name != value) throw new Hiperspace.MutationException($"CubeName can not be changed once bound to a Space");
                 _value.Name = value;
             }
         }
@@ -71,7 +71,7 @@ namespace Hiperspace
             get => _value.TypeName;
             set
             {
-                if (SetSpace != null && _value.TypeName != value) throw new Hiperspace.MutationException($"TypeName can not be changed once bound to a Space");
+                if (SetSpace is not null && _value.TypeName != value) throw new Hiperspace.MutationException($"TypeName can not be changed once bound to a Space");
                 _value.TypeName = value;
             }
         }
@@ -88,7 +88,7 @@ namespace Hiperspace
         {
             get
             {
-                if (_Object == null || _Object.Target == null)
+                if (_Object is null || _Object.Target is null)
                     _Object = new WeakReference(SetSpace?.Space?.Get<object>(SKey));
                 return _Object.Target;
             }
@@ -103,7 +103,7 @@ namespace Hiperspace
             get
             {
                 var obj = Object;
-                if (obj != null)
+                if (obj is not null)
                 {
                     return obj
                         .GetType()
@@ -139,7 +139,7 @@ namespace Hiperspace
                     }
                 }
             };
-            if (SetSpace?.Space != null)
+            if (SetSpace?.Space is not null)
                 return SetSpace.Space.FindPaths(this, route, length, targets);
             else
                 return PathFunctions.Paths(this, route, length, targets);
@@ -165,7 +165,7 @@ namespace Hiperspace
                     ToType = "*"
                 }))
             };
-            if (SetSpace?.Space != null)
+            if (SetSpace?.Space is not null)
                 return SetSpace.Space.FindPaths(this, route, length, targets);
             else
                 return PathFunctions.Paths(this, route, length, targets);
@@ -186,7 +186,7 @@ namespace Hiperspace
                 Name = TypeName,
                 Rules = rules
             };
-            if (SetSpace?.Space != null)
+            if (SetSpace?.Space is not null)
                 return SetSpace.Space.FindPaths(this, route, length, targets);
             else
                 return PathFunctions.Paths(this, route, length, targets);
@@ -214,7 +214,7 @@ namespace Hiperspace
                     }
                 }
             };
-            if (SetSpace?.Space != null)
+            if (SetSpace?.Space is not null)
                 return await SetSpace.Space.FindPathsAsync(this, route, length, targets);
             else
                 return await PathFunctions.PathsAsync(this, route.Map!, length, targets);
@@ -240,7 +240,7 @@ namespace Hiperspace
                     ToType = "*"
                 }))
             };
-            if (SetSpace?.Space != null)
+            if (SetSpace?.Space is not null)
                 return await SetSpace.Space.FindPathsAsync(this, route, length, targets);
             else
                 return await PathFunctions.PathsAsync(this, route.Map!, length, targets);
@@ -260,7 +260,7 @@ namespace Hiperspace
                 Name = TypeName,
                 Rules = rules
             };
-            if (SetSpace?.Space != null)
+            if (SetSpace?.Space is not null)
                 return await SetSpace.Space.FindPathsAsync(this, route, length, targets);
             else
                 return await PathFunctions.PathsAsync(this, route.Map!, length, targets);
@@ -274,7 +274,7 @@ namespace Hiperspace
             {
                 SKey = item.SKey;
             }
-            [ProtoMember(2)] public String SKey;
+            [ProtoMember(1)] public String SKey;
 
             public bool IsGetable()
             {
@@ -295,7 +295,7 @@ namespace Hiperspace
             }
             public override bool Equals(Object? other)
             {
-                if (other == null) return false;
+                if (other is null) return false;
                 if (other is KeyType) return Equals((KeyType)other);
                 return false;
             }
@@ -324,12 +324,12 @@ namespace Hiperspace
             }
             public static bool operator <(KeyType left, KeyType right)
             {
-                if (left.SKey != null && left.SKey.CompareTo(right.SKey) < 0) return true;
+                if (left.SKey is not null && left.SKey.CompareTo(right.SKey) < 0) return true;
                 return false;
             }
             public static bool operator >(KeyType left, KeyType right)
             {
-                if (left.SKey != null && left.SKey.CompareTo(right.SKey) > 0) return true;
+                if (left.SKey is not null && left.SKey.CompareTo(right.SKey) > 0) return true;
                 return false;
             }
         }
@@ -403,7 +403,7 @@ namespace Hiperspace
 
         public override int CompareTo(Node? other)
         {
-            if (ReferenceEquals(null, other))
+            if (other is null)
                 throw new ArgumentNullException(nameof(other));
             if (_key < other._key)
                 return -1;
@@ -414,13 +414,13 @@ namespace Hiperspace
         }
         public override bool Equals(Object? other)
         {
-            if (other == null) return false;
+            if (other is null) return false;
             if (other is Node) return Equals((Node)other);
             return false;
         }
         public override bool Equals(Node? other)
         {
-            if (ReferenceEquals(null, other))
+            if (other is null)
                 return false;
             return (_key == other._key);
         }
@@ -445,24 +445,24 @@ namespace Hiperspace
         }
         public static implicit operator KeyRef<KeyType, Node>?(Node? other)
         {
-            if (!ReferenceEquals(null, other))
+            if (other is not null)
                 return other.self;
             return null;
         }
         public static bool operator ==(Node? left, Node? right)
         {
-            if (ReferenceEquals(null, left) && ReferenceEquals(null, right))
+            if (left is null && right is null)
                 return true;
-            else if (ReferenceEquals(null, left) || ReferenceEquals(null, right))
+            else if (left is null || right is null)
                 return false;
             else
                 return left.Equals(right);
         }
         public static bool operator !=(Node? left, Node? right)
         {
-            if (ReferenceEquals(null, left) && ReferenceEquals(null, right))
+            if (left is null && right is null)
                 return false;
-            else if (ReferenceEquals(null, left) || ReferenceEquals(null, right))
+            else if (left is null || right is null)
                 return true;
             else
                 return !left.Equals(right);
@@ -477,9 +477,9 @@ namespace Hiperspace
         /// <returns>true if it matched the provided values of the template</returns>
         public bool Filter(Node other, bool read)
         {
-            if (other._value.TypeName != null && this._value.TypeName != null && this._value.TypeName != other._value.TypeName) return false;
-            if (other._key.SKey != null && this._key.SKey != null && this._key.SKey != other._key.SKey) return false;
-            if (other._value.Name != null && this._value.Name != null && this._value.Name != other._value.Name) return false;
+            if (other._value.TypeName is not null && this._value.TypeName is not null && this._value.TypeName != other._value.TypeName) return false;
+            if (other._key.SKey is not null && this._key.SKey is not null && this._key.SKey != other._key.SKey) return false;
+            if (other._value.Name is not null && this._value.Name is not null && this._value.Name != other._value.Name) return false;
             return true;
         }
     }

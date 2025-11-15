@@ -52,7 +52,7 @@ namespace Hiperspace
                 {
                     if (Type == PathType.Join)
                         return true;
-                    else if (Parent != null)
+                    else if (Parent is not null)
                         return Parent.InJoin;
                     else
                         return false;
@@ -85,9 +85,9 @@ namespace Hiperspace
             {
                 get
                 {
-                    if (_arguments == null && Parent != null)
+                    if (_arguments is null && Parent is not null)
                         return Parent.Arguments;
-                    else if (_arguments != null)
+                    else if (_arguments is not null)
                         return _arguments;
                     else
                         return new List<Expression>();
@@ -102,12 +102,12 @@ namespace Hiperspace
             {
                 get
                 {
-                    if (_target != null)
+                    if (_target is not null)
                         return _target;
-                    foreach(var child in Children)
+                    foreach(var child in Children.ToArray())
                     {
                         var result = child.Target;
-                        if (result != null)
+                        if (result is not null)
                             return result;
                     }
                     return null;
@@ -122,12 +122,12 @@ namespace Hiperspace
             {
                 get
                 {
-                    if (_PropertyInfo != null)
+                    if (_PropertyInfo is not null)
                         return _PropertyInfo;
-                    foreach (var child in Children)
+                    foreach (var child in Children.ToArray())
                     {
                         var result = child.PropertyInfo;
-                        if (result != null)
+                        if (result is not null)
                             return result;
                     }
                     return null;
@@ -139,9 +139,9 @@ namespace Hiperspace
             }
             public IEnumerable<(string alias, PropertyInfo property)> GetProperties()
             {
-                if (_PropertyInfo != null)
+                if (_PropertyInfo is not null)
                     yield return (ParentSetName, _PropertyInfo);
-                foreach (var child in Children)
+                foreach (var child in Children.ToArray())
                 {
                     foreach (var item in child.GetProperties())
                     {
@@ -154,10 +154,10 @@ namespace Hiperspace
                 if (Type == PathType.New)
                     return false;
 
-                if (_PropertyInfo != null)
+                if (_PropertyInfo is not null)
                     return true;
 
-                foreach (var child in Children)
+                foreach (var child in Children.ToArray())
                 {
                     if (child.HasPropertyNotComposite())
                         return true;
@@ -169,7 +169,7 @@ namespace Hiperspace
             {
                 if (current.Type == PathType.New)
                 {
-                    foreach (var child in current.Children)
+                    foreach (var child in current.Children.ToArray())
                     {
                         foreach (var item in CompositeKeys(child))
                         {
@@ -181,7 +181,7 @@ namespace Hiperspace
                 }
                 else
                 {
-                    foreach (var child in current.Children)
+                    foreach (var child in current.Children.ToArray())
                     {
                         foreach (var item in CompositeKeys(child))
                         {
@@ -201,7 +201,7 @@ namespace Hiperspace
                     {
                         var alias = node.SetName;
                         var getter = node.Getter();
-                        if (alias != null && getter != null)
+                        if (alias is not null && getter is not null)
                             yield return (alias, getter);
                     }
                 }
@@ -209,7 +209,7 @@ namespace Hiperspace
                 {
                     var alias = SetName;
                     var getter = Getter();
-                    if (alias != null && getter != null)
+                    if (alias is not null && getter is not null)
                         yield return (alias, getter);
                 }
             }
@@ -218,12 +218,12 @@ namespace Hiperspace
             {
                 get
                 {
-                    if (_FieldInfo != null)
+                    if (_FieldInfo is not null)
                         return _FieldInfo;
-                    foreach (var child in Children)
+                    foreach (var child in Children.ToArray())
                     {
                         var result = child.FieldInfo;
-                        if (result != null)
+                        if (result is not null)
                             return result;
                     }
                     return null;
@@ -238,12 +238,12 @@ namespace Hiperspace
             {
                 get
                 {
-                    if (_Value != null)
+                    if (_Value is not null)
                         return _Value;
-                    foreach (var child in Children)
+                    foreach (var child in Children.ToArray())
                     {
                         var result = child.Value;
-                        if (result != null)
+                        if (result is not null)
                             return result;
                     }
                     return null;
@@ -256,13 +256,13 @@ namespace Hiperspace
             private static object? Index (object source, object index)
             {
                 var dict = source as System.Collections.IDictionary;
-                if (dict != null)
+                if (dict is not null)
                 {
                     return dict[index];
                 }
                 var list = source as System.Collections.IList;
                 var i = index as int?;
-                if (list != null && i != null)
+                if (list is not null && i is not null)
                 {
                     return list[i.Value];
                 }
@@ -281,9 +281,9 @@ namespace Hiperspace
                     case 1:
                         {
                             var result = Children[0].Getter();
-                            if (_FieldInfo != null)
+                            if (_FieldInfo is not null)
                                 return result.Field(_FieldInfo);
-                            else if (_PropertyInfo != null)
+                            else if (_PropertyInfo is not null)
                                 return result.Property(_PropertyInfo);
                             else
                                 return result;
@@ -293,9 +293,9 @@ namespace Hiperspace
                         {
                             var result = Children[0].Getter();
                             var index = Children[1].Getter();
-                            if (result != null && index != null)
+                            if (result is not null && index is not null)
                                 return result.Index(index);
-                            else if (result != null)
+                            else if (result is not null)
                                 return result;
                             else
                                 return ValueGetter.Value(_Value);
@@ -311,12 +311,12 @@ namespace Hiperspace
             {
                 get
                 {
-                    if (_ClosureType != null)
+                    if (_ClosureType is not null)
                         return _ClosureType;
-                    foreach (var child in Children)
+                    foreach (var child in Children.ToArray())
                     {
                         var result = child.ClosureType;
-                        if (result != null)
+                        if (result is not null)
                             return result;
                     }
                     return null;
@@ -331,12 +331,12 @@ namespace Hiperspace
             {
                 get
                 {
-                    if (_LambdaExpression != null)
+                    if (_LambdaExpression is not null)
                         return _LambdaExpression;
-                    foreach (var child in Children)
+                    foreach (var child in Children.ToArray())
                     {
                         var result = child.LambdaExpression;
-                        if (result != null)
+                        if (result is not null)
                             return result;
                     }
                     return null;
@@ -352,12 +352,12 @@ namespace Hiperspace
             { 
                 get
                 {
-                    if (_SetName != null)
+                    if (_SetName is not null)
                         return _SetName;
-                    foreach (var child in Children)
+                    foreach (var child in Children.ToArray())
                     {
                         var result = child.SetName;
-                        if (result != null)
+                        if (result is not null)
                             return result;
                     }
                     return null;
@@ -372,9 +372,9 @@ namespace Hiperspace
             {
                 get
                 {
-                    if (_SetName != null)
+                    if (_SetName is not null)
                         return _SetName;
-                    else if (Parent != null)
+                    else if (Parent is not null)
                         return Parent.SetName!;
                     else
                         return null!;
@@ -386,9 +386,9 @@ namespace Hiperspace
             {
                 get
                 {
-                    if (_Name == null && Parent != null)
+                    if (_Name is null && Parent is not null)
                         return Parent.Name;
-                    else if (_Name != null)
+                    else if (_Name is not null)
                         return _Name;
                     else
                         return null;
@@ -403,9 +403,9 @@ namespace Hiperspace
             {
                 get
                 {
-                    if (_Position == null && Parent != null)
+                    if (_Position is null && Parent is not null)
                         return Parent.Position;
-                    else if (_Position != null)
+                    else if (_Position is not null)
                         return _Position;
                     else
                         return null;
@@ -420,9 +420,9 @@ namespace Hiperspace
             {
                 get
                 {
-                    if (_Assignement == null && Parent != null)
+                    if (_Assignement is null && Parent is not null)
                         return Parent.Assignement;
-                    else if (_Assignement != null)
+                    else if (_Assignement is not null)
                         return _Assignement.Value;
                     else
                         return false;
@@ -437,16 +437,16 @@ namespace Hiperspace
             {
                 get
                 {
-                    if (Parent != null && _searchable == null)
+                    if (Parent is not null && _searchable is null)
                         return Parent.Searchable;
                     else
                         return _searchable ?? true;
                 }
                 set
                 {
-                    if (_searchable != null)
+                    if (_searchable is not null)
                         _searchable = value;
-                    else if (Parent != null)
+                    else if (Parent is not null)
                         Parent.Searchable = value;
                 }
             }
@@ -468,21 +468,21 @@ namespace Hiperspace
                 if (Children.Count > 0)
                 {
                     sb.Append($"{indent}Children:[");
-                    foreach (var item in Children)
+                    foreach (var item in Children.ToArray())
                     {
                         sb.Append(indent);
                         sb.Append(item.ToString(level + 1));
                     }
                     sb.Append("]");
                 }
-                if (_Name != null) sb.Append($"{indent}CubeName: {_Name}");
-                if (_target != null) sb.Append($"{indent}Target: {_target}");
-                if (_PropertyInfo != null) sb.Append($"{indent}PropertyInfo: {_PropertyInfo.Name}");
-                if (_FieldInfo != null) sb.Append($"{indent}FieldInfo: {_FieldInfo.Name}");
-                if (_Value != null) sb.Append($"{indent}Value: {_Value}");
-                if (SetName != null) sb.Append($"{indent}SetName: {SetName}");
-                if (_Position != null) sb.Append($"{indent}Position: {_Position}"); 
-                if (_LambdaExpression != null) sb.Append($"{indent}Lambda: {_LambdaExpression}");
+                if (_Name is not null) sb.Append($"{indent}CubeName: {_Name}");
+                if (_target is not null) sb.Append($"{indent}Target: {_target}");
+                if (_PropertyInfo is not null) sb.Append($"{indent}PropertyInfo: {_PropertyInfo.Name}");
+                if (_FieldInfo is not null) sb.Append($"{indent}FieldInfo: {_FieldInfo.Name}");
+                if (_Value is not null) sb.Append($"{indent}Value: {_Value}");
+                if (SetName is not null) sb.Append($"{indent}SetName: {SetName}");
+                if (_Position is not null) sb.Append($"{indent}Position: {_Position}"); 
+                if (_LambdaExpression is not null) sb.Append($"{indent}Lambda: {_LambdaExpression}");
                 return sb.ToString();
             }
             public bool? FirstBinaryVisit;
@@ -494,7 +494,7 @@ namespace Hiperspace
 
         private TreeType PushTree(Expression node, TreeType.PathType type)
         {
-            if (Tree.TryPeek(out TreeType? parent) && parent != null)
+            if (Tree.TryPeek(out TreeType? parent) && parent is not null)
             {
                 var result = parent.Next(node);
                 result.Type = type;
@@ -515,9 +515,9 @@ namespace Hiperspace
             if (Tree.TryPeek(out TreeType? current))
             {
                 Tree.Pop();
-                if (Tree.TryPeek(out TreeType? parent) && parent != null)
+                if (Tree.TryPeek(out TreeType? parent) && parent is not null)
                 {
-                    if (current?.Target != null && parent?.Target == null && parent != null)
+                    if (current?.Target is not null && parent?.Target is null && parent is not null)
                         parent.Target = current?.Target;
                 }
             }
@@ -529,7 +529,7 @@ namespace Hiperspace
 
             public void Add(ISetQuery set)
             {
-                if (set.Alias == null)
+                if (set.Alias is null)
                     throw new ArgumentNullException("Alias must be set");
                 else if (!named.ContainsKey(set.Alias))
                     named.Add(set.Alias, set);
@@ -557,7 +557,7 @@ namespace Hiperspace
                 var from = path.Children.Count > 0 ? path.Children[0].FromSet : null;
                 var join = path.Children.Count > 0 ? path.Children[0].FromJoin : null;
                 var alias = path.Children.Count > 1 ? path.Children[1].SetName : null;
-                if (from != null && alias != null)
+                if (from is not null && alias is not null)
                 {
                     from.Alias = alias;
                     Sources.Add(from);
@@ -565,7 +565,7 @@ namespace Hiperspace
                     args[1] = Visit(node.Arguments[1]);
                     return Expression.Call(node.Method, args);
                 }
-                else if (join != null && alias != null)
+                else if (join is not null && alias is not null)
                 {
                     //join.Alias = alias;
                     //Sources.Add(join);
@@ -596,20 +596,20 @@ namespace Hiperspace
                 args[0] = Visit(node.Arguments[0]);
                 var left = path.Children[0].FromSet;
                 var join = path.Children[0].FromJoin;
-                if (join != null)
+                if (join is not null)
                 {
                     var j = join;
-                    while (j != null)
+                    while (j is not null)
                     {
-                        if (j.Left != null)
+                        if (j.Left is not null)
                         {
                             Sources.Add(j.Left);
                         }
-                        if (j.Right != null)
+                        if (j.Right is not null)
                         {
                             Sources.Add(j.Right);
                         }
-                        if (j.Inner != null)
+                        if (j.Inner is not null)
                             j = j.Inner;
                         else
                             j = null;
@@ -624,12 +624,12 @@ namespace Hiperspace
 
                 var leftalias = path.Children[2].SetName;
                 var rightalias = path.Children[3].SetName;
-                if (left != null)
+                if (left is not null)
                 {
                     left.Alias = leftalias;
                     Sources.Add(left);
                 }
-                if (right != null)
+                if (right is not null)
                 {
                     right.Alias = rightalias;
                     Sources.Add(right);
@@ -637,26 +637,29 @@ namespace Hiperspace
 
                 var leftSelectors = path.Children[2].GetSelectors().ToArray();
                 var rightProperties = path.Children[3].GetProperties().ToArray();
-                if (leftSelectors.Length != rightProperties.Length)
-                    throw new ArgumentException("Join predicates must be equal on left and right");
+
                 var joins = new List<((string alias, ValueGetter property) left, (string alias, PropertyInfo property) right)>();
 
-                for (int c = 0; c < leftSelectors.Length; c++)
-                {
-                    joins.Add((leftSelectors[c], rightProperties[c]));
-                }
+                // if they don't match it is because a SetSpace is being joined to an non-SetSpace ()
+                // e.g. a collections such as an array -> a join condition can not be created to optimise the 
+                // join, and must be performed by LINQ from the result
+                if (leftSelectors.Length == rightProperties.Length)     // if they don't match, one of th
+                    for (int c = 0; c < leftSelectors.Length; c++)
+                    {
+                        joins.Add((leftSelectors[c], rightProperties[c]));
+                    }
 
                 args[4] = Visit(node.Arguments[4]);
                 var closure = path.Children[4].ClosureType;
                 var lambda = path.Children[4].LambdaExpression;
 
-                if (left != null && right != null && closure != null && lambda != null)
+                if (left is not null && right is not null && closure is not null && lambda is not null)
                 {
                     var setJoin = typeof(SetJoin<,,>).MakeGenericType(closure, left.ElementType, right.ElementType);
                     var instance = Activator.CreateInstance(setJoin, new object[] { left, right, joins, lambda });
                     return Expression.Constant(instance, setJoin);
                 }
-                if (join != null && right != null && closure != null && lambda != null)
+                if (join is not null && right is not null && closure is not null && lambda is not null)
                 {
                     var setJoin = typeof(SetJoin<,,>).MakeGenericType(closure, join.ElementType, right.ElementType);
                     var instance = Activator.CreateInstance(setJoin, new object[] { join, right, joins, lambda });
@@ -740,16 +743,16 @@ namespace Hiperspace
         }
         private static bool IsElement(Type? type)
         {
-            if (type == null)
+            if (type is null)
                 return false;
             Type? lastGeneric = null;
             var curentType = type;
-            while (curentType != null && curentType.IsGenericType)
+            while (curentType is not null && curentType.IsGenericType)
             {
                 lastGeneric = curentType;
                 curentType = curentType.BaseType;
             }
-            if (lastGeneric != null && lastGeneric.GetGenericTypeDefinition() == typeof(Element<>))
+            if (lastGeneric is not null && lastGeneric.GetGenericTypeDefinition() == typeof(Element<>))
                 return true;
             else
                 return false;
@@ -772,7 +775,7 @@ namespace Hiperspace
                 }
 
                 // direct predicate
-                if (t >= 0 && args != null && 
+                if (t >= 0 && args is not null && 
                     args[t] is ConstantExpression ce && 
                     ce?.Value is ISetQuery sq && 
                     path.Parent?.FirstBinaryVisit == true)
@@ -787,7 +790,7 @@ namespace Hiperspace
                     if (IsElement(node.Type.BaseType))
                     {
                         var alias = Sources.Get(node.Member.Name);
-                        if (alias != null && node.Member is PropertyInfo pi2 && alias.ElementType == node.Type)
+                        if (alias is not null && node.Member is PropertyInfo pi2 && alias.ElementType == node.Type)
                         {
                             path.Target = alias.Template;
                             path.SetName = alias.Alias;
@@ -796,7 +799,7 @@ namespace Hiperspace
                     }
                 }
                 var result = base.VisitMember(node);
-                if (path.Target != null && node.Member is PropertyInfo pi3 && !IsElement(node.Type.BaseType))
+                if (path.Target is not null && node.Member is PropertyInfo pi3 && !IsElement(node.Type.BaseType))
                 {
                     path.PropertyInfo = pi3;
                 }
@@ -806,7 +809,7 @@ namespace Hiperspace
                     var value = node.Expression is ConstantExpression constantExpression ? constantExpression.Value : null;
                     var field = member as FieldInfo;
                     var name = member.Name;
-                    if (value != null && field != null)
+                    if (value is not null && field is not null)
                     {
                         path.Target = value;
                         path.FieldInfo = field;
@@ -825,7 +828,7 @@ namespace Hiperspace
             var path = PushTree(node, TreeType.PathType.Member);
             try
             {
-                if (node.Name != null)
+                if (node.Name is not null)
                 {
                     if (IsElement(node.Type.BaseType))
                     { 
@@ -835,7 +838,7 @@ namespace Hiperspace
                 }
 
                 path.Name = node?.Name;
-                if (node?.Name != null)
+                if (node?.Name is not null)
                     aliases.Push(node.Name);
                 return base.VisitParameter(node!);
             }
@@ -882,7 +885,7 @@ namespace Hiperspace
                         var getter = right.Getter();
                         var value = getter.GetValue();
 
-                        if (left.Target != null && property != null && value != null)
+                        if (left.Target is not null && property is not null && value is not null)
                         {
                             property.SetValue(left.Target, value);
                         }

@@ -22,7 +22,7 @@ namespace Hiperspace.Meta
 
         public override bool Equals(object? other)
         {
-            if (other == null) return false;
+            if (other is null) return false;
             if (other is Name value) return Equals(value);
             return false;
         }
@@ -32,7 +32,7 @@ namespace Hiperspace.Meta
             if (!Reference.Equals(other.Reference)) return false;
             if (Parameters.Length != 0 && other.Parameters?.Length == 0) return false;
             if (Parameters.Length == 0 && other.Parameters?.Length > 0) return false;
-            if (other.Parameters != null)
+            if (other.Parameters is not null)
             {
                 if (Parameters.Length != other.Parameters.Length) return false;
                 for (int c = 0; c < Parameters.Length; ++c)
@@ -47,7 +47,7 @@ namespace Hiperspace.Meta
             Parameters ??= new Name[0];
             var hc = new HashCode();
             hc.Add(Reference);
-            if (Parameters != null)
+            if (Parameters is not null)
                 for (int c = 0; c < Parameters.Length; c++)
                     hc.Add(Parameters[c].GetHashCode());
             return hc.ToHashCode();

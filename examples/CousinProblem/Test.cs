@@ -68,7 +68,7 @@ namespace CousinProblem
             using (var space = new CousinsSpace(_space))
             {
                 var eve = space.Persons.Get(new Person { Name = "Eve" })!;
-                Node node = eve;
+                Node node = eve!;
                 var descendants = node.HiperEdges("Child");
 
                 foreach (var child in descendants)
@@ -84,7 +84,7 @@ namespace CousinProblem
             using (var space = new CousinsSpace(_space))
             {
                 var lucy = space.Persons.Get(new Person { Name = "Lucy" })!;
-                Node node = lucy;
+                Node node = lucy!;
                 var ancestors = node.HiperEdges("Ancestors", new[] {"Mother", "Father" });
 
                 foreach (var child in ancestors)
@@ -112,6 +112,10 @@ namespace CousinProblem
         {
             using (var space = new CousinsSpace(_space))
             {
+                var l = space.Edges.ToArray();
+                var l2 = (from e in space.Edges select e).ToArray();
+                var l3 = (from e in space.Edges where e.From != null select e).ToArray();
+                var l4 = (from e in space.Edges where e.To != null select e).ToArray();
                 var lines =
                     (from e in space.Edges
                      where e.From != null && e.To != null
@@ -265,21 +269,21 @@ namespace CousinProblem
                 });
                 foreach (var path in lucy.Stored)
                 {
-                    if (path.Paths != null)
+                    if (path.Paths is not null)
                     { 
                         foreach (var r in path.Paths)
                         {
                             var p = r;
-                            if (p != null)
+                            if (p is not null)
                                 _output.WriteLine($"From {p.From?.Name} To {p.To?.Name} Length {p.Length} Width {p.Width}");
-                            var arrow = $"\t{p.To?.Name} ({p.Edge?.TypeName})";
-                            var source = p.Source;
-                            while (source != null) 
+                            var arrow = $"\t{p?.To?.Name} ({p?.Edge?.TypeName})";
+                            var source = p?.Source;
+                            while (source is not null) 
                             {
                                 arrow = arrow + $" <- {source.To?.Name} ({source.Edge?.TypeName})";
                                 source = source.Source;
                             }
-                            arrow = arrow + $" <- {p.From?.Name}";
+                            arrow = arrow + $" <- {p?.From?.Name}";
 
                             _output.WriteLine(arrow);
                         }

@@ -18,8 +18,8 @@ namespace Hiperspace
     {
         private readonly Expression _expression;
         private readonly IQueryProvider _provider;
-        private static QueryOptimizer optimizer = new QueryOptimizer();
-        private static QueryRunner runner = new QueryRunner();
+        private readonly QueryOptimizer optimizer = new QueryOptimizer();
+        private readonly QueryRunner runner = new QueryRunner();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JoinQuery{T}"/> class.

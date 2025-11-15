@@ -31,7 +31,7 @@ namespace Hiperspace
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private ConcurrentHashSet<T> GetNext()
         {
-            if (_next == null)
+            if (_next is null)
                 _next = new ConcurrentHashSet<T>();
             return _next;
         }
@@ -45,7 +45,7 @@ namespace Hiperspace
         {
             if (Interlocked.Read(ref SetSemaphore) == 0)
             {
-                if (_next != null)
+                if (_next is not null)
                 {
                     bool taken = false;
                     try
@@ -61,7 +61,7 @@ namespace Hiperspace
                     }
                     finally
                     {
-                        if (PostMerge != null)
+                        if (PostMerge is not null)
                         {
                             PostMerge();
                             PostMerge = null;
@@ -148,7 +148,7 @@ namespace Hiperspace
                 Lock.Enter(ref taken);
                 if (_segment.Contains(item)) return true;
 
-                if (_next != null)
+                if (_next is not null)
                 {
                     var next = _next;
                     Lock.Exit();
@@ -177,7 +177,7 @@ namespace Hiperspace
                 Lock.Enter(ref taken);
                 var len = _segment.Count;
                 _segment.CopyTo(array, arrayIndex);
-                if (_next != null)
+                if (_next is not null)
                 {
                     var next = _next;
                     Lock.Exit();
@@ -234,7 +234,7 @@ namespace Hiperspace
             {
                 foreach (var t in _segment)
                     yield return t;
-                if (_next != null)
+                if (_next is not null)
                     foreach (var t in _next)
                     yield return t;
             }
@@ -281,7 +281,7 @@ namespace Hiperspace
                 if (!_segment.IsProperSubsetOf(enumerate)) return false;
                 Lock.Exit();
                 taken = false;
-                if (next != null)
+                if (next is not null)
                 {
                     return next.IsProperSubsetOf(enumerate);
                 }
@@ -307,7 +307,7 @@ namespace Hiperspace
                 if (!_segment.IsProperSupersetOf(enumerate)) return false;
                 Lock.Exit();
                 taken = false;
-                if (next != null)
+                if (next is not null)
                 {
                     return next.IsProperSupersetOf(enumerate);
                 }
@@ -333,7 +333,7 @@ namespace Hiperspace
                 if (!_segment.IsSubsetOf(enumerate)) return false;
                 Lock.Exit();
                 taken = false;
-                if (next != null)
+                if (next is not null)
                 {
                     return next.IsSubsetOf(enumerate);
                 }
@@ -359,7 +359,7 @@ namespace Hiperspace
                 if (!_segment.IsSupersetOf(enumerate)) return false;
                 Lock.Exit();
                 taken = false;
-                if (next != null)
+                if (next is not null)
                 {
                     return next.IsSupersetOf(enumerate);
                 }
@@ -385,7 +385,7 @@ namespace Hiperspace
                 if (_segment.Overlaps(enumerate)) return true;
                 Lock.Exit();
                 taken = false;
-                if (next != null)
+                if (next is not null)
                 {
                     return next.Overlaps(enumerate);
                 }
@@ -555,7 +555,7 @@ namespace Hiperspace
                 taken = false;
                 foreach (var t in enumerate)
                     yield return t;
-                if (_next != null)
+                if (_next is not null)
                 {
                     foreach (var t in _next)
                         yield return t;
@@ -603,7 +603,7 @@ namespace Hiperspace
             }
             set
             {
-                if (value != null)
+                if (value is not null)
                     Replace(value);
             }
         }

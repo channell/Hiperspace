@@ -150,7 +150,7 @@ namespace Graph
             }
             public override bool Equals(Object? other)
             {
-                if (other == null) return false;
+                if (other is null) return false;
                 if (other is KeyType) return Equals((KeyType)other);
                 return false;
             }
@@ -188,17 +188,17 @@ namespace Graph
             public static bool operator <(KeyType left, KeyType right)
             {
 
-                if (left.FromType != null && left.FromType.CompareTo(right.FromType) < 0) return true;
-                if (left.ToType != null && left.ToType.CompareTo(right.ToType) < 0) return true;
-                if (left.EdgeType != null && left.EdgeType.CompareTo(right.EdgeType) < 0) return true;
+                if (left.FromType is not null && left.FromType.CompareTo(right.FromType) < 0) return true;
+                if (left.ToType is not null && left.ToType.CompareTo(right.ToType) < 0) return true;
+                if (left.EdgeType is not null && left.EdgeType.CompareTo(right.EdgeType) < 0) return true;
                 return false;
             }
             public static bool operator >(KeyType left, KeyType right)
             {
 
-                if (left.FromType != null && left.FromType.CompareTo(right.FromType) > 0) return true;
-                if (left.ToType != null && left.ToType.CompareTo(right.ToType) > 0) return true;
-                if (left.EdgeType != null && left.EdgeType.CompareTo(right.EdgeType) > 0) return true;
+                if (left.FromType is not null && left.FromType.CompareTo(right.FromType) > 0) return true;
+                if (left.ToType is not null && left.ToType.CompareTo(right.ToType) > 0) return true;
+                if (left.EdgeType is not null && left.EdgeType.CompareTo(right.EdgeType) > 0) return true;
                 return false;
             }
         }
@@ -230,7 +230,7 @@ namespace Graph
             }
             public override bool Equals(Object? other)
             {
-                if (other == null) return false;
+                if (other is null) return false;
                 if (other is ValueType) return Equals((ValueType)other);
                 return false;
             }
@@ -295,19 +295,19 @@ namespace Graph
         }
         public bool Equals(Rule? other)
         {
-            if (other == null)
+            if (other is null)
                 return false;
             return (_key == other.Value._key && _value == other.Value._value);
         }
         public override bool Equals(Object? other)
         {
-            if (other == null) return false;
+            if (other is null) return false;
             if (other is Rule) return Equals((Rule)other);
             return false;
         }
         public int CompareTo(Rule? other)
         {
-            if (other == null)
+            if (other is null)
                 throw new ArgumentNullException(nameof(other));
             if (_key < other.Value._key)
                 return -1;

@@ -47,7 +47,7 @@ namespace Hiperspace.Meta
             if (Category != other.Category) return false;
             if (Versioned != other.Versioned) return false;
 
-            if (other.Keys != null)
+            if (other.Keys is not null)
             {
                 var keymap = other.Keys.ToDictionary(i => i.Id);
                 for (int c = 0; c < Keys.Length; c++)
@@ -55,14 +55,14 @@ namespace Hiperspace.Meta
                         if (!Keys[c].Equals(value)) return false;
             }
 
-            if (other.Values != null)
+            if (other.Values is not null)
             {
                 var valuemap = other.Values.ToDictionary(i => i.Id);
                 for (int c = 0; c < Values.Length; c++)
                     if (valuemap.TryGetValue(Values[c].Id, out Field value))
                         if (!Values[c].Equals(value)) return false;
             }
-            if (other.Index != null)
+            if (other.Index is not null)
             {
                 var indexmap = other.Index.ToDictionary(i => i.Id);
                 for (int c = 0; c < Index.Length; c++)
@@ -99,7 +99,7 @@ namespace Hiperspace.Meta
             Values ??= new Field[0];
             Index ??= new Alias[0];
 
-            if (other.Keys != null)
+            if (other.Keys is not null)
             {
                 var keymap = Keys.ToDictionary(i => i.Id);
                 for (int c = 0; c < other.Keys.Length; c++)
@@ -108,7 +108,7 @@ namespace Hiperspace.Meta
                 Keys = keymap.Select(p => p.Value).ToArray();
             }
 
-            if (other.Values != null)
+            if (other.Values is not null)
             {
                 var valuemap = Values.ToDictionary(i => i.Id);
                 for (int c = 0; c < other.Values.Length; c++)
@@ -117,7 +117,7 @@ namespace Hiperspace.Meta
                 Values = valuemap.Select(p => p.Value).ToArray();
             }
 
-            if (other.Index != null)
+            if (other.Index is not null)
             {
                 var indexmap = Index.ToDictionary(i => i.Id);
                 for (int c = 0; c < other.Index.Length; c++)
@@ -132,7 +132,7 @@ namespace Hiperspace.Meta
             if (Category != other.Category) yield return (Id, $"{Name.Reference} category changed from {Category} to {other.Category}");
             if (Versioned != other.Versioned) yield return (Id, $"{Name.Reference} versioned changed from {Versioned} to {other.Versioned}");
 
-            if (other.Keys != null)
+            if (other.Keys is not null)
             {
                 var keymap = other.Keys.ToDictionary(i => i.Id);
                 for (int c = 0; c < Keys.Length; c++)
@@ -141,7 +141,7 @@ namespace Hiperspace.Meta
                             yield return diff;
             }
 
-            if (other.Values != null)
+            if (other.Values is not null)
             {
                 var valuemap = other.Values.ToDictionary(i => i.Id);
                 for (int c = 0; c < Values.Length; c++)
@@ -150,7 +150,7 @@ namespace Hiperspace.Meta
                             yield return diff;
             }
 
-            if (other.Index != null)
+            if (other.Index is not null)
             {
                 var indexmap = other.Index.ToDictionary(i => i.Id);
                 for (int c = 0; c < Index.Length; c++)
@@ -161,7 +161,7 @@ namespace Hiperspace.Meta
         }
         public IEnumerable<(int id, string reason)> Warning(Element other)
         {
-            if (other.Keys != null)
+            if (other.Keys is not null)
             {
                 var keymap = other.Keys.ToDictionary(i => i.Name);
                 for (int c = 0; c < Keys.Length; c++)
@@ -170,7 +170,7 @@ namespace Hiperspace.Meta
                             yield return (Keys[c].Id, $"{Name.Reference}.{Keys[c].Name} key id changed from {Keys[c].Id} to {value.Id}");
             }
 
-            if (other.Values != null)
+            if (other.Values is not null)
             {
                 var valuemap = other.Values.ToDictionary(i => i.Name);
                 for (int c = 0; c < Values.Length; c++)
@@ -179,7 +179,7 @@ namespace Hiperspace.Meta
                             yield return (Values[c].Id, $"{Name.Reference}.{Values[c].Name} value id changed from {Values[c].Id} to {value.Id}");
             }
 
-            if (other.Index != null)
+            if (other.Index is not null)
             {
                 var indexmap = other.Index.ToDictionary(i => i.Name);
                 for (int c = 0; c < Index.Length; c++)

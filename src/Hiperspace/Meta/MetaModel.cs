@@ -37,18 +37,18 @@ namespace Hiperspace.Meta
 
         public override bool Equals(object? other)
         {
-            if (other == null) return false;
+            if (other is null) return false;
             if (other is MetaModel value)
                 return Equals(value);
             return false;
         }
         public bool Equals(MetaModel? other)
         {
-            if (other == null) return false;
-            if (Elements == null) return true;      // other may introduce any element 
+            if (other is null) return false;
+            if (Elements is null) return true;      // other may introduce any element 
 
             var map = other.Elements?.ToDictionary(p => p.Id);
-            if (map == null) return false;
+            if (map is null) return false;
             for (int c = 0; c < Elements.Length; c++)
                 if (map.TryGetValue(Elements[c].Id, out Element value))
                     if (!Elements[c].Equals(value)) return false;
@@ -58,7 +58,7 @@ namespace Hiperspace.Meta
         public override int GetHashCode()
         {
             var hc = new HashCode();
-            if (Elements != null)
+            if (Elements is not null)
                 for (int c = 0; c < Elements.Length; c++)
                     hc.Add(Elements[c].GetHashCode());
             return hc.ToHashCode();
@@ -69,7 +69,7 @@ namespace Hiperspace.Meta
         /// <param name="other"></param>
         public void Merge(MetaModel other)
         {
-            if (other.Elements != null && Elements != null)
+            if (other.Elements is not null && Elements is not null)
             {
                 var elmentmap = Elements.ToDictionary(i => i.Id);
                 for (int c = 0; c < other.Elements.Length; c++)
@@ -85,7 +85,7 @@ namespace Hiperspace.Meta
                 }
                 Elements = elmentmap.Select(p => p.Value).ToArray();
             }
-            else if (Elements == null)
+            else if (Elements is null)
             {
                 Elements = other.Elements;
             }
@@ -205,7 +205,7 @@ namespace Hiperspace.Meta
         {
             var map = other.Elements?.ToDictionary(p => p.Id) ?? default;
 
-            if (Elements != null && map != null)
+            if (Elements is not null && map is not null)
             {
                 for (int c = 0; c < Elements.Length; c++)
                 {
@@ -226,7 +226,7 @@ namespace Hiperspace.Meta
                 .GroupBy(p => p.Name.Reference)
                 .ToDictionary(p => p.Key, v => v.ToDictionary(k => k.Id, v => v)) ?? default;
 
-            if (Elements != null && map != null)
+            if (Elements is not null && map is not null)
             {
                 for (int c = 0; c < Elements.Length; c++)
                 {

@@ -44,7 +44,7 @@ namespace Hiperspace
         {
             _key = source._key;
             _value = source._value;
-            if (space != null)
+            if (space is not null)
                 Bind(space);
         }
 
@@ -58,7 +58,7 @@ namespace Hiperspace
             }
             set
             {
-                if (SetSpace != null) throw new Hiperspace.MutationException($"Vector can not be changed once bound to a Space");
+                if (SetSpace is not null) throw new Hiperspace.MutationException($"Vector can not be changed once bound to a Space");
                 _key.Vector = value;
             }
         }
@@ -101,7 +101,7 @@ namespace Hiperspace
             }
             public override bool Equals(Object? other)
             {
-                if (other == null) return false;
+                if (other is null) return false;
                 if (other is KeyType) return Equals((KeyType)other);
                 return false;
             }
@@ -184,7 +184,7 @@ namespace Hiperspace
             {
                 if (SetSpace != space.VectorSpaces)
                 {
-                    if (space.VectorSpaces.TryGetValue(this, out VectorSpace? current) && current != this && current != null)
+                    if (space.VectorSpaces.TryGetValue(this, out VectorSpace? current) && current != this && current is not null)
                         return Result.Skip(current);
                     SetSpace = space.VectorSpaces;
                     var result = SetSpace.Bind(this, true, true);
@@ -213,20 +213,20 @@ namespace Hiperspace
         }
         public override bool Equals(VectorSpace? other)
         {
-            if (ReferenceEquals(null, other))
+            if (other is null)
                 return false;
             return (_key == other._key);
         }
         public override bool Equals(Object? other)
         {
-            if (other == null) return false;
+            if (other is null) return false;
             if (other is VectorSpace) return Equals((VectorSpace)other);
             return false;
         }
 
         public override int CompareTo(VectorSpace? other)
         {
-            if (ReferenceEquals(null, other))
+            if (other is null)
                 throw new ArgumentNullException(nameof(other));
             if (_key < other._key)
                 return -1;
@@ -256,7 +256,7 @@ namespace Hiperspace
         }
         public static implicit operator KeyRef<KeyType, VectorSpace>?(VectorSpace? other)
         {
-            if (!ReferenceEquals(null, other))
+            if (other is not null)
                 return other.self;
             return null;
         }

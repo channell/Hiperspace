@@ -73,13 +73,21 @@ namespace Hiperspace
             Status = Result.Status.Error;   
         }
 
+        internal Result(T value, Result.Status status, string? reason, Exception? exception)
+        {
+            _value = value;
+            Reason = reason;
+            Status = status;
+            _exception = exception;
+        }
+
         public T Value 
         { 
             get 
             {
-                if (_value == null)
+                if (_value is null)
                 {
-                    if (Exception != null)
+                    if (Exception is not null)
                         throw Exception;
                     else
                         throw new NullReferenceException(Reason);
@@ -91,7 +99,7 @@ namespace Hiperspace
         {
             get
             {
-                if (_exception != null)
+                if (_exception is not null)
                     return _exception;
                 if (Status == Result.Status.Error)
                     return new Exception(Reason);
@@ -108,6 +116,65 @@ namespace Hiperspace
         public static explicit operator T (Result<T> value) 
         {
             return value.Value;
+        }
+
+        /// <summary>
+        /// Helper function for chaining results together on success 
+        /// </summary>
+        /// <typeparam name="R">return type</typeparam>
+        /// <param name="func">function to perform on the success value</param>
+        /// <returns>result of the func</returns>
+        public Result<R> Then<R>(Func<T, Result<R>> func)
+        {
+            switch (Status)
+            {
+                case Result.Status.Ok:
+                case Result.Status.Skip:
+                    return func(Value) switch
+                    {
+                        Result<R> r when r.Ok => r,
+                        Result<R> r when r.Skip => Result.Skip(r.Value),
+                        Result<R> r when r.Fail => Result.Fail(r.Value, r.Reason ?? Reason),
+                        Result<R> r when r.Error => Result.Error<R>(r.Exception ?? Exception),
+                        _ => Result.Fail<R>(default!, "Result created by reflection")
+                    };
+
+                case Result.Status.Fail when typeof(R) == typeof(T):
+                case Result.Status.Error when typeof(R) == typeof(T):
+                    return new Result<R>((R)(object)_value!, Status, Reason, _exception);
+
+                case Result.Status.Fail:
+                    return Result.Fail<R>(default!, Reason);
+
+                case Result.Status.Error:
+                    return Result.Error<R>(Exception);
+
+                case Result.Status.EOF:
+                    return Result.EOF<R>();
+
+                default:
+                    return Result.Fail<R>(default!, "Result created by reflection");
+            }
+        }
+
+        /// <summary>
+        /// Executes the specified action if the current result represents a failure or an error.
+        /// </summary>
+        /// <remarks>The action is invoked only when the result's status is either <see
+        /// cref="Result.Status.Fail"/> or <see cref="Result.Status.Error"/>. For other statuses, the action is not
+        /// executed.</remarks>
+        /// <param name="func">The action to execute, which receives the current result as a parameter.</param>
+        public void Else(Action<Result<T>> func)
+        {
+            switch (Status)
+            {
+                case Result.Status.Fail:
+                case Result.Status.Error:
+                    func(this);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

@@ -47,7 +47,7 @@ namespace Hiperspace
         {
             _key = source._key;
             _value = source._value;
-            if (space != null)
+            if (space is not null)
                 Bind(space);
         }
 
@@ -63,7 +63,7 @@ namespace Hiperspace
             }
             set
             {
-                if (SetSpace != null && _key.SKey != value) throw new Hiperspace.ValueMutationException("SKey");
+                if (SetSpace is not null && _key.SKey != value) throw new Hiperspace.ValueMutationException("SKey");
                 _key.SKey = value;
             }
         }
@@ -80,7 +80,7 @@ namespace Hiperspace
             }
             set
             {
-                if (SetSpace != null && _value.Vector != value) throw new Hiperspace.ValueMutationException($"Vector");
+                if (SetSpace is not null && _value.Vector != value) throw new Hiperspace.ValueMutationException($"Vector");
                 _value.Vector = value;
             }
         }
@@ -128,7 +128,7 @@ namespace Hiperspace
             }
             public override bool Equals(Object? other)
             {
-                if (other == null) return false;
+                if (other is null) return false;
                 if (other is KeyType) return Equals((KeyType)other);
                 return false;
             }
@@ -162,13 +162,13 @@ namespace Hiperspace
             public static bool operator <(KeyType left, KeyType right)
             {
 
-                if (left.SKey != null && left.SKey.CompareTo(right.SKey) < 0) return true;
+                if (left.SKey is not null && left.SKey.CompareTo(right.SKey) < 0) return true;
                 return false;
             }
             public static bool operator >(KeyType left, KeyType right)
             {
 
-                if (left.SKey != null && left.SKey.CompareTo(right.SKey) > 0) return true;
+                if (left.SKey is not null && left.SKey.CompareTo(right.SKey) > 0) return true;
                 return false;
             }
             #region view
@@ -190,13 +190,13 @@ namespace Hiperspace
             public void Bind(SubSpace space)
             {
 
-                if (Vector != null) Vector?.Bind(space);
+                if (Vector is not null) Vector?.Bind(space);
             }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void Unbind(SubSpace space)
             {
 
-                if (Vector != null) Vector?.Unbind(space);
+                if (Vector is not null) Vector?.Unbind(space);
             }
         }
         public static explicit operator ValueType(VectorNode item) => item._value;
@@ -228,20 +228,20 @@ namespace Hiperspace
         }
         public override bool Equals(VectorNode? other)
         {
-            if (ReferenceEquals(null, other))
+            if (other is null)
                 return false;
             return (_key == other._key);
         }
         public override bool Equals(Object? other)
         {
-            if (other == null) return false;
+            if (other is null) return false;
             if (other is VectorNode) return Equals((VectorNode)other);
             return false;
         }
 
         public override int CompareTo(VectorNode? other)
         {
-            if (ReferenceEquals(null, other))
+            if (other is null)
                 throw new ArgumentNullException(nameof(other));
             if (_key < other._key)
                 return -1;
@@ -262,7 +262,7 @@ namespace Hiperspace
         }
         public static implicit operator KeyRef<KeyType, VectorNode>?(VectorNode? other)
         {
-            if (!ReferenceEquals(null, other))
+            if (other is not null)
                 return other.self;
             return null;
         }

@@ -48,7 +48,7 @@ namespace Hiperspace
         {
             HashCode hashCode = new HashCode();
 
-            if (key == null || key.Length == 0 || (key[0] == 0 && key.Length < (sizeof(ulong) + 2)))
+            if (key is null || key.Length == 0 || (key[0] == 0 && key.Length < (sizeof(ulong) + 2)))
                 throw new ArgumentNullException("key null or versioned, without version timestamp");
 
             if (key[0] == 0)   // versioned

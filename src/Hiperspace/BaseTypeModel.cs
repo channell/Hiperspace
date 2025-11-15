@@ -44,7 +44,7 @@ public class BaseTypeModel
                 case 1:
                     {
                         string text = state.ReadString(null);
-                        if (text != null)
+                        if (text is not null)
                         {
                             value.Name = text;
                         }
@@ -54,7 +54,7 @@ public class BaseTypeModel
                     {
                         Relation[] parameters = value.Parameters;
                         parameters = RepeatedSerializer.CreateVector<Relation>().ReadRepeated(ref state, (SerializerFeatures)146, parameters, this);
-                        if (parameters != null)
+                        if (parameters is not null)
                         {
                             value.Parameters = parameters;
                         }
@@ -80,7 +80,7 @@ public class BaseTypeModel
         string name = value.Name;
         state.WriteString(1, name, null);
         Relation[] parameters = value.Parameters;
-        if (parameters != null)
+        if (parameters is not null)
         {
             Relation[] array = parameters;
             RepeatedSerializer.CreateVector<Relation>().WriteRepeated(ref state, 2, (SerializerFeatures)146, array, this);
@@ -108,7 +108,7 @@ public class BaseTypeModel
                 case 2:
                     {
                         string text = state.ReadString(null);
-                        if (text != null)
+                        if (text is not null)
                         {
                             value.Category = text;
                         }
@@ -118,7 +118,7 @@ public class BaseTypeModel
                     {
                         Field[] values = value.Keys;
                         values = RepeatedSerializer.CreateVector<Field>().ReadRepeated(ref state, (SerializerFeatures)146, values, this);
-                        if (values != null)
+                        if (values is not null)
                         {
                             value.Keys = values;
                         }
@@ -128,7 +128,7 @@ public class BaseTypeModel
                     {
                         Field[] values = value.Values;
                         values = RepeatedSerializer.CreateVector<Field>().ReadRepeated(ref state, (SerializerFeatures)146, values, this);
-                        if (values != null)
+                        if (values is not null)
                         {
                             value.Values = values;
                         }
@@ -138,7 +138,7 @@ public class BaseTypeModel
                     {
                         Alias[] index = value.Index;
                         index = RepeatedSerializer.CreateVector<Alias>().ReadRepeated(ref state, (SerializerFeatures)146, index, this);
-                        if (index != null)
+                        if (index is not null)
                         {
                             value.Index = index;
                         }
@@ -171,19 +171,19 @@ public class BaseTypeModel
         string category = value.Category;
         state.WriteString(2, category, null);
         Field[] keys = value.Keys;
-        if (keys != null)
+        if (keys is not null)
         {
             Field[] array = keys;
             RepeatedSerializer.CreateVector<Field>().WriteRepeated(ref state, 3, (SerializerFeatures)146, array, this);
         }
         Field[] values = value.Values;
-        if (values != null)
+        if (values is not null)
         {
             Field[] array = values;
             RepeatedSerializer.CreateVector<Field>().WriteRepeated(ref state, 4, (SerializerFeatures)146, array, this);
         }
         Alias[] index = value.Index;
-        if (index != null)
+        if (index is not null)
         {
             Alias[] array2 = index;
             RepeatedSerializer.CreateVector<Alias>().WriteRepeated(ref state, 5, (SerializerFeatures)146, array2, this);
@@ -210,7 +210,7 @@ public class BaseTypeModel
                 case 1:
                     {
                         string text = state.ReadString(null);
-                        if (text != null)
+                        if (text is not null)
                         {
                             value.Name = text;
                         }
@@ -253,7 +253,7 @@ public class BaseTypeModel
 
     MetaModel ISerializer<MetaModel>.Read(ref ProtoReader.State state, MetaModel value)
     {
-        if (value == null)
+        if (value is null)
         {
             MetaModel val = new MetaModel();
             value = val;
@@ -265,7 +265,7 @@ public class BaseTypeModel
             {
                 Element[]? elements = value.Elements;
                 elements = RepeatedSerializer.CreateVector<Element>().ReadRepeated(ref state, (SerializerFeatures)146, elements, this);
-                if (elements != null)
+                if (elements is not null)
                 {
                     value.Elements = elements;
                 }
@@ -282,7 +282,7 @@ public class BaseTypeModel
     {
         ThrowUnexpectedSubtype(value);
         Element[]? elements = value.Elements;
-        if (elements != null)
+        if (elements is not null)
         {
             Element[] array = elements;
             RepeatedSerializer.CreateVector<Element>().WriteRepeated(ref state, 1, (SerializerFeatures)146, array, this);
@@ -300,7 +300,7 @@ public class BaseTypeModel
                 case 1:
                     {
                         string text = state.ReadString(null);
-                        if (text != null)
+                        if (text is not null)
                         {
                             value.Reference = text;
                         }
@@ -310,7 +310,7 @@ public class BaseTypeModel
                     {
                         Name[] parameters = value.Parameters;
                         parameters = RepeatedSerializer.CreateVector<Name>().ReadRepeated(ref state, (SerializerFeatures)146, parameters, this);
-                        if (parameters != null)
+                        if (parameters is not null)
                         {
                             value.Parameters = parameters;
                         }
@@ -329,7 +329,7 @@ public class BaseTypeModel
         string reference = value.Reference;
         state.WriteString(1, reference, null);
         Name[] parameters = value.Parameters;
-        if (parameters != null)
+        if (parameters is not null)
         {
             Name[] array = parameters;
             RepeatedSerializer.CreateVector<Name>().WriteRepeated(ref state, 2, (SerializerFeatures)146, array, this);
@@ -347,7 +347,7 @@ public class BaseTypeModel
                 case 1:
                     {
                         string text = state.ReadString(null);
-                        if (text != null)
+                        if (text is not null)
                         {
                             value.Name = text;
                         }
@@ -411,7 +411,7 @@ public class BaseTypeModel
                 case 4:
                     {
                         string text = state.ReadString(null);
-                        if (text != null)
+                        if (text is not null)
                         {
                             value.TypeName = text;
                         }
@@ -450,7 +450,7 @@ public class BaseTypeModel
             if (num == 5)
             {
                 string text = state.ReadString(null);
-                if (text != null)
+                if (text is not null)
                 {
                     value.Name = text;
                 }
@@ -474,10 +474,10 @@ public class BaseTypeModel
         int num;
         while ((num = state.ReadFieldHeader()) > 0)
         {
-            if (num == 2)
+            if (num == 1)
             {
                 string text = state.ReadString(null);
-                if (text != null)
+                if (text is not null)
                 {
                     value.SKey = text;
                 }
@@ -493,7 +493,7 @@ public class BaseTypeModel
     void ISerializer<Node.KeyType>.Write(ref ProtoWriter.State state, Node.KeyType value)
     {
         string sKey = value.SKey;
-        state.WriteString(2, sKey, null);
+        state.WriteString(1, sKey, null);
     }
 
     Node.ValueType ISerializer<Node.ValueType>.Read(ref ProtoReader.State state, Node.ValueType value)
@@ -506,7 +506,7 @@ public class BaseTypeModel
                 case 2:
                     {
                         string text = state.ReadString(null);
-                        if (text != null)
+                        if (text is not null)
                         {
                             value.Name = text;
                         }
@@ -515,7 +515,7 @@ public class BaseTypeModel
                 case 3:
                     {
                         string text = state.ReadString(null);
-                        if (text != null)
+                        if (text is not null)
                         {
                             value.TypeName = text;
                         }
@@ -541,7 +541,7 @@ public class BaseTypeModel
         int num;
         while ((num = state.ReadFieldHeader()) > 0)
         {
-            if (num == 2)
+            if (num == 1)
             {
                 Node.KeyType key = value.Key;
                 key = state.ReadMessage<Node.KeyType>((SerializerFeatures)0, key, (ISerializer<Node.KeyType>)this);
@@ -558,7 +558,7 @@ public class BaseTypeModel
     void ISerializer<KeyRef<Node.KeyType, Node>>.Write(ref ProtoWriter.State state, KeyRef<Node.KeyType, Node> value)
     {
         Node.KeyType key = value.Key;
-        state.WriteMessage<Node.KeyType>(2, (SerializerFeatures)0, key, (ISerializer<Node.KeyType>)this);
+        state.WriteMessage<Node.KeyType>(1, (SerializerFeatures)0, key, (ISerializer<Node.KeyType>)this);
     }
     Node ISerializer<Node>.Read(ref ProtoReader.State state, Node item)
     {
@@ -571,7 +571,7 @@ public class BaseTypeModel
                 case 1:
                     {
                         string text = state.ReadString(null);
-                        if (text != null)
+                        if (text is not null)
                         {
                             item._key.SKey = text;
                         }
@@ -580,7 +580,7 @@ public class BaseTypeModel
                 case 2:
                     {
                         string text = state.ReadString(null);
-                        if (text != null)
+                        if (text is not null)
                         {
                             item._value.Name = text;
                         }
@@ -589,7 +589,7 @@ public class BaseTypeModel
                 case 3:
                     {
                         string text = state.ReadString(null);
-                        if (text != null)
+                        if (text is not null)
                         {
                             item._value.TypeName = text;
                         }
@@ -619,7 +619,7 @@ public class BaseTypeModel
                     {
                         int[]? ints = value.Ints;
                         ints = RepeatedSerializer.CreateVector<int>().ReadRepeated(ref state, (SerializerFeatures)144, ints);
-                        if (ints != null)
+                        if (ints is not null)
                         {
                             value.Ints = ints;
                         }
@@ -629,7 +629,7 @@ public class BaseTypeModel
                     {
                         float[]? floats = value.Floats;
                         floats = RepeatedSerializer.CreateVector<float>().ReadRepeated(ref state, (SerializerFeatures)149, floats);
-                        if (floats != null)
+                        if (floats is not null)
                         {
                             value.Floats = floats;
                         }
@@ -646,13 +646,13 @@ public class BaseTypeModel
     void ISerializer<Vector>.Write(ref ProtoWriter.State state, Vector value)
     {
         int[]? ints = value.Ints;
-        if (ints != null)
+        if (ints is not null)
         {
             int[] array = ints;
             RepeatedSerializer.CreateVector<int>().WriteRepeated(ref state, 1, (SerializerFeatures)144, array);
         }
         float[]? floats = value.Floats;
-        if (floats != null)
+        if (floats is not null)
         {
             float[] array2 = floats;
             RepeatedSerializer.CreateVector<float>().WriteRepeated(ref state, 2, (SerializerFeatures)149, array2);
@@ -667,7 +667,7 @@ public class BaseTypeModel
             if (num == 1)
             {
                 string text = state.ReadString();
-                if (text != null)
+                if (text is not null)
                 {
                     value.SKey = text;
                 }
@@ -738,7 +738,7 @@ public class BaseTypeModel
                 case 4:
                     {
                         string text = state.ReadString(null);
-                        if (text != null)
+                        if (text is not null)
                         {
                             value.TypeName = text;
                         }
@@ -790,7 +790,7 @@ public class BaseTypeModel
                 case 4:
                     {
                         string text = state.ReadString(null);
-                        if (text != null)
+                        if (text is not null)
                         {
                             item._key.TypeName = text;
                         }
@@ -799,7 +799,7 @@ public class BaseTypeModel
                 case 5:
                     {
                         string text = state.ReadString(null);
-                        if (text != null)
+                        if (text is not null)
                         {
                             item._value.Name = text;
                         }
@@ -845,7 +845,7 @@ public class BaseTypeModel
 
         state.WriteString(1, value.Name);
 
-        if (value.Rules != null)
+        if (value.Rules is not null)
         {
             RepeatedSerializer.CreateSet<HashSet<Graph.Rule>, Graph.Rule>().WriteRepeated(ref state, 2, SerializerFeatures.WireTypeString | SerializerFeatures.OptionPackedDisabled, value.Rules, this);
         }
@@ -918,11 +918,11 @@ public class BaseTypeModel
     void ISerializer<Graph.HiperEdge.KeyType>.Write(ref ProtoWriter.State state, Graph.HiperEdge.KeyType value)
     {
 
-        if (value.From != null)
+        if (value.From is not null)
         {
             state.WriteMessage<KeyRef<Node.KeyType, Node>>(2, SerializerFeatures.CategoryRepeated, value.From.Value, this);
         }
-        if (value.To != null)
+        if (value.To is not null)
         {
             state.WriteMessage<KeyRef<Node.KeyType, Node>>(3, SerializerFeatures.CategoryRepeated, value.To.Value, this);
         }
@@ -971,20 +971,20 @@ public class BaseTypeModel
     {
 
         state.WriteString(5, value.Name);
-        if (value.Edge != null && value.Edge.Value.Value != null)
+        if (value.Edge is not null && value.Edge.Value.Value is not null)
         {
             state.WriteMessage<Edge>(10, SerializerFeatures.CategoryRepeated, value.Edge.Value.Value, this);
         }
-        if (value.Source != null && value.Source.Value.Value != null)
+        if (value.Source is not null && value.Source.Value.Value is not null)
         {
             state.WriteMessage<Graph.HiperEdge>(11, SerializerFeatures.CategoryRepeated, value.Source.Value.Value, this);
         }
-        if (value.Width != null)
+        if (value.Width is not null)
         {
             state.WriteFieldHeader(13, WireType.Varint);
             state.WriteInt32(value.Width.Value);
         }
-        if (value.Length != null)
+        if (value.Length is not null)
         {
             state.WriteFieldHeader(14, WireType.Varint);
             state.WriteInt32(value.Length.Value);
@@ -1029,11 +1029,11 @@ public class BaseTypeModel
     {
         var value = item.Key;
 
-        if (value.From != null && value.From.Value.Value != null)
+        if (value.From is not null && value.From.Value.Value is not null)
         {
             state.WriteMessage<Node>(2, SerializerFeatures.CategoryRepeated, value.From.Value.Value, this);
         }
-        if (value.To != null && value.To.Value.Value != null)
+        if (value.To is not null && value.To.Value.Value is not null)
         {
             state.WriteMessage<Node>(3, SerializerFeatures.CategoryRepeated, value.To.Value.Value, this);
         }

@@ -119,15 +119,15 @@ namespace Hiperspace
                 if ((prop.PropertyType.IsValueType || prop.PropertyType == typeof(string)) && prop.Name != "AsAt")
                 {
                     var val = prop.GetValue(template);
-                    if (val != null)
+                    if (val is not null)
                     {
                         sb.Append($"{comma}{prop.Name}={val}");
                         comma = ", ";
                     }
-                    if (outer != null && prop.Name != "SKey" && val == null)
+                    if (outer is not null && prop.Name != "SKey" && val is null)
                     {
                         val = prop.GetValue(outer);
-                        if (val != null)
+                        if (val is not null)
                         {
                             sb.Append($"{comma}{prop.Name}=left.{prop.Name}");
                             comma = ", ";
@@ -146,7 +146,7 @@ namespace Hiperspace
         /// <param name="template">The template object.</param>
         protected void VisitQuery(ISetQuery sq, object? template = null)
         {
-            var (path, name) = template == null ? sq.Explain() : sq.Explain(template);
+            var (path, name) = template is null ? sq.Explain() : sq.Explain(template);
         }
 
         /// <summary>
@@ -160,24 +160,24 @@ namespace Hiperspace
             current.Children.Add(next);
             _stack.Push(next);
 
-            if (sj.Inner != null)
+            if (sj.Inner is not null)
             {
                 VisitJoin(sj.Inner);
             }
-            else if (sj.Left != null)
+            else if (sj.Left is not null)
             {
                 VisitQuery(sj.Left);
             }
-            if (sj.Right != null)
+            if (sj.Right is not null)
             {
                 var template = Activator.CreateInstance(sj.Right.ElementType, new object[] { sj.Right.Template, null! });
                 var joins = "";
-                if (template != null)
+                if (template is not null)
                 {
                     foreach (var prop in sj.Joins)
                     {
                         joins += $", {prop.left.property?.Name} = {prop.right.alias}.{prop.right.property?.Name}";
-                        if (prop.right.property != null)
+                        if (prop.right.property is not null)
                         {
                             if (prop.right.property.PropertyType.IsValueType)
                             {

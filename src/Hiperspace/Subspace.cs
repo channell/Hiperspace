@@ -59,9 +59,9 @@ namespace Hiperspace
         protected SubSpace(HiperSpace space, Horizon[]? horizon, DateTime? AsAt = null, DateTime? DeltaFrom = null) : this(space)
         {
             var baseHorizon = space?.GetHorizons()?.ToArray();
-            if (baseHorizon != null && baseHorizon != Array.Empty<Horizon>())
+            if (baseHorizon is not null && baseHorizon != Array.Empty<Horizon>())
             {
-                if (horizon is null)
+                if (horizon  is null)
                     Horizon = baseHorizon;
                 else
                     Horizon = baseHorizon.Union(horizon).ToArray();
@@ -113,7 +113,7 @@ namespace Hiperspace
                 ServiceProvider = ServiceProvider
             };
             var constructor = this.GetType().GetConstructor(new Type[] { typeof(SubSpaceParameters) });
-            if (constructor == null)
+            if (constructor  is null)
                 throw new InvalidOperationException($"SubSpace {this.GetType().FullName} must have a constructor that takes a single SubSpaceParameters argument");
             var subspace = (SubSpace)constructor.Invoke(new object[] { parameters });
             return subspace;
@@ -125,7 +125,7 @@ namespace Hiperspace
         /// <returns>horizon filters</returns>
         public override IEnumerable<Horizon> GetHorizons()
         {
-            if (Horizon != null)
+            if (Horizon is not null)
                 return Horizon;
             else
                 return Array.Empty<Horizon>();
@@ -530,6 +530,8 @@ namespace Hiperspace
         /// </remarks>
         public override Task<byte[]> InvokeAsync(byte[] key, CancellationToken token = default)
         {
+            if (_space  is null)
+                return Task.FromResult(Array.Empty<byte>());
             return _space.InvokeAsync(key, token);
         }
 
@@ -544,7 +546,10 @@ namespace Hiperspace
         /// </remarks>
         public override IAsyncEnumerable<byte[]> InvokeStreamAsync(byte[] key, CancellationToken token = default)
         {
-            return _space.InvokeStreamAsync(key, token);
+            if (_space  is null)
+                return Enumerable.Empty<byte[]>().ToAsyncEnumerable();
+            else
+                return _space.InvokeStreamAsync(key, token);
         }
 
         /// <summary>
@@ -555,13 +560,13 @@ namespace Hiperspace
         public async Task<TMessage> Invoke<TMessage>(TMessage item, CancellationToken token = default) 
             where TMessage : class, IMessage
         {
-            if (item == null) throw new ArgumentNullException(nameof(item));
-            if (TypeModel == null) throw new InvalidOperationException("TypeModel is not initialized in SubSpace");
+            if (item  is null) throw new ArgumentNullException(nameof(item));
+            if (TypeModel  is null) throw new InvalidOperationException("TypeModel is not initialized in SubSpace");
 
             item.Bind(this);
             var key = item.KeyBytes(TypeModel);
             var io = await _space.InvokeAsync(key, token);
-            if (io != null && io.Length != 0)
+            if (io is not null && io.Length != 0)
             {
                 var result = item.WithValue<TMessage>(TypeModel, io);
                 result.Bind(this);
@@ -581,8 +586,8 @@ namespace Hiperspace
         public async IAsyncEnumerable<TMessage> InvokeStream<TMessage>(TMessage item, [EnumeratorCancellation]CancellationToken token = default) 
             where TMessage : class, IMessage
         {
-            if (item == null) throw new ArgumentNullException(nameof(item));
-            if (TypeModel == null) throw new InvalidOperationException("TypeModel is not initialized in SubSpace");
+            if (item  is null) throw new ArgumentNullException(nameof(item));
+            if (TypeModel  is null) throw new InvalidOperationException("TypeModel is not initialized in SubSpace");
 
             item.Bind(this);
             var key = item.KeyBytes(TypeModel);

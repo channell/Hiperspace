@@ -53,14 +53,14 @@ namespace Hiperspace.Heap
             HiperSpace? sync = null;
             lock (_lock)
             {
-                if (_sync == null)
+                if (_sync is null)
                 {
                     sync = _sync!;
                     _sync = null;
                 }
             }
 
-            if (sync != null)
+            if (sync is not null)
             {
                 bool fault = false;
                 for (int c = 0; c < _spaces.Length; c++)
@@ -172,7 +172,7 @@ namespace Hiperspace.Heap
                 {
                     lock (_lock)
                     {
-                        if (_sync == null)
+                        if (_sync is null)
                             _sync = _createSync();
                         _sync.Bind(key, value);
                         Fault(c);
@@ -208,7 +208,7 @@ namespace Hiperspace.Heap
                 {
                     lock (_lock)
                     {
-                        if (_sync == null)
+                        if (_sync is null)
                             _sync = _createSync();
                         _sync.Bind(key, value, version);
                         Fault(c);
@@ -243,7 +243,7 @@ namespace Hiperspace.Heap
                 {
                     lock (_lock)
                     {
-                        if (_sync == null)
+                        if (_sync is null)
                             _sync = _createSync();
                         _sync.Bind(key, value, version, priorVersion);
                         Fault(c);
@@ -441,14 +441,14 @@ namespace Hiperspace.Heap
                 try
                 {
                     var r = await tasks[c];
-                    if (result == null)
+                    if (result is null)
                         result = r;
                 }
                 catch (Exception e)
                 {
                     lock (_lock)
                     {
-                        if (_sync == null)
+                        if (_sync is null)
                             _sync = _createSync();
                         _sync.BatchBind(batch);
                         Fault(c);
@@ -456,7 +456,7 @@ namespace Hiperspace.Heap
                     }
                 }
             }
-            if (result != null)
+            if (result is not null)
                 return result;
             else
                 throw exception!;
@@ -475,14 +475,14 @@ namespace Hiperspace.Heap
                 try
                 {
                     var r = await tasks[c];
-                    if (result == null)
+                    if (result is null)
                         result = r;
                 }
                 catch (Exception e)
                 {
                     lock (_lock)
                     {
-                        if (_sync == null)
+                        if (_sync is null)
                             _sync = _createSync();
                         _sync.BatchBind(batch);
                         Fault(c);
@@ -490,7 +490,7 @@ namespace Hiperspace.Heap
                     }
                 }
             }
-            if (result != null)
+            if (result is not null)
                 return result;
             else
                 throw exception!;
@@ -509,14 +509,14 @@ namespace Hiperspace.Heap
                 try
                 {
                     var r = await tasks[c];
-                    if (result == null)
+                    if (result is null)
                         result = r;
                 }
                 catch (Exception e)
                 {
                     lock (_lock)
                     {
-                        if (_sync == null)
+                        if (_sync is null)
                             _sync = _createSync();
                         _sync.BatchBind(batch);
                         Fault(c);
@@ -524,7 +524,7 @@ namespace Hiperspace.Heap
                     }
                 }
             }
-            if (result != null)
+            if (result is not null)
                 return result;
             else
                 throw exception!;

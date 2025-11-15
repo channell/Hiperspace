@@ -23,7 +23,7 @@ namespace Hiperspace.Meta
 
         public override bool Equals(object? other)
         {
-            if (other == null) return false;
+            if (other is null) return false;
             if (other is Relation value) 
                 return Equals(value);
             return false;

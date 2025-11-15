@@ -42,9 +42,9 @@ namespace Hiperspace
         {
             get
             {
-                if (_entity == null)
+                if (_entity is null)
                 {
-                    if (SetSpace != null)
+                    if (SetSpace is not null)
                     {
                         _entity = SetSpace.Get<TKey>(ref _key);
                     }
@@ -64,9 +64,9 @@ namespace Hiperspace
         }
         public async Task<TEntity?> ValueAsync()
         {
-            if (_entity == null)
+            if (_entity is null)
             {
-                if (SetSpace != null)
+                if (SetSpace is not null)
                 {
                     _entity = await SetSpace.GetAsync<TKey>(_key);
                 }
@@ -102,7 +102,7 @@ namespace Hiperspace
         }
         public override bool Equals(Object? other)
         {
-            if (other == null) return false;
+            if (other is null) return false;
             if (other is KeyRef<TKey, TEntity>) return Equals((KeyRef<TKey, TEntity>)other);
             return false;
         }
@@ -120,7 +120,7 @@ namespace Hiperspace
 
         public int CompareTo(object? obj)
         {
-            if (obj == null) throw new ArgumentNullException();
+            if (obj is null) throw new ArgumentNullException();
             if (obj is KeyRef<TKey, TEntity> kr)
                 return CompareTo(kr);
             throw new ArgumentException();

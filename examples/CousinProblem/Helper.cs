@@ -12,7 +12,7 @@ namespace Cousins //Problem
     {
         internal static HashSet<HiperEdge> AllRelations(Person person)
         {
-            Node node = person;
+            Node node = person!;
 
             var route = new Route
             {
@@ -32,11 +32,11 @@ namespace Cousins //Problem
         /// <returns></returns>
         internal static List<Path> Relations(Person person)
         {
-            Node node = person;
+            Node node = person!;
             var result = new List<Path>();
             foreach (var edge in node.Froms)
             {
-                var paths = FindPaths(node, edge, null).Where(p => p.From != null && p.To != null).ToImmutableSortedSet();
+                var paths = FindPaths(node, edge, null).Where(p => p.From is not null && p.To is not null).ToImmutableSortedSet();
                 if (paths != ImmutableSortedSet<Path>.Empty)
                 {
                     result.AddRange(paths.Select(p => p.TransformPath(Infered)).Where(p => p.TypeName != "relation"));
@@ -330,24 +330,24 @@ namespace Cousins //Problem
         }
         public static IEnumerable<Edge> Edges(this Path path)
         {
-            if (path != null)
+            if (path is not null)
             {
-                if (path.Edge != null)
+                if (path.Edge is not null)
                     yield return path.Edge;
-                if (path.Source != null)
+                if (path.Source is not null)
                     foreach (var source in path.Source.Edges())
                         yield return source;
             }
         }
         private static bool Match(this Path path, Stack<string[]> valid)
         {
-            if (path != null)
+            if (path is not null)
             {
                 var val = valid.Pop();
 
                 if (!val.Any(i => i == path?.Edge?.TypeName))
                     return false;
-                if (path.Source != null)
+                if (path.Source is not null)
                 {
                     if (valid.TryPeek(out var src))
                         return path.Source.Match(valid);
@@ -365,7 +365,7 @@ namespace Cousins //Problem
         {
             if (edge == null ||
                 root == edge.To ||
-                root == edge.From && source != null ||
+                root == edge.From && source is not null ||
                 edge.InPath(source))
                 return ImmutableSortedSet<Path>.Empty;
 
@@ -380,11 +380,11 @@ namespace Cousins //Problem
 
             var result = ImmutableSortedSet<Path>.Empty.Add(path);
             var froms = edge?.To?.Froms.ToArray();
-            if (froms != null)
+            if (froms is not null)
             {
                 foreach (var e in froms)
                 {
-                    if (e != null && e.To != null && edge?.To != null)
+                    if (e is not null && e.To is not null && edge?.To is not null)
                     {
                         var paths = FindPaths(root, e, path);
                         if (paths != ImmutableSortedSet<Path>.Empty)

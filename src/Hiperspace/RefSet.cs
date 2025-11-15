@@ -85,7 +85,7 @@ namespace Hiperspace
 
         private ISet<TEntity> Lazy()
         {
-            if (_new && SetSpace != null)
+            if (_new && SetSpace is not null)
             {
                 var template = _template();
                 TEntity[] result = SetSpace.Find(template, true).ToArray();
@@ -114,7 +114,7 @@ namespace Hiperspace
         }
         private async Task<ISet<TEntity>> LazyAsync(CancellationToken token)
         {
-            if (_new && SetSpace != null)
+            if (_new && SetSpace is not null)
             {
                 var template = _template();
                 var res = new List<TEntity>();
@@ -212,7 +212,7 @@ namespace Hiperspace
                 try
                 {
                     _new = false;
-                    if (SetSpace != null)
+                    if (SetSpace is not null)
                     {
                         _binder(item);
                         SetSpace.Bind(item, true, true);
@@ -249,7 +249,7 @@ namespace Hiperspace
                 try
                 {
                     _new = false;
-                    if (SetSpace != null)
+                    if (SetSpace is not null)
                     {
                         _binder(item);
                         await SetSpace.BindAsync(item, true, true);

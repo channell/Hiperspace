@@ -35,7 +35,7 @@ namespace Hiperspace
 
         public (byte[] Key, DateTime AsAt, byte[] Value, double Distance) ToTuple()
         {
-            if (Value == null)
+            if (Value is null)
                 return (Key, AsAt, Array.Empty<byte>(), Distance);
             else
                 return (Key, AsAt, Value, Distance);
@@ -53,7 +53,7 @@ namespace Hiperspace
         }
         public override bool Equals(Object? other)
         {
-            if (other == null) return false;
+            if (other is null) return false;
             if (other is Nearest) return Equals((Nearest)other);
             return false;
         }

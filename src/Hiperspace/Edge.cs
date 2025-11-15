@@ -39,7 +39,7 @@ namespace Hiperspace
         {
             _key = source._key;
             _value = source._value;
-            if (space != null) 
+            if (space is not null) 
                 Bind(space);
         }
 
@@ -48,7 +48,7 @@ namespace Hiperspace
             get => _key.From?.Value;
             set
             {
-                if (SetSpace != null && _key.From != value) throw new Hiperspace.ValueMutationException($"From");
+                if (SetSpace is not null && _key.From != value) throw new Hiperspace.ValueMutationException($"From");
                 _key.From = value;
             }
         }
@@ -64,7 +64,7 @@ namespace Hiperspace
             get => _key.To?.Value;
             set
             {
-                if (SetSpace != null && _key.To != value) throw new Hiperspace.ValueMutationException($"To");
+                if (SetSpace is not null && _key.To != value) throw new Hiperspace.ValueMutationException($"To");
                 _key.To = value;
             }
         }
@@ -80,7 +80,7 @@ namespace Hiperspace
             get => _key.TypeName;
             set
             {
-                if (SetSpace != null && _key.TypeName != value) throw new Hiperspace.ValueMutationException($"TypeName");
+                if (SetSpace is not null && _key.TypeName != value) throw new Hiperspace.ValueMutationException($"TypeName");
                 _key.TypeName = value;
             }
         }
@@ -90,7 +90,7 @@ namespace Hiperspace
             get => _value.Name;
             set
             {
-                if (SetSpace != null && _value.Name != value) throw new Hiperspace.ValueMutationException($"CubeName");
+                if (SetSpace is not null && _value.Name != value) throw new Hiperspace.ValueMutationException($"CubeName");
                 _value.Name = value;
             }
         }
@@ -135,7 +135,7 @@ namespace Hiperspace
             }
             public override bool Equals(Object? other)
             {
-                if (other == null) return false;
+                if (other is null) return false;
                 if (other is KeyType) return Equals((KeyType)other);
                 return false;
             }
@@ -166,14 +166,14 @@ namespace Hiperspace
             {
                 if (left.From < right.From) return true;
                 if (left.To < right.To) return true;
-                if (left.TypeName != null && left.TypeName.CompareTo(right.TypeName) < 0) return true;
+                if (left.TypeName is not null && left.TypeName.CompareTo(right.TypeName) < 0) return true;
                 return false;
             }
             public static bool operator >(KeyType left, KeyType right)
             {
                 if (left.From > right.From) return true;
                 if (left.To > right.To) return true;
-                if (left.TypeName != null && left.TypeName.CompareTo(right.TypeName) > 0) return true;
+                if (left.TypeName is not null && left.TypeName.CompareTo(right.TypeName) > 0) return true;
                 return false;
             }
         }
@@ -202,13 +202,13 @@ namespace Hiperspace
         {
             if (SetSpace != subspace.Edges)
             {
-                if (From != null)
+                if (From is not null)
                 {
                     var value = From;
                     value.Bind(subspace);
                     From = value;
                 }
-                if (To != null)
+                if (To is not null)
                 {
                     var value = To;
                     value.Bind(subspace);
@@ -236,7 +236,7 @@ namespace Hiperspace
 
         public override int CompareTo(Edge? other)
         {
-            if (ReferenceEquals(null, other))
+            if (other is null)
                 throw new ArgumentNullException(nameof(other));
             if (_key < other._key)
                 return -1;
@@ -247,13 +247,13 @@ namespace Hiperspace
         }
         public override bool Equals(Object? other)
         {
-            if (other == null) return false;
+            if (other is null) return false;
             if (other is Edge) return Equals((Edge)other);
             return false;
         }
         public override bool Equals(Edge? other)
         {
-            if (ReferenceEquals(null, other))
+            if (other is null)
                 return false;
             return (_key == other._key);
         }
@@ -277,24 +277,24 @@ namespace Hiperspace
         }
         public static implicit operator KeyRef<KeyType, Edge>?(Edge? other)
         {
-            if (!ReferenceEquals(null, other))
+            if (other is not null)
                 return other.self;
             return null;
         }
         public static bool operator ==(Edge? left, Edge? right)
         {
-            if (ReferenceEquals(null, left) && ReferenceEquals(null, right))
+            if (left is null && right is null)
                 return true;
-            else if (ReferenceEquals(null, left) || ReferenceEquals(null, right))
+            else if (left is null || right is null)
                 return false;
             else
                 return left.Equals(right);
         }
         public static bool operator !=(Edge? left, Edge? right)
         {
-            if (ReferenceEquals(null, left) && ReferenceEquals(null, right))
+            if (left is null && right is null)
                 return false;
-            else if (ReferenceEquals(null, left) || ReferenceEquals(null, right))
+            else if (left is null || right is null)
                 return true;
             else
                 return !left.Equals(right);
@@ -309,10 +309,10 @@ namespace Hiperspace
         /// <returns>true if it matched the provided values of the template</returns>
         public bool Filter(Edge other, bool read)
         {
-            if (other._key.From != null && this._key.From != null && this._key.From != other._key.From) return false;
-            if (other._key.To != null && this._key.To != null && this._key.To != other._key.To) return false;
-            if (other._value.Name != null && read && this._value.Name != null && this._value.Name != other._value.Name) return false;
-            if (other._key.TypeName != null && this._key.TypeName != null && this._key.TypeName != other._key.TypeName) return false;
+            if (other._key.From is not null && this._key.From is not null && this._key.From != other._key.From) return false;
+            if (other._key.To is not null && this._key.To is not null && this._key.To != other._key.To) return false;
+            if (other._value.Name is not null && read && this._value.Name is not null && this._value.Name != other._value.Name) return false;
+            if (other._key.TypeName is not null && this._key.TypeName is not null && this._key.TypeName != other._key.TypeName) return false;
             return true;
         }
 

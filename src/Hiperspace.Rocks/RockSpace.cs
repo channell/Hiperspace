@@ -35,7 +35,7 @@ namespace Hiperspace.Rocks
             _readonly = read;
             try
             {
-                _db = Open(path, metaModel, metaModel != null ? compress : false, read);
+                _db = Open(path, metaModel, metaModel is not null ? compress : false, read);
             }
             catch (MutationException)
             {
@@ -65,7 +65,7 @@ namespace Hiperspace.Rocks
                 ? RocksDb.OpenReadOnly (option, path, false)
                 : RocksDb.Open(option, path);
 
-            if (metaModel != null)
+            if (metaModel is not null)
             {
                 var (success, model) = ApplyMetaModel(metaModel);
                 if (!success)
@@ -77,7 +77,7 @@ namespace Hiperspace.Rocks
         public override Result<byte[]> Bind(byte[] key, byte[] value, object? source = null)
         {
             var current = _db.Get(key);
-            if (current != null)
+            if (current is not null)
             {
                 return Result.Skip(current);
             }
@@ -108,7 +108,7 @@ namespace Hiperspace.Rocks
             BinaryPrimitives.WriteUInt64BigEndian(new Span<byte>(fullkey, fullkey.Length - sizeof(long), sizeof(long)), toend);
 
             var (cur, v) = Get(key, version);
-            if (cur != null)
+            if (cur is not null)
             {
                 if (v == version)
                     return Result.Skip(cur);
@@ -127,7 +127,7 @@ namespace Hiperspace.Rocks
             BinaryPrimitives.WriteUInt64BigEndian(new Span<byte>(fullkey, fullkey.Length - sizeof(long), sizeof(long)), toend);
 
             var (cur, v) = Get(key, version);
-            if (cur != null)
+            if (cur is not null)
             {
                 if (v == version)
                     return Result.Skip(cur);
@@ -254,7 +254,7 @@ namespace Hiperspace.Rocks
                         }
                         else if (lastVersion != 0)
                         {
-                            if (lastValue != null)
+                            if (lastValue is not null)
                                 yield return (lastKey, new DateTime(lastVersion), lastValue);
                             lastKey = keypart;
                             lastVersion = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(k, k.Length - sizeof(ulong), sizeof(ulong))));
@@ -268,7 +268,7 @@ namespace Hiperspace.Rocks
                     else
                         break;
                 }
-                if (lastVersion != 0 && lastValue != null)
+                if (lastVersion != 0 && lastValue is not null)
                 {
                     yield return (lastKey, new DateTime(lastVersion), lastValue);
                 }
@@ -457,7 +457,7 @@ namespace Hiperspace.Rocks
             }
             if (lastVersion != 0)
             {
-                if (lastValue != null)
+                if (lastValue is not null)
                 {
                     RaiseOnAfterGet(ref key, ref lastValue);
                     return (lastValue, new DateTime(lastVersion));
@@ -565,7 +565,7 @@ namespace Hiperspace.Rocks
         {
             var mk = new byte[] { 0x00, 0x00 };
             var stored = Get(mk);    // no proto message starts with 0x00
-            if (stored != null)
+            if (stored is not null)
             {
                 return Hiperspace.Space.FromValue<MetaModel>(TypeModel, stored);
             }
@@ -575,7 +575,7 @@ namespace Hiperspace.Rocks
         {
             var mk = new byte[] { 0x00, 0x00 };
             var stored = await GetAsync(mk);    // no proto message starts with 0x00
-            if (stored != null)
+            if (stored is not null)
             {
                 return Hiperspace.Space.FromValue<MetaModel>(TypeModel, stored);
             }
