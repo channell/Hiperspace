@@ -1,6 +1,6 @@
 ﻿// ---------------------------------------------------------------------------------------
 //                                   Hiperspace
-//                        Copyright (c) 2023, 2024 Cepheis Ltd
+//                        Copyright (c) 2023, 2024, 2025 Cepheis Ltd
 //                                    www.cepheis.com
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
@@ -30,6 +30,10 @@ namespace Hiperspace.Meta
         public int Id { get; set; }
         [ProtoMember(7)]
         public bool Versioned { get; set; }
+
+        [ProtoMember(8)]
+        public string? SetSpace { get; set; }
+
 
         public override bool Equals(object? other)
         {
