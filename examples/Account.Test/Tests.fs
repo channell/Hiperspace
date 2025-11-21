@@ -62,11 +62,6 @@ type CustomerObserver (output : ITestOutputHelper) =
 
 type  AccountTest (output : ITestOutputHelper) =
 
-    do if Directory.Exists("./rockstest") then Directory.Delete("./rockstest", true) |> ignore
-
-    let rocks = new Hiperspace.Rocks.RockSpace ("./rockstest")
-    let accSpace = AccSpace.Make(rocks)
-
     let nvl (v : 'v) = Nullable<'v> (v)
 
     let result (p : Result<'p>) = 
@@ -77,6 +72,11 @@ type  AccountTest (output : ITestOutputHelper) =
 
     [<Fact>]
     member _.``test acc`` () =
+        do if Directory.Exists("./rockstest") then Directory.Delete("./rockstest", true) |> ignore
+
+        let rocks = new Hiperspace.Rocks.RockSpace ("./rockstest")
+        let accSpace = AccSpace.Make(rocks)
+
         use subscription = accSpace.Dependencies.Subscribe<Customer> (CustomerObserver output)
 
         let cust = Customer ( Name = "Fred")
@@ -163,9 +163,13 @@ type  AccountTest (output : ITestOutputHelper) =
 
     [<Fact>]
     member _.``test add account`` () =
+        do if Directory.Exists("./rockstest2") then Directory.Delete("./rockstest2", true) |> ignore
 
-        let donald = (accSpace.Customers.Bind (Customer ( Name = "Donald"))).Value
+        let rocks2 = new Hiperspace.Rocks.RockSpace ("./rockstest2")
+        let accSpace2 = AccSpace.Make(rocks2)
+
+        let donald = (accSpace2.Customers.Bind (Customer ( Name = "Donald"))).Value
         donald.Accounts.Add (Account ( Title = "Donalds"))
-        let donalds = accSpace.Accounts.Find (new Account (owner = donald)) |> Seq.tryHead
+        let donalds = accSpace2.Accounts.Find (new Account (owner = donald)) |> Seq.tryHead
         donalds.IsSome.Should().BeTrue("added") |> ignore
         donalds.Value.Title.Should().Be("Donalds", "added") |> ignore

@@ -6,6 +6,7 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using Hiperspace.Meta;
+using System;
 using System.Buffers.Binary;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
@@ -142,19 +143,13 @@ namespace Hiperspace
 
         public async override IAsyncEnumerable<(byte[], byte[])> FindAsync(byte[] begin, byte[] end, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            for (int c = 0; c < _spaces.Length; c++)
-            {
-                await foreach (var b in _spaces[c].FindAsync(begin, end, cancellationToken))
-                    yield return b;
-            }
+            await foreach (var b in _durableSpace.FindAsync(begin, end, cancellationToken))
+                yield return b;
         }
         public async override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindAsync(byte[] begin, byte[] end, DateTime? version, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            for (int c = 0; c < _spaces.Length; c++)
-            {
-                await foreach (var b in _spaces[c].FindAsync(begin, end, version, cancellationToken))
-                    yield return b;
-            }
+            await foreach (var b in _durableSpace.FindAsync(begin, end, version, cancellationToken))
+                yield return b;
         }
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)
         {
@@ -185,11 +180,8 @@ namespace Hiperspace
 
         public async override IAsyncEnumerable<(byte[] value, DateTime version)> GetVersionsAsync(byte[] key, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            for (int c = 0; c < _spaces.Length; c++)
-            {
-                await foreach (var v in _spaces[c].GetVersionsAsync(key))
-                    yield return v;
-            }
+            await foreach (var v in _durableSpace.GetVersionsAsync(key, cancellationToken))
+                yield return v;
         }
 
         public override byte[] Get(byte[] key)
@@ -339,19 +331,13 @@ namespace Hiperspace
         }
         public async override IAsyncEnumerable<(byte[] Key, byte[] Value)> FindIndexAsync(byte[] begin, byte[] end, [EnumeratorCancellation]CancellationToken cancellationToken = default)
         {
-            for (int c = 0; c < _spaces.Length; c++)
-            {
-                await foreach (var b in _spaces[c].FindIndexAsync(begin, end, cancellationToken))
-                    yield return b;
-            }
+            await foreach (var b in _durableSpace.FindIndexAsync(begin, end, cancellationToken))
+                yield return b;
         }
         public async override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindIndexAsync(byte[] begin, byte[] end, DateTime? version, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            for (int c = 0; c < _spaces.Length; c++)
-            {
-                await foreach (var b in _spaces[c].FindIndexAsync(begin, end, version, cancellationToken))
-                    yield return b;
-            }
+            await foreach (var b in _durableSpace.FindIndexAsync(begin, end, version, cancellationToken))
+                yield return b;
         }
         public override (byte[] Key, byte[] Value)? GetFirst(byte[] begin, byte[] end)
         {

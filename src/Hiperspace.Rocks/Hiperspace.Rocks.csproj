@@ -59,7 +59,22 @@ Reference libraries have also been updated
   <ItemGroup>
     <ProjectReference Include="..\Hiperspace\Hiperspace.csproj" />
   </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy bin\debug\*.nupkg \dev\packages" />
+  <!--
+    Upload generated .nupkg files to the local NuGet feed at http://localhost:5000/v3/index.json
+    This target only runs when not in CI (i.e., when $(CI) != 'true').
+  -->
+  <Target Name="UploadToLocalFeed" AfterTargets="Pack" Condition="'$(CI)' != 'true'">
+    <!-- Collect .nupkg files from the output directory -->
+    <ItemGroup>
+      <LocalPackages Include="$(OutputPath)**\*.nupkg" />
+    </ItemGroup>
+
+    <!-- Informational message -->
+    <Message Importance="high" Text="Preparing to push @(LocalPackages) to local NuGet feed at https://localhost:5001/v3/index.json" Condition=" '@(LocalPackages)' != '' " />
+    <Message Importance="low" Text="No local packages found to push from $(OutputPath)" Condition=" '@(LocalPackages)' == '' " />
+
+    <!-- Push each package found to the local feed. Uses batching so Exec runs per package. -->
+    <Exec Command="dotnet nuget push &quot;%(LocalPackages.Identity)&quot; --source &quot;https://localhost:5001/v3/index.json&quot; --api-key &quot;local&quot; --skip-duplicate"
+          Condition=" '@(LocalPackages)' != '' " />
   </Target>
 </Project>
