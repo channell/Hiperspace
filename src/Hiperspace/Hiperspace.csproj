@@ -18,22 +18,59 @@
     <RepositoryUrl>https://github.com/channell/Hiperspace</RepositoryUrl>
     <Nullable>enable</Nullable>
     <LangVersion>14.0</LangVersion>
-    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20251115
+    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20251124
 ## Overview
 
-This version updates to .NET 10 and modernizes the code to use `name != null` and `ReferenceEquals(name, null)` 
-to `name is not null`.
+This release adds the `@AlternateIndex` property to explicitly create an index for views and ad hoc queries that do not *or cannot* be defined in the normal way of using an access path.
 
-The `is null` and `is not null` patterns are **billed** as
-provide a clearer and more concise way to check for null values in C#. This change enhances readability and aligns with current C# best practices.
+### Path Index
+Normally indexes are created in `Hiperspace` by defining an extent that uses an attribute to retrieve a list of elements.  The following hilang model defines a *Person* with a *Parent* and an extension *Children* that retrieves all *Person* that have a *Parrent* that refers to this *person*.
+```
+entity Person (Id : Guid) {Parent : Person} [Children : Person (Parent = this)];
+```
+The *Children* extent causes an index to be created on *Parent* so that access to *Children* is fast and does not require an scan or all *Person* elements
 
-but the main advantage is that:
-* You don't need to include `ReferenceEquals` in any `operator ==` overload.
-* `name is not null` is the same for reference (*class*) and value (*struct*) objects instead of `ReferenceEquals(name, null)` for classes and `!name.HasValue` for nullable values.
+### Alternate Index
+The following model defines two entities {*Product, Order*} that can be viewed as **nodes** in a **graph**. The segment *Item* defined the details of the *Order* with reference to the *Product* being ordered. 
 
-## References
-Reference libraries have also been updated
-</PackageReleaseNotes>
+```
+entity Product = Node(...) (Id : Guid);
+entity Order = Node (...) (Id : Guid) [Items : Item];
+segment Item = Edges (From = owner, To = Product, FromType = "Purchase", ToType ="Purchased")
+(Line : Int32) 
+{
+  @AlternateIndex
+  Product : Product,
+  Quantity : Decimal
+};
+```
+In a **UML** diagram,  *Order* aggregates *Item*, and *Item* is associated with *Product*.  In a **Graph** diagram *Order* and *Product* are both `Nodes` with two `Edge` between them for "Purchase" and "Purchased".
+
+[image]Sites/hiperspace/sample/orderitem.png[/image]
+
+*Product* cannot refer to *Item* because it is a `segment` of its owner (*in this case Order*), and cannot therefore define a *path* from *order* to *Item*. When viewed as a **graph** the Order-&gt;(Purchase)-&gt;Product `Edge` uses the *Item* key to find all edges, but the Product-&gt;(Purchased)-&gt;Order `Edge` needs an `@AlternateIndex` to avoid a scan of all *Items*.
+
+-----
+
+## Result&lt;&gt; enhancement
+The Hiperspace [Result](https://github.com/channell/Hiperspace/blob/master/src/Hiperspace/Result.cs) type has been updated to include *Rust-Style* continuation monads that can optionally follow a `.Bind()` (*bind an element with hiperspace*) with:
+* `.Then` chaining function
+* `.Else` error handling function
+
+```
+write.Roles
+    .Bind(new Role
+    {
+        Name = role,
+        RoleName = role,
+    })
+    .Then(r =&gt;
+    {
+        Log?.LogInformation($"Added missing role {r.Name}");
+        return Result.Ok(r);
+    })
+    .Else(r =&gt; Log?.LogError($"Failed to bind role {r.Value.Name} with status {r.Status} and reason {r.Reason}"));
+```</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\Hiper.png">
@@ -71,7 +108,6 @@ Reference libraries have also been updated
     <Message Importance="low" Text="No local packages found to push from $(OutputPath)" Condition=" '@(LocalPackages)' == '' " />
 
     <!-- Push each package found to the local feed. Uses batching so Exec runs per package. -->
-    <Exec Command="dotnet nuget push &quot;%(LocalPackages.Identity)&quot; --source &quot;https://localhost:5001/v3/index.json&quot; --api-key &quot;local&quot; --skip-duplicate"
-          Condition=" '@(LocalPackages)' != '' " />
+    <Exec Command="dotnet nuget push &quot;%(LocalPackages.Identity)&quot; --source &quot;https://localhost:5001/v3/index.json&quot; --api-key &quot;local&quot; --skip-duplicate" Condition=" '@(LocalPackages)' != '' " />
   </Target>
 </Project>

@@ -72,6 +72,13 @@ namespace Hiperspace
             }
             _version = AsAt;
             _delta = DeltaFrom;
+            if (space is SubSpace subSpace)
+            {
+                ContextLabel = subSpace.ContextLabel;
+                UserLabel = subSpace.UserLabel;
+                RemoteLabel = subSpace.RemoteLabel;
+                ServiceProvider = subSpace.ServiceProvider;
+            }
         }
 
         /// <summary>

@@ -112,6 +112,7 @@ entity Togaf.Organization : Togaf.Base
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Organization"),
       Edges       ( From = this, To = Parent, FromTypeName = "AF-Organization-Part", ToTypeName = "AF-Organization-Include") #20
 {
+    @AlternateIndex
     Parent          : Togaf.Organization #5
 }
 [
@@ -133,6 +134,7 @@ entity Togaf.Business.Driver : Togaf.General.Base
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Driver"),    
       Edges       ( From = this, To = MotivatedBy, FromTypeName = "AF-Driver-Organization", ToTypeName = "AF-Organization-Driver") #76
 {
+    @AlternateIndex
     MotivatedBy     : Togaf.Organization #5
 }
 [
@@ -144,6 +146,7 @@ entity Togaf.Business.Actor : Togaf.General.Base
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Actor"),
       Edges       (From = this, To = In, Name = Name, FromTypeName = "AF-Actor-Organization", ToTypeName = "AF-Organization-Actor") #88 
 {
+    @AlternateIndex
     In              : Togaf.Organization #5
 }
 [
@@ -159,6 +162,7 @@ entity Togaf.Business.Function : Togaf.General.Base
       Edges2      ( From = this, To = For, FromTypeName = "AF-Function-Organization", ToTypeName = "AF-Organization-Function"),
       Edges3      ( From = this, To = Delivers, FromTypeName = "AF-Function-Capability", ToTypeName = "AF-Capability-Function") #101
 {
+    @AlternateIndex
     For             : Togaf.Organization #5,
     Parent          : Togaf.Business.Function #6,
     Delivers        : Togaf.Business.Capability #7
@@ -246,6 +250,7 @@ segment Togaf.History.Measure
     At              : DateTime #2
 )
 {
+    @AlternateIndex(2216)
     Value           : Decimal #3
 };
 
