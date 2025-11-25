@@ -56,8 +56,15 @@ namespace Hiperspace
                 {
                     if (SetSpace is not null)
                     {
-                        _key = _keyBuilder();
-                        _entity = SetSpace.Get<TKey>(ref _key);
+                        try
+                        {
+                            _key = _keyBuilder();
+                            _entity = SetSpace.Get<TKey>(ref _key);
+                        }
+                        catch (NotFoundException)
+                        {
+                            // swallow not found exceptions to return null
+                        }
                     }
                     else  // enable Concrete Elements to expose TEntity rather that KeyRef<>
                     {
@@ -86,8 +93,15 @@ namespace Hiperspace
             {
                 if (SetSpace is not null)
                 {
-                    _key = _keyBuilder();
-                    _entity = await SetSpace.GetAsync<TKey>(_key);
+                    try
+                    {
+                        _key = _keyBuilder();
+                        _entity = await SetSpace.GetAsync<TKey>(_key);
+                    }
+                    catch (NotFoundException)
+                    {
+                        // swallow not found exceptions to return null
+                    }
                 }
                 else  // enable Concrete Elements to expose TEntity rather that KeyRef<> 
                 {
