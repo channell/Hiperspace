@@ -2,11 +2,11 @@
 %function (unary, changed, ERP.ERPFunctions.Changed, Boolean);
 %function (unary, changedLines, ERP.ERPFunctions.ChangedLines, Boolean);
 
-view Edge2 : Edge = Edge();
-view Edge3 : Edge = Edge();
-view Edge4 : Edge = Edge();
-view Edge5 : Edge = Edge();
-view Edge6 : Edge = Edge();
+view Edge2 : Edge = Edge() #49;
+view Edge3 : Edge = Edge() #50;
+view Edge4 : Edge = Edge() #51;
+view Edge5 : Edge = Edge() #52;
+view Edge6 : Edge = Edge() #53;
 
 entity ERP.Location.Address : Versioned
     = Node  (Name = "{ Street: '" + Street + "', PostalCode: '" + PostalCode + "'}", TypeName = "Address", SKey = SKey),
@@ -91,11 +91,11 @@ entity ERP.Products.Product : Versioned
     Valid           = Name = null ||Tax = null || Supplier = null || Shipping = null ? false : true #7
 }
 [
-    Price           : ERP.Products.Price #18,
+    Price           : ERP.Products.Price #58,
     Rate            = Tax.Rate
 ];
 
-aspect ERP.Products.Price : Versioned
+aspect ERP.Products.Price : Versioned #18
 {
     Name            : String #3,
     Sell            : Decimal #4,
@@ -209,7 +209,7 @@ entity ERP.Sales.Order : Versioned
     Profit          = 0.0 + Total - Cost,
 
     "the optional invoice aspect with coists and tax frozen "
-    Invoice         : ERP.Sales.Invoice #46 
+    Invoice         : ERP.Sales.Invoice #77
 ];
 "
     Frozen value of order 
@@ -217,7 +217,7 @@ entity ERP.Sales.Order : Versioned
 aspect ERP.Sales.Invoice 
     = Node  (Name = "", SKey = SKey, TypeName = "Invoice"),
       Edge  (From = this,   To = owner, TypeName = "Invoice"),
-      Edge2 (From = owner,  To = this,  TypeName = "Invoiced")
+      Edge2 (From = owner,  To = this,  TypeName = "Invoiced") #46
 {
     TaxDate         : DateTime #2,
     Total           : Decimal #3,

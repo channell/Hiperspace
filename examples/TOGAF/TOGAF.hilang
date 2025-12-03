@@ -7,17 +7,17 @@
 */
 
 "An additional edge helper for Edges"
-view Edge_ : Edge = Edge();
+view Edge_ : Edge = Edge() #1940;
 
 "Bidirectional Edge, implemented with two Edges"
 view Edges
     = Edge  (From = From, To = To, Name = Name, TypeName = FromTypeName), 
-      Edge_ (From = To, To = From, Name = Name, TypeName = ToTypeName)
+      Edge_ (From = To, To = From, Name = Name, TypeName = ToTypeName) #1941
 (
-    From            : Node      #2,
-    To              : Node      #3,
-    FromTypeName    : String    #4,
-    ToTypeName      : String    #5
+    From            : Node      #7,
+    To              : Node      #8,
+    FromTypeName    : String    #9,
+    ToTypeName      : String    #10
 )
 {
     Name        : String    #6,
@@ -26,23 +26,22 @@ view Edges
 /*
     Additional pairs of edges
 */
-view Edges2 : Edges = Edges();
-view Edges3 : Edges = Edges();
-view Edges4 : Edges = Edges();
-view Edges5 : Edges = Edges();
+view Edges2 : Edges = Edges() #1942;
+view Edges3 : Edges = Edges() #1943;
+view Edges4 : Edges = Edges() #1944;
+view Edges5 : Edges = Edges() #1945;
 
 @Versioned
 type Togaf.Base 
 (
-    Id              : Guid
+    Id              : Guid      #20
 )
 {
-    Name            : String,
-    Description     : String,
-    Deleted         = false
+    Name            : String    #21,
+    Description     : String    #22,
+    Deleted         = false     #23
 }
 [
-    
     ValidBase 		= Id = null || Name = null ? false : true
 ];
 
@@ -59,33 +58,33 @@ value Togaf.GoalRef #651
 
 segment Togaf.Has.Principle : Togaf.Base 
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Principle"),
-      Edges       (From = owner, To = this, Name = Name, FromTypeName = "AF-Has-Principle", ToTypeName = "AF-Principle-For" );
+      Edges       (From = owner, To = this, Name = Name, FromTypeName = "AF-Has-Principle", ToTypeName = "AF-Principle-For" ) #2669;
 
 segment Togaf.Has.Constraint : Togaf.Base  
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Constraint"),
-      Edges       (From = owner, To = this, Name = Name, FromTypeName = "AF-Has-Constraint", ToTypeName = "AF-Constraint-For");
+      Edges       (From = owner, To = this, Name = Name, FromTypeName = "AF-Has-Constraint", ToTypeName = "AF-Constraint-For") #2670;
 
 segment Togaf.Has.Assumption : Togaf.Base 
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Assumption"),
-      Edges       (From = owner, To = this, Name = Name, FromTypeName = "AF-Has-Assumption", ToTypeName = "AF-Assumption-For") ;
+      Edges       (From = owner, To = this, Name = Name, FromTypeName = "AF-Has-Assumption", ToTypeName = "AF-Assumption-For") #2671 ;
 
 segment Togaf.Has.Requirement : Togaf.Base 
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Requirement"),
-      Edges       (From = owner, To = this, Name = Name, FromTypeName = "AF-Has-Requirement", ToTypeName = "AF-Requirement-For") ;
+      Edges       (From = owner, To = this, Name = Name, FromTypeName = "AF-Has-Requirement", ToTypeName = "AF-Requirement-For") #2672 ;
 
 segment Togaf.Has.Location : Togaf.Base 
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Location"),
-      Edges       (From = owner, To = this, Name = Name, FromTypeName = "AF-Has-Location", ToTypeName = "AF-Location-For") ;
+      Edges       (From = owner, To = this, Name = Name, FromTypeName = "AF-Has-Location", ToTypeName = "AF-Location-For") #2673 ;
 
 segment Togaf.Has.Gap : Togaf.Base 
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Gap"),
-      Edges       (From = owner, To = this, Name = Name, FromTypeName = "AF-Has-Gap", ToTypeName = "AF-Gap-For");
+      Edges       (From = owner, To = this, Name = Name, FromTypeName = "AF-Has-Gap", ToTypeName = "AF-Gap-For") #2674;
 
 segment Togaf.Has.WorkPackage : Togaf.Base 
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-WorkPackage"),
       Edge        (From = owner, To = this, Name = Name, TypeName = "AF-Has-WorkPackage"),
       Edge_       (To = owner, From = this, Name = Name, TypeName = "AF-WorkPackage-For"),
-      Graph.HiperEdge = StrategicEdges 
+      Graph.HiperEdge = StrategicEdges #2675 
 [
     "All Edges that can be projected as Transitative Edges to a Business Goal"
     @Once
@@ -150,8 +149,8 @@ entity Togaf.Business.Actor : Togaf.General.Base
     In              : Togaf.Organization #5
 }
 [
-    Performs        : Togaf.Has.Activity #414,
-    Involved        : Togaf.Business.ValueStream (Involves = this) #87,
+    Performs        : Togaf.Has.Activity #3047 ,
+    Involved        : Togaf.Business.ValueStream (Involves = this) #2727 ,
     SameName        : Togaf.Business.Actor (Name = Name) #1384
 ];
 
@@ -239,13 +238,13 @@ entity Togaf.Business.Measure : Togaf.General.Base
     Tracks          : Togaf.Service #7
 }
 [
-    Observation     : Togaf.History.Measure #323,
+    Observation     : Togaf.History.Measure #2944,
     SameName        : Togaf.Business.Measure (Name = Name) #1444
 ];
 
 segment Togaf.History.Measure
     = Node        ( SKey = SKey, Name = "", TypeName = "AF-Measurement"),
-      Edge        (From = owner, To = this, Name = "", TypeName = "AF-Measurement")
+      Edge        (From = owner, To = this, Name = "", TypeName = "AF-Measurement") #323
 (
     At              : DateTime #2
 )
@@ -283,7 +282,7 @@ entity Togaf.Business.Activity : Togaf.General.Base
 ];
 
 segment Togaf.Has.Activity : Many<Togaf.Business.Activity>
-    = Edges       (From = owner, To = A, Name = A.Name, FromTypeName = "AF-Has-Activity", ToTypeName = "AF-Activity-For") 
+    = Edges       (From = owner, To = A, Name = A.Name, FromTypeName = "AF-Has-Activity", ToTypeName = "AF-Activity-For") #414 
 /*( 
     Item            : Togaf.Business.Activity
 ) */

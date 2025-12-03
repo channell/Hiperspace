@@ -33,13 +33,13 @@ entity Acc.Customer : Versioned #3
 }
 [
     "Account that the customer owns"
-    Accounts        : Acc.Account #20, 
+    Accounts        : Acc.Account #67, 
     Children        : Acc.Customer (Parent = this) #27
 ];
 
 "a transaction against account"
 @DeltaIndex(31), CubeFact(26)
-segment Acc.Transaction : Versioned 
+segment Acc.Transaction : Versioned #25 
 (
     "when the transaction was authorised"
     At              : DateTime #2
@@ -64,7 +64,7 @@ segment Acc.Transaction : Versioned
 
 "An Account for a customer"
 @CubeDimension
-segment Acc.Account : Versioned 
+segment Acc.Account : Versioned #20 
 (
     Title           : String #2
 )
@@ -74,10 +74,10 @@ segment Acc.Account : Versioned
 }
 [
     "transactions against the account"
-    Transactions    : Acc.Transaction #25,
+    Transactions    : Acc.Transaction #73,
 
     "the last closing balance"
-    Balance         : Acc.Balance #21,
+    Balance         : Acc.Balance #68,
 
     /* calculations */
     @CubeMeasure(Aggregate.Sum)
@@ -87,7 +87,7 @@ segment Acc.Account : Versioned
 ];
 
 " Balance is the rolled up value for the account computed for a time"
-aspect Acc.Balance : Versioned
+aspect Acc.Balance : Versioned #21
 {
     "DateTime of the max balance"
     When            : DateTime #3,

@@ -51,15 +51,15 @@ entity City = Node (SKey = SKey, Name = Name, TypeName = "City") #3 (@Xmi("932d4
 entity Person : Versioned 
 	= Node (SKey = SKey, Name = Name, TypeName = "Person"), 
 	  Edge (From = this, To = City, Name = "", TypeName = "Lives In") #7 
-	( Id : Int32 #1) { Name : String #2, City : City #3 } [ Friends : Friend #14, Likes : Likes #13, Ownes : Option<Restaurant> #12 ]; 
+	( Id : Int32 #1) { Name : String #2, City : City #3 } [ Friends : Friend #24, Likes : Likes #23, Ownes : Option<Restaurant> #12 ]; 
 entity Restaurant 
 	= Node (SKey = SKey, Name = Name, TypeName = "Restaurant"),
 	  Edge (From = this, To = City, Name = "", TypeName = "Located In") #8 
 	  ( Id : Int32 #1) {Name : String #2, City : City #3 };
 segment Friend 
-	= Edge (From = owner, To = Of, Name = "", TypeName = "Friend")
+	= Edge (From = owner, To = Of, Name = "", TypeName = "Friend") #14
 	(Of : Person #2) {When : DateTime #3};
-segment Likes = Edge (From = owner, To = Restaurant, Name = "", TypeName = "Likes") (Restaurant : Restaurant #2) { Rating : Int32 #3};
+segment Likes = Edge (From = owner, To = Restaurant, Name = "", TypeName = "Likes") #13 (Restaurant : Restaurant #2) { Rating : Int32 #3};
 
 "
 Path Type is a specification for Paths between nodes that can be recursively derived 

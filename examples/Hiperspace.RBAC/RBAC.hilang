@@ -8,7 +8,7 @@
 %function (set, empty, Access.RBAC.Functions.Empty, Boolean);
 
 " Optional note "
-aspect Note
+aspect Note #140
 {
     Text : String #2
 }; 
@@ -22,9 +22,9 @@ value Ref<T>
 /*
     Additional Edge definitions
 */
-view Edge2 : Edge = Edge ();
-view Edge3 : Edge = Edge ();
-view Edge4 : Edge = Edge ();
+view Edge2 : Edge = Edge () #144;
+view Edge3 : Edge = Edge () #145;
+view Edge4 : Edge = Edge () #146;
 
 /* addin for Permissioned elements */
 type Access.RBAC.Permissioned 
@@ -81,7 +81,7 @@ entity Access.RBAC.Realm : Access.RBAC.Permissioned
                   (Author = null ? "Invalid Author, " : "") +
                   (CanCreate = false ? "not authorised " : ""),
 
-    Note        : Note #140
+    Note        : Note #302
 ]; 
 
 "
@@ -121,7 +121,7 @@ A permission granted to a group user or role on a resource, typically an entity 
 "
 segment Access.RBAC.Permission : Versioned, Access.RBAC.Permissioned 
                                = Edge  (From = owner, To = Item, Name = Item.Subject, TypeName = TypeName),
-                                 Edge2 (From = Item, To = owner, Name = Item.Subject, TypeName = TypeName + "|From")
+                                 Edge2 (From = Item, To = owner, Name = Item.Subject, TypeName = TypeName + "|From") #155
 (
     " Identify all the resource item. "
     Item        : Access.RBAC.Resource #12,
@@ -309,7 +309,7 @@ entity Access.RBAC.Role : Access.RBAC.Principal
 "
 Any security principal (group, user or role) can be a member of a role - it is stored Separately. 
 "
-segment Access.RBAC.RoleMember : Versioned, Access.RBAC.Permissioned  
+segment Access.RBAC.RoleMember : Versioned, Access.RBAC.Permissioned #193  
 (
     " Reference to the role that this group user or role is a member of "
     Role        : Access.RBAC.Role #7

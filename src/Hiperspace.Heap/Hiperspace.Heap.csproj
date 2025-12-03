@@ -8,60 +8,115 @@
     <Description>Hiperspace heap store for session, edge and testing purposes</Description>
     <Copyright>Cepheis Ltd (C) 2023, 2024, 2025</Copyright>
     <LangVersion>13.0</LangVersion>
-    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20251124
+    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20251303
 ## Overview
-
-This release adds the `@AlternateIndex` property to explicitly create an index for views and ad hoc queries that do not *or cannot* be defined in the normal way of using an access path.
-
-### Path Index
-Normally indexes are created in `Hiperspace` by defining an extent that uses an attribute to retrieve a list of elements.  The following hilang model defines a *Person* with a *Parent* and an extension *Children* that retrieves all *Person* that have a *Parrent* that refers to this *person*.
-```
-entity Person (Id : Guid) {Parent : Person} [Children : Person (Parent = this)];
-```
-The *Children* extent causes an index to be created on *Parent* so that access to *Children* is fast and does not require an scan or all *Person* elements
-
-### Alternate Index
-The following model defines two entities {*Product, Order*} that can be viewed as **nodes** in a **graph**. The segment *Item* defined the details of the *Order* with reference to the *Product* being ordered. 
-
-```
-entity Product = Node(...) (Id : Guid);
-entity Order = Node (...) (Id : Guid) [Items : Item];
-segment Item = Edges (From = owner, To = Product, FromType = "Purchase", ToType ="Purchased")
-(Line : Int32) 
-{
-  @AlternateIndex
-  Product : Product,
-  Quantity : Decimal
-};
-```
-In a **UML** diagram,  *Order* aggregates *Item*, and *Item* is associated with *Product*.  In a **Graph** diagram *Order* and *Product* are both `Nodes` with two `Edge` between them for "Purchase" and "Purchased".
-
-[image]Sites/hiperspace/sample/orderitem.png[/image]
-
-*Product* cannot refer to *Item* because it is a `segment` of its owner (*in this case Order*), and cannot therefore define a *path* from *order* to *Item*. When viewed as a **graph** the Order-&gt;(Purchase)-&gt;Product `Edge` uses the *Item* key to find all edges, but the Product-&gt;(Purchased)-&gt;Order `Edge` needs an `@AlternateIndex` to avoid a scan of all *Items*.
+This release adds `NotFoundException` to distinguish *not found* from *cannot be found* conditions. and extends the functionality of `@AlternateIndex` to support multiple alternate indexes on *segments* and *aspects* that are referenced by multiple *entities*.
 
 -----
 
-## Result&lt;&gt; enhancement
-The Hiperspace [Result](https://github.com/channell/Hiperspace/blob/master/src/Hiperspace/Result.cs) type has been updated to include *Rust-Style* continuation monads that can optionally follow a `.Bind()` (*bind an element with hiperspace*) with:
-* `.Then` chaining function
-* `.Else` error handling function
+### Not Found
+
+Prior to this release `Get(...)` calls did not distinguish between *Not Found* and *not found because of IO error*.  To improve the handling of missing values several changes have been made:
+* Additional Exception class `NotFoundException` 
+* `KeyRef&lt;&gt;` (*reference to another element*) changed to return `null` when a value cannot be found 
+* `RefSingle&lt;&gt;` (*reference to an aspect*) changed to return `null` when a value cannot be found 
+
+-----
+
+### AlternateIndex
+Alternate indexes are created automatically whenever there is a path from an *element* from another *element*, but can be added to support access from a view.  The prime example is `Edge` which is defined (*in the Hilang prelude*) as
+```
+"edge between nodes"
+view Edge 
+( /* keys */
+    From        : Node,
+    To          : Node,
+    TypeName    : String
+)
+{ /* values */
+    Name        : String
+};
+```
+`@AlternateIndex` enables an *element* to index the *key/value* that corresponds to the `From` key member for indexed access from a `Node.Froms` extension property
+
+For the model 
+```
+entity CostCentre (Id : Int32) [Costs : Cost (CostCentre = this)];
+aspect Cost {CostCentre : CostCentre, Amount : Decimal};
+```
+with
+```
+entity Asset (...) {...} [Cost : Cost];
+entity Project (...) {...} [Cost : Cost];
+```
+Concreate elements `AssetCost` and `ProjectCost` will be created indexes
+`AssetCostCostCentre.Index` and `ProjectCostCostCentre.Index` 
+
+Source edit will  change the source to  
+```
+entity CostCentre (Id : Int32) [Costs : Cost (CostCentre = this)];
+aspect Cost 
+{
+  @AlternateIndex("AssetCost", 42)
+  ,AlternateIndex("ProjectCost", 43) 
+  CostCentre : CostCentre, Amount : Decimal};
+```
+To ensure the index Id is not used for something else resultuing in an incompatible model and store.
+
+ ***how does CostCentre know what (Asset/Project/ etc) the Cost is for?***
+ The `aspect Cost` is transformed to a `view` that is equvilent to 
+ ```
+ view Cost (owner : Any) {CostCentre : CostCentre, Amount : Decimal};
+ ```
+ the (*C#*) hiperspace query 
+ ```
+ from centre in space.CostCentres 
+ select centre.Id, (from line in centre.Costs 
+                    let asset = line.owner.Is&lt;Asset&gt;() ? Amount : 0 
+                    let project = line.owner.Is&lt;Project&gt;() ? Amount : 0 
+                    group line by line.CostCentre into totals
+                    select new { Projects = totals.Sum(v =&gt; v.asset),
+                                 Assets = totals.Sum(v =&gt; v.project)})
+ ```
+ Will return the total costs by type for each CostCentre
+
+#### Inherited Index
+This model defines an overall *trade* type with three different implementations for {*FI, EQ, FX*}  that have different properties for the different asset-classes.   *Trade* is referenced by *Book*,  the extension property *`Book.Trades`* returns a collection of *Trade* has a *`Book`* equal to the current *Book*.  For efficient access, and index is created for the *`Trade.Book`* that is inherited by each implementation.
+
+The syntax `Banking.FI.Trade : Banking.Trade = Banking.Trade()` means `Banking.FI.Trade`:
+* Inherits *keys / values / extensions / properties* from `Banking.Trade` (via **`:`**)
+* Can be viewed as a `Banking.Trade` (via **`=`**)
 
 ```
-write.Roles
-    .Bind(new Role
-    {
-        Name = role,
-        RoleName = role,
-    })
-    .Then(r =&gt;
-    {
-        Log?.LogInformation($"Added missing role {r.Name}");
-        return Result.Ok(r);
-    })
-    .Else(r =&gt; Log?.LogError($"Failed to bind role {r.Value.Name} with status {r.Status} and reason {r.Reason}"));
-```</PackageReleaseNotes>
-    <PackageLicenseExpression>GPL-2.0-or-later</PackageLicenseExpression>
+view Banking.Trade (Id : String) 
+{Book : Banking.Book};
+entity Banking.FI.Trade : Banking.Trade = Banking.Trade();
+entity Banking.FX.Trade : Banking.Trade = Banking.Trade();
+entity Banking.EQ.Trade : Banking.Trade = Banking.Trade();
+entity Banking.Book (Id : String) [Trades : Banking.Trade (Book = this)];
+```
+
+Adding `%ids` to the model, with result in a source edit to a `#` id to each *element*, *key/value* and extension property, and `@AlternateIndex` property for each generated concrete index.
+```
+view Banking.Trade #45 (Id : String) 
+{@AlternateIndex("Banking.EQ.Trade", 52) 
+ ,AlternateIndex("Banking.FI.Trade", 48)
+ ,AlternateIndex("Banking.FX.Trade", 50) 
+ Book : Banking.Book};
+entity Banking.FI.Trade : Banking.Trade = Banking.Trade() #49;
+entity Banking.FX.Trade : Banking.Trade = Banking.Trade() #51;
+entity Banking.EQ.Trade : Banking.Trade = Banking.Trade() #53;
+entity Banking.Book #47 (Id : String #1) [Trades : Banking.Trade (Book = this) #54];
+```
+subsequent compilation of the model will result in the indexes using the same *Id* value when stored.  
+**NB** the `#id` can be of any value, but can never to reused for a different purpose once used with a *Hiperspace*.
+
+-----
+
+### Source Editing
+When the directive `%ids` is added to a hilang model, the source code is edited to add `#id` values to ensure that the schema can be evolved without the risk of introducing incompatible changes. 
+
+***know issue***: Source editing lacks the context of other edits to a line of `hilang` source `@AlternateIndex("Banking.EQ.Trade", 52) @AlternateIndex("Banking.FI.Trade", 48) Book : Banking.Book` will create a syntax error the next time the *schema* is compiled because `@` is the prefix for a comma-separated list of one-or-more attributes.  The code needs to be edited to change subsequent `@` to `,`</PackageReleaseNotes>    <PackageLicenseExpression>GPL-2.0-or-later</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
     <Authors>Stephen Channell</Authors>
@@ -91,22 +146,4 @@ write.Roles
   <ItemGroup>
     <ProjectReference Include="..\Hiperspace\Hiperspace.csproj" />
   </ItemGroup>
-  <!--
-    Upload generated .nupkg files to the local NuGet feed at http://localhost:5000/v3/index.json
-    This target only runs when not in CI (i.e., when $(CI) != 'true').
-  -->
-  <Target Name="UploadToLocalFeed" AfterTargets="Pack" Condition="'$(CI)' != 'true'">
-    <!-- Collect .nupkg files from the output directory -->
-    <ItemGroup>
-      <LocalPackages Include="$(OutputPath)**\*.nupkg" />
-    </ItemGroup>
-
-    <!-- Informational message -->
-    <Message Importance="high" Text="Preparing to push @(LocalPackages) to local NuGet feed at https://localhost:5001/v3/index.json" Condition=" '@(LocalPackages)' != '' " />
-    <Message Importance="low" Text="No local packages found to push from $(OutputPath)" Condition=" '@(LocalPackages)' == '' " />
-
-    <!-- Push each package found to the local feed. Uses batching so Exec runs per package. -->
-    <Exec Command="dotnet nuget push &quot;%(LocalPackages.Identity)&quot; --source &quot;https://localhost:5001/v3/index.json&quot; --api-key &quot;local&quot; --skip-duplicate"
-          Condition=" '@(LocalPackages)' != '' " />
-  </Target>
 </Project>

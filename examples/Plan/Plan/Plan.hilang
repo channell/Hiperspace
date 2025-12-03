@@ -78,7 +78,7 @@ entity Plan.Project     : Versioned
 ];
 
 "SubTask enables the entity Task to export more than one Edge"
-view Plan.Tasks.SubTask = Edge (From = Parent, To = Task, TypeName = "Plan-Task-Part", Name = Task.Name)
+view Plan.Tasks.SubTask = Edge (From = Parent, To = Task, TypeName = "Plan-Task-Part", Name = Task.Name) #186
 (
     Parent          : Plan.Tasks.Task,
     Task            : Plan.Tasks.Task
@@ -129,11 +129,11 @@ entity Plan.Tasks.Task     : Versioned
 }
   
 [
-    Actual          : Plan.Tasks.Actual #84,
-    After           : Plan.Tasks.TaskLink #83,
-    Before          : Plan.Tasks.TaskLink #81  ,
-    SubTasks        : Plan.Tasks.Task (Parent = this) #60,
-    Resources       : Plan.Tasks.TaskResource #79,
+    Actual          : Plan.Tasks.Actual #241,
+    After           : Plan.Tasks.TaskLink #240,
+    Before          : Plan.Tasks.TaskLink #238,
+    SubTasks        : Plan.Tasks.Task (Parent = this) #221,
+    Resources       : Plan.Tasks.TaskResource #236,
   
 
   
@@ -164,7 +164,7 @@ entity Plan.Tasks.Task     : Versioned
 ];
 
 @Versioned
-aspect Plan.Tasks.Actual
+aspect Plan.Tasks.Actual #84
 {
     Duration        : Plan.Duration #2,
     Close           : DateTime #3,
@@ -177,7 +177,7 @@ aspect Plan.Tasks.Actual
   
 
 @Versioned
-segment Plan.Tasks.TaskLink
+segment Plan.Tasks.TaskLink #197
 (
     Task            : Plan.Tasks.Task #3
 )
@@ -202,7 +202,7 @@ enum Plan.Tasks.ScheduleType
 Resources used by the task
 "
 segment Plan.Tasks.TaskResource  = Node (SKey = SKey, Name = Resource.Name, TypeName = "Plan-Task-Resource"), 
-                                   Edge (From = owner, To = Resource, Name = Resource.Name, TypeName = "Plan-Task-Resource")
+                                   Edge (From = owner, To = Resource, Name = Resource.Name, TypeName = "Plan-Task-Resource") #79
 (
     Resource        : Plan.Resource #2
 )
@@ -271,7 +271,7 @@ entity Plan.Resource     : Versioned
  * view for BI analysis
  */
 
-view BI.Item    = Node (SKey = SKey, Name = Name, TypeName = "BI-Cost-" + TypeName)
+view BI.Item    = Node (SKey = SKey, Name = Name, TypeName = "BI-Cost-" + TypeName) #210
 (
     WBS             : String,
     TypeName        : String
