@@ -109,7 +109,7 @@ type Togaf.General.Base : Togaf.Base, HasVectorSpace
 @CubeDimension, CubeHierarchy(Parent)
 entity Togaf.Organization : Togaf.Base 
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Organization"),
-      Edges       ( From = this, To = Parent, FromTypeName = "AF-Organization-Part", ToTypeName = "AF-Organization-Include") #20
+      Edges       ( From = this, To = Parent, Name = Name, FromTypeName = "AF-Organization-Part", ToTypeName = "AF-Organization-Include") #20
 {
     @AlternateIndex
     Parent          : Togaf.Organization #5
@@ -131,7 +131,7 @@ entity Togaf.Organization : Togaf.Base
 
 entity Togaf.Business.Driver : Togaf.General.Base
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Driver"),    
-      Edges       ( From = this, To = MotivatedBy, FromTypeName = "AF-Driver-Organization", ToTypeName = "AF-Organization-Driver") #76
+      Edges       ( From = this, To = MotivatedBy, Name = Name, FromTypeName = "AF-Driver-Organization", ToTypeName = "AF-Organization-Driver") #76
 {
     @AlternateIndex
     MotivatedBy     : Togaf.Organization #5
@@ -156,10 +156,10 @@ entity Togaf.Business.Actor : Togaf.General.Base
 
 @CubeDimension, CubeHierarchy(Parent)
 entity Togaf.Business.Function : Togaf.General.Base
-    = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Function"),  
-      Edges       ( From = this, To = Parent, FromTypeName = "AF-Function-Part", ToTypeName = "AF-Function-Include"),
-      Edges2      ( From = this, To = For, FromTypeName = "AF-Function-Organization", ToTypeName = "AF-Organization-Function"),
-      Edges3      ( From = this, To = Delivers, FromTypeName = "AF-Function-Capability", ToTypeName = "AF-Capability-Function") #101
+    = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Function"),
+      Edges       ( From = this, To = Parent, Name = Name, FromTypeName = "AF-Function-Part", ToTypeName = "AF-Function-Include"),
+      Edges2      ( From = this, To = For, Name = Name, FromTypeName = "AF-Function-Organization", ToTypeName = "AF-Organization-Function"),
+      Edges3      ( From = this, To = Delivers, Name = Name, FromTypeName = "AF-Function-Capability", ToTypeName = "AF-Capability-Function") #101
 {
     @AlternateIndex
     For             : Togaf.Organization #5,
@@ -176,7 +176,7 @@ entity Togaf.Business.Function : Togaf.General.Base
 @CubeDimension, CubeHierarchy(Parent)
 entity Togaf.Business.Capability : Togaf.General.Base
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Capability"),  
-      Edges       ( From = this, To = Parent, FromTypeName = "AF-Capability-Part", ToTypeName = "AF-Capability-Include") #116
+      Edges       ( From = this, To = Parent, Name = Name, FromTypeName = "AF-Capability-Part", ToTypeName = "AF-Capability-Include") #116
 {
     By              : Togaf.Organization #5,
     Parent          : Togaf.Business.Capability #6
@@ -193,8 +193,8 @@ entity Togaf.Business.Capability : Togaf.General.Base
 @CubeDimension, CubeHierarchy(Parent)
 entity Togaf.Business.Product : Togaf.General.Base
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Product"),  
-      Edges       ( From = this, To = Parent, FromTypeName = "AF-Product-Part", ToTypeName = "AF-Product-Include"),
-      Edges2      ( From = this, To = Parent, FromTypeName = "AF-Organisation-Product", ToTypeName = "AF-Product-Organisation") #128
+      Edges       ( From = this, To = Parent, Name = Name, FromTypeName = "AF-Product-Part", ToTypeName = "AF-Product-Include"),
+      Edges2      ( From = this, To = Parent, Name = Name, FromTypeName = "AF-Organisation-Product", ToTypeName = "AF-Product-Organisation") #128
 {
     By              : Togaf.Organization #5,
     Parent          : Togaf.Business.Product #6
@@ -207,7 +207,7 @@ entity Togaf.Business.Product : Togaf.General.Base
 
 entity Togaf.Business.Goal : Togaf.General.Base
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Goal"),
-      Edges       ( From = this, To = By, FromTypeName = "AF-Goal-Driver", ToTypeName = "AF-Driver-Goal") #140
+      Edges       ( From = this, To = By, Name = Name, FromTypeName = "AF-Goal-Driver", ToTypeName = "AF-Driver-Goal") #140
 {
     By              : Togaf.Business.Driver #5 
 }
@@ -219,7 +219,7 @@ entity Togaf.Business.Goal : Togaf.General.Base
 
 entity Togaf.Business.Objective : Togaf.General.Base
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-Objective"),
-      Edges       ( From = this, To = For, FromTypeName = "AF-Objective-Organisation", ToTypeName = "AF-Organisation-Objective") #151
+      Edges       ( From = this, To = For, Name = Name, FromTypeName = "AF-Objective-Organisation", ToTypeName = "AF-Organisation-Objective") #151
 {
     For             : Togaf.Business.Goal #5
 }

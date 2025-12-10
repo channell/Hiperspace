@@ -6,7 +6,6 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using System.Collections;
-using System.Reflection;
 
 namespace Hiperspace
 {
@@ -23,7 +22,7 @@ namespace Hiperspace
         /// <summary>
         /// Gets the template object for the query.
         /// </summary>
-        public object Template { get; }
+        public object Template { get; set; }
 
         /// <summary>
         /// Gets the space object for the query.

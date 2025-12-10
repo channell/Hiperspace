@@ -34,7 +34,7 @@ namespace Hiperspace
 
         public string? Alias { get => _runQuery.Alias; set => _runQuery.Alias = value; }
 
-        public object Template => _runQuery.Template;
+        public object Template { get => _runQuery.Template; set => _runQuery.Template = value; }
 
         public object Space => _runQuery.Space;
 
@@ -63,7 +63,7 @@ namespace Hiperspace
     {
         protected SetSpace<TEntity> _setSpace;
         protected TEntity _template;
-        public object Template => _template;
+        public object Template { get => _template; set => _template = (TEntity)value; }
 
         public RunQuery(SetSpace<TEntity> setspace, TEntity template)
         {

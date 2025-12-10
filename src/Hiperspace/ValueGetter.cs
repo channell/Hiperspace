@@ -132,5 +132,17 @@ namespace Hiperspace
             }
             return result;
         }
+        public Type GetValueType()
+        {
+            if (_field is not null)
+            {
+                return _field.FieldType;
+            }
+            else if (_property is not null)
+            {
+                return _property.PropertyType;
+            }
+            return typeof(object);
+        }
     }
 }

@@ -11,6 +11,7 @@ using System.Reflection;
 
 namespace Hiperspace
 {
+
     public class SetJoin<TResult, TLeft, TRight> : IOrderedQueryable<TResult>, ISetJoin
         where TLeft : class
         where TRight : class
@@ -20,15 +21,23 @@ namespace Hiperspace
         protected IQueryProvider _provider;
 
         public SetJoin
-            (IQueryable<TLeft> left
+            ( IQueryable<TLeft> left
             , IQueryable<TRight> right
             , List<((string alias, ValueGetter property) left, (string alias, PropertyInfo property) right)> joins
             , LambdaExpression closureExpression
+            , (LambdaExpression left, LambdaExpression right) functors
             )
         {
-            _runnable = new RunJoin<TResult, TLeft, TRight>(left, right, joins, closureExpression);
+            var joinClosure = BuildClosure(functors, closureExpression);
+            _runnable = new RunJoin<TResult, TLeft, TRight>(left, right, joins, closureExpression, joinClosure);
             _provider = left.Provider ?? right.Provider;
-            _expression = Expression.Constant(this);
+            _expression = closureExpression;
+        }
+        static IJoinClosure<TLeft, TRight> BuildClosure((LambdaExpression left, LambdaExpression right) residual, LambdaExpression closureExpression)
+        {
+            var residualType = typeof(JoinClosure<,,,>).MakeGenericType(typeof(TLeft), typeof(TRight), residual.left.ReturnType, residual.right.ReturnType);
+            var instance = Activator.CreateInstance(residualType, new object[] { residual.left, residual.right });
+            return (IJoinClosure<TLeft, TRight>)instance!;
         }
 
         public IQueryProvider Provider => _provider;
@@ -50,7 +59,6 @@ namespace Hiperspace
         {
             return _runnable.Explain();
         }
-
         public IEnumerator<TResult> GetEnumerator()
         {
             return _runnable.GetEnumerator();
@@ -62,146 +70,44 @@ namespace Hiperspace
         }
     }
 
-
     public class RunJoin<TResult, TLeft, TRight> : IEnumerable<TResult>, ISetJoin
         where TLeft : class
         where TRight : class
     {
-
         public RunJoin
             ( IQueryable<TLeft> left
             , IQueryable<TRight> right
             , List<((string alias, ValueGetter property) left, (string alias, PropertyInfo property) right)> joins
             , LambdaExpression closureExpression
+            , IJoinClosure<TLeft, TRight> residual
             )
         {
             _left = left;
             _right = right;
             _joins = joins;
-
+            _residual = residual;
             _closureFactory = (Func<TLeft, TRight, TResult>)closureExpression.Compile();
-
-            _setJoin = left as ISetJoin;
-            _setLeft = left as ISetQuery;
-            _setRight = right as ISetQuery;
-            _sources = new Dictionary<string, ISetQuery>(buildSource(this));
         }
         public ISetJoin Runnable => this;
-
-
-        /// <summary>
-        /// Unpacks the elements of a closure. This function should be converted to Emit when time allows
-        /// </summary>
-        /// <param name="closure">the closure object created during teh Expression execution</param>
-        /// <returns></returns>
-        public IEnumerable<(string name, object value)> UnpackElements(object closure)
-        {
-            var fields = closure.GetType().GetFields();
-            for (int c = 0; c < fields.Length; c++)
-            {
-                var value = fields[c].GetValue(closure);
-                yield return (fields[c].Name, value!);
-            }
-            var properties = closure.GetType().GetProperties();
-            for (int c = 0; c < properties.Length; c++)
-            {
-                var value = properties[c].GetValue(closure);
-                yield return (properties[c].Name, value!);
-            }
-        }
 
         public string? Alias { get; set; }
 
         private IQueryable<TLeft> _left;
         private IQueryable<TRight> _right;
         private Func<TLeft, TRight, TResult> _closureFactory;
+        private IJoinClosure<TLeft, TRight> _residual;
         private List<((string alias, ValueGetter property) left, (string alias, PropertyInfo property) right)> _joins;
 
-        private ISetJoin? _setJoin;
-        private ISetQuery? _setLeft;
-        private ISetQuery? _setRight;
-
-        private Dictionary<string, ISetQuery> _sources;
-
-        private IEnumerable<KeyValuePair<string, ISetQuery>> buildSource (ISetJoin join)
-        {
-            if (join.Inner is not null)
-            {
-                foreach (var source in buildSource(join.Inner))
-                {
-                    yield return source;
-                }
-            }
-            if (join.Left is not null && join.Left.Alias is not null && join.Left is not null)
-            {
-                yield return KeyValuePair.Create(join.Left.Alias, join.Left);
-            }
-            if (join.Right is not null && join.Right.Alias is not null && join.Right is not null)
-            {
-                yield return KeyValuePair.Create(join.Right.Alias, join.Right);
-            }
-        }
-
-        public ISetJoin? Inner => _setJoin;
-        public ISetQuery? Left => _setLeft;
-        public ISetQuery? Right => _setRight;
+        public ISetJoin? Inner => _left as ISetJoin;
+        public ISetQuery? Left => _left as ISetQuery;
+        public ISetQuery? Right => _right as ISetQuery;
 
         public List<((string alias, ValueGetter property) left, (string alias, PropertyInfo property) right)> Joins => _joins;
         public Type ElementType => typeof(TResult);
 
         public IEnumerator<TResult> GetEnumerator()
         {
-            if (_setLeft is not null)
-            {
-                foreach (var left in _left)
-                {
-                    if (_setRight is not null)
-                    {
-                        foreach (var j in _joins)
-                        {
-                            object? value = j.left.property.GetValue(left);
-                            j.right.property.SetValue(_setRight.Template, value);
-                        }
-                        foreach (var right in _right)
-                        {
-                            yield return _closureFactory(left, right);
-                        }
-                    }
-                    else // cross join to non-hiperspace collection
-                    {
-                        foreach (var right in _right)
-                        {
-                            yield return _closureFactory(left, right);
-                        }
-                    }
-                }
-            }
-            else if (_setJoin is not null)
-            {
-                foreach (var left in _left)
-                {
-                    if (_setRight is not null)
-                    {
-                        //!var tuple = UnpackElements(left).ToArray();
-                        foreach (var j in _joins)
-                        {
-                            object? value = j.left.property.GetValue(left);
-                            j.right.property.SetValue(_setRight.Template, value);
-                        }
-                        foreach (var right in _right)
-                        {
-                            yield return _closureFactory(left, right);
-                        }
-                    }
-                    else // cross join to non-hiperspace collection
-                    {
-                        foreach (var right in _right)
-                        {
-                            yield return _closureFactory(left, right);
-                        }
-                    }
-                }
-            }
+            return _residual.GetEnumerator<TResult>(_left, _right, _closureFactory);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -212,14 +118,14 @@ namespace Hiperspace
         public QueryExplain.Explain Explain()
         {
             var result = new QueryExplain.Explain() { Area = "Join" };
-            if (_setLeft is not null)
+            if (Left is not null)
             {
-                var (path, name) = _setLeft.Explain();
+                var (path, name) = Left.Explain();
                 result.Children.Add(new QueryExplain.Explain() { Area = path, Message = name });
             }
-            if (_setRight is not null)
+            if (Right is not null)
             {
-                var (path, name) = _setRight.Explain();
+                var (path, name) = Right.Explain();
                 result.Children.Add(new QueryExplain.Explain() { Area = path, Message = name });
             }
             return result;

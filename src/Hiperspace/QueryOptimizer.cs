@@ -74,7 +74,7 @@ namespace Hiperspace
                 var next = new TreeType(node, this);
                 return next;
             }
-            public Expression? Node;
+            public Expression Node;
             public TreeType? Parent;
             public ISetQuery? FromSet { get; set; }
             public ISetJoin? FromJoin { get; set; }
@@ -213,6 +213,23 @@ namespace Hiperspace
                         yield return (alias, getter);
                 }
             }
+
+            public LambdaExpression? GetLambda()
+            {
+                if (_LambdaExpression is not null)
+                    return _LambdaExpression;
+                else
+                {
+                    foreach (var child in Children)
+                    {
+                        var l = child.GetLambda();
+                        if (l is not null)
+                            return l;
+                    }
+                }
+                return null;
+            }
+
             protected FieldInfo? _FieldInfo;
             public FieldInfo? FieldInfo
             {
@@ -252,22 +269,6 @@ namespace Hiperspace
                 {
                     _Value = value;
                 }
-            }
-            private static object? Index (object source, object index)
-            {
-                var dict = source as System.Collections.IDictionary;
-                if (dict is not null)
-                {
-                    return dict[index];
-                }
-                var list = source as System.Collections.IList;
-                var i = index as int?;
-                if (list is not null && i is not null)
-                {
-                    return list[i.Value];
-                }
-                else
-                    return source;
             }
 
             public ValueGetter Getter()
@@ -643,26 +644,30 @@ namespace Hiperspace
                 // if they don't match it is because a SetSpace is being joined to an non-SetSpace ()
                 // e.g. a collections such as an array -> a join condition can not be created to optimise the 
                 // join, and must be performed by LINQ from the result
-                if (leftSelectors.Length == rightProperties.Length)     // if they don't match, one of th
+                if (leftSelectors.Length == rightProperties.Length)     
                     for (int c = 0; c < leftSelectors.Length; c++)
                     {
-                        joins.Add((leftSelectors[c], rightProperties[c]));
+                        // only include join conditions that can be compared
+                        if (rightProperties[c].property.PropertyType.IsAssignableFrom(leftSelectors[c].property.GetValueType()))
+                            joins.Add((leftSelectors[c], rightProperties[c]));
                     }
 
                 args[4] = Visit(node.Arguments[4]);
                 var closure = path.Children[4].ClosureType;
                 var lambda = path.Children[4].LambdaExpression;
 
+                var residuals = (path.Children[2].GetLambda(), path.Children[3].GetLambda());
+
                 if (left is not null && right is not null && closure is not null && lambda is not null)
                 {
                     var setJoin = typeof(SetJoin<,,>).MakeGenericType(closure, left.ElementType, right.ElementType);
-                    var instance = Activator.CreateInstance(setJoin, new object[] { left, right, joins, lambda });
+                    var instance = Activator.CreateInstance(setJoin, new object[] { left, right, joins, lambda, residuals});
                     return Expression.Constant(instance, setJoin);
                 }
                 if (join is not null && right is not null && closure is not null && lambda is not null)
                 {
                     var setJoin = typeof(SetJoin<,,>).MakeGenericType(closure, join.ElementType, right.ElementType);
-                    var instance = Activator.CreateInstance(setJoin, new object[] { join, right, joins, lambda });
+                    var instance = Activator.CreateInstance(setJoin, new object[] { join, right, joins, lambda, residuals});
                     return Expression.Constant(instance, setJoin);
                 }
                 else
@@ -693,6 +698,7 @@ namespace Hiperspace
                     var path = PushTree(node, TreeType.PathType.Call);
                     return base.VisitMethodCall(node);
                 }
+
                 finally
                 {
                     PopTree();
@@ -799,6 +805,20 @@ namespace Hiperspace
                     }
                 }
                 var result = base.VisitMember(node);
+                if (node!.Expression is MemberExpression)
+                {
+                    if (result is MemberExpression memberExpression &&
+                        memberExpression.Expression?.Type is not null &&
+                        (!node.Type.IsValueType || node.Type.Name.StartsWith("Nullable")))
+                    {
+                        var nullValue = Expression.Constant(null, memberExpression.Expression.Type );
+                        var nullResult = Expression.Constant(null, result.Type);
+                        var isNull = Expression.Equal(memberExpression.Expression, nullValue);
+                        var condition = Expression.Condition(isNull, nullResult, result);
+                        result = condition;
+                    }
+                    path.Node = result;
+                }
                 if (path.Target is not null && node.Member is PropertyInfo pi3 && !IsElement(node.Type.BaseType))
                 {
                     path.PropertyInfo = pi3;
@@ -813,6 +833,17 @@ namespace Hiperspace
                     {
                         path.Target = value;
                         path.FieldInfo = field;
+                    }
+                }
+                // replace c.Mother.Name {((((c).Mother).Name) - Name(Mother(c))} with c.Mother {(((c).Mother) - Mother(c)}
+                if (path.Parent is not null && path.Parent.Type == TreeType.PathType.Property)
+                {
+                    var parentParent = path?.Parent?.Parent;
+                    if (parentParent is not null)
+                    {
+                        parentParent.Children.Remove(path!.Parent);
+                        parentParent.Children.Add(path);
+                        path.Node = path.Parent.Node;   // the outer expression
                     }
                 }
                 return result;
@@ -871,7 +902,6 @@ namespace Hiperspace
             path.FirstBinaryVisit = true;
             try
             {
-//                var search = path.Searchable;
                 switch (node.NodeType)
                 {
                     case ExpressionType.Equal when path.Searchable == true:
@@ -917,8 +947,9 @@ namespace Hiperspace
             var path = PushTree(node, TreeType.PathType.Lambda);
             try
             {
-                path.LambdaExpression = node;
-                return base.VisitLambda(node);
+                path.Node = base.VisitLambda(node);
+                path.LambdaExpression = path.Node as LambdaExpression;
+                return path.Node;
             }
             finally
             {

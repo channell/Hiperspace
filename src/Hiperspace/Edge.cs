@@ -6,6 +6,7 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using ProtoBuf;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 /*
@@ -22,6 +23,7 @@ view Edge #2
 */
 namespace Hiperspace
 {
+    [DebuggerDisplay("(F:{From}, T:{To}, N:{Name}, Y:{TypeName})")]
     public class Edge : Element<Edge>
     {
         public KeyType _key;

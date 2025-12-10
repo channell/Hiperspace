@@ -52,6 +52,21 @@ namespace Hiperspace
         public IServiceProvider? ServiceProvider;
 
         /// <summary>
+        /// Set if the host supports GPU-accelerated graph functions for computational operations.
+        /// </summary>
+
+        public Hiperspace.ICalculationGPU? CalculationGPU;
+
+        /// <summary>
+        /// An event sink for lifecycle events in the SubSpace and each SetSpace
+        /// </summary>
+        /// <remarks>
+        /// Designed to ne used in Conjunction with a GraphGPU that uses a cache to reduce 
+        /// transposition of entities to GPU Kernel arrays
+        /// </remarks>
+        public ISubSpaceEventSink SubSpaceEventSink;
+
+        /// <summary>
         /// Associates the specified <see cref="HiperSpace"/> with the current <see cref="SubSpaceParameters"/> instance.
         /// </summary>
         /// <param name="space">The <see cref="HiperSpace"/> to associate with this instance. Cannot be null.</param>
@@ -137,6 +152,42 @@ namespace Hiperspace
         public SubSpaceParameters WithServiceProvider(IServiceProvider services)
         {
             ServiceProvider = services;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the GraphGPU and returns the updated <see cref="SubSpaceParameters"/> instance.
+        /// </summary>
+        /// <param name="services">The <see cref="IServiceProvider"/> to associate with this instance.</param>
+        /// <returns>Copy of the current <see cref="SubSpaceParameters"/> instance with the updated service provider.</returns>
+
+        public SubSpaceParameters WithCalculationGPU(Hiperspace.ICalculationGPU graphGPU)
+        {
+            CalculationGPU = graphGPU;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the SubSpaceEventSink and returns the updated <see cref="SubSpaceParameters"/> instance.
+        /// </summary>
+        /// <param name="services">The <see cref="IServiceProvider"/> to associate with this instance.</param>
+        /// <returns>Copy of the current <see cref="SubSpaceParameters"/> instance with the updated service provider.</returns>
+        public SubSpaceParameters WithSubSpaceEventSink(ISubSpaceEventSink sink)
+        {
+            SubSpaceEventSink = sink;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the SubSpaceEventSink and GraphGPU, then returns the updated <see cref="SubSpaceParameters"/> instance.
+        /// </summary>
+        /// <param name="services">The <see cref="IServiceProvider"/> to associate with this instance.</param>
+        /// <returns>Copy of the current <see cref="SubSpaceParameters"/> instance with the updated service provider.</returns>
+        public SubSpaceParameters WithCachingCalculationGPU<T>(T cachingGraphGPU) 
+            where T : ICalculationGPU, ISubSpaceEventSink
+        {
+            CalculationGPU = cachingGraphGPU;
+            SubSpaceEventSink = cachingGraphGPU;
             return this;
         }
     }

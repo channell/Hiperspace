@@ -11,7 +11,7 @@ using System.Threading.Channels;
 
 namespace Graph
 {
-    public static class PathFunctions
+    public static class PathFunctions 
     {
         public static RouteMap CompileRoute(Route route)
         {
@@ -45,6 +45,7 @@ namespace Graph
             else
                 return new HashSet<HiperEdge>(PathsAsync(root, new RouteMap(route), length, targets).GetAwaiter().GetResult());
         }
+        [Obsolete("use messages to invoke graph functions on a server")]
         public static HashSet<HiperEdge> PathsRemote
             (Node? root
             , Route? route
@@ -56,6 +57,7 @@ namespace Graph
             else
                 return new HashSet<HiperEdge>();
         }
+        [Obsolete("use messages to invoke graph functions on a server")]
         public static async Task<HashSet<HiperEdge>> PathsRemoteAsync
             (Node? root
             , Route? route
@@ -63,38 +65,125 @@ namespace Graph
             , HashSet<string>? targets = null)
         {
             if (root is not null && route is not null && root.SetSpace is not null)
-                return await root.SetSpace.Space.FindPathsAsync (root, route.Value, length, targets);
+                return await root.SetSpace.Space.FindPathsAsync(root, route.Value, length, targets);
             else
                 return new HashSet<HiperEdge>();
         }
 
         public static async Task<HashSet<HiperEdge>> PathsAsync
-            (Node root
+            ( Node root
             , RouteMap route
             , int? length = null
             , HashSet<string>? targets = null
             , CancellationToken cancellationToken = default)
         {
+            if (root?.SetSpace?.Space?. CalculationGPU is not null)
+            {
+                return await root.SetSpace.Space.CalculationGPU.PathsAsync
+                    ( root
+                    , route
+                    , length
+                    , targets
+                    , cancellationToken);
+            }
             var channel = Channel.CreateUnbounded<Result<HiperEdge>>();
             Dispatch dispatched = new Dispatch();
 
             HashSet<HiperEdge> result = new HashSet<HiperEdge>();
-            foreach (var edge in root.Froms)
+            if (root?.Froms is not null)
             {
-                if (edge is not null)
+                foreach (var edge in root.Froms)
                 {
-                    dispatched.Increment();
-                    _ = Task.Run(async () =>
+                    if (edge is not null)
                     {
-                        try
+                        dispatched.Increment();
+                        _ = Task.Run(async () =>
                         {
-                            await FindRoutes(root, route, edge, null, length, 0, channel, dispatched, targets, cancellationToken);
-                        }
-                        finally
+                            try
+                            {
+                                await FindRoutes(root, route, edge, null, length, 0, channel, dispatched, targets, null, cancellationToken);
+                            }
+                            finally
+                            {
+                                await channel.Writer.WriteAsync(Result.EOF<HiperEdge>());
+                            }
+                        });
+                    }
+                }
+            }
+            if (dispatched.EOF)
+                return result;
+            await foreach (var item in channel.Reader.ReadAllAsync())
+            {
+                if (item.Ok)
+                {
+                    if (result.TryGetValue(item.Value, out var path))
+                    {
+                        if (path is not null)
                         {
-                            await channel.Writer.WriteAsync(Result.EOF<HiperEdge>());
+                            if (path.Length > item.Value.Length)
+                            {
+                                result.Remove(path);
+                                result.Add(item.Value);
+                                item.Value.Width++;
+                            }
+                            else
+                                path.Width++;
                         }
-                    });
+                    }
+                    else
+                    {
+                        result.Add(item.Value);
+                    }
+                }
+                else if (item.EOF)
+                {
+                    dispatched.Decrement();
+                    if (dispatched.EOF)
+                        break;
+                }
+            }
+
+            return result;
+        }
+
+        public static async Task<HashSet<HiperEdge>> LinksAsync
+            ( Node root
+            , RouteMap route
+            , HashSet<Node> targets
+            , CancellationToken cancellationToken = default)
+        {
+            if (root?.SetSpace?.Space?.CalculationGPU is not null)
+            {
+                return await root.SetSpace.Space.CalculationGPU.LinksAsync
+                    (root
+                    , route
+                    , targets
+                    , cancellationToken);
+            }
+            var channel = Channel.CreateUnbounded<Result<HiperEdge>>();
+            Dispatch dispatched = new Dispatch();
+
+            HashSet<HiperEdge> result = new HashSet<HiperEdge>();
+            if (root?.Froms is not null)
+            {
+                foreach (var edge in root.Froms)
+                {
+                    if (edge is not null)
+                    {
+                        dispatched.Increment();
+                        _ = Task.Run(async () =>
+                        {
+                            try
+                            {
+                                await FindRoutes(root, route, edge, null, null, 0, channel, dispatched, null, targets, cancellationToken);
+                            }
+                            finally
+                            {
+                                await channel.Writer.WriteAsync(Result.EOF<HiperEdge>());
+                            }
+                        });
+                    }
                 }
             }
             if (dispatched.EOF)
@@ -134,7 +223,7 @@ namespace Graph
         }
 
         static async Task FindRoutes
-            (Node root
+            ( Node root
             , RouteMap route
             , Edge edge
             , HiperEdge? source
@@ -143,6 +232,7 @@ namespace Graph
             , Channel<Result<HiperEdge>> channel
             , Dispatch dispatched
             , HashSet<string>? targets
+            , HashSet<Node>? targetNodes
             , CancellationToken cancellationToken = default)
         {
             if (edge is null ||
@@ -176,7 +266,7 @@ namespace Graph
                             {
                                 try
                                 {
-                                    await FindRoutes(root, route, next, path, length, recursion + 1, channel, dispatched, targets, cancellationToken);
+                                    await FindRoutes(root, route, next, path, length, recursion + 1, channel, dispatched, targets, null, cancellationToken);
                                 }
                                 finally
                                 {
@@ -189,22 +279,46 @@ namespace Graph
             }
             // if this edge is in the set of target types
             if (edge is not null &&
-                route.Match(edge) == true && 
-                edge?.To?.TypeName is not null && 
-                (targets is null || targets.Contains(edge.To.TypeName)))
+                route.Match(edge) == true &&
+                edge?.To?.TypeName is not null &&
+                (targets is null || targets.Contains(edge.To.TypeName)) &&
+                (targetNodes is null || targetNodes.Contains(edge.To)))
             {
                 await channel.Writer.WriteAsync(Result.Ok(path));
             }
         }
         public static bool InPath(this Edge edge, HiperEdge? path)
         {
-            if (path is null)
-                return false;
-            else if (edge == path.Edge ||
-                     edge.To == path.Edge?.From)
-                return true;
-            else
-                return edge.InPath(path?.Source);
+            if (path is null) return false;
+            if (edge == path.Edge) return true;
+            if (edge.To == path.Edge?.From) return true;
+            if (edge.To == path.Edge?.To) return true;
+            if (path.Source is not null)
+            {
+                var source = path.Source;
+                if (edge == source.Edge) return true;
+                if (edge.To == source.Edge?.From) return true;
+                if (edge.To == source.Edge?.To) return true;
+                if (source.Source is null) return false;
+                else
+                {
+                    source = source.Source;
+                    if (edge == source.Edge) return true;
+                    if (edge.To == source.Edge?.From) return true;
+                    if (edge.To == source.Edge?.To) return true;
+                    if (source.Source is null) return false;
+                    else
+                    {
+                        source = source.Source;
+                        if (edge == source.Edge) return true;
+                        if (edge.To == source.Edge?.From) return true;
+                        if (edge.To == source.Edge?.To) return true;
+                        if (source.Source is null) return false;
+                        return edge.InPath(source.Source);
+                    }
+                }
+            }
+            return false;
         }
 
         /// <summary>
@@ -224,50 +338,67 @@ namespace Graph
             (Node root
             , RouteMap route
             , int? length = null
-            , [EnumeratorCancellation]CancellationToken cancellationToken = default)
+            , [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
-            var channel = Channel.CreateUnbounded<Result<HiperEdge>>();
-            Dispatch dispatched = new Dispatch();
-
-            HashSet<HiperEdge> result = new HashSet<HiperEdge>();
-            foreach (var edge in root.Froms)
+            if (root?.SetSpace?.Space?.CalculationGPU is not null)
             {
-                if (edge is not null)
+                await foreach (var row in root.SetSpace.Space.CalculationGPU.CycleAsync
+                    (root
+                    , route
+                    , length
+                    , cancellationToken))
                 {
-                    dispatched.Increment();
-                    _ = Task.Run(async () =>
-                    {
-                        try
-                        {
-                            await CycleRoutes(root, route, edge, null, length, 0, channel, dispatched, cancellationToken);
-                        }
-                        finally
-                        {
-                            await channel.Writer.WriteAsync(Result.EOF<HiperEdge>());
-                        }
-                    });
+                    yield return row;
                 }
             }
-            if (!dispatched.EOF)
+            else
             {
-                await foreach (var item in channel.Reader.ReadAllAsync())
+                var channel = Channel.CreateUnbounded<Result<HiperEdge>>();
+                Dispatch dispatched = new Dispatch();
+
+                HashSet<HiperEdge> result = new HashSet<HiperEdge>();
+                if (root?.Froms is not null)
                 {
-                    if (item.Ok)
+                    foreach (var edge in root.Froms)
                     {
-                        yield return item.Value;
+                        if (edge is not null)
+                        {
+                            dispatched.Increment();
+                            _ = Task.Run(async () =>
+                            {
+                                try
+                                {
+                                    await CycleRoutes(root, route, edge, null, length, 0, channel, dispatched, cancellationToken);
+                                }
+                                finally
+                                {
+                                    await channel.Writer.WriteAsync(Result.EOF<HiperEdge>());
+                                }
+                            });
+                        }
                     }
-                    else if (item.EOF)
+                }
+                if (!dispatched.EOF)
+                {
+                    await foreach (var item in channel.Reader.ReadAllAsync())
                     {
-                        dispatched.Decrement();
-                        if (dispatched.EOF)
-                            break;
+                        if (item.Ok)
+                        {
+                            yield return item.Value;
+                        }
+                        else if (item.EOF)
+                        {
+                            dispatched.Decrement();
+                            if (dispatched.EOF)
+                                break;
+                        }
                     }
                 }
             }
         }
 
         static async Task CycleRoutes
-            (Node root
+            ( Node root
             , RouteMap route
             , Edge edge
             , HiperEdge? source

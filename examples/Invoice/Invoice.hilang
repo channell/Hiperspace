@@ -10,7 +10,7 @@ view Edge6 : Edge = Edge() #53;
 
 entity ERP.Location.Address : Versioned
     = Node  (Name = "{ Street: '" + Street + "', PostalCode: '" + PostalCode + "'}", TypeName = "Address", SKey = SKey),
-      Edge  (From = this, To = Country, TypeName = "Address-Country") #7
+      Edge  (From = this, To = Country, Name = "", TypeName = "Address-Country") #7
 
 (
     Id              : Int32 #1
@@ -46,7 +46,7 @@ entity ERP.Location.Store : ERP.Location.Address #10
 
 entity ERP.Finance.Tarriff : Versioned
     = Node  (Name = From.Name + " to " + To.Name, SKey = SKey, TypeName = "Tarriff"),
-      Edge  (From = From, To = To, TypeName = "Tarriff") #11
+      Edge  (From = From, To = To, Name = From.Name + " to " + To.Name, TypeName = "Tarriff") #11
 (
     From            : ERP.Location.Country #1,
     To              : ERP.Location.Country #2
@@ -68,7 +68,7 @@ entity ERP.Finance.Tax : Versioned #12
 
 entity ERP.Finance.Shipping : Versioned
     = Node  (Name = From.Name + " to " + To.Name, SKey = SKey, TypeName = "Shipping"),
-      Edge  (From = From, To = To, TypeName = "Shipping") #13
+      Edge  (From = From, To = To, Name = "", TypeName = "Shipping") #13
 (
     From            : ERP.Location.Country #1,
     To              : ERP.Location.Country #2
@@ -105,8 +105,8 @@ aspect ERP.Products.Price : Versioned #18
 
 entity ERP.Client.Customer : Versioned
     = Node  (Name = Name, SKey = SKey, TypeName = "Customer"),
-      Edge  (From = this, To = BillTo, TypeName = "BillTo"),
-      Edge2 (From = this, To = ShipTo, TypeName = "BillTo") #20
+      Edge  (From = this, To = BillTo, Name = Name, TypeName = "BillTo"),
+      Edge2 (From = this, To = ShipTo, Name = Name, TypeName = "BillTo") #20
 (
     Id              : Int32 #1
 )
@@ -156,12 +156,12 @@ value ERP.Sales.OrderLine #27
 "
 entity ERP.Sales.Order : Versioned
     = Node  (Name = "", SKey = SKey, TypeName = "Order"),
-      Edge  (From = this,        To = Customer,    TypeName = "Order-Customer"),
-      Edge2 (From = Customer,    To = this,        TypeName = "Customer-Order"),
-      Edge3 (From = this,        To = Store,       TypeName = "Order-Store"),
-      Edge4 (From = Store,       To = this,        TypeName = "Store-Order"),
-      Edge5 (From = this,        To = Salesperson, TypeName = "Order-Sales"),
-      Edge6 (From = Salesperson, To = this,        TypeName = "Sales-Order") #42
+      Edge  (From = this,        To = Customer,    Name = "", TypeName = "Order-Customer"),
+      Edge2 (From = Customer,    To = this,        Name = "", TypeName = "Customer-Order"),
+      Edge3 (From = this,        To = Store,       Name = "", TypeName = "Order-Store"),
+      Edge4 (From = Store,       To = this,        Name = "", TypeName = "Store-Order"),
+      Edge5 (From = this,        To = Salesperson, Name = "", TypeName = "Order-Sales"),
+      Edge6 (From = Salesperson, To = this,        Name = "", TypeName = "Sales-Order") #42
 (
     OrderNumber     : Int32 #1
 )
@@ -216,8 +216,8 @@ entity ERP.Sales.Order : Versioned
 "
 aspect ERP.Sales.Invoice 
     = Node  (Name = "", SKey = SKey, TypeName = "Invoice"),
-      Edge  (From = this,   To = owner, TypeName = "Invoice"),
-      Edge2 (From = owner,  To = this,  TypeName = "Invoiced") #46
+      Edge  (From = this,   To = owner, Name = "", TypeName = "Invoice"),
+      Edge2 (From = owner,  To = this, Name = "", TypeName = "Invoiced") #46
 {
     TaxDate         : DateTime #2,
     Total           : Decimal #3,

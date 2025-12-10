@@ -1,5 +1,4 @@
-﻿using Graph;
-using Hiperspace.Meta;
+﻿using Hiperspace.Meta;
 using ProtoBuf;
 using ProtoBuf.Meta;
 using ProtoBuf.Serializers;
@@ -618,7 +617,7 @@ public class BaseTypeModel
                 case 1:
                     {
                         int[]? ints = value.Ints;
-                        ints = RepeatedSerializer.CreateVector<int>().ReadRepeated(ref state, (SerializerFeatures)144, ints);
+                        ints = RepeatedSerializer.CreateVector<int>().ReadRepeated(ref state, SerializerFeatures.WireTypeVarint, ints);
                         if (ints is not null)
                         {
                             value.Ints = ints;
@@ -628,10 +627,20 @@ public class BaseTypeModel
                 case 2:
                     {
                         float[]? floats = value.Floats;
-                        floats = RepeatedSerializer.CreateVector<float>().ReadRepeated(ref state, (SerializerFeatures)149, floats);
+                        floats = RepeatedSerializer.CreateVector<float>().ReadRepeated(ref state, SerializerFeatures.WireTypeFixed32, floats);
                         if (floats is not null)
                         {
                             value.Floats = floats;
+                        }
+                        break;
+                    }
+                case 3:
+                    {
+                        double[]? doubles = value.Doubles;
+                        doubles = RepeatedSerializer.CreateVector<double>().ReadRepeated(ref state, SerializerFeatures.WireTypeFixed64, doubles);
+                        if (doubles is not null)
+                        {
+                            value.Doubles = doubles;
                         }
                         break;
                     }
@@ -648,14 +657,17 @@ public class BaseTypeModel
         int[]? ints = value.Ints;
         if (ints is not null)
         {
-            int[] array = ints;
-            RepeatedSerializer.CreateVector<int>().WriteRepeated(ref state, 1, (SerializerFeatures)144, array);
+            RepeatedSerializer.CreateVector<int>().WriteRepeated(ref state, 1, SerializerFeatures.WireTypeVarint, ints);
         }
         float[]? floats = value.Floats;
         if (floats is not null)
         {
-            float[] array2 = floats;
-            RepeatedSerializer.CreateVector<float>().WriteRepeated(ref state, 2, (SerializerFeatures)149, array2);
+            RepeatedSerializer.CreateVector<float>().WriteRepeated(ref state, 2, SerializerFeatures.WireTypeFixed32, floats);
+        }
+        double[]? doubles = value.Doubles;
+        if (doubles is not null)
+        {
+            RepeatedSerializer.CreateVector<double>().WriteRepeated(ref state, 3, SerializerFeatures.WireTypeFixed64, doubles);
         }
     }
 

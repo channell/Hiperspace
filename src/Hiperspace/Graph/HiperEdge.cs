@@ -8,6 +8,7 @@
 #nullable enable
 using Hiperspace;
 using ProtoBuf;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
@@ -19,6 +20,8 @@ namespace Graph
 
     /* <Summary>Path from one Node to another Node over a number of routes</Summary> */
     [ProtoContract]
+    [DebuggerDisplay("(E:{Edge}, S:{Source}}, N:{Name}, Y:{TypeName})")]
+
     public partial class HiperEdge : Hiperspace.Element<HiperEdge>
     {
         public KeyType _key;

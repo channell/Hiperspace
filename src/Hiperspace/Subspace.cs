@@ -176,7 +176,7 @@ namespace Hiperspace
         public SetSpace<Edge> Edges { get; protected set; }
         public SetSpace<VectorSpace> VectorSpaces { get; protected set; }
         public SetSpace<VectorNode> VectorNodes { get; protected set; }
-        public SetSpace<Graph.HiperEdge> HiperEdges { get; protected set; }
+        public SetSpace<global::Graph.HiperEdge> HiperEdges { get; protected set; }
 
 #pragma warning disable CS8618 // Nodes and Edges will be constructed from domain
         public SubSpace(HiperSpace space) : base()
@@ -461,10 +461,12 @@ namespace Hiperspace
         public virtual Meta.Dependencies Dependencies => new Meta.Dependencies(Array.Empty<Meta.Dependency>());
         public virtual Meta.Routes Routes => new Meta.Routes(Array.Empty<Meta.Route>());
 
+        [Obsolete("Use messages instead")]
         public interface ISQLQueryProvider
         {
             public IQueryable<TEntity> Query<TEntity>(string SQL);
         }
+        [Obsolete("Use messages instead")]
         public ISQLQueryProvider? SQLQueryProvider { get; init; }
 
         /// <summary>
@@ -475,9 +477,10 @@ namespace Hiperspace
         /// <param name="length">the maximum length of routes to be searched</param>
         /// <param name="targets">set of target node types for this use of path</param>
         /// <returns>Set of value references to paths</returns>
-        public virtual HashSet<Graph.HiperEdge> FindPaths(Node? root, Graph.Route? route, int? length = null, HashSet<string>? targets = null)
+        [Obsolete("use messages to invoke graph functions on a server using messages")]
+        public virtual HashSet<global::Graph.HiperEdge> FindPaths(Node? root, global::Graph.Route? route, int? length = null, HashSet<string>? targets = null)
         {
-            return Graph.PathFunctions.Paths(root, route, length, targets);
+            return global::Graph.PathFunctions.Paths(root, route, length, targets);
         }
         /// <summary>
         /// Find all paths from a root node to a target node on a server if available
@@ -487,9 +490,10 @@ namespace Hiperspace
         /// <param name="length">the maximum length of routes to be searched</param>
         /// <param name="targets">set of target node types for this use of path</param>
         /// <returns>Set of value references to paths</returns>
-        public virtual async Task<HashSet<Graph.HiperEdge>> FindPathsAsync(Node root, Graph.Route route, int? length = null, HashSet<string>? targets = null, CancellationToken cancellationToken = default)
+        [Obsolete("use messages to invoke graph functions on a server using messages")]
+        public virtual async Task<HashSet<global::Graph.HiperEdge>> FindPathsAsync(Node root, global::Graph.Route route, int? length = null, HashSet<string>? targets = null, CancellationToken cancellationToken = default)
         {
-            return await Graph.PathFunctions.PathsAsync(root, new Graph.RouteMap(route), length, targets, cancellationToken);
+            return await global::Graph.PathFunctions.PathsAsync(root, new global::Graph.RouteMap(route), length, targets, cancellationToken);
         }
 
         /// <summary>
@@ -498,6 +502,7 @@ namespace Hiperspace
         /// <remarks>
         /// is usefull for web-assembly/phone clients need to transfer the full set for a use-case
         /// </remarks>
+        [Obsolete("Use messages instead")]
         public abstract IAsyncEnumerable<(byte[] Key, byte[] Value, DateTime? AsAt)> ExportCacheAsync(CancellationToken cancellationToken = default);
         /// <summary>
         /// Import into SubSpace cache if avialable 
@@ -506,6 +511,7 @@ namespace Hiperspace
         /// <remarks>
         /// cachedOnly is usefull for web-assembly/phone clients need to transfer the full set for a use-case
         /// </remarks>
+        [Obsolete("Use messages instead")]
         public abstract void ImportCacheAsync(IAsyncEnumerable<(byte[] Key, byte[] Value, DateTime? AsAt)> values, CancellationToken cancellationToken = default);
 
         public override MetaModel? GetMetaModel()
@@ -605,5 +611,14 @@ namespace Hiperspace
                 yield return result;
             }
         }
+
+        /// <summary>
+        /// Gets the GPU-accelerated graph processing interface used for computational tasks.
+        /// </summary>
+        /// <remarks>
+        /// This property will be set if the Host supports GPU Excelorated graph search
+        /// </remarks>
+
+        public Hiperspace.ICalculationGPU? CalculationGPU { get; init; } 
     }
 }

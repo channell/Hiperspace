@@ -5,9 +5,9 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
-using Graph;
 using ProtoBuf;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 /*view node #1
@@ -21,6 +21,7 @@ using System.Diagnostics.CodeAnalysis;
 */
 namespace Hiperspace
 {
+    [DebuggerDisplay("(S:{SKey}, N:{Name}, Y:{TypeName})")]
 
     public class Node : Element<Node>
     {
@@ -124,14 +125,14 @@ namespace Hiperspace
         /// <param name="length">the maximum length of the path</param>
         /// <param name="targets">only return HiperEdges that end with a Node of the type matching one of these types</param>
         /// <returns>The full set of HiperEdges for this path</returns>
-        public HashSet<HiperEdge> HiperEdges(string TypeName, int? length = null, HashSet<string>? targets = null)
+        public HashSet<Graph.HiperEdge> HiperEdges(string TypeName, int? length = null, HashSet<string>? targets = null)
         {
-            var route = new Route
+            var route = new Graph.Route
             {
                 Name = TypeName,
-                Rules = new HashSet<Rule>
+                Rules = new HashSet<Graph.Rule>
                 {
-                    new Rule
+                    new Graph.Rule
                     {
                         FromType = "*",
                         EdgeType = TypeName,
@@ -139,36 +140,30 @@ namespace Hiperspace
                     }
                 }
             };
-            if (SetSpace?.Space is not null)
-                return SetSpace.Space.FindPaths(this, route, length, targets);
-            else
-                return PathFunctions.Paths(this, route, length, targets);
+            return Graph.PathFunctions.Paths(this, route, length, targets);
         }
 
         /// <summary>
         /// Create an inline HiperName from TypeNames and find all transitive paths for that type
         /// </summary>
-        /// <param name="HiperName">The name of the HiperEdge being infered from the Edge TyopeNames</param>
+        /// <param name="HiperName">The name of the HiperEdge being infered from the Edge TypeNames</param>
         /// <param name="TypeNames">the set of Edge TypeNames that make up this HiperEdge</param>
         /// <param name="length">the maximum length of the path</param>
         /// <param name="targets">only return HiperEdges that end with a Node of the type matching one of these types</param>
         /// <returns>The full set of HiperEdges for this path</returns>
-        public HashSet<HiperEdge> HiperEdges(string HiperName, IEnumerable<string> TypeNames, int? length = null, HashSet<string>? targets = null)
+        public HashSet<Graph.HiperEdge> HiperEdges(string HiperName, IEnumerable<string> TypeNames, int? length = null, HashSet<string>? targets = null)
         {
-            var route = new Route
+            var route = new Graph.Route
             {
                 Name = TypeName,
-                Rules = new HashSet<Rule> (TypeNames.Select( tn => new Rule
+                Rules = new HashSet<Graph.Rule> (TypeNames.Select( tn => new Graph.Rule
                 {
                     FromType = "*",
                     EdgeType = tn,
                     ToType = "*"
                 }))
             };
-            if (SetSpace?.Space is not null)
-                return SetSpace.Space.FindPaths(this, route, length, targets);
-            else
-                return PathFunctions.Paths(this, route, length, targets);
+            return Graph.PathFunctions.Paths(this, route, length, targets);
         }
 
         /// <summary>
@@ -179,17 +174,14 @@ namespace Hiperspace
         /// <param name="length">the maximum length of the path</param>
         /// <param name="targets">only return HiperEdges that end with a Node of the type matching one of these types</param>
         /// <returns>The full set of HiperEdges for this path</returns>
-        public HashSet<HiperEdge> HiperEdges(string TypeName, HashSet<Rule> rules, int? length = null, HashSet<string>? targets = null)
+        public HashSet<Graph.HiperEdge> HiperEdges(string TypeName, HashSet<Graph.Rule> rules, int? length = null, HashSet<string>? targets = null)
         {
-            var route = new Route
+            var route = new Graph.Route
             {
                 Name = TypeName,
                 Rules = rules
             };
-            if (SetSpace?.Space is not null)
-                return SetSpace.Space.FindPaths(this, route, length, targets);
-            else
-                return PathFunctions.Paths(this, route, length, targets);
+            return Graph.PathFunctions.Paths(this, route, length, targets);
         }
 
         /// <summary>
@@ -201,12 +193,12 @@ namespace Hiperspace
         /// <returns>The full set of HiperEdges for this path</returns>
         public async Task<HashSet<Graph.HiperEdge>> HiperEdgesAsync(string TypeName, int? length = null, HashSet<string>? targets = null, CancellationToken cancellationToken = default)
         {
-            var route = new Route
+            var route = new Graph.Route
             {
                 Name = TypeName,
-                Rules = new HashSet<Rule>
+                Rules = new HashSet<Graph.Rule>
                 {
-                    new Rule
+                    new Graph.Rule
                     {
                         FromType = "*",
                         EdgeType = TypeName,
@@ -214,10 +206,7 @@ namespace Hiperspace
                     }
                 }
             };
-            if (SetSpace?.Space is not null)
-                return await SetSpace.Space.FindPathsAsync(this, route, length, targets);
-            else
-                return await PathFunctions.PathsAsync(this, route.Map!, length, targets);
+            return await Graph.PathFunctions.PathsAsync(this, new Graph.RouteMap(route), length, targets);
         }
 
         /// <summary>
@@ -228,22 +217,19 @@ namespace Hiperspace
         /// <param name="length">the maximum length of the path</param>
         /// <param name="targets">only return HiperEdges that end with a Node of the type matching one of these types</param>
         /// <returns>The full set of HiperEdges for this path</returns>
-        public async Task<HashSet<HiperEdge>> HiperEdgesAsync(string HiperName, IEnumerable<string> TypeNames, int? length = null, HashSet<string>? targets = null, CancellationToken cancellationToken = default)
+        public async Task<HashSet<Graph.HiperEdge>> HiperEdgesAsync(string HiperName, IEnumerable<string> TypeNames, int? length = null, HashSet<string>? targets = null, CancellationToken cancellationToken = default)
         {
-            var route = new Route
+            var route = new Graph.Route
             {
                 Name = HiperName,
-                Rules = new HashSet<Rule>(TypeNames.Select(tn => new Rule
+                Rules = new HashSet<Graph.Rule>(TypeNames.Select(tn => new Graph.Rule
                 {
                     FromType = "*",
                     EdgeType = tn,
                     ToType = "*"
                 }))
             };
-            if (SetSpace?.Space is not null)
-                return await SetSpace.Space.FindPathsAsync(this, route, length, targets);
-            else
-                return await PathFunctions.PathsAsync(this, route.Map!, length, targets);
+            return await Graph.PathFunctions.PathsAsync(this, new Graph.RouteMap(route), length, targets);
         }
         /// <summary>
         /// Treat the Edges of TypeName as a HiperEdge and find all transitive paths for that type
@@ -253,17 +239,14 @@ namespace Hiperspace
         /// <param name="length">the maximum length of the path</param>
         /// <param name="targets">only return HiperEdges that end with a Node of the type matching one of these types</param>
         /// <returns>The full set of HiperEdges for this path</returns>
-        public async Task<HashSet<Graph.HiperEdge>> HiperEdgesAsync(string TypeName, HashSet<Rule> rules, int? length = null, HashSet<string>? targets = null, CancellationToken cancellationToken = default)
+        public async Task<HashSet<Graph.HiperEdge>> HiperEdgesAsync(string TypeName, HashSet<Graph.Rule> rules, int? length = null, HashSet<string>? targets = null, CancellationToken cancellationToken = default)
         {
-            var route = new Route
+            var route = new Graph.Route
             {
                 Name = TypeName,
                 Rules = rules
             };
-            if (SetSpace?.Space is not null)
-                return await SetSpace.Space.FindPathsAsync(this, route, length, targets);
-            else
-                return await PathFunctions.PathsAsync(this, route.Map!, length, targets);
+            return await Graph.PathFunctions.PathsAsync(this, new Graph.RouteMap(route), length, targets);
         }
 
         #region state

@@ -5,7 +5,6 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
-using System.Diagnostics;
 using System.Numerics;
 using System.Text;
 
@@ -302,7 +301,7 @@ namespace Hiperspace
         /// </summary>
         /// <param name="skey">The SKey of the external node</param>
         /// <returns>An external node with the specified SKey, or null if the SKey is missing</returns>
-        public static Node? ExternalNode (string? skey)
+        public static Node? ExternalNode(string? skey)
         {
             if (string.IsNullOrWhiteSpace(skey)) return null;
             return new Node { SKey = skey };
