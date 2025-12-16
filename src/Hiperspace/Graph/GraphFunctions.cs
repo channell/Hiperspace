@@ -43,7 +43,7 @@ namespace Graph
             if (root is null || route is null)
                 return new HashSet<HiperEdge>();
             else
-                return new HashSet<HiperEdge>(PathsAsync(root, new RouteMap(route), length, targets).GetAwaiter().GetResult());
+                return new HashSet<HiperEdge>(PathsAsync(root, route.Value, length, targets).GetAwaiter().GetResult());
         }
         [Obsolete("use messages to invoke graph functions on a server")]
         public static HashSet<HiperEdge> PathsRemote
@@ -72,7 +72,7 @@ namespace Graph
 
         public static async Task<HashSet<HiperEdge>> PathsAsync
             ( Node root
-            , RouteMap route
+            , Route route
             , int? length = null
             , HashSet<string>? targets = null
             , CancellationToken cancellationToken = default)
@@ -86,6 +86,7 @@ namespace Graph
                     , targets
                     , cancellationToken);
             }
+            var map = new RouteMap(route);
             var channel = Channel.CreateUnbounded<Result<HiperEdge>>();
             Dispatch dispatched = new Dispatch();
 
@@ -101,7 +102,7 @@ namespace Graph
                         {
                             try
                             {
-                                await FindRoutes(root, route, edge, null, length, 0, channel, dispatched, targets, null, cancellationToken);
+                                await FindRoutes(root, map, edge, null, length, 0, channel, dispatched, targets, null, cancellationToken);
                             }
                             finally
                             {
@@ -149,8 +150,9 @@ namespace Graph
 
         public static async Task<HashSet<HiperEdge>> LinksAsync
             ( Node root
-            , RouteMap route
+            , Route route
             , HashSet<Node> targets
+            , int? length = null
             , CancellationToken cancellationToken = default)
         {
             if (root?.SetSpace?.Space?.CalculationGPU is not null)
@@ -159,8 +161,10 @@ namespace Graph
                     (root
                     , route
                     , targets
+                    , length
                     , cancellationToken);
             }
+            var map = new RouteMap(route);
             var channel = Channel.CreateUnbounded<Result<HiperEdge>>();
             Dispatch dispatched = new Dispatch();
 
@@ -176,7 +180,7 @@ namespace Graph
                         {
                             try
                             {
-                                await FindRoutes(root, route, edge, null, null, 0, channel, dispatched, null, targets, cancellationToken);
+                                await FindRoutes(root, map, edge, null, null, 0, channel, dispatched, null, targets, cancellationToken);
                             }
                             finally
                             {
@@ -336,7 +340,7 @@ namespace Graph
         /// </remarks>
         public static async IAsyncEnumerable<HiperEdge> CycleAsync
             (Node root
-            , RouteMap route
+            , Route route
             , int? length = null
             , [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
@@ -353,6 +357,7 @@ namespace Graph
             }
             else
             {
+                var map = new RouteMap(route);
                 var channel = Channel.CreateUnbounded<Result<HiperEdge>>();
                 Dispatch dispatched = new Dispatch();
 
@@ -368,7 +373,7 @@ namespace Graph
                             {
                                 try
                                 {
-                                    await CycleRoutes(root, route, edge, null, length, 0, channel, dispatched, cancellationToken);
+                                    await CycleRoutes(root, map, edge, null, length, 0, channel, dispatched, cancellationToken);
                                 }
                                 finally
                                 {

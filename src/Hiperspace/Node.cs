@@ -206,7 +206,7 @@ namespace Hiperspace
                     }
                 }
             };
-            return await Graph.PathFunctions.PathsAsync(this, new Graph.RouteMap(route), length, targets);
+            return await Graph.PathFunctions.PathsAsync(this, route, length, targets);
         }
 
         /// <summary>
@@ -229,7 +229,7 @@ namespace Hiperspace
                     ToType = "*"
                 }))
             };
-            return await Graph.PathFunctions.PathsAsync(this, new Graph.RouteMap(route), length, targets);
+            return await Graph.PathFunctions.PathsAsync(this, route, length, targets);
         }
         /// <summary>
         /// Treat the Edges of TypeName as a HiperEdge and find all transitive paths for that type
@@ -246,7 +246,7 @@ namespace Hiperspace
                 Name = TypeName,
                 Rules = rules
             };
-            return await Graph.PathFunctions.PathsAsync(this, new Graph.RouteMap(route), length, targets);
+            return await Graph.PathFunctions.PathsAsync(this, route, length, targets);
         }
 
         #region state

@@ -37,7 +37,7 @@ namespace Hiperspace
         /// <returns></returns>
         Task<HashSet<HiperEdge>> PathsAsync
             ( Node root
-            , RouteMap route
+            , Route route
             , int? length = null
             , HashSet<string>? targets = null
             , CancellationToken cancellationToken = default
@@ -63,8 +63,9 @@ namespace Hiperspace
         /// <returns></returns>
         Task<HashSet<HiperEdge>> LinksAsync
             ( Node root
-            , RouteMap route
+            , Route route
             , HashSet<Node> targets
+            , int? length = null
             , CancellationToken cancellationToken = default
             );
 
@@ -78,7 +79,7 @@ namespace Hiperspace
         /// <returns>set of HiperEdges that contain the source path of nodes visited for the shortest path</returns>
         IAsyncEnumerable<HiperEdge> CycleAsync
             ( Node root
-            , RouteMap route
+            , Route route
             , int? length = null
             , CancellationToken cancellationToken = default
             );

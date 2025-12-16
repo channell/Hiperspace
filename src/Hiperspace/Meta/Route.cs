@@ -153,9 +153,6 @@ namespace Hiperspace.Meta
         {
             if (dest._one is not null && source._one is not null)
             {
-                /*        internal Func<TSource, IEnumerable<TTarget>?>? _many;
-                        internal Func<TSource, TTarget?>? _one;
-                */
                 Func<TTransitive, TTarget?> destFunc = dest._one;
                 Func<TSource, TTransitive?> sourceFunc = source._one;
                 Func<TSource, TTarget?> transitativeFunc = s => destFunc(sourceFunc(s)!);

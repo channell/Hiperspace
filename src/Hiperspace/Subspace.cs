@@ -107,6 +107,7 @@ namespace Hiperspace
         /// </remarks>
         /// <returns>subspace</returns>
         /// <exception cref="InvalidOperationException"></exception>
+        [Obsolete("use Session2(DateTime AsAt instead")]
         public virtual SubSpace Session()
         {
             var parameters = new SubSpaceParameters()
@@ -120,7 +121,25 @@ namespace Hiperspace
                 ServiceProvider = ServiceProvider
             };
             var constructor = this.GetType().GetConstructor(new Type[] { typeof(SubSpaceParameters) });
-            if (constructor  is null)
+            if (constructor is null)
+                throw new InvalidOperationException($"SubSpace {this.GetType().FullName} must have a constructor that takes a single SubSpaceParameters argument");
+            var subspace = (SubSpace)constructor.Invoke(new object[] { parameters });
+            return subspace;
+        }
+        public virtual SubSpace Session2(DateTime? AsAt = null)
+        {
+            var parameters = new SubSpaceParameters()
+            {
+                Space = this,
+                AsAt = AsAt != default ? AsAt : _version,
+                DeltaFrom = _delta,
+                ContextLabel = ContextLabel,
+                UserLabel = UserLabel,
+                RemoteLabel = RemoteLabel,
+                ServiceProvider = ServiceProvider
+            };
+            var constructor = this.GetType().GetConstructor(new Type[] { typeof(SubSpaceParameters) });
+            if (constructor is null)
                 throw new InvalidOperationException($"SubSpace {this.GetType().FullName} must have a constructor that takes a single SubSpaceParameters argument");
             var subspace = (SubSpace)constructor.Invoke(new object[] { parameters });
             return subspace;
@@ -493,7 +512,7 @@ namespace Hiperspace
         [Obsolete("use messages to invoke graph functions on a server using messages")]
         public virtual async Task<HashSet<global::Graph.HiperEdge>> FindPathsAsync(Node root, global::Graph.Route route, int? length = null, HashSet<string>? targets = null, CancellationToken cancellationToken = default)
         {
-            return await global::Graph.PathFunctions.PathsAsync(root, new global::Graph.RouteMap(route), length, targets, cancellationToken);
+            return await global::Graph.PathFunctions.PathsAsync(root, route, length, targets, cancellationToken);
         }
 
         /// <summary>
