@@ -897,6 +897,14 @@ namespace Hiperspace
 
         /// <summary>
         /// Serquence are special elements that have a key, and an unsigned long value only.
+        /// Get the current value
+        /// </summary>
+        /// <param name="key">A byte array that uniquely identifies the sequence to use. Cannot be null.</param>
+        /// <returns>The next sequence number for the specified key.</returns>
+        /// TODO: change to abstract in the next version
+        public virtual Task<ulong> GetSequenceAsync(byte[] key) { throw new NotImplementedException("Update the HiuLang compiler and/or drivers"); }
+        /// <summary>
+        /// Sequence are special elements that have a key, and an unsigned long value only.
         /// Increment the Sequence and return the current value 
         /// </summary>
         /// <param name="key">A byte array that uniquely identifies the sequence to use. Cannot be null.</param>

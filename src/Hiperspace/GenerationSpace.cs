@@ -1113,6 +1113,10 @@ namespace Hiperspace
             return _write.SetMetaModelAsync(metaModel);
         }
 
+        public override Task<ulong> GetSequenceAsync(byte[] key)
+        {
+            return _write.GetSequenceAsync(key);
+        }
         public override Task<ulong> UseSequenceAsync(byte[] key)
         {
             return _write.UseSequenceAsync(key);

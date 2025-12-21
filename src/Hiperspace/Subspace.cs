@@ -654,26 +654,5 @@ namespace Hiperspace
         {
             return _space.UseSequenceAsync(key);
         }
-        /// <summary>
-        /// Asynchronously retrieves the sequence number associated with the specified entity.
-        /// </summary>
-        /// <typeparam name="TEntity">The element to retrieve the sequence number.</typeparam>
-        /// <param name="element">The entity instance whose sequence number is to be retrieved. Can be null if the implementation allows.</param>
-        /// <returns>A task that represents the asynchronous operation. The task result contains the sequence number associated
-        /// with the specified entity.</returns>
-        /// <exception cref="NotImplementedException">Thrown if the method is not implemented in a derived class.</exception>
-        /// TODO: change to abstract in the next version
-        public virtual Task<ulong> GetSequenceAsync<TEntity>(TEntity? element) { throw new NotImplementedException("Update the HiuLang compiler and/or drivers"); }
-
-        /// <summary>
-        /// Asynchronously get the NEXT sequence number associated with the specified entity.
-        /// </summary>
-        /// <typeparam name="TEntity">The element to retrieve the sequence number.</typeparam>
-        /// <param name="element">The entity instance whose sequence number is to be retrieved. Can be null if the implementation allows.</param>
-        /// <returns>A task that represents the asynchronous operation. The task result contains the sequence number associated
-        /// with the specified entity.</returns>
-        /// <exception cref="NotImplementedException">Thrown if the method is not implemented in a derived class.</exception>
-        /// TODO: change to abstract in the next version
-        public virtual Task<ulong> UseSequenceAsync<TEntity>(TEntity? element) { throw new NotImplementedException("Update the HiuLang compiler and/or drivers"); }
     }
 }

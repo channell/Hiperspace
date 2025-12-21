@@ -550,6 +550,39 @@ namespace Hiperspace.Heap
             return Task.FromResult(true);
         }
 
+        public async override Task<ulong> GetSequenceAsync(byte[] key)
+        {
+            var prefix = new byte[] { 0x00, 0x00, 0x01 };
+            var fullkey = new byte[prefix.Length + key.Length];
+            prefix.CopyTo(fullkey, 0);
+            key.CopyTo(fullkey, prefix.Length);
+
+            var result = await GetAsync(fullkey);
+            ulong seq = 1;
+            if (result is not null)
+            {
+                if (result != null && result.Length == sizeof(ulong))
+                {
+                    seq = (ulong)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(result, 0, sizeof(ulong))));
+                    BinaryPrimitives.WriteUInt64BigEndian(new Span<byte>(result, 0, sizeof(long)), seq);
+                }
+                else
+                    throw new ArgumentException("The value stored is not a sequence");
+            }
+            else
+            {
+                result = new byte[sizeof(ulong)];
+                BinaryPrimitives.WriteUInt64BigEndian(new Span<byte>(result, 0, sizeof(long)), seq);
+
+                lock (_heap)
+                {
+                    var node = new HeapNode(fullkey, result);
+                    _heap.Remove(node);
+                    _heap.Add(node);
+                }
+            }
+            return seq;
+        }
         public async override Task<ulong> UseSequenceAsync(byte[] key)
         {
             var prefix = new byte[] { 0x00, 0x00, 0x01 };
