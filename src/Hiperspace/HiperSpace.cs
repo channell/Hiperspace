@@ -8,6 +8,7 @@
 using Hiperspace.Meta;
 using ProtoBuf.Meta;
 using System.IO.Compression;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.Marshalling;
 
@@ -892,5 +893,15 @@ namespace Hiperspace
         /// <param name="key">The initial byte array to include in the streamed sequence.</param>
         /// <returns>An asynchronous sequence of byte arrays, beginning with the specified <paramref name="key"/>.</returns>
         public virtual IAsyncEnumerable<byte[]> InvokeStreamAsync(byte[] key, CancellationToken token = default) => new byte[][] { key }.ToAsyncEnumerable();
+
+
+        /// <summary>
+        /// Serquence are special elements that have a key, and an unsigned long value only.
+        /// Increment the Sequence and return the current value 
+        /// </summary>
+        /// <param name="key">A byte array that uniquely identifies the sequence to use. Cannot be null.</param>
+        /// <returns>The next sequence number for the specified key.</returns>
+        /// TODO: change to abstract in the next version
+        public virtual Task<ulong> UseSequenceAsync(byte[] key) { throw new NotImplementedException("Update the HiuLang compiler and/or drivers"); }
     }
 }

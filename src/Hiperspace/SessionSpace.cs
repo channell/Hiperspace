@@ -615,5 +615,10 @@ namespace Hiperspace
         {
             return _durableSpace.InvokeStreamAsync(key, token);
         }
+
+        public override Task<ulong> UseSequenceAsync(byte[] key)
+        {
+            return _durableSpace.UseSequenceAsync(key);
+        }
     }
 }

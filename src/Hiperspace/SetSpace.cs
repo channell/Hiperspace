@@ -197,7 +197,6 @@ namespace Hiperspace
         #region entity functions
         public abstract TEntity? Get(TEntity template);
         public abstract Task<TEntity?> GetAsync(TEntity template);
-
         public abstract Task<Result<TEntity>> BindAsync(TEntity item, bool cache = true, bool read = false);
 
         public abstract void UnionWith(IEnumerable<TEntity> other);

@@ -845,5 +845,10 @@ namespace Hiperspace.Heap
         {
             return _primary.InvokeStreamAsync(key, token);
         }
+
+        public override Task<ulong> UseSequenceAsync(byte[] key)
+        {
+            return _primary.UseSequenceAsync(key);
+        }
     }
 }

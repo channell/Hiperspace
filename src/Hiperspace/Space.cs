@@ -467,7 +467,7 @@ namespace Hiperspace
             return (bytes, other);
         }
         /// <summary>
-        /// Get they key type from the source for delta search
+        /// Get the key type from the source for delta search
         /// </summary>
         /// <param name="source">source stream serialized to protobuf</param>
         /// <returns>keytype followed by 0xFF</returns>

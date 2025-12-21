@@ -18,8 +18,8 @@ namespace Hiperspace.Rocks
     /// </summary>
     public class RockSpace : HiperSpace
     {
-        private RocksDb _db;
-        private bool _readonly;
+        protected RocksDb _db;
+        protected bool _readonly;
         /// <summary>
         /// Create a HiperSpace using the RocksDB provider 
         /// </summary>
@@ -141,9 +141,7 @@ namespace Hiperspace.Rocks
             _db.Put(fullkey, value);
             RaiseOnBind(key, value, source);
             return Result.Ok(value);
-
         }
-
 
         public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, object? source)
         {
@@ -156,7 +154,7 @@ namespace Hiperspace.Rocks
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static int Compare(Span<byte> left, Span<byte> right)
+        protected static int Compare(Span<byte> left, Span<byte> right)
         {
             var min = left.Length < right.Length ? left.Length : right.Length;
             int c = 0, d = 0;
@@ -215,7 +213,7 @@ namespace Hiperspace.Rocks
             }
             RaiseOnAfterFind(ref begin, ref end);
         }
-        private static byte[] FF = new byte[] { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
+        protected static byte[] FF = new byte[] { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
 
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Find(byte[] begin, byte[] end, DateTime? version)
         {
@@ -341,10 +339,10 @@ namespace Hiperspace.Rocks
         {
             space.Float();
             var ranks = new SortedSet<Nearest>();
-            var vbegin = new byte[begin.Length + sizeof(long) + 2];
-            var vend = new byte[end.Length + sizeof(long) + 2];
-            begin.CopyTo(new Span<byte>(vbegin, 2, begin.Length));
-            end.CopyTo(new Span<byte>(vend, 2, end.Length));
+            var vbegin = new byte[begin.Length + sizeof(long) + 1];
+            var vend = new byte[end.Length + sizeof(long) + 1];
+            begin.CopyTo(new Span<byte>(vbegin, 1, begin.Length));
+            end.CopyTo(new Span<byte>(vend, 1, end.Length));
             FF.CopyTo(new Span<byte>(vend, vend.Length - sizeof(long), sizeof(long)));
 
             RaiseOnBeforeFind(ref vbegin, ref vend);
@@ -507,7 +505,7 @@ namespace Hiperspace.Rocks
             return GetVersions(key).ToAsyncEnumerable(cancellationToken);
         }
 
-        private IEnumerable<(byte[], byte[])> Export()
+        protected IEnumerable<(byte[], byte[])> Export()
         {
             using (var iter = _db.NewIterator())
             {
@@ -594,6 +592,38 @@ namespace Hiperspace.Rocks
             var mk = new byte[] { 0x00, 0x00 };
             var result = await BindAsync(mk, metaModel.Bytes, null);
             return result.Ok;
+        }
+
+        public async override Task<ulong> UseSequenceAsync(byte[] key)
+        {
+            var prefix = new byte[] { 0x00, 0x00, 0x01 };
+            var fullkey = new byte[prefix.Length + key.Length];
+            prefix.CopyTo(fullkey, 0);
+            key.CopyTo(fullkey, prefix.Length);
+
+            var result = await GetAsync(fullkey);
+            ulong seq = 1;
+            if (result is not null)
+            {
+                if (result.Length == sizeof(ulong))
+                {
+                    seq = (ulong)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(result, 0, sizeof(ulong))));
+                    seq++;
+                    BinaryPrimitives.WriteUInt64BigEndian(new Span<byte>(result, 0, sizeof(long)), seq);
+
+                    _db.Put(key, result);
+                }
+                else
+                    throw new ArgumentException("The value stored is not a sequence");
+            }
+            else
+            {
+                result = new byte[sizeof(ulong)];
+                BinaryPrimitives.WriteUInt64BigEndian(new Span<byte>(result, 0, sizeof(long)), seq);
+
+                _db.Put(fullkey, result);
+            }
+            return seq;
         }
     }
 }

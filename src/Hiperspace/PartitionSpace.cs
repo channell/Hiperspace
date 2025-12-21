@@ -1079,5 +1079,34 @@ namespace Hiperspace
             }
             return Task.FromResult(true);
         }
+
+        public async override Task<ulong> UseSequenceAsync(byte[] key)
+        {
+
+            ulong max = 0;
+            var seqs = new Task<ulong>[_spaces.Length];
+            var seqr = new ulong[_spaces.Length];
+            // scatter
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                seqs[c] = _spaces[c].UseSequenceAsync(key);
+            }
+            // gather
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                var s = await seqs[c];
+                seqr[c] = s;
+                if (s > max) max = s;
+            }
+            // sync
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                while (seqr[c] < max)
+                {
+                    seqr[c] = await _spaces[c].UseSequenceAsync(key);
+                }
+            }
+            return max;
+        }
     }
 }

@@ -95,6 +95,16 @@ namespace Hiperspace
         }
 
         /// <summary>
+        /// Invoked when the component has completed its initialization phase.
+        /// </summary>
+        /// <remarks>Override this method to perform additional setup after initialization. 
+        /// Domain SubSpaces can use this function for post construction initialisation
+        /// e.g. for a GraphSpace that needs to updated properties after construction
+        /// called once during the component's lifecycle
+        /// </remarks>
+        protected virtual void OnInitialized() { }
+
+        /// <summary>
         /// All Subspaces can reuse the same metamap 
         /// </summary>
         protected (int key, (int member, int key)[] values)[]? SharedMetaMap;
@@ -638,6 +648,32 @@ namespace Hiperspace
         /// This property will be set if the Host supports GPU Excelorated graph search
         /// </remarks>
 
-        public Hiperspace.ICalculationGPU? CalculationGPU { get; init; } 
+        public Hiperspace.ICalculationGPU? CalculationGPU { get; init; }
+
+        public override Task<ulong> UseSequenceAsync(byte[] key)
+        {
+            return _space.UseSequenceAsync(key);
+        }
+        /// <summary>
+        /// Asynchronously retrieves the sequence number associated with the specified entity.
+        /// </summary>
+        /// <typeparam name="TEntity">The element to retrieve the sequence number.</typeparam>
+        /// <param name="element">The entity instance whose sequence number is to be retrieved. Can be null if the implementation allows.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the sequence number associated
+        /// with the specified entity.</returns>
+        /// <exception cref="NotImplementedException">Thrown if the method is not implemented in a derived class.</exception>
+        /// TODO: change to abstract in the next version
+        public virtual Task<ulong> GetSequenceAsync<TEntity>(TEntity? element) { throw new NotImplementedException("Update the HiuLang compiler and/or drivers"); }
+
+        /// <summary>
+        /// Asynchronously get the NEXT sequence number associated with the specified entity.
+        /// </summary>
+        /// <typeparam name="TEntity">The element to retrieve the sequence number.</typeparam>
+        /// <param name="element">The entity instance whose sequence number is to be retrieved. Can be null if the implementation allows.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains the sequence number associated
+        /// with the specified entity.</returns>
+        /// <exception cref="NotImplementedException">Thrown if the method is not implemented in a derived class.</exception>
+        /// TODO: change to abstract in the next version
+        public virtual Task<ulong> UseSequenceAsync<TEntity>(TEntity? element) { throw new NotImplementedException("Update the HiuLang compiler and/or drivers"); }
     }
 }

@@ -17,8 +17,7 @@ namespace Hiperspace.Heap
 {
     public class HeapSpace : HiperSpace
     {
-        private SortedSet<HeapNode> _heap = new SortedSet<HeapNode>();
-
+        protected SortedSet<HeapNode> _heap = new SortedSet<HeapNode>();
         public HeapSpace() 
         {
             TypeModel = new BaseTypeModel();
@@ -103,7 +102,7 @@ namespace Hiperspace.Heap
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static int Compare(Span<byte> left, Span<byte> right)
+        protected static int Compare(Span<byte> left, Span<byte> right)
         {
             var min = left.Length < right.Length ? left.Length : right.Length;
             int c = 0, d = 0;
@@ -158,7 +157,7 @@ namespace Hiperspace.Heap
                 return cursor;
             }
         }
-        private static byte[] FF = new byte[] { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
+        protected static byte[] FF = new byte[] { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
 
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Find(byte[] begin, byte[] end, DateTime? version)
         {
@@ -224,11 +223,11 @@ namespace Hiperspace.Heap
             space.Float();
             var ranks = new SortedSet<Nearest>();
             RaiseOnBeforeFind(ref begin, ref end);
-            var vbegin = new byte[begin.Length + sizeof(long) + 2];
-            var vend = new byte[end.Length + sizeof(long) + 2];
+            var vbegin = new byte[begin.Length + sizeof(long) + 1];
+            var vend = new byte[end.Length + sizeof(long) + 1];
 
-            begin.CopyTo(new Span<byte>(vbegin, 2, begin.Length));
-            end.CopyTo(new Span<byte>(vend, 2, end.Length));
+            begin.CopyTo(new Span<byte>(vbegin, 1, begin.Length));
+            end.CopyTo(new Span<byte>(vend, 1, end.Length));
             FF.CopyTo(new Span<byte>(vend, vend.Length - sizeof(long), sizeof(long)));
 
             byte[] lastKey = Array.Empty<byte>();
@@ -425,7 +424,7 @@ namespace Hiperspace.Heap
 
         #region node
         [DebuggerDisplay("{KeyHex} / {ValueHex}")]
-        class HeapNode : IStructuralEquatable, IStructuralComparable, IComparable
+        protected class HeapNode : IStructuralEquatable, IStructuralComparable, IComparable
         {
             public byte[] Key;
             public byte[] Value;
@@ -549,6 +548,48 @@ namespace Hiperspace.Heap
         public override Task<bool> SetMetaModelAsync(MetaModel metaModel)
         {
             return Task.FromResult(true);
+        }
+
+        public async override Task<ulong> UseSequenceAsync(byte[] key)
+        {
+            var prefix = new byte[] { 0x00, 0x00, 0x01 };
+            var fullkey = new byte[prefix.Length + key.Length];
+            prefix.CopyTo(fullkey, 0);
+            key.CopyTo(fullkey, prefix.Length);
+
+            var result = await GetAsync(fullkey);
+            ulong seq = 1;
+            if (result is not null)
+            {
+                if (result != null && result.Length == sizeof(ulong))
+                {
+                    seq = (ulong)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(result, 0, sizeof(ulong))));
+                    seq++;
+                    BinaryPrimitives.WriteUInt64BigEndian(new Span<byte>(result, 0, sizeof(long)), seq);
+
+                    lock (_heap)
+                    {
+                        var node = new HeapNode(fullkey, result);
+                        _heap.Remove(node);
+                        _heap.Add(node);
+                    }
+                }
+                else
+                    throw new ArgumentException("The value stored is not a sequence");
+            }
+            else
+            {
+                result = new byte[sizeof(ulong)];
+                BinaryPrimitives.WriteUInt64BigEndian(new Span<byte>(result, 0, sizeof(long)), seq);
+
+                lock (_heap)
+                {
+                    var node = new HeapNode(fullkey, result);
+                    _heap.Remove(node);
+                    _heap.Add(node);
+                }
+            }
+            return seq;
         }
     }
 }

@@ -20,7 +20,7 @@ namespace Hiperspace
     /// <summary>
     /// A hiperspace aggregate that reads from a number of spaces, and writes to one 
     /// </summary>
-    public class GenerationSpace  : HiperSpace
+    public class GenerationSpace : HiperSpace
     {
         private HiperSpace _write;
         private HiperSpace[] _read;
@@ -1111,6 +1111,11 @@ namespace Hiperspace
         public override Task<bool> SetMetaModelAsync(MetaModel metaModel)
         {
             return _write.SetMetaModelAsync(metaModel);
+        }
+
+        public override Task<ulong> UseSequenceAsync(byte[] key)
+        {
+            return _write.UseSequenceAsync(key);
         }
     }
 }
