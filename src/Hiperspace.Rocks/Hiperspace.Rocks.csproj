@@ -10,89 +10,62 @@
     <PackageReadmeFile>readme.md</PackageReadmeFile>
     <Copyright>Cepheis Ltd (C) 2023, 2024, 2025</Copyright>
     <LangVersion>13.0</LangVersion>
-    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20251210
+    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20251221
 # Overview
-This release introduces GPU optimization for graph searches involving `HiperEdge` and other vector operations used in nearest-neighbor searches (*commonly required when providing information for AI prompts*).
+Change method signatures for Path functions to use Route instead of RouteMap for remote calls.
 
-It also enhances *Hiperspace* functions for LINQ queries by adding automatic null-coalescing for values selected from Hiperspace, supporting non-sargable join conditions, and improving performance for multi-table joins and **HiperspaceDB** cube aggregation.
+Add Session2 to Subspace to support time-travel sessions over a graph space to support partial refresh of GPU cache for GPU parallel search of Graph methods without the need for recursive cycle detection.
 
------
-
-## CalculationGPU
-[Graph Theory](https://en.wikipedia.org/wiki/Graph_theory) is a branch of Mathematics that can be used to describe all knowledge as `Node` and `Edge`'s  between them; because there is a simple consistent model across domains it has wide application for visualizing information, but has the downside that many graph views appear as a tangled web of nodes and lines: *often* conveying complexity, *but not* clarity.
-
- [HyperGraph](https://en.wikipedia.org/wiki/Hypergraph)  is a generalization of [Graph](https://en.wikipedia.org/wiki/Graph_theory) that replaces the tangle of edges with a *hyperedge* that encapsulates all the intermediate nodes that are not interesting: I have a *cousin* (Robert), which can be described as "`Me-&gt;(cousin)-&gt;Robert`", but *cousin* is actually a *hyperedge* that is derived from "`me-&gt;mother2-&gt;mother1-&gt;daughter-&gt;son where mother2 is not daughter`"
- 
-[HiperEdge](https://www.cepheis.com/hiperspace/hiperedge) is a *HiperSpace* implementation of *hyperedge* that encapsulates the source of the *hyperedge* for a simple view of connections ***or*** the intermediate nodes in the path. When viewed graphically a `HiperEdge` view looks like a tree of connections extending out from the subject `Node`.
-
-Hiperspace provides functions to query  [HiperEdge](https://www.cepheis.com/hiperspace/hiperedge)s using rules that project {*source node type, edge type, end node type*} to create [HiperEdge](https://www.cepheis.com/hiperspace/hiperedge)s whenever needed (*e.g. as a member function of a `Node`*).
-
-### *Graph support*
-This version introduces `ICalculationGPU` for optional acceleration of Graph Queries using the hardware created for [Ray Tracing](https://en.wikipedia.org/wiki/Ray_tracing_(graphics)), 
-
-### *Calculation support*
-
-Search for *Nearest* node proximity in a [Vector Space](https://en.wikipedia.org/wiki/Vector_space) is supported via GPU, together with aggregation of Vectors used for complex calculation.
 
 -----
 
-### Null Coalesce
-Consider a cube analytics model with {*Sector, Customer, Account, Trade*} with dimensions *Customer* and *Sector*; with *Trade* Facts aggregated. Null-coalescing is necessary when querying dimensions associated with a *Trade* fact.
-```
-@CubeDimension, CubeHierarchy(Parent), Versioned
-entity Sector 
-  (Id : Int32) 
-  {Name : String, Parent : Sector} 
-  [Children : Sector (Parent = this), Customers : Customer (Sector = this)];
+## Sequence support
+Sequence numbers are a relational database feature that has largely been replaced been replaced by [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier) (*especially v7*) since they do not require a sequence source and can be allocated within a client, but they still have a use as an alternate key especially with [GPGPU](https://en.wikipedia.org/wiki/General-purpose_computing_on_graphics_processing_units) that need primitive points, *but do not wish to use the expense of mapping UUID to int128 values that may not be supported by the device*
 
-@CubeDimension, DeltaIndex
-entity Customer 
-  (Id : String) 
-  {Sector : Sector}
-  [Name : String, Accounts : Account (Customer = this)];
-entity Instrument;
+**Hiperspace** implements *sequences* as unsigned 64-bit integers (*1 to 18,446,744,073,709,551,616*), and can be stored for any *element* key value
 
-entity Account 
-  (Id : String) 
-  {Name : String, Customer : Customer};
+### Hiperspace
 
-@CubeFact, DeltaIndex
-entity Trade : Versioned 
-  (id : Int64) 
-  {@CubeMeasure(Aggregation.Sum) Quantity : Decimal, Instrument : Instrument, Account : Account};
-```
- [image]Sites/hiperspace/sample/trade-null.png[/image]
+Added `UseSequenceAsync()` for driver implementation, together with proxy methods in {`BrowserSpace, FailoverSpace, GenerationSpace, PartitionSpace, SessionSpace`}
 
-The query  `from trade in Space.Trades select trade.Account.Customer.Sector` provides the *Sector* for a trade, but if any {*Trade.Account, Account.Customer, Customer.Sector*} is missing the expression will break.  The work around is to manually add null-coalesce to the query:
+### Hiperspace.Heap
+Implemented  `UseSequenceAsync()` in `Hiperspace.Heap` and added additional driver `CacheHeapSpace` for use by caches that do not require history to be maintained for elements. **CacheHeapSpace** should *only* be used by *caches* since it lacks the ability to reconcile concurrent changes through version inspection.
+
+`LatestSpace` is replaced by `CacheHeapSpace` and will be removed in a future release.
+
+### Hiperspace.Rocks
+Implemented UseSequenceAsync()` in `Hiperspace.Rocks` and added additional driver `CacheRockSpace` for use by caches that do not require history to be maintained for elements. **CacheRockSpace** should *only* be used by *caches* since it lacks the ability to reconcile concurrent changes through version inspection.
+
+The underlying RocksDB driver has been updated.
+
+### SubSpace
+`SubSpace` forwards the `UseSequenceAsync()` function to the underlying driver
+
+### SetSpace
+Added two functions to get a sequence counter from the driver:
+* `GetSequenceAsync&lt;TEntity&gt;(TEntity? element)` to get the current sequence number associated with the domain key
+* `UseSequenceAsync&lt;TEntity&gt;(TEntity? element)` to get a new  sequence number for the with the domain key
+
+**NB** While the main use of Sequence numbers is to provide an alternate (*GPGPU friendly*) sequence number for a `Node`, it can be applied to any key value. 
 ```
-from trade in Space.Trades 
-select trade.Account ==  null ? null :  
-       trade.Account.Customer == null ? null :
-       trade.Account.Customer.Sector;
+// get an order number that is unique within all orders
+var orderNo = await space.Orders.UseSequenceAsync (new Order { });
+
+// get a line number within the owning Order {1,2,3..}
+var lineNo = await space.Lines.UseSequenceAsync (new Line { Order = order }); 
 ```
-**This release adds coalesce automatically**. This is especially useful when Hiperspace.SQL is used to query a *hiperspace* from a scripting language where null-coalesce is not available, but we want to access the *graph* of properties.
-```
-select c.Id as SectorId, a.Id as AccountId
-from Account as a join 
-     Customer as c on a.Customer.Id = c.Id
-group by c.Sector.Id, a.Id;
-```
-This query would have ***previously*** failed if `a.Customer` is missing.
 
 -----
 
-### Non-Saragable predicates
-In *Hiperspace* the following query cannot be [Sargable](https://en.wikipedia.org/wiki/Sargable) since *Customer* does not contain a *Sector* but a `KeyRef&lt;Sector.KeyType, Sector&gt;` with *lazy* loading of the element if needed.
-```
-select Sector.Name as "Sector Name", c.Name as "Customer Name"
-from   Sector join
-       Customer on Sector.Name = Customer.Sector.Name
-order by Sector.Name, Customer.Name;
-```
-This query would ***previously*** have failed since `Customer.Sector` is a derived property of *Customer* and cannot be applied to a template for a `Find()` request of matching *Customers*
+### HiLang
 
-This release splits join processing into [Sargable](https://en.wikipedia.org/wiki/Sargable) predicates and residual conditions and is constructed dynamically as compiled expressions.
-  </PackageReleaseNotes>
+Added code generation for the SubSpace methods.
+
+-----
+
+## OnInitialized
+Addition of `virtual void OnInitialized()` function to SubSpace to allow domian subspaces to perform additional initialization after the Domain Space has been created by a generic container (e.g. **Hiperspace.DB**)
+</PackageReleaseNotes>
     <PackageLicenseExpression>GPL-2.0-or-later</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
