@@ -339,10 +339,10 @@ namespace Hiperspace.Rocks
         {
             space.Float();
             var ranks = new SortedSet<Nearest>();
-            var vbegin = new byte[begin.Length + sizeof(long) + 1];
-            var vend = new byte[end.Length + sizeof(long) + 1];
-            begin.CopyTo(new Span<byte>(vbegin, 1, begin.Length));
-            end.CopyTo(new Span<byte>(vend, 1, end.Length));
+            var vbegin = new byte[begin.Length + sizeof(long) + 2];
+            var vend = new byte[end.Length + sizeof(long) + 2];
+            begin.CopyTo(new Span<byte>(vbegin, 2, begin.Length));
+            end.CopyTo(new Span<byte>(vend, 2, end.Length));
             FF.CopyTo(new Span<byte>(vend, vend.Length - sizeof(long), sizeof(long)));
 
             RaiseOnBeforeFind(ref vbegin, ref vend);
@@ -624,7 +624,7 @@ namespace Hiperspace.Rocks
         }
         public async override Task<ulong> UseSequenceAsync(byte[] key)
         {
-            var prefix = new byte[] { 0x00, 0x00, 0x01 };
+            var prefix = new byte[] { 0x00, 0x00, 0x00, 0x01 };
             var fullkey = new byte[prefix.Length + key.Length];
             prefix.CopyTo(fullkey, 0);
             key.CopyTo(fullkey, prefix.Length);
