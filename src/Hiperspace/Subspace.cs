@@ -649,6 +649,10 @@ namespace Hiperspace
         /// </remarks>
 
         public Hiperspace.ICalculationGPU? CalculationGPU { get; init; }
+        public override Task<ulong> GetSequenceAsync(byte[] key)
+        {
+            return _space.GetSequenceAsync(key);
+        }
 
         public override Task<ulong> UseSequenceAsync(byte[] key)
         {

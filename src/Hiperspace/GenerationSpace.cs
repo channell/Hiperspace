@@ -6,14 +6,9 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using Hiperspace.Meta;
-using System.Buffers.Binary;
-using System.ComponentModel.Design;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Channels;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Hiperspace
 {
@@ -1113,13 +1108,31 @@ namespace Hiperspace
             return _write.SetMetaModelAsync(metaModel);
         }
 
-        public override Task<ulong> GetSequenceAsync(byte[] key)
+        public async override Task<ulong> GetSequenceAsync(byte[] key)
         {
-            return _write.GetSequenceAsync(key);
+            var sequence = await _write.GetSequenceAsync(key);
+            if (sequence == 1)   // first read
+            {
+                var oldSequence = await _read[1].GetSequenceAsync(key);
+                while (sequence < oldSequence)
+                {
+                    sequence = await _write.UseSequenceAsync(key);
+                }
+            }
+            return sequence;
         }
-        public override Task<ulong> UseSequenceAsync(byte[] key)
+        public async override Task<ulong> UseSequenceAsync(byte[] key)
         {
-            return _write.UseSequenceAsync(key);
+            var sequence = await _write.UseSequenceAsync(key);
+            if (sequence < 3)   // probably first read
+            {
+                var oldSequence = await _read[1].GetSequenceAsync(key);
+                while (sequence < oldSequence)
+                {
+                    sequence = await _write.UseSequenceAsync(key);
+                }
+            }
+            return sequence;
         }
     }
 }
