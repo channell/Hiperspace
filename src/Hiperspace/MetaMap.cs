@@ -17,14 +17,14 @@ namespace Hiperspace
         private (int key, (int member, int key)[] values)[] _map;
         private (int member, int key)[] _currentMap;
         private int _current = 0;
-        private Stack<(int key, int poppoint)> _stack;
+        private Stack<(int key, int poppoint, (int member, int key)[])> _stack;
         private int _popPoint;
 
         public MetaMap((int key, (int member, int key)[] values)[] map, int popPoint)
         {
             _map = map;
-            _stack = new Stack<(int key, int poppoint)>(popPoint / 2);
             _currentMap = map[0].values;
+            _stack = new Stack<(int key, int poppoint, (int member, int key)[])> (popPoint / 2);
             _popPoint = popPoint;
         }
 
@@ -41,7 +41,7 @@ namespace Hiperspace
             {
                 if (_map[s].key == key)
                 {
-                    _stack.Push((_current, _popPoint));
+                    _stack.Push((_current, _popPoint, _currentMap));
                     _currentMap = _map[s].values;
                     _current = _map[s].key;
                     _popPoint = poppoint;
@@ -49,7 +49,7 @@ namespace Hiperspace
                 }
                 else if (_map[e].key == key)
                 {
-                    _stack.Push((_current, _popPoint));
+                    _stack.Push((_current, _popPoint, _currentMap));
                     _currentMap = _map[e].values;
                     _current = _map[e].key;
                     _popPoint = poppoint;
@@ -81,7 +81,7 @@ namespace Hiperspace
         {
             while (pos >= _popPoint)
             {
-                (_current, _popPoint) = _stack.Pop();
+                (_current, _popPoint, _) = _stack.Pop();
             }
         }
 

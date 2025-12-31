@@ -46,9 +46,9 @@ namespace Hiperspace
         }
         public abstract IEnumerable<TEntity> Find(TEntity template);
         public abstract IAsyncEnumerable<TEntity> FindAsync(TEntity template, CancellationToken cancellation = default);
-        public abstract IEnumerable<(TEntity Item, double Distance)> Nearest(TEntity template, Vector space, Vector.Method method, int limit);
+        public abstract IEnumerable<(TEntity Item, double Distance)> Nearest(TEntity template, Vector space, Vector.Method method, int limit, double? distanceLimit = null);
 
-        public abstract IAsyncEnumerable<(TEntity Item, double Distance)> NearestAsync(TEntity template, Vector space, Vector.Method method, int limit, CancellationToken cancellation = default);
+        public abstract IAsyncEnumerable<(TEntity Item, double Distance)> NearestAsync(TEntity template, Vector space, Vector.Method method, int limit, double? distanceLimit = null, CancellationToken cancellation = default);
 
         /// <summary>
         /// Perform a full table scan because there are no suitable Key or Index to use

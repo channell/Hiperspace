@@ -100,6 +100,7 @@ namespace Hiperspace
             , Vector space
             , Vector.Method method
             , int limit = 0
+            , double? distanceLimit = null
             , CancellationToken cancellation = default
             )
             where TEntity : Element<TEntity>, new();

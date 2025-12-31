@@ -5,13 +5,8 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
-using Hiperspace.Meta;
 using System.Buffers.Binary;
-using System.Collections;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace Hiperspace.Heap
 {
@@ -20,19 +15,47 @@ namespace Hiperspace.Heap
 
         public CacheHeapSpace() : base() { }
 
+        [Obsolete("use Bind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
         public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, object? source = null)
         {
-            return Bind(key, value, source);
+            var fullkey = new byte[key.Length + sizeof(long) + 1];
+            key.CopyTo(fullkey, 1);
+            var node = new HeapNode(fullkey, value);
+            lock (_heap)
+            {
+                if (_heap.TryGetValue(node, out HeapNode? result) && Compare(result.Value, value) != 0)
+                {
+                    return Result.Skip(result.Value);
+                }
+                _heap.Remove(node);
+                _heap.Add(node);
+                RaiseOnBind(key, value, source);
+                return Result.Ok(value);
+            }
         }
         public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
         {
-            return Bind(key, value, source);
+            var fullkey = new byte[key.Length + sizeof(long) + 1];
+            key.CopyTo(fullkey, 1);
+            var node = new HeapNode(fullkey, value);
+            lock (_heap)
+            {
+                if (_heap.TryGetValue(node, out HeapNode? result) && Compare(result.Value, value) != 0)
+                {
+                    return Result.Skip(result.Value);
+                }
+                _heap.Remove(node);
+                _heap.Add(node);
+                RaiseOnBind(key, value, source);
+                return Result.Ok(value);
+            }
         }
 
         public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, object? source)
         {
             return Task.Run(() => Bind(key, value, source));
         }
+        [Obsolete("use BindAsync((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
         public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, object? source)
         {
             return Task.Run(() => Bind(key, value, version, source));
@@ -40,19 +63,32 @@ namespace Hiperspace.Heap
 
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Find(byte[] begin, byte[] end, DateTime? version)
         {
+            var vbegin = new byte[begin.Length + 1];
+            var vend = new byte[end.Length + 1];
+            begin.CopyTo(new Span<byte>(vbegin, 1, begin.Length));
+            end.CopyTo(new Span<byte>(vend, 1, end.Length));
             var now = DateTime.UtcNow;
             foreach (var v in Find(begin, end))
-                yield return (v.Item1, now, v.Item2);
+            {
+                var keypart = new byte[v.Item1.Length - 1];
+                var span = new Span<byte>(v.Item1, 1, v.Item1.Length - sizeof(long) - 1);
+                span.CopyTo(keypart);
+                yield return (keypart, now, v.Item2);
+            }
         }
 
-        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0, double? distanceLimit = null)
         {
             space.Float();
             var ranks = new SortedSet<Nearest>();
             RaiseOnBeforeFind(ref begin, ref end);
 
-            var beginnode = new HeapNode(begin, Array.Empty<byte>());
-            var endnode = new HeapNode(end, Array.Empty<byte>());
+            var vbegin = new byte[begin.Length + 2];
+            var vend = new byte[end.Length + 2];
+            begin.CopyTo(new Span<byte>(vbegin, 2, begin.Length));
+            end.CopyTo(new Span<byte>(vend, 2, end.Length));
+            var beginnode = new HeapNode(vbegin, Array.Empty<byte>());
+            var endnode = new HeapNode(vend, Array.Empty<byte>());
             (byte[] Key, byte[] Value)[] cursor;
 
             lock (_heap)
@@ -70,7 +106,7 @@ namespace Hiperspace.Heap
                     var keypart = row.Key;
                     var vec = Space.FromValue<Vector>(TypeModel, row.Value);
                     var distance = space.Nearest(vec, method);
-                    if (distance.HasValue)
+                    if (distance.HasValue && (distanceLimit is null || distance <= distanceLimit))
                         ranks.Add(new Nearest(distance.Value, row.Key));
                 }
             }
@@ -87,7 +123,8 @@ namespace Hiperspace.Heap
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Delta(byte[] begin, DateTime? version)
         {
             var now = DateTime.UtcNow;
-            var vbegin = new byte[begin.Length + sizeof(long) + 1];
+            var vbegin = new byte[begin.Length + 1];
+            begin.CopyTo(vbegin, 1);
             var vend = Hiperspace.Space.DeltaKey(begin);
 
             foreach (var v in Find(vbegin, vend))

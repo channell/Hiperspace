@@ -83,6 +83,7 @@ namespace Hiperspace
         /// <param name="value">serialized value</param>
         /// <param name="source">original object</param>
         /// <returns>a result struct that indicates success, ignore, or fail </returns>
+        [Obsolete("use BatchBind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
         public abstract Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, object? source = null);
         /// <summary>
         /// Bind a key/value pair to the space, passing in the source object, if the driver can use additional metadata (e.g. EFCore)
@@ -109,6 +110,7 @@ namespace Hiperspace
         /// <param name="value">serialized value</param>
         /// <param name="source">original object</param>
         /// <returns>a result struct that indicates success, ignore, or fail </returns>
+        [Obsolete("use BindAsync(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null) instead")]
         public abstract Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, object? source = null);
 
         /// <summary>
@@ -121,7 +123,9 @@ namespace Hiperspace
         /// <returns>a result struct that indicates success, ignore, or fail </returns>
         public virtual Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             return BindAsync(key, value, version, source);
+#pragma warning restore CS0618 // Type or member is obsolete
         }
 
         /// <summary>
@@ -153,6 +157,7 @@ namespace Hiperspace
         /// </summary>
         /// <param name="batch">array of request</param>
         /// <returns>array of results</returns>
+        [Obsolete("use BatchBind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
         public virtual Result<(byte[] Key, byte[] Value)>[] BatchBind((byte[] key, byte[] value, DateTime version, object? source)[] batch)
         {
             var result = new Result<(byte[] Key, byte[] Value)>[batch.Length];
@@ -221,6 +226,7 @@ namespace Hiperspace
         /// </summary>
         /// <param name="batch">array of request</param>
         /// <returns>array of results</returns>
+        [Obsolete("use BindAsync(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null) instead")]
         public virtual async Task<Result<(byte[] Key, byte[] Value)>[]> BatchBindAsync((byte[] key, byte[] value, DateTime version, object? source)[] batch)
         {
             var result = new Result<(byte[] Key, byte[] Value)>[batch.Length];
@@ -387,8 +393,9 @@ namespace Hiperspace
         /// <param name="vector"></param>
         /// <param name="version">datestamp of key</param>
         /// <param name="limit">limit to the top results, or zero for all</param>
+        /// <param name="distance">exclude any distances greater than this optional value</param>
         /// <returns></returns>
-        public virtual IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)
+        public virtual IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0, double? distanceLimit = null)
         {
             throw new NotImplementedException("This HiperSpace does not support Vector Search");
         }
@@ -400,9 +407,9 @@ namespace Hiperspace
         /// <param name="limit">limit to the top results, or zero for all</param>
         /// <param name="version">datestamp of key</param>
         /// <returns></returns>
-        public virtual IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> NearestAsync(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0, CancellationToken cancellationToken = default)
+        public virtual IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> NearestAsync(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0, double? distanceLimit = null, CancellationToken cancellationToken = default)
         {
-            return Nearest(begin, end, version, space, method, limit).ToAsyncEnumerable(cancellationToken);
+            return Nearest(begin, end, version, space, method, limit, distanceLimit).ToAsyncEnumerable(cancellationToken);
         }
         /// <summary>
         /// Get a single unique value from space

@@ -100,6 +100,7 @@ namespace Hiperspace.Rocks
         /// <param name="version"></param>
         /// <param name="source"></param>
         /// <returns></returns>
+        [Obsolete("use Bind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
         public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, object? source = null)
         {
             var fullkey = new byte[key.Length + sizeof(long) + 1];
@@ -148,9 +149,14 @@ namespace Hiperspace.Rocks
             return Task.Run(() => Bind(key, value, source));
         }
 
+        [Obsolete("use Bind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
         public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, object? source)
         {
             return Task.Run(() => Bind(key, value, version, source));
+        }
+        public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)
+        {
+            return Task.Run(() => Bind(key, value, version, priorVersion, source));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -335,7 +341,7 @@ namespace Hiperspace.Rocks
             return Find(begin, end, version).ToAsyncEnumerable(cancellationToken);
         }
 
-        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0, double? distanceLimit = null)
         {
             space.Float();
             var ranks = new SortedSet<Nearest>();
@@ -376,7 +382,7 @@ namespace Hiperspace.Rocks
                         {
                             var vec = Hiperspace.Space.FromValue<Vector>(TypeModel, lastValue);
                             var distance = space.Nearest(vec, method);
-                            if (distance.HasValue)
+                            if (distance.HasValue && (distanceLimit is null || distance <= distanceLimit))
                                 ranks.Add(new Nearest(distance.Value, lastKey));
 
                             lastKey = keypart;
@@ -596,7 +602,7 @@ namespace Hiperspace.Rocks
 
         public async override Task<ulong> GetSequenceAsync(byte[] key)
         {
-            var prefix = new byte[] { 0x00, 0x00, 0x01 };
+            var prefix = new byte[] { 0x00, 0x00, 0x00, 0x01 };
             var fullkey = new byte[prefix.Length + key.Length];
             prefix.CopyTo(fullkey, 0);
             key.CopyTo(fullkey, prefix.Length);
@@ -607,18 +613,10 @@ namespace Hiperspace.Rocks
             {
                 if (result.Length == sizeof(ulong))
                 {
-                    seq = (ulong)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(result, 0, sizeof(ulong))));
-                    BinaryPrimitives.WriteUInt64BigEndian(new Span<byte>(result, 0, sizeof(long)), seq);
+                    seq = BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(result, 0, sizeof(ulong)));
                 }
                 else
                     throw new ArgumentException("The value stored is not a sequence");
-            }
-            else
-            {
-                result = new byte[sizeof(ulong)];
-                BinaryPrimitives.WriteUInt64BigEndian(new Span<byte>(result, 0, sizeof(long)), seq);
-
-                _db.Put(fullkey, result);
             }
             return seq;
         }
@@ -635,11 +633,11 @@ namespace Hiperspace.Rocks
             {
                 if (result.Length == sizeof(ulong))
                 {
-                    seq = (ulong)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(result, 0, sizeof(ulong))));
+                    seq = BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(result, 0, sizeof(ulong)));
                     seq++;
                     BinaryPrimitives.WriteUInt64BigEndian(new Span<byte>(result, 0, sizeof(long)), seq);
 
-                    _db.Put(key, result);
+                    _db.Put(fullkey, result);
                 }
                 else
                     throw new ArgumentException("The value stored is not a sequence");

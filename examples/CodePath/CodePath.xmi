@@ -1,0 +1,1133 @@
+<?xml  version='1.0' encoding='windows-1252' ?>
+<xmi:XMI xmlns:xmi="http://schema.omg.org/spec/XMI/2.1" xmi:version="2.1" xmlns:uml="http://schema.omg.org/spec/UML/2.1" xmlns:thecustomprofile="http://www.sparxsystems.com/profiles/thecustomprofile/1.0" xmlns:HiLang="http://www.sparxsystems.com/profiles/HiLang/1.0">
+    <xmi:Documentation exporter="Enterprise Architect" exporterVersion="6.5" exporterID="1622"/>
+    <uml:Model xmi:type="uml:Model" name="EA_Model" visibility="public">
+
+        <packagedElement xmi:type="uml:Package" xmi:id="Graph" name="Graph" visibility="public">
+
+            <packagedElement xmi:type="uml:Class" xmi:id="Graph.Route" name="Route" visibility="public">
+
+				<ownedAttribute xmi:type="uml:Property" xmi:id="Graph.Route.Name" name="Name" visibility="protected" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="String"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="Graph.Route.Rules" name="Rules" visibility="public" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="HashSet&lt;Graph.Rule&gt;"/>
+				</ownedAttribute>
+			</packagedElement>
+            <packagedElement xmi:type="uml:Class" xmi:id="Graph.Rule" name="Rule" visibility="public">
+
+				<ownedAttribute xmi:type="uml:Property" xmi:id="Graph.Rule.FromType" name="FromType" visibility="protected" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="String"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="Graph.Rule.ToType" name="ToType" visibility="protected" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="String"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="Graph.Rule.EdgeType" name="EdgeType" visibility="protected" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="String"/>
+				</ownedAttribute>
+			</packagedElement>
+            <packagedElement xmi:type="uml:Class" xmi:id="Graph.HiperEdge" name="HiperEdge" visibility="public">
+
+				<ownedAttribute xmi:type="uml:Property" xmi:id="Graph.HiperEdge.Edge" name="Edge" visibility="public" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="Edge"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="Graph.HiperEdge.Source" name="Source" visibility="public" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="Graph.HiperEdge"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="Graph.HiperEdge.Width" name="Width" visibility="public" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<defaultValue xmi:type="uml:LiteralString" xmi:id="LSGraph.HiperEdge.Width" value="1"/>
+					<type xmi:idref="Int32"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="Graph.HiperEdge.Length" name="Length" visibility="public" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<defaultValue xmi:type="uml:LiteralString" xmi:id="LSGraph.HiperEdge.Length" value="1"/>
+					<type xmi:idref="Int32"/>
+				</ownedAttribute>
+			</packagedElement>
+		</packagedElement>
+        <packagedElement xmi:type="uml:Package" xmi:id="GraphInternal" name="GraphInternal" visibility="public">
+
+            <packagedElement xmi:type="uml:Class" xmi:id="GraphInternal.PathMessage" name="PathMessage" visibility="public">
+
+				<ownedAttribute xmi:type="uml:Property" xmi:id="GraphInternal.PathMessage.Node" name="Node" visibility="protected" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="Node"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="GraphInternal.PathMessage.Route" name="Route" visibility="protected" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="Graph.Route"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="GraphInternal.PathMessage.Length" name="Length" visibility="protected" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="Int32"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="GraphInternal.PathMessage.Targets" name="Targets" visibility="protected" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="HashSet&lt;String&gt;"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="GraphInternal.PathMessage.Edges" name="Edges" visibility="public" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="HashSet&lt;Graph.HiperEdge&gt;"/>
+				</ownedAttribute>
+			</packagedElement>
+		</packagedElement>
+        <packagedElement xmi:type="uml:Package" xmi:id="EAPK_81C8532F_588C_406c_ABAF_CCE3C49749BF" name="CodePath" visibility="public">
+
+            <packagedElement xmi:type="uml:Class" xmi:id="CodePath.Edge2" name="Edge2" visibility="public">
+
+			</packagedElement>
+            <packagedElement xmi:type="uml:Class" xmi:id="CodePath.Edges" name="Edges" visibility="public">
+
+				<ownedAttribute xmi:type="uml:Property" xmi:id="CodePath.Edges.From" name="From" visibility="protected" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="Node"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="CodePath.Edges.To" name="To" visibility="protected" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="Node"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="CodePath.Edges.FromTypeName" name="FromTypeName" visibility="protected" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="String"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="CodePath.Edges.ToTypeName" name="ToTypeName" visibility="protected" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="String"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="CodePath.Edges.Name" name="Name" visibility="public" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="String"/>
+				</ownedAttribute>
+			</packagedElement>
+            <packagedElement xmi:type="uml:Class" xmi:id="CodePath.Edges2" name="Edges2" visibility="public">
+
+			</packagedElement>
+            <packagedElement xmi:type="uml:Class" xmi:id="EAID_8FFA9F33_9D92_4f62_BB5F_F31F7E727B8D" name="Attribute" visibility="public">
+
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_53D3EF1E_82C2_4ff3_8A9A_FCAF584BC49C" name="In" visibility="protected" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="EAID_818C0BAA_5B55_4c8e_BB96_0EECAE602C02"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_5DAF1A0A_A664_4b8d_A5CE_13DF6FA0EAEC" name="Id" visibility="protected" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="UInt32"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_4EB14F36_2B6B_4342_B113_B127041674B3" name="Name" visibility="public" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="String"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_C34202DE_4E79_4ba6_B80F_8075D74431E0" name="DataType" visibility="public" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="EAID_818C0BAA_5B55_4c8e_BB96_0EECAE602C02"/>
+				</ownedAttribute>
+			</packagedElement>
+            <packagedElement xmi:type="uml:Class" xmi:id="EAID_7B1C1C48_1D3B_485d_915E_A07E729A5D6A" name="Call" visibility="public">
+
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_25AD6CC3_8BB0_4884_A0E5_98B55246719D" name="Method" visibility="protected" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="EAID_EEB297E8_7193_4e8e_8F68_69A4C42C5B10"/>
+				</ownedAttribute>
+				<ownedOperation xmi:id="CodePath.Call.Parameters" name="Parameters" visibility="public" type="EAID_219132F3_ADE5_4d82_B669_8D5386F5C37B" concurrency="sequential">
+					<ownedParameter xmi:id="RCodePath.Call.Parameters" name="return" type="EAID_219132F3_ADE5_4d82_B669_8D5386F5C37B" direction="return"/>
+				</ownedOperation>
+			</packagedElement>
+            <packagedElement xmi:type="uml:Class" xmi:id="EAID_818C0BAA_5B55_4c8e_BB96_0EECAE602C02" name="Class" visibility="public">
+
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_64EF0544_1398_4bcf_9B1A_4D87E59DC6A7" name="Id" visibility="protected" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="UInt64"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_BF8E19BB_FDD1_45b7_9DEA_7F745C4C4592" name="Name" visibility="public" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="String"/>
+				</ownedAttribute>
+				<ownedOperation xmi:id="CodePath.Class.Inherits" name="Inherits" visibility="public" type="EAID_DDABDEE0_7DAA_4478_85DF_DD65D03089C3" concurrency="sequential">
+					<ownedParameter xmi:id="RCodePath.Class.Inherits" name="return" type="EAID_DDABDEE0_7DAA_4478_85DF_DD65D03089C3" direction="return"/>
+				</ownedOperation>
+				<ownedOperation xmi:id="CodePath.Class.Implements" name="Implements" visibility="public" type="EAID_8EFF586F_7E27_4509_94F3_6DC7A2CD7ED1" concurrency="sequential">
+					<ownedParameter xmi:id="RCodePath.Class.Implements" name="return" type="EAID_8EFF586F_7E27_4509_94F3_6DC7A2CD7ED1" direction="return"/>
+				</ownedOperation>
+				<ownedOperation xmi:id="CodePath.Class.Methods" name="Methods" visibility="public" type="EAID_EEB297E8_7193_4e8e_8F68_69A4C42C5B10" concurrency="sequential">
+
+                    <ownedParameter xmi:id="CodePath.Class.MethodsMethodsIn" name="In" direction="in" isStream="false" isException="false" isOrdered="false" isUnique="true" />
+					<ownedParameter xmi:id="EAID_52C0C584_9EA5_4eff_8FD9_BE96502F2948" name="Methods" direction="in" isStream="false" isException="false" isOrdered="false" isUnique="true" type="EAHiperspace_self"/>
+					<ownedParameter xmi:id="RCodePath.Class.Methods" name="return" type="EAID_EEB297E8_7193_4e8e_8F68_69A4C42C5B10" direction="return"/>
+				</ownedOperation>
+				<ownedOperation xmi:id="CodePath.Class.Attributes" name="Attributes" visibility="public" type="EAID_8FFA9F33_9D92_4f62_BB5F_F31F7E727B8D" concurrency="sequential">
+
+                    <ownedParameter xmi:id="CodePath.Class.AttributesAttributesIn" name="In" direction="in" isStream="false" isException="false" isOrdered="false" isUnique="true" />
+					<ownedParameter xmi:id="EAID_52C0C584_9EA5_4eff_8FD9_BE96502F2948" name="Attributes" direction="in" isStream="false" isException="false" isOrdered="false" isUnique="true" type="EAHiperspace_self"/>
+					<ownedParameter xmi:id="RCodePath.Class.Attributes" name="return" type="EAID_8FFA9F33_9D92_4f62_BB5F_F31F7E727B8D" direction="return"/>
+				</ownedOperation>
+			</packagedElement>
+            <packagedElement xmi:type="uml:Class" xmi:id="EAID_8EFF586F_7E27_4509_94F3_6DC7A2CD7ED1" name="Implement" visibility="public">
+
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_8DAAB5C5_978A_42c3_80B9_7AA5BEF0914C" name="BaseClass" visibility="protected" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="EAID_818C0BAA_5B55_4c8e_BB96_0EECAE602C02"/>
+				</ownedAttribute>
+			</packagedElement>
+            <packagedElement xmi:type="uml:Class" xmi:id="EAID_DDABDEE0_7DAA_4478_85DF_DD65D03089C3" name="Inherit" visibility="public">
+
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_20ABF1BA_B098_4674_B0B8_5B40EC236F09" name="BaseClass" visibility="protected" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="EAID_818C0BAA_5B55_4c8e_BB96_0EECAE602C02"/>
+				</ownedAttribute>
+			</packagedElement>
+            <packagedElement xmi:type="uml:Class" xmi:id="EAID_EEB297E8_7193_4e8e_8F68_69A4C42C5B10" name="Method" visibility="public">
+
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_C2EBBD33_C49F_43fd_92C6_5E0C3E6DF85E" name="In" visibility="protected" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="EAID_818C0BAA_5B55_4c8e_BB96_0EECAE602C02"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_9ED4C6AF_5017_48ca_9883_879E4B8B05E1" name="Id" visibility="protected" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="UInt32"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_2F27BE37_0054_42c6_BD1E_97D60FD73778" name="Name" visibility="public" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="String"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_083CF05B_3531_4bec_A2C7_84E522111F5B" name="ReturnType" visibility="public" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="EAID_818C0BAA_5B55_4c8e_BB96_0EECAE602C02"/>
+				</ownedAttribute>
+				<ownedOperation xmi:id="CodePath.Method.Variables" name="Variables" visibility="public" type="EAID_BE3ABA9F_1F5F_4542_99C5_B94AAA725BC2" concurrency="sequential">
+
+                    <ownedParameter xmi:id="CodePath.Method.VariablesVariablesIn" name="In" direction="in" isStream="false" isException="false" isOrdered="false" isUnique="true" />
+					<ownedParameter xmi:id="EAID_52C0C584_9EA5_4eff_8FD9_BE96502F2948" name="Variables" direction="in" isStream="false" isException="false" isOrdered="false" isUnique="true" type="EAHiperspace_self"/>
+					<ownedParameter xmi:id="RCodePath.Method.Variables" name="return" type="EAID_BE3ABA9F_1F5F_4542_99C5_B94AAA725BC2" direction="return"/>
+				</ownedOperation>
+				<ownedOperation xmi:id="CodePath.Method.Calls" name="Calls" visibility="public" type="EAID_7B1C1C48_1D3B_485d_915E_A07E729A5D6A" concurrency="sequential">
+					<ownedParameter xmi:id="RCodePath.Method.Calls" name="return" type="EAID_7B1C1C48_1D3B_485d_915E_A07E729A5D6A" direction="return"/>
+				</ownedOperation>
+				<ownedOperation xmi:id="CodePath.Method.Assignments" name="Assignments" visibility="public" type="EAID_6B2842CA-0CF8-439e-B7F9-4421F1600A35" concurrency="sequential">
+					<ownedParameter xmi:id="RCodePath.Method.Assignments" name="return" type="EAID_6B2842CA-0CF8-439e-B7F9-4421F1600A35" direction="return"/>
+				</ownedOperation>
+			</packagedElement>
+            <packagedElement xmi:type="uml:Class" xmi:id="EAID_219132F3_ADE5_4d82_B669_8D5386F5C37B" name="Parameter" visibility="public">
+
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_8BA51B37_D1F6_403b_B01E_01FD910C66F3" name="Id" visibility="protected" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="UInt16"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_A7F10F5D_F09A_46bc_8303_21350FD96567" name="Name" visibility="public" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="String"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_CC262F1D_0788_46fc_AED0_AA29B8EB8B5D" name="DataType" visibility="public" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="EAID_818C0BAA_5B55_4c8e_BB96_0EECAE602C02"/>
+				</ownedAttribute>
+			</packagedElement>
+            <packagedElement xmi:type="uml:Class" xmi:id="EAID_BE3ABA9F_1F5F_4542_99C5_B94AAA725BC2" name="Variable" visibility="public">
+
+				<ownedAttribute xmi:type="uml:Property" xmi:id="CodePath.Variable.In" name="In" visibility="protected" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="EAID_EEB297E8_7193_4e8e_8F68_69A4C42C5B10"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="CodePath.Variable.Id" name="Id" visibility="protected" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="UInt16"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="CodePath.Variable.Name" name="Name" visibility="public" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="String"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="EAID_225DD899_A06C_41d6_AE76_B8858DF743EE" name="DataType" visibility="public" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="EAID_818C0BAA_5B55_4c8e_BB96_0EECAE602C02"/>
+				</ownedAttribute>
+			</packagedElement>
+            <packagedElement xmi:type="uml:Class" xmi:id="EAID_6B2842CA-0CF8-439e-B7F9-4421F1600A35" name="Assign" visibility="public">
+
+				<ownedAttribute xmi:type="uml:Property" xmi:id="CodePath.Assign.Id" name="Id" visibility="protected" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="UInt32"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="CodePath.Assign.Source" name="Source" visibility="public" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="EAID_BE3ABA9F_1F5F_4542_99C5_B94AAA725BC2"/>
+				</ownedAttribute>
+				<ownedAttribute xmi:type="uml:Property" xmi:id="CodePath.Assign.Attribute" name="Attribute" visibility="public" isStatic="false" isReadOnly="false" isDerived="false" isOrdered="false" isUnique="true" isDerivedUnion="false">
+					<type xmi:idref="EAID_8FFA9F33_9D92_4f62_BB5F_F31F7E727B8D"/>
+				</ownedAttribute>
+			</packagedElement>
+		</packagedElement>
+
+		<HiLang:Type base_Class="Int16"/>
+		<HiLang:Type base_Class="Int32"/>
+		<HiLang:Type base_Class="Int64"/>
+		<HiLang:Type base_Class="UInt16"/>
+		<HiLang:Type base_Class="UInt32"/>
+		<HiLang:Type base_Class="UInt64"/>
+		<HiLang:Type base_Class="Decimal"/>
+		<HiLang:Type base_Class="Double"/>
+		<HiLang:Type base_Class="Single"/>
+		<HiLang:Type base_Class="Half"/>
+		<HiLang:Type base_Class="String"/>
+		<HiLang:Type base_Class="DateTime"/>
+		<HiLang:Type base_Class="Boolean"/>
+		<HiLang:Type base_Class="Guid"/>
+		<HiLang:Type base_Class="Any"/>
+		<HiLang:Value base_Class="List&lt;T&gt;"/>
+		<HiLang:Value base_Class="Set&lt;T&gt;"/>
+		<HiLang:Type base_Class="IEnumerable&lt;T&gt;"/>
+		<HiLang:View base_Class="Node"/>
+		<HiLang:View base_Class="Edge"/>
+		<HiLang:Type base_Class="Versioned"/>
+		<HiLang:View base_Class="VectorNode"/>
+		<HiLang:Type base_Class="HasVectorSpace"/>
+		<HiLang:Aspect base_Class="Option&lt;T&gt;"/>
+		<HiLang:Segment base_Class="Many&lt;T&gt;"/>
+		<HiLang:Segment base_Class="DrillDown&lt;T&gt;"/>
+		<HiLang:Set base_Class="HashSet&lt;String&gt;"/>
+		<HiLang:Set base_Class="HashSet&lt;Graph.HiperEdge&gt;"/>
+		<HiLang:Set base_Class="HashSet&lt;Graph.Rule&gt;"/>
+		<HiLang:Value base_Class="Graph.Route"/>
+		<HiLang:Value base_Class="Graph.Rule"/>
+		<HiLang:View base_Class="Graph.HiperEdge"/>
+		<HiLang:Message base_Class="GraphInternal.PathMessage"/>
+		<HiLang:View base_Class="CodePath.Edge2"/>
+		<HiLang:View base_Class="CodePath.Edges"/>
+		<HiLang:View base_Class="CodePath.Edges2"/>
+		<HiLang:Entity base_Class="EAID_8FFA9F33_9D92_4f62_BB5F_F31F7E727B8D"/>
+		<HiLang:Segment base_Class="EAID_7B1C1C48_1D3B_485d_915E_A07E729A5D6A"/>
+		<HiLang:Entity base_Class="EAID_818C0BAA_5B55_4c8e_BB96_0EECAE602C02"/>
+		<HiLang:Segment base_Class="EAID_8EFF586F_7E27_4509_94F3_6DC7A2CD7ED1"/>
+		<HiLang:Segment base_Class="EAID_DDABDEE0_7DAA_4478_85DF_DD65D03089C3"/>
+		<HiLang:Entity base_Class="EAID_EEB297E8_7193_4e8e_8F68_69A4C42C5B10"/>
+		<HiLang:Segment base_Class="EAID_219132F3_ADE5_4d82_B669_8D5386F5C37B"/>
+		<HiLang:Entity base_Class="EAID_BE3ABA9F_1F5F_4542_99C5_B94AAA725BC2"/>
+		<HiLang:Segment base_Class="EAID_6B2842CA-0CF8-439e-B7F9-4421F1600A35"/>
+    </uml:Model>
+    <xmi:Extension extender="Enterprise Architect" extenderID="6.5">
+		<elements>
+
+			<element xmi:idref="Int16" xmi:type="uml:Class" name="Int16" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Type" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+			</element>
+			<element xmi:idref="Int32" xmi:type="uml:Class" name="Int32" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Type" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+			</element>
+			<element xmi:idref="Int64" xmi:type="uml:Class" name="Int64" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Type" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+			</element>
+			<element xmi:idref="UInt16" xmi:type="uml:Class" name="UInt16" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Type" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+			</element>
+			<element xmi:idref="UInt32" xmi:type="uml:Class" name="UInt32" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Type" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+			</element>
+			<element xmi:idref="UInt64" xmi:type="uml:Class" name="UInt64" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Type" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+			</element>
+			<element xmi:idref="Decimal" xmi:type="uml:Class" name="Decimal" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Type" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+			</element>
+			<element xmi:idref="Double" xmi:type="uml:Class" name="Double" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Type" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+			</element>
+			<element xmi:idref="Single" xmi:type="uml:Class" name="Single" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Type" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+			</element>
+			<element xmi:idref="Half" xmi:type="uml:Class" name="Half" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Type" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+			</element>
+			<element xmi:idref="String" xmi:type="uml:Class" name="String" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Type" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+			</element>
+			<element xmi:idref="DateTime" xmi:type="uml:Class" name="DateTime" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Type" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+			</element>
+			<element xmi:idref="Boolean" xmi:type="uml:Class" name="Boolean" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Type" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+			</element>
+			<element xmi:idref="Guid" xmi:type="uml:Class" name="Guid" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Type" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+			</element>
+			<element xmi:idref="Any" xmi:type="uml:Class" name="Any" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Type" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+			</element>
+			<element xmi:idref="List&lt;T&gt;" xmi:type="uml:Class" name="List&lt;T&gt;" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Value" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+			</element>
+			<element xmi:idref="Set&lt;T&gt;" xmi:type="uml:Class" name="Set&lt;T&gt;" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Value" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+			</element>
+			<element xmi:idref="IEnumerable&lt;T&gt;" xmi:type="uml:Class" name="IEnumerable&lt;T&gt;" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Type" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+			</element>
+			<element xmi:idref="Node" xmi:type="uml:Class" name="Node" scope="public">
+				<properties documentation="node in a graph view of data" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::View" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+				<attributes>
+
+					<attribute xmi:idref="Node.SKey" name="SKey" scope="Protected">
+						<documentation value=""/>
+						<properties type="String" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="1"/>						
+					</attribute>
+					<attribute xmi:idref="Node.TypeName" name="TypeName" scope="public">
+						<documentation value=""/>
+						<properties type="String" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="2"/>						
+					</attribute>
+					<attribute xmi:idref="Node.Name" name="Name" scope="public">
+						<documentation value=""/>
+						<properties type="String" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="3"/>						
+					</attribute>
+				</attributes>
+
+				<operations>
+
+					<operation xmi:idref="Node.Froms" name="Froms" scope="Public">
+						<documentation value=""/>
+						<type type="Edge" const="false" static="false" isAbstract="false" synchronised="0" concurrency="Sequential" returnarray="0" pure="0" isQuery="false"/>
+						<tags/>
+
+						<parameters>
+
+							<parameter xmi:idref="NodeFromsFrom" visibility="public">
+								<properties pos="0" type="From" const="false" />
+							</parameter>
+						</parameters>
+					</operation>
+					<operation xmi:idref="Node.Tos" name="Tos" scope="Public">
+						<documentation value=""/>
+						<type type="Edge" const="false" static="false" isAbstract="false" synchronised="0" concurrency="Sequential" returnarray="0" pure="0" isQuery="false"/>
+						<tags/>
+
+						<parameters>
+
+							<parameter xmi:idref="NodeTosTo" visibility="public">
+								<properties pos="0" type="To" const="false" />
+							</parameter>
+						</parameters>
+					</operation>
+				</operations>
+			</element>
+			<element xmi:idref="Edge" xmi:type="uml:Class" name="Edge" scope="public">
+				<properties documentation="edge between nodes" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::View" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+				<attributes>
+
+					<attribute xmi:idref="Edge.From" name="From" scope="Protected">
+						<documentation value=""/>
+						<properties type="Node" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="2"/>						
+					</attribute>
+					<attribute xmi:idref="Edge.To" name="To" scope="Protected">
+						<documentation value=""/>
+						<properties type="Node" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="3"/>						
+					</attribute>
+					<attribute xmi:idref="Edge.TypeName" name="TypeName" scope="Protected">
+						<documentation value=""/>
+						<properties type="String" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="4"/>						
+					</attribute>
+					<attribute xmi:idref="Edge.Name" name="Name" scope="public">
+						<documentation value=""/>
+						<properties type="String" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="5"/>						
+					</attribute>
+				</attributes>
+
+			</element>
+			<element xmi:idref="Versioned" xmi:type="uml:Class" name="Versioned" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Type" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+				<attributes>
+
+					<attribute xmi:idref="Versioned.Deleted" name="Deleted" scope="public">
+						<initial body="false"/>
+						<documentation value="Flag for read horizon filter to hide when true"/>
+						<properties type="Boolean" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="1"/>						
+					</attribute>
+				</attributes>
+
+			</element>
+			<element xmi:idref="VectorNode" xmi:type="uml:Class" name="VectorNode" scope="public">
+				<properties documentation="Vector data for a graph node" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::View" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+				<attributes>
+
+					<attribute xmi:idref="VectorNode.SKey" name="SKey" scope="Protected">
+						<documentation value=""/>
+						<properties type="String" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="1"/>						
+					</attribute>
+					<attribute xmi:idref="VectorNode.Vector" name="Vector" scope="public">
+						<documentation value=""/>
+						<properties type="Hiperspace.Vector" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="3"/>						
+					</attribute>
+				</attributes>
+
+			</element>
+			<element xmi:idref="HasVectorSpace" xmi:type="uml:Class" name="HasVectorSpace" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Type" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+				<operations>
+
+					<operation xmi:idref="HasVectorSpace.VectorSpace" name="VectorSpace" scope="Public">
+						<documentation value=""/>
+						<type type="Hiperspace.VectorSpace" const="false" static="false" isAbstract="false" synchronised="0" concurrency="Sequential" returnarray="0" pure="0" isQuery="false"/>
+						<tags/>
+					</operation>
+				</operations>
+			</element>
+			<element xmi:idref="Option&lt;T&gt;" xmi:type="uml:Class" name="Option&lt;T&gt;" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Aspect" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+				<attributes>
+
+					<attribute xmi:idref="Option&lt;T&gt;.A" name="A" scope="public">
+						<documentation value=""/>
+						<properties type="T" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="2"/>						
+					</attribute>
+				</attributes>
+
+			</element>
+			<element xmi:idref="Many&lt;T&gt;" xmi:type="uml:Class" name="Many&lt;T&gt;" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Segment" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+				<attributes>
+
+				</attributes>
+
+			</element>
+			<element xmi:idref="DrillDown&lt;T&gt;" xmi:type="uml:Class" name="DrillDown&lt;T&gt;" scope="public">
+				<properties documentation="Drilldown from one cube slice to others" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Segment" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+				<attributes>
+
+					<attribute xmi:idref="DrillDown&lt;T&gt;.CubeSlice" name="CubeSlice" scope="Protected">
+						<documentation value=""/>
+						<properties type="String" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="2"/>						
+					</attribute>
+					<attribute xmi:idref="DrillDown&lt;T&gt;.To" name="To" scope="public">
+						<documentation value=""/>
+						<properties type="T" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="3"/>						
+					</attribute>
+					<attribute xmi:idref="DrillDown&lt;T&gt;.Fact" name="Fact" scope="public">
+						<documentation value="true if the target of the drilldown is a base fact (rather than an aggregate)"/>
+						<properties type="Boolean" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="4"/>						
+					</attribute>
+				</attributes>
+
+			</element>
+			<element xmi:idref="HashSet&lt;String&gt;" xmi:type="uml:Class" name="HashSet&lt;String&gt;" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Set" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+			</element>
+			<element xmi:idref="HashSet&lt;Graph.HiperEdge&gt;" xmi:type="uml:Class" name="HashSet&lt;Graph.HiperEdge&gt;" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Set" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+				<attributes>
+
+					<attribute xmi:idref="HashSet&lt;Graph.HiperEdge&gt;.Edge" name="Edge" scope="public">
+						<documentation value="The Edge that provides the end of this Path"/>
+						<properties type="Edge" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="10"/>						
+					</attribute>
+					<attribute xmi:idref="HashSet&lt;Graph.HiperEdge&gt;.Source" name="Source" scope="public">
+						<documentation value="The shortest source Path that this path extends"/>
+						<properties type="Graph.HiperEdge" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="11"/>						
+					</attribute>
+					<attribute xmi:idref="HashSet&lt;Graph.HiperEdge&gt;.Width" name="Width" scope="public">
+						<initial body="1"/>
+						<documentation value="The number of distict paths between the Nodes"/>
+						<properties type="Int32" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="13"/>						
+					</attribute>
+					<attribute xmi:idref="HashSet&lt;Graph.HiperEdge&gt;.Length" name="Length" scope="public">
+						<initial body="1"/>
+						<documentation value="The shortest number of Edges in the Path"/>
+						<properties type="Int32" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="14"/>						
+					</attribute>
+				</attributes>
+
+			</element>
+			<element xmi:idref="HashSet&lt;Graph.Rule&gt;" xmi:type="uml:Class" name="HashSet&lt;Graph.Rule&gt;" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Set" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+				<attributes>
+
+					<attribute xmi:idref="HashSet&lt;Graph.Rule&gt;.FromType" name="FromType" scope="Protected">
+						<documentation value=""/>
+						<properties type="String" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="1"/>						
+					</attribute>
+					<attribute xmi:idref="HashSet&lt;Graph.Rule&gt;.ToType" name="ToType" scope="Protected">
+						<documentation value=""/>
+						<properties type="String" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="2"/>						
+					</attribute>
+					<attribute xmi:idref="HashSet&lt;Graph.Rule&gt;.EdgeType" name="EdgeType" scope="Protected">
+						<documentation value=""/>
+						<properties type="String" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="3"/>						
+					</attribute>
+				</attributes>
+
+			</element>
+			<element xmi:idref="Graph.Route" xmi:type="uml:Class" name="Route" scope="public">
+				<properties documentation="Route across a graph of edge/node to form an HiperEdge" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Value" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+				<attributes>
+
+					<attribute xmi:idref="Graph.Route.Name" name="Name" scope="Protected">
+						<documentation value=""/>
+						<properties type="String" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="1"/>						
+					</attribute>
+					<attribute xmi:idref="Graph.Route.Rules" name="Rules" scope="public">
+						<documentation value=""/>
+						<properties type="HashSet&lt;Graph.Rule&gt;" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="2"/>						
+					</attribute>
+				</attributes>
+
+			</element>
+			<element xmi:idref="Graph.Rule" xmi:type="uml:Class" name="Rule" scope="public">
+				<properties documentation="A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = &#39;relation&#39;, Rules = [{FromType = &#39;Person&#39;, ToType = &#39;Person&#39;, EdgeType = &#39;Mother&#39;}]}" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Value" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+				<attributes>
+
+					<attribute xmi:idref="Graph.Rule.FromType" name="FromType" scope="Protected">
+						<documentation value=""/>
+						<properties type="String" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="1"/>						
+					</attribute>
+					<attribute xmi:idref="Graph.Rule.ToType" name="ToType" scope="Protected">
+						<documentation value=""/>
+						<properties type="String" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="2"/>						
+					</attribute>
+					<attribute xmi:idref="Graph.Rule.EdgeType" name="EdgeType" scope="Protected">
+						<documentation value=""/>
+						<properties type="String" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="3"/>						
+					</attribute>
+				</attributes>
+
+			</element>
+			<element xmi:idref="Graph.HiperEdge" xmi:type="uml:Class" name="HiperEdge" scope="public">
+				<properties documentation="Path from one Node to another Node over a number of routes" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::View" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+				<attributes>
+
+					<attribute xmi:idref="Graph.HiperEdge.Edge" name="Edge" scope="public">
+						<documentation value="The Edge that provides the end of this Path"/>
+						<properties type="Edge" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="10"/>						
+					</attribute>
+					<attribute xmi:idref="Graph.HiperEdge.Source" name="Source" scope="public">
+						<documentation value="The shortest source Path that this path extends"/>
+						<properties type="Graph.HiperEdge" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="11"/>						
+					</attribute>
+					<attribute xmi:idref="Graph.HiperEdge.Width" name="Width" scope="public">
+						<initial body="1"/>
+						<documentation value="The number of distict paths between the Nodes"/>
+						<properties type="Int32" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="13"/>						
+					</attribute>
+					<attribute xmi:idref="Graph.HiperEdge.Length" name="Length" scope="public">
+						<initial body="1"/>
+						<documentation value="The shortest number of Edges in the Path"/>
+						<properties type="Int32" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="14"/>						
+					</attribute>
+				</attributes>
+
+			</element>
+			<element xmi:idref="GraphInternal.PathMessage" xmi:type="uml:Class" name="PathMessage" scope="public">
+				<properties documentation="Remote execution of path requests" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Message" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+				<attributes>
+
+					<attribute xmi:idref="GraphInternal.PathMessage.Node" name="Node" scope="Protected">
+						<documentation value=""/>
+						<properties type="Node" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="1"/>						
+					</attribute>
+					<attribute xmi:idref="GraphInternal.PathMessage.Route" name="Route" scope="Protected">
+						<documentation value=""/>
+						<properties type="Graph.Route" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="2"/>						
+					</attribute>
+					<attribute xmi:idref="GraphInternal.PathMessage.Length" name="Length" scope="Protected">
+						<documentation value=""/>
+						<properties type="Int32" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="3"/>						
+					</attribute>
+					<attribute xmi:idref="GraphInternal.PathMessage.Targets" name="Targets" scope="Protected">
+						<documentation value=""/>
+						<properties type="HashSet&lt;String&gt;" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="4"/>						
+					</attribute>
+					<attribute xmi:idref="GraphInternal.PathMessage.Edges" name="Edges" scope="public">
+						<documentation value=""/>
+						<properties type="HashSet&lt;Graph.HiperEdge&gt;" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="5"/>						
+					</attribute>
+				</attributes>
+
+			</element>
+			<element xmi:idref="CodePath.Edge2" xmi:type="uml:Class" name="Edge2" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::View" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+			</element>
+			<element xmi:idref="CodePath.Edges" xmi:type="uml:Class" name="Edges" scope="public">
+				<properties documentation="Bidirectional Edge, implemented with two Edges" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::View" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+				<attributes>
+
+					<attribute xmi:idref="CodePath.Edges.From" name="From" scope="Protected">
+						<documentation value=""/>
+						<properties type="Node" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="1"/>						
+					</attribute>
+					<attribute xmi:idref="CodePath.Edges.To" name="To" scope="Protected">
+						<documentation value=""/>
+						<properties type="Node" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="2"/>						
+					</attribute>
+					<attribute xmi:idref="CodePath.Edges.FromTypeName" name="FromTypeName" scope="Protected">
+						<documentation value=""/>
+						<properties type="String" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="3"/>						
+					</attribute>
+					<attribute xmi:idref="CodePath.Edges.ToTypeName" name="ToTypeName" scope="Protected">
+						<documentation value=""/>
+						<properties type="String" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="4"/>						
+					</attribute>
+					<attribute xmi:idref="CodePath.Edges.Name" name="Name" scope="public">
+						<documentation value=""/>
+						<properties type="String" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="5"/>						
+					</attribute>
+				</attributes>
+
+			</element>
+			<element xmi:idref="CodePath.Edges2" xmi:type="uml:Class" name="Edges2" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::View" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+			</element>
+			<element xmi:idref="EAID_8FFA9F33_9D92_4f62_BB5F_F31F7E727B8D" xmi:type="uml:Class" name="Attribute" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Entity" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+				<attributes>
+
+					<attribute xmi:idref="EAID_53D3EF1E_82C2_4ff3_8A9A_FCAF584BC49C" name="In" scope="Protected">
+						<documentation value=""/>
+						<properties type="EAID_818C0BAA_5B55_4c8e_BB96_0EECAE602C02" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="1"/>						
+					</attribute>
+					<attribute xmi:idref="EAID_5DAF1A0A_A664_4b8d_A5CE_13DF6FA0EAEC" name="Id" scope="Protected">
+						<documentation value=""/>
+						<properties type="UInt32" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="2"/>						
+					</attribute>
+					<attribute xmi:idref="EAID_4EB14F36_2B6B_4342_B113_B127041674B3" name="Name" scope="public">
+						<documentation value=""/>
+						<properties type="String" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="3"/>						
+					</attribute>
+					<attribute xmi:idref="EAID_C34202DE_4E79_4ba6_B80F_8075D74431E0" name="DataType" scope="public">
+						<documentation value=""/>
+						<properties type="CodePath.Class" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="4"/>						
+					</attribute>
+				</attributes>
+
+			</element>
+			<element xmi:idref="EAID_7B1C1C48_1D3B_485d_915E_A07E729A5D6A" xmi:type="uml:Class" name="Call" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Segment" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+				<attributes>
+
+					<attribute xmi:idref="EAID_25AD6CC3_8BB0_4884_A0E5_98B55246719D" name="Method" scope="Protected">
+						<documentation value=""/>
+						<properties type="EAID_EEB297E8_7193_4e8e_8F68_69A4C42C5B10" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="2"/>						
+					</attribute>
+				</attributes>
+
+				<operations>
+
+					<operation xmi:idref="CodePath.Call.Parameters" name="Parameters" scope="Public">
+						<documentation value=""/>
+						<type type="CodePath.Parameter" const="false" static="false" isAbstract="false" synchronised="0" concurrency="Sequential" returnarray="0" pure="0" isQuery="false"/>
+						<tags/>
+					</operation>
+				</operations>
+			</element>
+			<element xmi:idref="EAID_818C0BAA_5B55_4c8e_BB96_0EECAE602C02" xmi:type="uml:Class" name="Class" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Entity" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+				<attributes>
+
+					<attribute xmi:idref="EAID_64EF0544_1398_4bcf_9B1A_4D87E59DC6A7" name="Id" scope="Protected">
+						<documentation value=""/>
+						<properties type="UInt64" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="1"/>						
+					</attribute>
+					<attribute xmi:idref="EAID_BF8E19BB_FDD1_45b7_9DEA_7F745C4C4592" name="Name" scope="public">
+						<documentation value=""/>
+						<properties type="String" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="2"/>						
+					</attribute>
+				</attributes>
+
+				<operations>
+
+					<operation xmi:idref="CodePath.Class.Inherits" name="Inherits" scope="Public">
+						<documentation value=""/>
+						<type type="CodePath.Inherit" const="false" static="false" isAbstract="false" synchronised="0" concurrency="Sequential" returnarray="0" pure="0" isQuery="false"/>
+						<tags/>
+					</operation>
+					<operation xmi:idref="CodePath.Class.Implements" name="Implements" scope="Public">
+						<documentation value=""/>
+						<type type="CodePath.Implement" const="false" static="false" isAbstract="false" synchronised="0" concurrency="Sequential" returnarray="0" pure="0" isQuery="false"/>
+						<tags/>
+					</operation>
+					<operation xmi:idref="CodePath.Class.Methods" name="Methods" scope="Public">
+						<documentation value=""/>
+						<type type="CodePath.Method" const="false" static="false" isAbstract="false" synchronised="0" concurrency="Sequential" returnarray="0" pure="0" isQuery="false"/>
+						<tags/>
+
+						<parameters>
+
+							<parameter xmi:idref="EAID_818C0BAA_5B55_4c8e_BB96_0EECAE602C02MethodsIn" visibility="public">
+								<properties pos="0" type="In" const="false" />
+							</parameter>
+						</parameters>
+					</operation>
+					<operation xmi:idref="CodePath.Class.Attributes" name="Attributes" scope="Public">
+						<documentation value=""/>
+						<type type="CodePath.Attribute" const="false" static="false" isAbstract="false" synchronised="0" concurrency="Sequential" returnarray="0" pure="0" isQuery="false"/>
+						<tags/>
+
+						<parameters>
+
+							<parameter xmi:idref="EAID_818C0BAA_5B55_4c8e_BB96_0EECAE602C02AttributesIn" visibility="public">
+								<properties pos="0" type="In" const="false" />
+							</parameter>
+						</parameters>
+					</operation>
+				</operations>
+			</element>
+			<element xmi:idref="EAID_8EFF586F_7E27_4509_94F3_6DC7A2CD7ED1" xmi:type="uml:Class" name="Implement" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Segment" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+				<attributes>
+
+					<attribute xmi:idref="EAID_8DAAB5C5_978A_42c3_80B9_7AA5BEF0914C" name="BaseClass" scope="Protected">
+						<documentation value=""/>
+						<properties type="EAID_818C0BAA_5B55_4c8e_BB96_0EECAE602C02" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="2"/>						
+					</attribute>
+				</attributes>
+
+			</element>
+			<element xmi:idref="EAID_DDABDEE0_7DAA_4478_85DF_DD65D03089C3" xmi:type="uml:Class" name="Inherit" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Segment" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+				<attributes>
+
+					<attribute xmi:idref="EAID_20ABF1BA_B098_4674_B0B8_5B40EC236F09" name="BaseClass" scope="Protected">
+						<documentation value=""/>
+						<properties type="EAID_818C0BAA_5B55_4c8e_BB96_0EECAE602C02" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="2"/>						
+					</attribute>
+				</attributes>
+
+			</element>
+			<element xmi:idref="EAID_EEB297E8_7193_4e8e_8F68_69A4C42C5B10" xmi:type="uml:Class" name="Method" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Entity" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+				<attributes>
+
+					<attribute xmi:idref="EAID_C2EBBD33_C49F_43fd_92C6_5E0C3E6DF85E" name="In" scope="Protected">
+						<documentation value=""/>
+						<properties type="EAID_818C0BAA_5B55_4c8e_BB96_0EECAE602C02" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="1"/>						
+					</attribute>
+					<attribute xmi:idref="EAID_9ED4C6AF_5017_48ca_9883_879E4B8B05E1" name="Id" scope="Protected">
+						<documentation value=""/>
+						<properties type="UInt32" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="2"/>						
+					</attribute>
+					<attribute xmi:idref="EAID_2F27BE37_0054_42c6_BD1E_97D60FD73778" name="Name" scope="public">
+						<documentation value=""/>
+						<properties type="String" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="3"/>						
+					</attribute>
+					<attribute xmi:idref="EAID_083CF05B_3531_4bec_A2C7_84E522111F5B" name="ReturnType" scope="public">
+						<documentation value=""/>
+						<properties type="CodePath.Class" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="4"/>						
+					</attribute>
+				</attributes>
+
+				<operations>
+
+					<operation xmi:idref="CodePath.Method.Variables" name="Variables" scope="Public">
+						<documentation value=""/>
+						<type type="CodePath.Variable" const="false" static="false" isAbstract="false" synchronised="0" concurrency="Sequential" returnarray="0" pure="0" isQuery="false"/>
+						<tags/>
+
+						<parameters>
+
+							<parameter xmi:idref="EAID_EEB297E8_7193_4e8e_8F68_69A4C42C5B10VariablesIn" visibility="public">
+								<properties pos="0" type="In" const="false" />
+							</parameter>
+						</parameters>
+					</operation>
+					<operation xmi:idref="CodePath.Method.Calls" name="Calls" scope="Public">
+						<documentation value=""/>
+						<type type="CodePath.Call" const="false" static="false" isAbstract="false" synchronised="0" concurrency="Sequential" returnarray="0" pure="0" isQuery="false"/>
+						<tags/>
+					</operation>
+					<operation xmi:idref="CodePath.Method.Assignments" name="Assignments" scope="Public">
+						<documentation value=""/>
+						<type type="CodePath.Assign" const="false" static="false" isAbstract="false" synchronised="0" concurrency="Sequential" returnarray="0" pure="0" isQuery="false"/>
+						<tags/>
+					</operation>
+				</operations>
+			</element>
+			<element xmi:idref="EAID_219132F3_ADE5_4d82_B669_8D5386F5C37B" xmi:type="uml:Class" name="Parameter" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Segment" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+				<attributes>
+
+					<attribute xmi:idref="EAID_8BA51B37_D1F6_403b_B01E_01FD910C66F3" name="Id" scope="Protected">
+						<documentation value=""/>
+						<properties type="UInt16" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="2"/>						
+					</attribute>
+					<attribute xmi:idref="EAID_A7F10F5D_F09A_46bc_8303_21350FD96567" name="Name" scope="public">
+						<documentation value=""/>
+						<properties type="String" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="3"/>						
+					</attribute>
+					<attribute xmi:idref="EAID_CC262F1D_0788_46fc_AED0_AA29B8EB8B5D" name="DataType" scope="public">
+						<documentation value=""/>
+						<properties type="CodePath.Class" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="4"/>						
+					</attribute>
+				</attributes>
+
+			</element>
+			<element xmi:idref="EAID_BE3ABA9F_1F5F_4542_99C5_B94AAA725BC2" xmi:type="uml:Class" name="Variable" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Entity" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+				<attributes>
+
+					<attribute xmi:idref="CodePath.Variable.In" name="In" scope="Protected">
+						<documentation value=""/>
+						<properties type="EAID_EEB297E8_7193_4e8e_8F68_69A4C42C5B10" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="1"/>						
+					</attribute>
+					<attribute xmi:idref="CodePath.Variable.Id" name="Id" scope="Protected">
+						<documentation value=""/>
+						<properties type="UInt16" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="2"/>						
+					</attribute>
+					<attribute xmi:idref="CodePath.Variable.Name" name="Name" scope="public">
+						<documentation value=""/>
+						<properties type="String" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="3"/>						
+					</attribute>
+					<attribute xmi:idref="EAID_225DD899_A06C_41d6_AE76_B8858DF743EE" name="DataType" scope="public">
+						<documentation value=""/>
+						<properties type="CodePath.Class" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="4"/>						
+					</attribute>
+				</attributes>
+
+			</element>
+			<element xmi:idref="EAID_6B2842CA-0CF8-439e-B7F9-4421F1600A35" xmi:type="uml:Class" name="Assign" scope="public">
+				<properties documentation="" isSpecification="false" sType="Class" nType="0" alias="1" scope="public" stereotype="HiLang::Segment" isRoot="false" isLeaf="false" isAbstract="false" isActive="false"/>
+				<code product_name="HiLang" gentype="HiLang"/>
+
+				<attributes>
+
+					<attribute xmi:idref="CodePath.Assign.Id" name="Id" scope="Protected">
+						<documentation value=""/>
+						<properties type="UInt32" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="2"/>						
+					</attribute>
+					<attribute xmi:idref="CodePath.Assign.Source" name="Source" scope="public">
+						<documentation value=""/>
+						<properties type="CodePath.Variable" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="3"/>						
+					</attribute>
+					<attribute xmi:idref="CodePath.Assign.Attribute" name="Attribute" scope="public">
+						<documentation value=""/>
+						<properties type="CodePath.Attribute" derived="0" collection="false" static="0" duplicates="0" changeability="changeable"/>
+
+						<style value="4"/>						
+					</attribute>
+				</attributes>
+
+			</element>
+		</elements>
+		<primitivetypes>
+			<packagedElement xmi:type="uml:Package" xmi:id="EAPrimitiveTypesPackage" name="EA_PrimitiveTypes_Package" visibility="public">
+				<packagedElement xmi:type="uml:Package" xmi:id="EAHiLangTypesPackage" name="EA_HiLang_Types_Package" visibility="public">
+
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_Int16" name="Int16" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_Int32" name="Int32" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_Int64" name="Int64" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_UInt16" name="UInt16" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_UInt32" name="UInt32" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_UInt64" name="UInt64" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_Decimal" name="Decimal" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_Double" name="Double" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_Single" name="Single" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_Half" name="Half" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_String" name="String" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_DateTime" name="DateTime" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_Boolean" name="Boolean" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_Guid" name="Guid" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_Any" name="Any" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_List&lt;T&gt;" name="List&lt;T&gt;" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_Set&lt;T&gt;" name="Set&lt;T&gt;" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_IEnumerable&lt;T&gt;" name="IEnumerable&lt;T&gt;" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_Node" name="Node" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_Edge" name="Edge" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_Versioned" name="Versioned" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_VectorNode" name="VectorNode" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_HasVectorSpace" name="HasVectorSpace" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_Option&lt;T&gt;" name="Option&lt;T&gt;" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_Many&lt;T&gt;" name="Many&lt;T&gt;" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_DrillDown&lt;T&gt;" name="DrillDown&lt;T&gt;" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_HashSet&lt;String&gt;" name="HashSet&lt;String&gt;" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_HashSet&lt;Graph.HiperEdge&gt;" name="HashSet&lt;Graph.HiperEdge&gt;" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_HashSet&lt;Graph.Rule&gt;" name="HashSet&lt;Graph.Rule&gt;" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_Graph.Route" name="Graph.Route" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_Graph.Rule" name="Graph.Rule" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_Graph.HiperEdge" name="Graph.HiperEdge" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_GraphInternal.PathMessage" name="GraphInternal.PathMessage" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_CodePath.Edge2" name="CodePath.Edge2" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_CodePath.Edges" name="CodePath.Edges" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_CodePath.Edges2" name="CodePath.Edges2" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_EAID_8FFA9F33_9D92_4f62_BB5F_F31F7E727B8D" name="CodePath.Attribute" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_EAID_7B1C1C48_1D3B_485d_915E_A07E729A5D6A" name="CodePath.Call" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_EAID_818C0BAA_5B55_4c8e_BB96_0EECAE602C02" name="CodePath.Class" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_EAID_8EFF586F_7E27_4509_94F3_6DC7A2CD7ED1" name="CodePath.Implement" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_EAID_DDABDEE0_7DAA_4478_85DF_DD65D03089C3" name="CodePath.Inherit" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_EAID_EEB297E8_7193_4e8e_8F68_69A4C42C5B10" name="CodePath.Method" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_EAID_219132F3_ADE5_4d82_B669_8D5386F5C37B" name="CodePath.Parameter" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_EAID_BE3ABA9F_1F5F_4542_99C5_B94AAA725BC2" name="CodePath.Variable" visibility="public"/>
+					<packagedElement xmi:type="uml:PrimitiveType" xmi:id="EAHiLang_EAID_6B2842CA-0CF8-439e-B7F9-4421F1600A35" name="CodePath.Assign" visibility="public"/>
+				</packagedElement>
+			</packagedElement>
+		</primitivetypes>
+    </xmi:Extension>
+</xmi:XMI>

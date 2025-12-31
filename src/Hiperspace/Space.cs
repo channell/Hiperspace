@@ -8,6 +8,7 @@
 using ProtoBuf;
 using ProtoBuf.Meta;
 using System.Reflection;
+using System.Xml.Schema;
 
 namespace Hiperspace
 {
@@ -145,11 +146,14 @@ namespace Hiperspace
                         bytes[s++] = source[p++];
                         break;
                     case 1: // I64
-                        var tspan = new Span<byte>(bytes, s, sizeof(Int64));
-                        var sspan = new Span<byte>(bytes, p, sizeof(Int64));
+                        var slen = s + sizeof(Int64) < bytes.Length ? sizeof(Int64) : bytes.Length - s;
+                        var plen = p + sizeof(Int64) < bytes.Length ? sizeof(Int64) : bytes.Length - p;
+                        var len = slen < plen ? slen : plen;
+                        var tspan = new Span<byte>(bytes, s, len);
+                        var sspan = new Span<byte>(bytes, p, len);
                         sspan.CopyTo(tspan);
-                        s += sizeof(Int64);
-                        p += sizeof(Int64);
+                        s += len;
+                        p += len;
                         break;
                     case 2: // LEN prefixed value
                         int id = (source[p] & ival) >> 3;
@@ -163,13 +167,12 @@ namespace Hiperspace
                         }
                         bytes[s++] = source[p++];
                         // copy LEN field to the end of the buffer
-                        int len = source[p] & ival;
-                        shift = 4;
+                        len = source[p] & ival;
                         while ((source[p] & icont) == icont)
                         {
+                            bytes[e--] = source[p++];
                             len += (source[p] & ival) << shift;
                             shift += 4;
-                            bytes[e--] = source[p++];
                             totlen--;
                         }
                         totlen += len;
@@ -177,17 +180,24 @@ namespace Hiperspace
                         // is not a nested message
                         if (!meta.Next(id, p + totlen))
                         {
-                            tspan = new Span<byte>(bytes, s, totlen);
-                            sspan = new Span<byte>(source, p, totlen);
-                            sspan.CopyTo(tspan);
-                            s += totlen;
-                            p += totlen;
+                            if (totlen > 0)
+                            {
+                                slen = s + totlen < bytes.Length ? totlen : bytes.Length - s;
+                                plen = p + totlen < bytes.Length ? totlen : bytes.Length - p;
+                                len = slen < plen ? slen : plen;
+                                tspan = new Span<byte>(bytes, s, len);
+                                sspan = new Span<byte>(source, p, len);
+                                sspan.CopyTo(tspan);
+                                s += len;
+                                p += len;
+                            }
                         }
                         break;
                     case 5: // I32
                         for (int c = 0; c < 5; c++)
                         {
-                            bytes[s++] = source[p++];
+                            if (s <= bytes.Length && p < bytes.Length)
+                                bytes[s++] = source[p++];
                         }
                         break;
                     default: // others copy
@@ -236,12 +246,14 @@ namespace Hiperspace
                         bytes[s++] = source[p++];
                         break;
                     case 1: // I64
-                        if (s + sizeof(Int64) > source.Length) return new byte[source.Length];
-                        var tspan = new Span<byte>(bytes, s, sizeof(Int64));
-                        var sspan = new Span<byte>(bytes, p, sizeof(Int64));
+                        var slen = s + sizeof(Int64) < bytes.Length ? sizeof(Int64) : bytes.Length - s;
+                        var plen = p + sizeof(Int64) < bytes.Length ? sizeof(Int64) : bytes.Length - p;
+                        var len = slen < plen ? slen : plen;
+                        var tspan = new Span<byte>(bytes, s, len);
+                        var sspan = new Span<byte>(bytes, p, len);
                         sspan.CopyTo(tspan);
-                        s += sizeof(Int64);
-                        p += sizeof(Int64);
+                        s += len;
+                        p += len;
                         break;
                     case 2: // LEN prefixed value
                         int id = (source[p] & ival) >> 3;
@@ -254,14 +266,14 @@ namespace Hiperspace
                             shift += 4;
                         }
                         bytes[s++] = source[p++];
-                        int len = source[e] & ival;
+                        len = source[e] & ival;
                         shift = 4;
                         // copy LEN field from the end of the buffer
                         while ((source[e] & icont) == icont)
                         {
+                            bytes[s++] = source[e--];
                             len += (source[e] & ival) << shift;
                             shift += 4;
-                            bytes[s++] = source[e--];
                             totlen--;
                         }
                         totlen += len;
@@ -269,17 +281,24 @@ namespace Hiperspace
                         // is a nested message
                         if (!meta.Next(id, p + totlen))
                         {
-                            tspan = new Span<byte>(bytes, s, totlen);
-                            sspan = new Span<byte>(source, p, totlen);
-                            sspan.CopyTo(tspan);
-                            s += totlen;
-                            p += totlen;
+                            if (totlen > 0)
+                            {
+                                slen = s + totlen < bytes.Length ? totlen : bytes.Length - s;
+                                plen = p + totlen < bytes.Length ? totlen : bytes.Length - p;
+                                len = slen < plen ? slen : plen;
+                                tspan = new Span<byte>(bytes, s, len);
+                                sspan = new Span<byte>(source, p, len);
+                                sspan.CopyTo(tspan);
+                                s += len;
+                                p += len;
+                            }
                         }
                         break;
                     case 5: // I32
                         for (int c = 0; c < 5; c++)
                         {
-                            bytes[s++] = source[p++];
+                            if (s <= bytes.Length && p  < bytes.Length)
+                                bytes[s++] = source[p++];
                         }
                         break;
                     default: // others copy
@@ -320,11 +339,14 @@ namespace Hiperspace
                         bytes[s++] = source[p++];
                         break;
                     case 1: // I64
-                        var tspan = new Span<byte>(bytes, s, sizeof(Int64));
-                        var sspan = new Span<byte>(bytes, p, sizeof(Int64));
+                        var slen = s + sizeof(Int64) < bytes.Length ? sizeof(Int64) : bytes.Length - s;
+                        var plen = p + sizeof(Int64) < bytes.Length ? sizeof(Int64) : bytes.Length - p;
+                        var len = slen < plen ? slen : plen;
+                        var tspan = new Span<byte>(bytes, s, len);
+                        var sspan = new Span<byte>(bytes, p, len);
                         sspan.CopyTo(tspan);
-                        s += sizeof(Int64);
-                        p += sizeof(Int64);
+                        s += len;
+                        p += len;
                         break;
                     case 2: // LEN prefixed value
                         int totlen = 0;
@@ -337,25 +359,31 @@ namespace Hiperspace
                             shift += 4;
                         }
                         bytes[s++] = source[p++];
-                        int len = source[e] & ival;
+                        len = source[e] & ival;
                         shift = 4;
                         // copy LEN field from the end of the buffer
                         while ((source[e] & icont) == icont)
                         {
-                            len += (source[p] & ival) << shift;
-                            shift += 4;
                             bytes[e--] = 0x00;
+                            len += (source[e] & ival) << shift;
+                            shift += 4;
                             totlen--;
                         }
                         totlen += len;
                         bytes[e--] = 0x00;
                         if (!meta.Next(id, p + totlen))
                         {
-                            tspan = new Span<byte>(bytes, s, totlen);
-                            sspan = new Span<byte>(source, p, totlen);
-                            sspan.CopyTo(tspan);
-                            s += totlen;
-                            p += totlen;
+                            if (totlen > 0)
+                            {
+                                slen = s + totlen < bytes.Length ? totlen : bytes.Length - s;
+                                plen = p + totlen < bytes.Length ? totlen : bytes.Length - p;
+                                len = slen < plen ? slen : plen;
+                                tspan = new Span<byte>(bytes, s, len);
+                                sspan = new Span<byte>(source, p, len);
+                                sspan.CopyTo(tspan);
+                                s += len;
+                                p += len;
+                            }
                         }
                         break;
                     case 5: // I32
@@ -411,11 +439,14 @@ namespace Hiperspace
                         bytes[s++] = source[p++];
                         break;
                     case 1: // I64
-                        var tspan = new Span<byte>(bytes, s, sizeof(Int64));
-                        var sspan = new Span<byte>(bytes, p, sizeof(Int64));
+                        var slen = s + sizeof(Int64) < bytes.Length ? sizeof(Int64) : bytes.Length - s;
+                        var plen = p + sizeof(Int64) < bytes.Length ? sizeof(Int64) : bytes.Length - p;
+                        int len = slen < plen ? slen : plen;
+                        var tspan = new Span<byte>(bytes, s, len);
+                        var sspan = new Span<byte>(bytes, p, len);
                         sspan.CopyTo(tspan);
-                        s += sizeof(Int64);
-                        p += sizeof(Int64);
+                        s += len;
+                        p += len;
                         break;
                     case 2: // LEN prefixed value
                         int totlen = 0;
@@ -428,25 +459,31 @@ namespace Hiperspace
                             shift += 4;
                         }
                         bytes[s++] = source[p++];
-                        int len = source[e] & ival;
+                        len = source[e] & ival;
                         shift = 4;
                         // copy LEN field from the end of the buffer
                         while ((source[e] & icont) == icont)
                         {
-                            len += (source[p] & ival) << shift;
-                            shift += 4;
                             bytes[e--] = 0x00;
+                            len += (source[e] & ival) << shift;
+                            shift += 4;
                             totlen--;
                         }
                         totlen += len;
                         bytes[e--] = 0x00;
                         if (!meta.Next(id, p + totlen))
                         {
-                            tspan = new Span<byte>(bytes, s, totlen);
-                            sspan = new Span<byte>(source, p, totlen);
-                            sspan.CopyTo(tspan);
-                            s += totlen;
-                            p += totlen;
+                            if (totlen > 0)
+                            {
+                                slen = s + totlen < bytes.Length ? totlen : bytes.Length - s;
+                                plen = p + totlen < bytes.Length ? totlen : bytes.Length - p;
+                                len = slen < plen ? slen : plen;
+                                tspan = new Span<byte>(bytes, s, len);
+                                sspan = new Span<byte>(source, p, len);
+                                sspan.CopyTo(tspan);
+                                s += len;
+                                p += len;
+                            }
                         }
                         else
                             finding = false;
@@ -454,7 +491,8 @@ namespace Hiperspace
                     case 5: // I32
                         for (int c = 0; c < 5; c++)
                         {
-                            bytes[s++] = source[p++];
+                            if (s <= bytes.Length && p < bytes.Length)
+                                bytes[s++] = source[p++];
                         }
                         break;
                     default: // others copy
@@ -499,11 +537,14 @@ namespace Hiperspace
                         bytes[s++] = source[p++];
                         break;
                     case 1: // I64
-                        var tspan = new Span<byte>(bytes, s, sizeof(Int64));
-                        var sspan = new Span<byte>(bytes, p, sizeof(Int64));
+                        var slen = s + sizeof(Int64) < bytes.Length ? sizeof(Int64) : bytes.Length - s;
+                        var plen = p + sizeof(Int64) < bytes.Length ? sizeof(Int64) : bytes.Length - p;
+                        var len = slen < plen ? slen : plen;
+                        var tspan = new Span<byte>(bytes, s, len);
+                        var sspan = new Span<byte>(bytes, p, len);
                         sspan.CopyTo(tspan);
-                        s += sizeof(Int64);
-                        p += sizeof(Int64);
+                        s += len;
+                        p += len;
                         break;
                     case 2: // LEN prefixed value
                         int id = (source[p] & ival) >> 3;
@@ -520,7 +561,8 @@ namespace Hiperspace
                     case 5: // I32
                         for (int c = 0; c < 5; c++)
                         {
-                            bytes[s++] = source[p++];
+                            if (s <= bytes.Length && p < bytes.Length)
+                                bytes[s++] = source[p++];
                         }
                         break;
                     default: // others copy

@@ -86,6 +86,7 @@ namespace Hiperspace
             return _spaces[partition].Bind(key, value, source);
         }
 
+        [Obsolete("use Bind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
         public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, object? source = null)
         {
 
@@ -95,7 +96,7 @@ namespace Hiperspace
         public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
         {
             var partition = GetHashCode(key) % (_spaces.Length);
-            return _spaces[partition].Bind(key, value, source);
+            return _spaces[partition].Bind(key, value, version, priorVersion, source);
         }
 
         public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, object? source)
@@ -103,6 +104,7 @@ namespace Hiperspace
             var partition = key.GetHashCode() % (_spaces.Length);
             return _spaces[partition].BindAsync(key, value, source);
         }
+        [Obsolete("use BindAsync(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null) instead")]
         public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, object? source = null)
         {
             var partition = GetHashCode(key) % (_spaces.Length);
@@ -111,7 +113,7 @@ namespace Hiperspace
         public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
         {
             var partition = GetHashCode(key) % (_spaces.Length);
-            return _spaces[partition].BindAsync(key, value, version, source);
+            return _spaces[partition].BindAsync(key, value, version, priorVersion, source);
         }
 
         public override IEnumerable<(byte[], byte[])> Find(byte[] begin, byte[] end)
@@ -943,21 +945,21 @@ namespace Hiperspace
                     throw item.Exception;
             }
         }
-        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0, double? distanceLimit = null)
         {
             var ranks = new SortedSet<Nearest>();
             for (int c = 0; c < _spaces.Length; c++)
             {
-                foreach (var result in _spaces[c].Nearest(begin, end, version, space, method, limit))
+                foreach (var result in _spaces[c].Nearest(begin, end, version, space, method, limit, distanceLimit))
                     ranks.Add(new Nearest(result));
             }
             var keys = limit == 0 ? ranks : ranks.Take(limit);
             foreach (var key in keys)
                 yield return key.ToTuple();
         }
-        public override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> NearestAsync(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0, CancellationToken cancellationToken = default)
+        public override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> NearestAsync(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0, double? distanceLimit = null, CancellationToken cancellationToken = default)
         {
-            return Nearest(begin, end, version, space, method, limit).ToAsyncEnumerable(cancellationToken);
+            return Nearest(begin, end, version, space, method, limit, distanceLimit).ToAsyncEnumerable(cancellationToken);
         }
         public override IEnumerable<(byte[] value, DateTime version)> GetVersions(byte[] key)
         {

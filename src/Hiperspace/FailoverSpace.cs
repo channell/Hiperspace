@@ -140,6 +140,7 @@ namespace Hiperspace.Heap
             return BindAsync(key, value, source).GetAwaiter().GetResult();
         }
 
+        [Obsolete("use BindAsync(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null) instead")]
         public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, object? source = null)
         {
             return BindAsync(key, value, version, source).GetAwaiter().GetResult();
@@ -186,6 +187,7 @@ namespace Hiperspace.Heap
                 throw exception!;
         }
 
+        [Obsolete("use BindAsync(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null) instead")]
         public override async Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, object? source = null)
         {
             var tasks = new Task<Result<byte[]>>[_spaces.Length];
@@ -411,6 +413,7 @@ namespace Hiperspace.Heap
                 return _primary.BatchBind(batch);
             }
         }
+        [Obsolete("use BatchBind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
         public override Result<(byte[] Key, byte[] Value)>[] BatchBind((byte[] key, byte[] value, DateTime version, object? source)[] batch)
         {
             try
@@ -461,6 +464,7 @@ namespace Hiperspace.Heap
             else
                 throw exception!;
         }
+        [Obsolete("use BatchBind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
         public override async Task<Result<(byte[] Key, byte[] Value)>[]> BatchBindAsync((byte[] key, byte[] value, DateTime version, object? source)[] batch)
         {
             var tasks = new Task<Result<(byte[] Key, byte[] Value)>[]>[_spaces.Length];
@@ -735,28 +739,28 @@ namespace Hiperspace.Heap
                 yield return row;
             }
         }
-        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0, double? distanceLimit = null)
         {
             try
             {
-                return _primary.Nearest(begin, end, version, space, method, limit);
+                return _primary.Nearest(begin, end, version, space, method, limit, distanceLimit);
             }
             catch (Exception)
             {
                 Recover();
-                return _primary.Nearest(begin, end, version, space, method, limit);
+                return _primary.Nearest(begin, end, version, space, method, limit, distanceLimit);
             }
         }
-        public override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> NearestAsync(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0, CancellationToken cancellationToken = default)
+        public override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> NearestAsync(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0, double? distanceLimit = null, CancellationToken cancellationToken = default)
         {
             try
             {
-                return _primary.NearestAsync(begin, end, version, space, method, limit, cancellationToken);
+                return _primary.NearestAsync(begin, end, version, space, method, limit, distanceLimit, cancellationToken);
             }
             catch (Exception)
             {
                 Recover();
-                return _primary.NearestAsync(begin, end, version, space, method, limit, cancellationToken);
+                return _primary.NearestAsync(begin, end, version, space, method, limit, distanceLimit, cancellationToken);
             }
         }
         public override IEnumerable<(byte[] Key, byte[] Value)> Scan(byte[] begin, byte[] end, byte[][] values)

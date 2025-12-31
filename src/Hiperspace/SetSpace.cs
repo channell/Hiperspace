@@ -230,6 +230,7 @@ namespace Hiperspace
         /// <param name="SQLWhere">Just there WHERE clause (SELECT * FROM customers) is added</param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
+        [Obsolete("Use messages instead")]
         public virtual IEnumerable<TEntity> Query(string SQL, bool cache = true)
         {
             throw new NotImplementedException("This SubSpace does not support SQL queries");
@@ -241,14 +242,15 @@ namespace Hiperspace
         /// <param name="SQLWhere">Just there WHERE clause (SELECT * FROM customers) is added</param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
+        [Obsolete("Use messages instead")]
         public virtual IAsyncEnumerable<TEntity> QueryAsync(string SQL, bool cache = true, CancellationToken cancellationToken = default)
         {
             throw new NotImplementedException("This SubSpace does not support SQL queries");
         }
 
-        public abstract IEnumerable<(TEntity Item, double Distance)> Nearest(TEntity template, Vector space, Vector.Method method, int limit = 0, bool cache = true);
+        public abstract IEnumerable<(TEntity Item, double Distance)> Nearest(TEntity template, Vector space, Vector.Method method, int limit = 0, bool cache = true, double? distanceLimit = null);
 
-        public abstract IAsyncEnumerable<(TEntity Item, double Distance)> NearestAsync(TEntity template, Vector space, Vector.Method method, int limit = 0, bool cache = true, CancellationToken cancellation = default);
+        public abstract IAsyncEnumerable<(TEntity Item, double Distance)> NearestAsync(TEntity template, Vector space, Vector.Method method, int limit = 0, bool cache = true, double? distanceLimit = null, CancellationToken cancellation = default);
 
         public IEnumerable<TEntity> Filter(IEnumerable<TEntity> entities, bool read = true)
         {
@@ -491,7 +493,7 @@ namespace Hiperspace
         /// with the specified entity.</returns>
         /// <exception cref="NotImplementedException">Thrown if the method is not implemented in a derived class.</exception>
         /// TODO: change to abstract in the next version
-        public virtual Task<ulong> GetSequenceAsync(TEntity element) { throw new NotImplementedException("Update the HiuLang compiler and/or drivers"); }
+        public virtual Task<ulong> GetSequenceAsync<T>(T item) { throw new NotImplementedException("Update the HiLang compiler and/or drivers"); }
 
         /// <summary>
         /// Asynchronously get the NEXT sequence number associated with the specified entity.
@@ -502,7 +504,7 @@ namespace Hiperspace
         /// with the specified entity.</returns>
         /// <exception cref="NotImplementedException">Thrown if the method is not implemented in a derived class.</exception>
         /// TODO: change to abstract in the next version
-        public virtual Task<ulong> UseSequenceAsync(TEntity element) { throw new NotImplementedException("Update the HiuLang compiler and/or drivers"); }
+        public virtual Task<ulong> UseSequenceAsync<T>(T item) { throw new NotImplementedException("Update the HiLang compiler and/or drivers"); }
 
         #endregion
     }
@@ -546,6 +548,7 @@ namespace Hiperspace
             }
             return Result.Ok(item);
         }
+        [Obsolete("use BatchBind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
         public Result<TEntity> BatchBind(TEntity item, bool cache, (byte[] key, byte[] value, DateTime version, object? source)[] batch)
         {
             var result = Space.BatchBind(batch);

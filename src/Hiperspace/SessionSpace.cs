@@ -110,6 +110,7 @@ namespace Hiperspace
             return _sessionSpace.Bind(key, value, source);
         }
 
+        [Obsolete("use Bind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
         public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, object? source = null)
         {
             return _sessionSpace.Bind(key, value, version, source);
@@ -123,6 +124,7 @@ namespace Hiperspace
         {
             return _sessionSpace.BindAsync(key, value, source);
         }
+        [Obsolete("use BatchBind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
         public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, object? source = null)
         {
             return _sessionSpace.BindAsync(key, value, version, source);
@@ -165,24 +167,24 @@ namespace Hiperspace
                     yield return b;
             }
         }
-        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0, double? distanceLimit = null)
         {
             var ranks = new SortedSet<Nearest>();
             for (int c = 0; c < _spaces.Length; c++)
             {
-                foreach (var result in _spaces[c].Nearest(begin, end, version, space, method, limit))
+                foreach (var result in _spaces[c].Nearest(begin, end, version, space, method, limit, distanceLimit))
                     ranks.Add(new Nearest(result));
             }
             var keys = limit == 0 ? ranks : ranks.Take(limit);
             foreach (var key in keys)
                 yield return key.ToTuple();
         }
-        public async override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> NearestAsync(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0, [EnumeratorCancellation]CancellationToken cancellationToken = default)
+        public async override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> NearestAsync(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0, double? distanceLimit = null, [EnumeratorCancellation]CancellationToken cancellationToken = default)
         {
             var ranks = new SortedSet<Nearest>();
             for (int c = 0; c < _spaces.Length; c++)
             {
-                await foreach (var result in _spaces[c].NearestAsync(begin, end, version, space, method, limit, cancellationToken))
+                await foreach (var result in _spaces[c].NearestAsync(begin, end, version, space, method, limit, distanceLimit, cancellationToken))
                     ranks.Add(new Nearest(result));
             }
             var keys = limit == 0 ? ranks : ranks.Take(limit);
@@ -336,6 +338,7 @@ namespace Hiperspace
         {
             return _sessionSpace.BatchBind(batch);
         }
+        [Obsolete("use BatchBind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
         public override Result<(byte[] Key, byte[] Value)>[] BatchBind((byte[] key, byte[] value, DateTime version, object? source)[] batch)
         {
             return _sessionSpace.BatchBind(batch);
@@ -348,6 +351,7 @@ namespace Hiperspace
         {
             return _sessionSpace.BatchBindAsync(batch);
         }
+        [Obsolete("use BatchBindAsync((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
         public override Task<Result<(byte[] Key, byte[] Value)>[]> BatchBindAsync((byte[] key, byte[] value, DateTime version, object? source)[] batch)
         {
             return _sessionSpace.BatchBindAsync(batch);

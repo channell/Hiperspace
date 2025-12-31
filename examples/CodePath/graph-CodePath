@@ -1,0 +1,366 @@
+
+classDiagram
+
+    class Node {
+
+        # SKey  : String
+
+        + TypeName  : String
+        + Name  : String
+
+        + Froms (From = this) : Edge
+        + Tos (To = this) : Edge
+    }
+
+
+
+
+
+
+ 
+
+    class Edge {
+
+        # From  : Node
+        # To  : Node
+        # TypeName  : String
+
+        + Name  : String
+
+    }
+
+
+
+
+
+
+ 
+
+    class VectorNode {
+
+        # SKey  : String
+
+        + Vector  : Hiperspace.Vector
+
+    }
+
+
+
+
+
+
+ 
+
+    class HashSet~Graph.HiperEdge~ {
+
+
+        + Edge  : Edge
+        + Source  : Graph.HiperEdge
+        + Width  = 1
+        + Length  = 1
+
+    }
+
+
+
+
+
+
+ 
+
+    class HashSet~Graph.Rule~ {
+
+        # FromType  : String
+        # ToType  : String
+        # EdgeType  : String
+
+
+    }
+
+
+
+
+
+
+ 
+
+    class Graph.Route {
+
+        # Name  : String
+
+        + Rules  : HashSet~Graph.Rule~
+
+    }
+
+
+
+
+
+
+ 
+
+    class Graph.Rule {
+
+        # FromType  : String
+        # ToType  : String
+        # EdgeType  : String
+
+
+    }
+
+
+
+
+
+
+ 
+
+    class Graph.HiperEdge {
+
+
+        + Edge  : Edge
+        + Source  : Graph.HiperEdge
+        + Width  = 1
+        + Length  = 1
+
+    }
+
+
+
+
+
+
+ 
+
+    class CodePath.PathMessage {
+
+        # Node  : Node
+        # Route  : Graph.Route
+        # Length  : Int32
+        # Targets  : HashSet~String~
+
+        + Edges  : HashSet~Graph.HiperEdge~
+
+    }
+
+
+
+
+
+
+ 
+
+    class CodePath.Edge2 {
+
+        # From  : Node
+        # To  : Node
+        # TypeName  : String
+
+        + Name  : String
+
+    }
+
+
+
+
+
+
+    CodePath.Edge2 ..|> Edge
+ 
+
+    class CodePath.Edges {
+
+        # From  : Node
+        # To  : Node
+        # FromTypeName  : String
+        # ToTypeName  : String
+
+        + Name  : String
+
+    }
+
+
+
+
+
+
+    CodePath.Edges ..|> Edge
+ 
+
+    class CodePath.Edges2 {
+
+        # From  : Node
+        # To  : Node
+        # FromTypeName  : String
+        # ToTypeName  : String
+
+        + Name  : String
+
+    }
+
+
+
+
+
+
+    CodePath.Edges2 ..|> Edge
+ 
+
+    class CodePath.Attribute {
+
+        # In  : CodePath.Class
+        # Id  : UInt32
+
+        + Name  : String
+        + DataType  : CodePath.Class
+
+    }
+
+
+
+
+
+
+    CodePath.Attribute ..|> Node
+ 
+
+    class CodePath.Call {
+
+        # owner  : CodePath.Method
+        # Method  : CodePath.Method
+
+
+        + Parameters () : CodePath.Parameter
+    }
+
+
+
+
+
+
+    CodePath.Call ..|> Node
+ 
+
+    class CodePath.Class {
+
+        # Id  : UInt64
+
+        + Name  : String
+
+        + Inherits () : CodePath.Inherit
+        + Implements () : CodePath.Implement
+        + Methods (In = this) : CodePath.Method
+        + Attributes (In = this) : CodePath.Attribute
+    }
+
+
+
+
+
+
+    CodePath.Class ..|> Node
+ 
+
+    class CodePath.Implement {
+
+        # owner  : CodePath.Class
+        # BaseClass  : CodePath.Class
+
+
+    }
+
+
+
+
+
+
+ 
+
+    class CodePath.Inherit {
+
+        # owner  : CodePath.Class
+        # BaseClass  : CodePath.Class
+
+
+    }
+
+
+
+
+
+
+ 
+
+    class CodePath.Method {
+
+        # In  : CodePath.Class
+        # Id  : UInt32
+
+        + Name  : String
+        + ReturnType  : CodePath.Class
+
+        + Variables (In = this) : CodePath.Variable
+        + Calls () : CodePath.Call
+        + Assignments () : CodePath.Assign
+    }
+
+
+
+
+
+
+    CodePath.Method ..|> Node
+ 
+
+    class CodePath.Parameter {
+
+        # owner  : CodePath.Call
+        # Id  : UInt16
+
+        + Name  : String
+        + DataType  : CodePath.Class
+
+    }
+
+
+
+
+
+
+ 
+
+    class CodePath.Variable {
+
+        # In  : CodePath.Method
+        # Id  : UInt16
+
+        + Name  : String
+        + DataType  : CodePath.Class
+
+    }
+
+
+
+
+
+
+    CodePath.Variable ..|> Node
+ 
+
+    class CodePath.Assign {
+
+        # owner  : CodePath.Method
+        # Id  : UInt32
+
+        + Source  : CodePath.Variable
+        + Attribute  : CodePath.Attribute
+
+    }
+
+
+
+
+
+
+ 
+

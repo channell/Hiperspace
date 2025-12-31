@@ -1,0 +1,165 @@
+%domain(CodePath);
+
+%Xmi("CodePath","EAPK_81C8532F_588C_406c_ABAF_CCE3C49749BF");
+
+view CodePath.Edge2 : Edge = Edge();
+
+"Bidirectional Edge, implemented with two Edges"
+view CodePath.Edges
+    = Edge  (From = From, To = To, Name = Name, TypeName = FromTypeName), 
+      CodePath.Edge2 (From = To, To = From, Name = Name, TypeName = ToTypeName) 
+
+(
+    From            : Node      ,
+    To              : Node      ,
+    FromTypeName    : String    ,
+    ToTypeName      : String    
+)
+{
+    Name        : String    
+};
+
+view CodePath.Edges2 : CodePath.Edges = CodePath.Edges();
+
+@Xmi("EAID_8FFA9F33_9D92_4f62_BB5F_F31F7E727B8D")
+entity CodePath.Attribute 
+    = Node (SKey = SKey, Name = Name, TypeName = "Attribute"),
+      CodePath.Edges (From = In, To = this, Name = Name, FromTypeName = "Attribute", ToTypeName="For"),
+      CodePath.Edges2 (From = this, To = DataType, Name = Name, FromTypeName = "DataType", ToTypeName="Usage")
+(
+    @Xmi("EAID_53D3EF1E_82C2_4ff3_8A9A_FCAF584BC49C") 
+    In : CodePath.Class,
+    @Xmi("EAID_5DAF1A0A_A664_4b8d_A5CE_13DF6FA0EAEC") 
+    Id : UInt32,
+)
+{
+    @Xmi("EAID_4EB14F36_2B6B_4342_B113_B127041674B3") 
+    Name : String,
+    @Xmi("EAID_C34202DE_4E79_4ba6_B80F_8075D74431E0") 
+    DataType : CodePath.Class
+}
+;
+
+@Xmi("EAID_7B1C1C48_1D3B_485d_915E_A07E729A5D6A")
+segment CodePath.Call
+    = Node (SKey = SKey, Name = Method.Name + "()", TypeName = "Call"),
+      CodePath.Edges (From = owner, To = Method, Name = Method.Name + "()", FromTypeName = "Calls", ToTypeName="Calling")
+(
+    @Xmi("EAID_25AD6CC3_8BB0_4884_A0E5_98B55246719D") 
+    Method : CodePath.Method,
+/*
+    @Xmi("EAID_9E9A1DF5_BF61_47bb_8088_682A2DD25FA7") 
+    Owner : Method
+*/
+)
+{
+}
+[
+    Parameters : CodePath.Parameter
+]
+;
+
+@Xmi("EAID_818C0BAA_5B55_4c8e_BB96_0EECAE602C02")
+entity CodePath.Class
+    = Node (SKey = SKey, Name = Name, TypeName = "Class")
+(
+    @Xmi("EAID_64EF0544_1398_4bcf_9B1A_4D87E59DC6A7") 
+    Id : UInt64,
+)
+{
+    @Xmi("EAID_BF8E19BB_FDD1_45b7_9DEA_7F745C4C4592") 
+    Name : String
+}
+[
+    Inherits : CodePath.Inherit,
+    Implements :CodePath.Implement,
+    Methods : CodePath.Method (In = this),
+    Attributes : CodePath.Attribute (In = this)
+]
+;
+
+@Xmi("EAID_8EFF586F_7E27_4509_94F3_6DC7A2CD7ED1")
+segment CodePath.Implement
+    = CodePath.Edges (From = owner, To = BaseClass, Name = BaseClass.Name, FromTypeName = "Implements", ToTypeName="Implemented By")
+(
+    @Xmi("EAID_8DAAB5C5_978A_42c3_80B9_7AA5BEF0914C") 
+    BaseClass : CodePath.Class
+);
+
+@Xmi("EAID_DDABDEE0_7DAA_4478_85DF_DD65D03089C3")
+segment CodePath.Inherit
+    = CodePath.Edges (From = owner, To = BaseClass, Name = BaseClass.Name, FromTypeName = "Inherits", ToTypeName="Inherited By")
+(
+    @Xmi("EAID_20ABF1BA_B098_4674_B0B8_5B40EC236F09") 
+    BaseClass : CodePath.Class,
+);
+
+@Xmi("EAID_EEB297E8_7193_4e8e_8F68_69A4C42C5B10")
+entity CodePath.Method
+    = Node (SKey = SKey, Name = Name, TypeName = "Method"),
+      CodePath.Edges (From = In, To = this, Name = Name, FromTypeName = "Method", ToTypeName="For")
+(
+    @Xmi("EAID_C2EBBD33_C49F_43fd_92C6_5E0C3E6DF85E") 
+    In : CodePath.Class,
+    @Xmi("EAID_9ED4C6AF_5017_48ca_9883_879E4B8B05E1") 
+    Id : UInt32
+)
+{
+    @Xmi("EAID_2F27BE37_0054_42c6_BD1E_97D60FD73778") 
+    Name : String,
+    @Xmi("EAID_083CF05B_3531_4bec_A2C7_84E522111F5B") 
+    ReturnType : CodePath.Class,
+}
+[
+    Variables : CodePath.Variable (In = this),
+    Calls : CodePath.Call,
+    Assignments : CodePath.Assign
+]
+;
+
+@Xmi("EAID_219132F3_ADE5_4d82_B669_8D5386F5C37B")
+segment CodePath.Parameter
+    = CodePath.Edges (From = owner, To = DataType, Name = Name, FromTypeName = "Passes", ToTypeName="Passed")
+(
+    @Xmi("EAID_8BA51B37_D1F6_403b_B01E_01FD910C66F3") 
+    Id : UInt16
+)
+{
+    @Xmi("EAID_A7F10F5D_F09A_46bc_8303_21350FD96567") 
+    Name : String,
+    @Xmi("EAID_CC262F1D_0788_46fc_AED0_AA29B8EB8B5D") 
+    DataType : CodePath.Class
+}
+;
+
+@Xmi("EAID_BE3ABA9F_1F5F_4542_99C5_B94AAA725BC2")
+entity CodePath.Variable
+    = Node (SKey = SKey, Name = Name, TypeName = "Variable"),
+      CodePath.Edges (From = In, To = this, Name = In.Name + " " + Name, FromTypeName = "Has", ToTypeName="Used")
+(
+    In : CodePath.Method,
+    Id : UInt16
+)
+{
+    Name : String,
+    @Xmi("EAID_225DD899_A06C_41d6_AE76_B8858DF743EE") 
+    DataType : CodePath.Class
+}
+[
+/*
+    Attribute: CodePath.Attribute
+*/
+]
+;
+
+@Xmi("EAID_6B2842CA-0CF8-439e-B7F9-4421F1600A35")
+segment CodePath.Assign
+    = CodePath.Edges (From = owner, To = Source, Name = Source.Name, FromTypeName = "Assign", ToTypeName="Assigned"),
+      CodePath.Edges2 (From = owner, To = Attribute, Name = Attribute.Name, FromTypeName = "Assign", ToTypeName="Assigned")
+(
+    Id : UInt32
+)
+{
+    Source : CodePath.Variable,
+    Attribute : CodePath.Attribute
+};

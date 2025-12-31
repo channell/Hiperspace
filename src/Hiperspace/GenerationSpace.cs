@@ -46,6 +46,7 @@ namespace Hiperspace
             return _write.Bind(key, value, source);
         }
 
+        [Obsolete("use Bind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
         public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, object? source = null)
         {
             return _write.Bind(key, value, version, source);
@@ -60,6 +61,7 @@ namespace Hiperspace
         {
             return _write.BindAsync(key, value, source);
         }
+        [Obsolete("use BindAsync(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null) instead")]
         public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, object? source = null)
         {
             return _write.BindAsync(key, value, version, source);
@@ -246,21 +248,21 @@ namespace Hiperspace
             }
         }
 
-        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0, double? distanceLimit = null)
         {
             var ranks = new SortedSet<Nearest>();
             for (int c = 0; c < _read.Length; c++)
             {
-                foreach (var result in _read[c].Nearest(begin, end, version, space, method, limit))
+                foreach (var result in _read[c].Nearest(begin, end, version, space, method, limit, distanceLimit))
                     ranks.Add(new Nearest(result));
             }
             var keys = limit == 0 ? ranks : ranks.Take(limit);
             foreach (var key in keys)
                 yield return key.ToTuple();
         }
-        public override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> NearestAsync(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0, CancellationToken cancellationToken = default)
+        public override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> NearestAsync(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0, double? distanceLimit = null, CancellationToken cancellationToken = default)
         {
-            return Nearest(begin, end, version, space, method, limit).ToAsyncEnumerable(cancellationToken);
+            return Nearest(begin, end, version, space, method, limit, distanceLimit).ToAsyncEnumerable(cancellationToken);
         }
 
         public override IEnumerable<(byte[] value, DateTime version)> GetVersions(byte[] key)
@@ -397,6 +399,7 @@ namespace Hiperspace
         {
             return _write.BatchBind(batch);
         }
+        [Obsolete("use BatchBind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
         public override Result<(byte[] Key, byte[] Value)>[] BatchBind((byte[] key, byte[] value, DateTime version, object? source)[] batch)
         {
             return _write.BatchBind(batch);
@@ -409,6 +412,7 @@ namespace Hiperspace
         {
             return _write.BatchBindAsync(batch);
         }
+        [Obsolete("use BatchBindAsync((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
         public override Task<Result<(byte[] Key, byte[] Value)>[]> BatchBindAsync((byte[] key, byte[] value, DateTime version, object? source)[] batch)
         {
             return _write.BatchBindAsync(batch);

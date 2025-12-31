@@ -1,0 +1,311 @@
+
+classDiagram
+
+    class HashSet~Graph.HiperEdge~ {
+
+
+        + Edge  : Edge
+        + Source  : Graph.HiperEdge
+        + Width  = 1
+        + Length  = 1
+
+    }
+
+
+
+
+
+
+ 
+
+    class HashSet~Graph.Rule~ {
+
+        # FromType  : String
+        # ToType  : String
+        # EdgeType  : String
+
+
+    }
+
+
+
+
+
+
+ 
+
+    class Graph.Route {
+
+        # Name  : String
+
+        + Rules  : HashSet~Graph.Rule~
+
+    }
+
+
+
+    Graph.Route *-- Graph.Rule
+
+
+ 
+
+    class Graph.Rule {
+
+        # FromType  : String
+        # ToType  : String
+        # EdgeType  : String
+
+
+    }
+
+
+
+
+
+
+ 
+
+    class CodePath.PathMessage {
+
+        # Node  : Node
+        # Route  : Graph.Route
+        # Length  : Int32
+        # Targets  : HashSet~String~
+
+        + Edges  : HashSet~Graph.HiperEdge~
+
+    }
+
+
+    CodePath.PathMessage *-- Graph.Route
+    CodePath.PathMessage *-- String
+    CodePath.PathMessage *-- Graph.HiperEdge
+
+
+ 
+
+    class CodePath.Edge2 {
+
+        # From  : Node
+        # To  : Node
+        # TypeName  : String
+
+        + Name  : String
+
+    }
+
+
+
+
+
+
+ 
+
+    class CodePath.Edges {
+
+        # From  : Node
+        # To  : Node
+        # FromTypeName  : String
+        # ToTypeName  : String
+
+        + Name  : String
+
+    }
+
+
+
+
+
+
+    CodePath.Edges ..|> CodePath.Edge2
+ 
+
+    class CodePath.Edges2 {
+
+        # From  : Node
+        # To  : Node
+        # FromTypeName  : String
+        # ToTypeName  : String
+
+        + Name  : String
+
+    }
+
+
+
+
+
+
+    CodePath.Edges2 ..|> CodePath.Edge2
+
+    CodePath.Edges2 ..|> CodePath.Edges
+ 
+
+    class CodePath.Attribute {
+
+        # In  : CodePath.Class
+        # Id  : UInt32
+
+        + Name  : String
+        + DataType  : CodePath.Class
+
+    }
+
+
+    CodePath.Attribute --> CodePath.Class
+    CodePath.Attribute --> CodePath.Class
+
+
+    CodePath.Attribute ..|> CodePath.Edges
+
+    CodePath.Attribute ..|> CodePath.Edges2
+ 
+
+    class CodePath.Call {
+
+        # owner  : CodePath.Method
+        # Method  : CodePath.Method
+
+
+        + Parameters () : CodePath.Parameter
+    }
+
+
+    CodePath.Call --> CodePath.Method
+
+    CodePath.Call o-- CodePath.Parameter
+
+    CodePath.Call ..|> CodePath.Edges
+ 
+
+    class CodePath.Class {
+
+        # Id  : UInt64
+
+        + Name  : String
+
+        + Inherits () : CodePath.Inherit
+        + Implements () : CodePath.Implement
+        + Methods (In = this) : CodePath.Method
+        + Attributes (In = this) : CodePath.Attribute
+    }
+
+
+
+
+    CodePath.Class o-- CodePath.Inherit
+    CodePath.Class o-- CodePath.Implement
+
+ 
+
+    class CodePath.Implement {
+
+        # owner  : CodePath.Class
+        # BaseClass  : CodePath.Class
+
+
+    }
+
+
+    CodePath.Implement --> CodePath.Class
+
+
+
+    CodePath.Implement ..|> CodePath.Edges
+ 
+
+    class CodePath.Inherit {
+
+        # owner  : CodePath.Class
+        # BaseClass  : CodePath.Class
+
+
+    }
+
+
+    CodePath.Inherit --> CodePath.Class
+
+
+
+    CodePath.Inherit ..|> CodePath.Edges
+ 
+
+    class CodePath.Method {
+
+        # In  : CodePath.Class
+        # Id  : UInt32
+
+        + Name  : String
+        + ReturnType  : CodePath.Class
+
+        + Variables (In = this) : CodePath.Variable
+        + Calls () : CodePath.Call
+        + Assignments () : CodePath.Assign
+    }
+
+
+    CodePath.Method --> CodePath.Class
+    CodePath.Method --> CodePath.Class
+    CodePath.Method o-- CodePath.Call
+    CodePath.Method o-- CodePath.Assign
+
+    CodePath.Method ..|> CodePath.Edges
+ 
+
+    class CodePath.Parameter {
+
+        # owner  : CodePath.Call
+        # Id  : UInt16
+
+        + Name  : String
+        + DataType  : CodePath.Class
+
+    }
+
+
+
+    CodePath.Parameter --> CodePath.Class
+
+
+    CodePath.Parameter ..|> CodePath.Edges
+ 
+
+    class CodePath.Variable {
+
+        # In  : CodePath.Method
+        # Id  : UInt16
+
+        + Name  : String
+        + DataType  : CodePath.Class
+
+    }
+
+
+    CodePath.Variable --> CodePath.Method
+    CodePath.Variable --> CodePath.Class
+
+
+    CodePath.Variable ..|> CodePath.Edges
+ 
+
+    class CodePath.Assign {
+
+        # owner  : CodePath.Method
+        # Id  : UInt32
+
+        + Source  : CodePath.Variable
+        + Attribute  : CodePath.Attribute
+
+    }
+
+
+
+    CodePath.Assign --> CodePath.Variable
+    CodePath.Assign --> CodePath.Attribute
+
+
+    CodePath.Assign ..|> CodePath.Edges
+
+    CodePath.Assign ..|> CodePath.Edges2
+ 
+

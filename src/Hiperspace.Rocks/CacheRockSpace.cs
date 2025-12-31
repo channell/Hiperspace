@@ -29,27 +29,65 @@ namespace Hiperspace.Rocks
         {
             var fullkey = new byte[key.Length + 1];
             key.CopyTo(fullkey, 1);
-            return Bind(fullkey, value, source);
+            var current = _db.Get(fullkey);
+            if (current is not null && Compare(current, value) == 0)
+            {
+                return Result.Skip(current);
+            }
+            _db.Put(fullkey, value);
+            RaiseOnBind(key, value, source);
+            return Result.Ok(value);
         }
+        [Obsolete("use Bind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
+        public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, object? source = null)
+        {
+            var fullkey = new byte[key.Length + 1];
+            key.CopyTo(fullkey, 1);
+            var current = _db.Get(fullkey);
+            if (current is not null && Compare(current, value) == 0)
+            {
+                return Result.Skip(current);
+            }
+            _db.Put(fullkey, value);
+            RaiseOnBind(key, value, source);
+            return Result.Ok(value);
+        }
+        [Obsolete("use BindAsync((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
         public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, object? source)
         {
             return Task.Run(() => Bind(key, value, version, source));
         }
+        public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)
+        {
+            return Task.Run(() => Bind(key, value, version, priorVersion, source));
+        }
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Find(byte[] begin, byte[] end, DateTime? version)
         {
-            foreach (var (key, value) in Find (begin, end))
-                yield return (key, DateTime.Now, value);
+            var vbegin = new byte[begin.Length + 1];
+            var vend = new byte[end.Length + 1];
+            begin.CopyTo(new Span<byte>(vbegin, 1, begin.Length));
+            end.CopyTo(new Span<byte>(vend, 1, end.Length));
+
+            foreach (var (key, value) in Find(vbegin, vend))
+            {
+                var keypart = new byte[key.Length - 1];
+                var span = new Span<byte>(key, 1, key.Length - 1);
+                span.CopyTo(keypart);
+                yield return (keypart, DateTime.Now, value);
+            }
         }
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Delta(byte[] begin, DateTime? version)
         {
+            var vbegin = new byte[begin.Length + 1];
+            begin.CopyTo(vbegin, 1);
             var end = Hiperspace.Space.DeltaKey(begin);
-            return Find(begin, end, version);
+            return Find(vbegin, end, version);
         }
         public override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindAsync(byte[] begin, byte[] end, DateTime? version, CancellationToken cancellationToken = default)
         {
             return Find(begin, end, version).ToAsyncEnumerable(cancellationToken);
         }
-        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0, double? distanceLimit = null)
         {
             var vbegin = new byte[begin.Length + 1];
             var vend = new byte[end.Length + 1];
@@ -63,7 +101,7 @@ namespace Hiperspace.Rocks
             {
                 var vec = Hiperspace.Space.FromValue<Vector>(TypeModel, value);
                 var distance = space.Nearest(vec, method);
-                if (distance.HasValue)
+                if (distance.HasValue && (distanceLimit is null || distance <= distanceLimit))
                     ranks.Add(new Nearest(distance.Value, key));
             }
             var keys = limit == 0 ? ranks : ranks.Take(limit);

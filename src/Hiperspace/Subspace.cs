@@ -136,13 +136,13 @@ namespace Hiperspace
             var subspace = (SubSpace)constructor.Invoke(new object[] { parameters });
             return subspace;
         }
-        public virtual SubSpace Session2(DateTime? AsAt = null)
+        public virtual SubSpace Session2(DateTime? AsAt = null, DateTime? DeltaFrom = null)
         {
             var parameters = new SubSpaceParameters()
             {
                 Space = this,
-                AsAt = AsAt != default ? AsAt : _version,
-                DeltaFrom = _delta,
+                AsAt = AsAt ?? _version,
+                DeltaFrom = DeltaFrom ?? _delta,
                 ContextLabel = ContextLabel,
                 UserLabel = UserLabel,
                 RemoteLabel = RemoteLabel,
@@ -285,13 +285,13 @@ namespace Hiperspace
             return _space.DeltaAsync(begin, version);
         }
 
-        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0)
+        public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0, double? distanceLimit = null)
         {
-            return _space.Nearest(begin, end, version, space, method, limit);
+            return _space.Nearest(begin, end, version, space, method, limit, distanceLimit);
         }
-        public override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> NearestAsync(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0, CancellationToken cancellationToken = default)
+        public override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> NearestAsync(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0, double? distanceLimit = null, CancellationToken cancellationToken = default)
         {
-            return _space.NearestAsync(begin, end, version, space, method, limit, cancellationToken);
+            return _space.NearestAsync(begin, end, version, space, method, limit, distanceLimit, cancellationToken);
         }
 
         public override byte[] Get(byte[] key)
@@ -413,11 +413,13 @@ namespace Hiperspace
             return (TResult)result!;
         }
 
+        [Obsolete("use Bind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
         public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, object? source = null)
         {
             return _space.Bind(key, value, version, source);
         }
 
+        [Obsolete("use BindAsync((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
         public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, object? source = null)
         {
             return _space.BindAsync(key, value, version, source);
