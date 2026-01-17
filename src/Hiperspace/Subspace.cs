@@ -1,6 +1,6 @@
 ﻿// ---------------------------------------------------------------------------------------
 //                                   Hiperspace
-//                        Copyright (c) 2023, 2024, 2025 Cepheis Ltd
+//                        Copyright (c) 2023, 2024, 2025, 2026 Cepheis Ltd
 //                                    www.cepheis.com
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
@@ -387,6 +387,27 @@ namespace Hiperspace
             _space.ImportAsync(values, cancellationToken);
         }
 
+        /// <summary>
+        /// Returns a collection of strings that represent the serialized state of the current domain object.
+        /// </summary>
+        /// <remarks>Will be overriden bu Hilang code generation</remarks>
+        /// <returns>An enumerable collection of strings containing the serialized data for the domain object.</returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public virtual IEnumerable<string> Dump()
+        {
+            throw new NotImplementedException("This Domain space does not support Dump/Load, usually because System.Test.Json was not referenced");
+        }
+
+        /// <summary>
+        /// Load the contents provides by a Dump call
+        /// </summary>
+        /// <param name="source"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        public virtual void Load(IEnumerable<string> source)
+        {
+            throw new NotImplementedException("This Domain space does not support Dump/Load, usually because System.Test.Json was not referenced");
+        }
+
         public DateTime? AsAt => _version;
         public DateTime? DeltaFrom => _delta;
 
@@ -521,7 +542,6 @@ namespace Hiperspace
         /// <param name="length">the maximum length of routes to be searched</param>
         /// <param name="targets">set of target node types for this use of path</param>
         /// <returns>Set of value references to paths</returns>
-        [Obsolete("use messages to invoke graph functions on a server using messages")]
         public virtual async Task<HashSet<global::Graph.HiperEdge>> FindPathsAsync(Node root, global::Graph.Route route, int? length = null, HashSet<string>? targets = null, CancellationToken cancellationToken = default)
         {
             return await global::Graph.PathFunctions.PathsAsync(root, route, length, targets, cancellationToken);

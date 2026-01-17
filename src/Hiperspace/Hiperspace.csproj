@@ -18,77 +18,14 @@
     <RepositoryUrl>https://github.com/channell/Hiperspace</RepositoryUrl>
     <Nullable>enable</Nullable>
     <LangVersion>13.0</LangVersion>
-    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20251231
+    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20260117
 # Overview
-Change to the `GetSequence` and `UseSequence` functions to take a parameter to allow the use of `KeyType` for Sequences 
+This release focuses on foundations to support of the migration of data from the current model of using key prefix for exceptions ("00" MetaModel, "0.." versioned, "00.." vector, "000.." sequence), to using the first-byte as a prefix for key-type.  To address this need, **dump / load** functions have been added to `SubSpace` for JSON data interchange"
 
-Extended  `Session2(DateTime? AsAt = null)`  to `Session2(DateTime? AsAt = null, DateTime? DeltaFrom = null)` to allow the DeltaFrom parameter to be used in addition to AsAt.
-## Obsolete
-Several interfaces function have been marked as `Obsolete` and will be removed in the next version.
-
-Currently **Hiperspace** uses a key prefix convention to distinguish *immutable* and *versioned* elements, *VectorSpaces* (for nearest neighbor search) and *sequences*
-
-| Prefix | Description |
-|-|-|
-| 00| The meta data dictionary for the *Hiperspace*, used to ensure that incompatible libraries cannot corrupt a store | 
-| 0...| Versioned element that includes a *timestamp* suffix at the end of the key | 
-| 00...| VectorSpace indexes| 
-| 001...|  Sequence numbers for mutable items| 
-| |Keys without a prefix are immutable elements without version|
-
-Performance testing of **Hiperspace.DB**  has highlighted that the rebuilding of the `MetaMap` used to translate between protobuf *tag/length/value* to *tag/value/length* for index search can be expensive top build when a store has experienced multiple schema changes.  The **next** version will change the prefix to:
-
-| Prefix | Description |
-|-|-|
-|1| The meta data dictionary for the *Hiperspace*, used to ensure that incompatible libraries cannot corrupt a store | 
-|2| cached `MetaMap` entries for key encode/decode|
-|3| validated client library *fingerprint* to avoid the need for `MetaMap` build |
-|4| immutable elements without version suffix|
-|5| Versioned element that includes a *timestamp* suffix at the end of the key | 
-|6| VectorSpace indexes| 
-|7|  Sequence numbers for mutable items| 
-
-The `#id` for {`Node`, `Edge`, `VectorNode`, `HiperEdge`,`PathMessage`} will also be moved to a *reserved* set of low values with all *domain* keys moved to higher values
-
------
-
-## SetSpace
-Added two functions to get a sequence counter from the driver:
-* `GetSequenceAsync&lt;T&gt;(T element)` to get the current sequence number associated with the domain key
-* `UseSequenceAsync&lt;T&gt;(T element)` to get a new  sequence number for the with the domain key
-
-**NB** While the main use of Sequence numbers is to provide an alternate (*GPGPU friendly*) sequence number for a `Node`, it can be applied to any key value. 
-```
-// get an order number that is unique within all orders
-var orderNo = await space.Orders.UseSequenceAsync (new Order { });
-var orderNo = await space.Orders.UseSequenceAsync (new Order.KeyType { });
-
-// get a line number within the owning Order {1,2,3..}
-var lineNo = await space.Lines.UseSequenceAsync (new Line { Order = order }); 
-var lineNo = await space.Lines.UseSequenceAsync (new Line.KeyType { Order = order.self }); 
-```
-
-`Get` and `GetASync()` functions now handle not found errors by returning `null` for scenarios where a reference object cannot be found.  This is especially useful for views where not found is better handled by `Horizon&lt;&gt;` filters that 
-
------
-
-## Bind Version
-All versions of Bind Function have been marked as Obsolete, with a preference to use the optimistic locking instead (that include the original AsAt copied to AsWas for comparison).
-Versions of Bind functions that include the `priorVersion` DateTime value use optimistic concurrency control to prevent updates to a version that has been changed by another session
-
-## Nearest
-Hiperspace provides nearest neighbor search using a VectorSpace `aspect` for geospatial and RAG search.  These functions have been extended to include a maximum distance search
-
------
-
-## Hilang
-The Hilang ahead of time compiler has been updated to remove indexes that are a subset of the element key, and will not be used
-
-
------
-
-## Hiperspace.Rocks
-The **RocksDB** driver has been upgraded to verion 10.4.2.63147
+## SubSpace
+The JSON format is structured as `{ Key : Element { ....}, AsAt : timestamp, Value : Element { ....}}}`
+*  IEnumerable&lt;string&gt; Dump() : *dump the content of the hiperspace to JSON*
+*  Load(IEnumerable&lt;string&gt; source) : *load the JSON to Hiperspace*
 </PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>

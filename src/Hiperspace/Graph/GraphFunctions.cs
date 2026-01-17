@@ -77,7 +77,7 @@ namespace Graph
             , HashSet<string>? targets = null
             , CancellationToken cancellationToken = default)
         {
-            if (root?.SetSpace?.Space?. CalculationGPU is not null)
+            if (root?.SetSpace?.Space?.CalculationGPU is not null)
             {
                 return await root.SetSpace.Space.CalculationGPU.PathsAsync
                     ( root

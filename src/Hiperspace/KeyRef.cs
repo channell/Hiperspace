@@ -1,11 +1,13 @@
 ﻿// ---------------------------------------------------------------------------------------
 //                                   Hiperspace
-//                        Copyright (c) 2023, 2024, 2025 Cepheis Ltd
+//                        Copyright (c) 2023, 2024, 2025, 2026 Cepheis Ltd
 //                                    www.cepheis.com
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using ProtoBuf;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Hiperspace
 {
@@ -18,7 +20,7 @@ namespace Hiperspace
         where TEntity : Element<TEntity>, new()
     {
         private TKey _key;
-        private TEntity? _entity;
+        private TEntity?  _entity;
 
         public KeyRef(TKey key)
         {
@@ -37,7 +39,6 @@ namespace Hiperspace
             get => _key; 
             init => _key = value;
         }
-
         public TEntity? Value
         {
             get
@@ -93,6 +94,10 @@ namespace Hiperspace
             }
             return _entity;
         }
+        /// <summary>
+        /// Gets a value indicating whether the current instance contains a value
+        /// </summary>
+        public bool HasValue => _entity is not null;
 
         public SetSpace<TEntity>? SetSpace { get; set; }
 

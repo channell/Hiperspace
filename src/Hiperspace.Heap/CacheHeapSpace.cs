@@ -1,6 +1,6 @@
 ﻿// ---------------------------------------------------------------------------------------
 //                                   Hiperspace
-//                        Copyright (c) 2023, 2024, 2025 Cepheis Ltd
+//                        Copyright (c) 2023, 2024, 2025, 2026 Cepheis Ltd
 //                                    www.cepheis.com
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
@@ -18,7 +18,7 @@ namespace Hiperspace.Heap
         [Obsolete("use Bind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
         public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, object? source = null)
         {
-            var fullkey = new byte[key.Length + sizeof(long) + 1];
+            var fullkey = new byte[key.Length + 1];
             key.CopyTo(fullkey, 1);
             var node = new HeapNode(fullkey, value);
             lock (_heap)
@@ -35,7 +35,7 @@ namespace Hiperspace.Heap
         }
         public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
         {
-            var fullkey = new byte[key.Length + sizeof(long) + 1];
+            var fullkey = new byte[key.Length + 1];
             key.CopyTo(fullkey, 1);
             var node = new HeapNode(fullkey, value);
             lock (_heap)
@@ -68,10 +68,10 @@ namespace Hiperspace.Heap
             begin.CopyTo(new Span<byte>(vbegin, 1, begin.Length));
             end.CopyTo(new Span<byte>(vend, 1, end.Length));
             var now = DateTime.UtcNow;
-            foreach (var v in Find(begin, end))
+            foreach (var v in Find(vbegin, vend))
             {
                 var keypart = new byte[v.Item1.Length - 1];
-                var span = new Span<byte>(v.Item1, 1, v.Item1.Length - sizeof(long) - 1);
+                var span = new Span<byte>(v.Item1, 1, v.Item1.Length - 1);
                 span.CopyTo(keypart);
                 yield return (keypart, now, v.Item2);
             }

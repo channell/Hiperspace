@@ -1,10 +1,11 @@
 ﻿// ---------------------------------------------------------------------------------------
 //                                   Hiperspace
-//                        Copyright (c) 2023, 2024, 2025 Cepheis Ltd
+//                        Copyright (c) 2023, 2024, 2025, 2026 Cepheis Ltd
 //                                    www.cepheis.com
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using System.Net.NetworkInformation;
 using System.Numerics;
 using System.Text;
 
@@ -306,5 +307,58 @@ namespace Hiperspace
             if (string.IsNullOrWhiteSpace(skey)) return null;
             return new Node { SKey = skey };
         }
+
+        /// <summary>
+        /// Creates a new graph rule with the specified source type, edge type, and target type. Wildcard values are
+        /// used for any unspecified types.
+        /// </summary>
+        /// <remarks>This function is for rule definition with a hilang model</remarks>
+        /// <param name="fromType">The source node type for the rule. If null, a wildcard ('*') is used to match any type.</param>
+        /// <param name="edgeType">The edge type for the rule. If null, a wildcard ('*') is used to match any edge type.</param>
+        /// <param name="toType">The target node type for the rule. If null, a wildcard ('*') is used to match any type.</param>
+        /// <returns>A new <see cref="Graph.Rule"/> instance representing the specified rule, with wildcards for any unspecified
+        /// types.</returns>
+        public static Graph.Rule Rule(string? fromType, string? edgeType, string? toType)
+        {
+            return new Graph.Rule
+            {
+                FromType = fromType ?? "*",
+                EdgeType = edgeType ?? "*",
+                ToType = toType ?? "*"
+            };
+        }
+        /// <summary>
+        /// Creates a new route with the specified name and a set of rules.
+        /// </summary>
+        /// <param name="name">The name to assign to the route. Cannot be null.</param>
+        /// <param name="rules">An array of rules to associate with the route. May be empty.</param>
+        /// <returns>A new <see cref="Graph.Route"/> instance with the specified name and rules.</returns>
+        public static Graph.Route? Route(string name, params Graph.Rule[] rules)
+        {
+            return new Graph.Route
+            {
+                Name = name,
+                Rules = new HashSet<Graph.Rule>(rules)
+            };
+        }
+
+        public static HashSet<Graph.HiperEdge> Path<T> (T subject, Graph.Route? route, int? length = null, HashSet<string>? targets = null) 
+            where T : Element<T>, new()
+        {
+            var node = subject.Cast<Node>();
+            if (node is not null && subject?.SetSpace?.Space is not null && route is not null && OperatingSystem.IsBrowser() == false)
+            {
+                var space = subject.SetSpace.Space;
+                return space.FindPathsAsync(node, route.Value, length, targets).GetAwaiter().GetResult();
+            }
+            return new HashSet<Graph.HiperEdge>();
+        }
+        public static T? Cast<T,S> (S? s)
+            where T : Element<T>, new()
+            where S : Element<T>, new()
+        {
+            return s?.Cast<T>();
+        }
+
     }
 }
