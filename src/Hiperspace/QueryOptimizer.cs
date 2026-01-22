@@ -5,6 +5,7 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
@@ -807,15 +808,24 @@ namespace Hiperspace
                 var result = base.VisitMember(node);
                 if (node!.Expression is MemberExpression)
                 {
-                    if (result is MemberExpression memberExpression &&
-                        memberExpression.Expression?.Type is not null &&
-                        (!node.Type.IsValueType || node.Type.Name.StartsWith("Nullable")))
+                    try
                     {
-                        var nullValue = Expression.Constant(null, memberExpression.Expression.Type );
-                        var nullResult = Expression.Constant(null, result.Type);
-                        var isNull = Expression.Equal(memberExpression.Expression, nullValue);
-                        var condition = Expression.Condition(isNull, nullResult, result);
-                        result = condition;
+                        if (result is MemberExpression memberExpression &&
+                            memberExpression.Expression?.Type is not null &&
+                            (!node.Type.IsValueType || node.Type.Name.StartsWith("Nullable")))
+                        {
+                            var nullValue = Expression.Constant(null, memberExpression.Expression.Type);
+                            var nullResult = Expression.Constant(null, result.Type);
+                            var isNull = Expression.Equal(memberExpression.Expression, nullValue);
+                            var condition = Expression.Condition(isNull, nullResult, result);
+                            result = condition;
+                        }
+                    }
+                    catch (Exception)
+                    {
+#if DEBUG
+                        Debugger.Break();
+#endif
                     }
                     path.Node = result;
                 }
