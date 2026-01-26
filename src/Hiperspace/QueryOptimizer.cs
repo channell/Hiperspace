@@ -811,8 +811,7 @@ namespace Hiperspace
                     try
                     {
                         if (result is MemberExpression memberExpression &&
-                            memberExpression.Expression?.Type is not null &&
-                            (!node.Type.IsValueType || node.Type.Name.StartsWith("Nullable")))
+                            memberExpression.Expression?.Type is not null)
                         {
                             var nullValue = Expression.Constant(null, memberExpression.Expression.Type);
                             var nullResult = Expression.Constant(null, result.Type);
@@ -821,12 +820,7 @@ namespace Hiperspace
                             result = condition;
                         }
                     }
-                    catch (Exception)
-                    {
-#if DEBUG
-                        Debugger.Break();
-#endif
-                    }
+                    catch { } // will fail if memberExpression.Expression is malformed.. do not use null coalescing
                     path.Node = result;
                 }
                 if (path.Target is not null && node.Member is PropertyInfo pi3 && !IsElement(node.Type.BaseType))
