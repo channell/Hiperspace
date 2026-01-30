@@ -1,10 +1,9 @@
 ﻿using FluentAssertions;
-using Hiperspace;
 using Hiperspace.Heap;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Domain.Tests
+namespace Cube.Tests
 {
     public class Test
     {
@@ -12,12 +11,12 @@ namespace Domain.Tests
         ITestOutputHelper _output;
 
         private HeapSpace driver;
-        private DomainSpace _space;
+        private CubeSpace _space;
         public Test(ITestOutputHelper output)
         {
             _output = output;
             driver = new HeapSpace();
-            _space = new DomainSpace(driver);
+            _space = new CubeSpace(driver);
         }
         [Fact]
         public void TestView()

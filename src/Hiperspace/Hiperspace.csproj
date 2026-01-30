@@ -18,14 +18,51 @@
     <RepositoryUrl>https://github.com/channell/Hiperspace</RepositoryUrl>
     <Nullable>enable</Nullable>
     <LangVersion>13.0</LangVersion>
-    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20260117
+    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20260130
 # Overview
-This release focuses on foundations to support of the migration of data from the current model of using key prefix for exceptions ("00" MetaModel, "0.." versioned, "00.." vector, "000.." sequence), to using the first-byte as a prefix for key-type.  To address this need, **dump / load** functions have been added to `SubSpace` for JSON data interchange"
+This release is focused on improvements to the Cube functionality to provide a foundation for viewing Cube's through Hiperspace.DB's Blazor.   The Blazor explorer uses 
+* Cube Dimension Name to display the next of the element in a PivotTable view 
+* Cube Hierarchy Level to enable the PivotTable to view to drilldown through hierarchies of elements 
 
-## SubSpace
-The JSON format is structured as `{ Key : Element { ....}, AsAt : timestamp, Value : Element { ....}}}`
-*  IEnumerable&lt;string&gt; Dump() : *dump the content of the hiperspace to JSON*
-*  Load(IEnumerable&lt;string&gt; source) : *load the JSON to Hiperspace*
+For  *Portfolio* Cube dimension with three levels in the hierarchy, the cube will be displayed in a Pivot -Table as {Portfolio 1, Portfolio 2, Portfolio 3}, and support drilldown from the highest level
+
+```
+@CubeDimension(Id), CubeHierarchy(Parent, Tier), Versioned
+entity Cube.Portfolio 
+ = Node (SKey = SKey, Name = Id, TypeName = "Portfolio"),
+   Cube.Edges (From = this, To = Parent, FromTypeName = "Portfolio-Parent", ToTypeName = "Portfolio-Child", Name = Id)
+(Id : String) 
+{ Parent : Cube.Portfolio, Tier : Int32 } 
+[Children : Cube.Portfolio (Parent = this)];
+```
+## Hiperspace
+`CubeDimension` has been updated to include a reference to the name that should be used when the Cube is viewed in a Piviot-table view.
+`CubeHierarchy` has been updated to include a level indicator to allow Pivot-table views to navigate through hierarchy of elements 
+
+
+## HiLang
+###empty view enhancement
+The view `Cube.Edge_` and `Cube.Edges` could be used as helpers to provide additional ways to project *elements* as graph views, but if they are not referenced elsewhere in the model, they will be pruned and not have any code generation.
+
+```
+"An additional edge helper for Cube.Edges"
+view Cube.Edge_ : Edge = Edge();
+
+"Bidirectional Edge, implemented with two Cube.Edges"
+view Cube.Edges
+    = Edge  (From = From, To = To, Name = Name, TypeName = FromTypeName),
+      Cube.Edge_ (From = To, To = From, Name = Name, TypeName = ToTypeName)
+(
+    From            : Node      #7,
+    To              : Node      #8,
+    FromTypeName    : String    #9,
+    ToTypeName      : String    #10
+)
+{
+    Name        : String    #6,
+};
+```
+This presents a problem for the generation of the `Edge` subspace, since it expects to add a base reference to the pruned view.  A fix has been added to the HiLang compiler to remove the dependency.  The compiler pipeline has been changed to continue process *transformations* to prevent spurious errors being created from *validation* that depends on prior *transformations* .
 </PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>

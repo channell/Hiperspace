@@ -13,10 +13,10 @@ namespace Hiperspace
     [AttributeUsage(AttributeTargets.Class)]
     public class CubeDimensionAttribute : Attribute
     {
-        public string? CubeName { get; set; }
-        public CubeDimensionAttribute(string? dimensionName = null) : base()
+        public string? Name { get; set; }
+        public CubeDimensionAttribute(string? name = null) : base()
         {
-            CubeName = dimensionName;
+            Name = name;
         }
     }
     /// <summary>
@@ -52,5 +52,13 @@ namespace Hiperspace
         /// Gets the stringified key for the dimension element
         /// </summary>
         public string SKey { get; }
+
+        /// <summary>
+        /// Get the name used to display the Dimension in pivot-table view
+        /// </summary>
+        /// <remarks>
+        /// The default value is provided for backward compatibility 
+        /// </remarks>
+        public string? Name => SKey;
     }
 }
