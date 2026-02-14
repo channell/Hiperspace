@@ -8,51 +8,69 @@
     <Description>Hiperspace heap store for session, edge and testing purposes</Description>
     <Copyright>Cepheis Ltd (C) 2023, 2024, 2025</Copyright>
     <LangVersion>13.0</LangVersion>
-    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20260130
+    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20260214
 # Overview
-This release is focused on improvements to the Cube functionality to provide a foundation for viewing Cube's through Hiperspace.DB's Blazor.   The Blazor explorer uses 
-* Cube Dimension Name to display the next of the element in a PivotTable view 
-* Cube Hierarchy Level to enable the PivotTable to view to drilldown through hierarchies of elements 
 
-For  *Portfolio* Cube dimension with three levels in the hierarchy, the cube will be displayed in a Pivot -Table as {Portfolio 1, Portfolio 2, Portfolio 3}, and support drilldown from the highest level
+## Cube enhancements
+`@CubeDimension` and `@CubeHierarchy` updated to better support generic access to Cube data from Graph Pivot-Table view.  
+* `@CubeDimension` name parameter now refers to the property that provides the name of the element in a Pivot-Table dimension.
+* `@CubeHierarchy` has additional parameters for *Children* and *Level*
+
+Create GPU Accelerated Graph Search introduced a problem for cubes in that every single permutation of aggregate would be evaluated to produce the Graph cache resulting in:
+* A dense MOLAP cube 
+* Expensive invalidation when cube *facts* change
+
+The  **Cube** model has been split into *_Fact* entity containing just base aggregates projected from `@CubeFact` elements, and *_Cube* elements that are calculated *on demand* for summaries.
+
+*Drilldown* performed well when then was a very small number of dimensions and hierarchy levels, but poorly when the complexity increases.  The mode has been changed from using *Drilldown* as an index for aggregate calculation  to a scan of matching *facts*
+
+### Is Fact
+`IsFact` attribute of *_Cube* and *_Fact* has been removed, as it is no longer needed.  This is a help for BI access of Cube data via ODATA.
+
+-----
+
+### Cube Hierarchy
+Keep hierarchy has been enhanced to include the name of the children property in addition to parent and add level to support aggregation of cube summaries 
+
+An example dimension is Organization that is structured as a hierarchy with *Parent* as a reference to the aggregation line, and *Children* as a collection of organization units below the current node.  When referenced by a `@CubeFact` element, the aggregate values of all `@CubeMeasure`s members show the aggregate value of the *node* and all *child nodes* 
+```
+@CubeDimension, CubeHierarchy(Parent, Children, Tier)
+entity Organization (Name : String) {Description : String, Parent : Organization, Tier : Int32} [Children : Organization (Parent = this)];
+```
+The generated code implements `@CubeHierarchy` using the `ICubeHierarchy&lt;TEntity&gt;` that now includes
+
+|Name|Notes|
+|-|-|-|
+|Parent| Reference to parent, that must be the same type as the element|
+|Children| Collection of child nodes that must be the same type as the element|
+|AllPartents()| Function that recursively yields the entire hierarchy upto root node |
+|AllChildren()|Function that  recursively  yields every child node and all their child nodes |
+| Level | Level in Hierarchy for **Pivot Table** views that have separate tabs for each level of the hierarchy |
+
+-----
+
+### Cube Measure
+`@CubeMeasure` has been enhanced include [Population Standard Deviation](https://en.wikipedia.org/wiki/Standard_deviation) and [Ranked Percentile](https://en.wikipedia.org/wiki/Percentile) aggregates.  `Aggregate.StdDev` and `Aggregate. Percentile` use the `Vector` pseudo-aggregate member that includes every observation in the *_Fact* element for precise aggregation at the summary level.
 
 ```
-@CubeDimension(Id), CubeHierarchy(Parent, Tier), Versioned
-entity Cube.Portfolio 
- = Node (SKey = SKey, Name = Id, TypeName = "Portfolio"),
-   Cube.Edges (From = this, To = Parent, FromTypeName = "Portfolio-Parent", ToTypeName = "Portfolio-Child", Name = Id)
-(Id : String) 
-{ Parent : Cube.Portfolio, Tier : Int32 } 
-[Children : Cube.Portfolio (Parent = this)];
+@CubeFact, DeltaIndex 
+aspect Valuation {@CubeMeasure(Aggregate.Sum) NPV : Decimal} 
+[@CubeMeasure(Aggregate.StdDev) Deviation = NPV, @CubeMeasure(Aggregate.Percentile, 95) PFE = NPV];
 ```
-## Hiperspace
-`CubeDimension` has been updated to include a reference to the name that should be used when the Cube is viewed in a Piviot-table view.
-`CubeHierarchy` has been updated to include a level indicator to allow Pivot-table views to navigate through hierarchy of elements 
+is equivalent to 
 
+|Name|Notes|
+|-|-|-|-|-|
+| NPV | Total across dimensions, up through hierarchies|
+|Deviation | Populate standard deviation for all elements|
+|PFE|The top 95% of all simulated scenarios across the entire set at each  level|
 
-## HiLang
-###empty view enhancement
-The view `Cube.Edge_` and `Cube.Edges` could be used as helpers to provide additional ways to project *elements* as graph views, but if they are not referenced elsewhere in the model, they will be pruned and not have any code generation.
+When the *Hiperspace* is hosted using **Hiperspace.DB** the *_Fact* and *_Cube* elements are automatically recalculated:
+* When a *Fact* changes the **_Fact** entity is recalculated with its *dimension* references
+* When an element that a *Fact* is dependent on changes the **_Fact** entity is recalculated
+* When a **Dimension** changes, any **_Cube** elements that reference it are recalculated.
 
-```
-"An additional edge helper for Cube.Edges"
-view Cube.Edge_ : Edge = Edge();
-
-"Bidirectional Edge, implemented with two Cube.Edges"
-view Cube.Edges
-    = Edge  (From = From, To = To, Name = Name, TypeName = FromTypeName),
-      Cube.Edge_ (From = To, To = From, Name = Name, TypeName = ToTypeName)
-(
-    From            : Node      #7,
-    To              : Node      #8,
-    FromTypeName    : String    #9,
-    ToTypeName      : String    #10
-)
-{
-    Name        : String    #6,
-};
-```
-This presents a problem for the generation of the `Edge` subspace, since it expects to add a base reference to the pruned view.  A fix has been added to the HiLang compiler to remove the dependency.  The compiler pipeline has been changed to continue process *transformations* to prevent spurious errors being created from *validation* that depends on prior *transformations* .
+Because **_Facts**  and **_Cubes** are recalculated using a *delta* of changed elements in real-time, it is possible for **Facts** to be calculated from other aggregated **Facts**. Both ***Facts*** and  ***Cubes*** track history  through time (*using `GetVersions()` functions*)
 </PackageReleaseNotes>
     <PackageLicenseExpression>GPL-2.0-or-later</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>

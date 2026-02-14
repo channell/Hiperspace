@@ -19,7 +19,7 @@ view Cube.Edges
 
 view Cube.Edges2 : Cube.Edges = Cube.Edges();
 
-@CubeDimension(Id), CubeHierarchy(Parent, Tier), Versioned
+@CubeDimension(Id), CubeHierarchy(Parent, Children, Tier), Versioned, DeltaIndex
 entity Cube.Portfolio 
 	= Node (SKey = SKey, Name = Id, TypeName = "Portfolio"),
 	  Cube.Edges (From = this, To = Parent, FromTypeName = "Portfolio-Parent", ToTypeName = "Portfolio-Child", Name = Id)
@@ -33,13 +33,13 @@ entity Cube.Country
 (ISO : String) 
 [Instruments : Cube.Instrument (Country = this)];
 
-@CubeDimension(Name), CubeHierarchy(Parent, Tier), Versioned
+@CubeDimension(Name), CubeHierarchy(Parent, Children, Tier), Versioned, DeltaIndex
 entity Cube.Sector 
 	= Node (SKey = SKey, Name = Name, TypeName = "Sector") ,
 	  Cube.Edges (From = this, To = Parent, FromTypeName = "Sector-Parent", ToTypeName = "Sector-Child", Name = Name) 
 (Id : Int32) { Name : String, Parent : Cube.Sector, Tier : Int32 } [Children : Cube.Sector (Parent = this), Customers : Cube.Customer (Sector = this)];
 
-@CubeDimension(Id), CubeHierarchy(Parent, Tier), Versioned
+@CubeDimension(Id), CubeHierarchy(Parent, Children, Tier), Versioned, DeltaIndex
 entity Cube.Product 
 	= Node (SKey = SKey, Name = Id, TypeName = "Product"),
 	  Cube.Edges (From = this, To = Parent, FromTypeName = "Product-Parent", ToTypeName = "Product-Child", Name = Id) 
@@ -67,7 +67,7 @@ entity Cube.Instrument
 (ISIN : String) 
 {Country : Cube.Country, Product : Cube.Product} [Price : Cube.Price, Market = Price.Market];
 
-@CubeFact, DeltaIndex
+@CubeFact
 entity Cube.Contract : Versioned 
 	= Valued (name = "some", Value = Value, Deleted = Deleted)
 	, Node (SKey = SKey, Name = "", TypeName = "Contract") 
@@ -76,7 +76,9 @@ entity Cube.Contract : Versioned
 	[
 		Market = Instrument.Market, 
 		@CubeMeasure(Aggregate.Sum) 
-		Value = Quantity * Market
+		Value = Quantity * Market,
+		@CubeMeasure(Aggregate.StdDev) 
+		StdDev = Value
 	];
 
 view Valued : Versioned

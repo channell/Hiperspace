@@ -5,6 +5,7 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using System.Diagnostics;
 using System.Net.NetworkInformation;
 using System.Numerics;
 using System.Text;
@@ -219,48 +220,48 @@ namespace Hiperspace
             return null;
         }
 
-        public static IEnumerable<TDrill> DrillDown<TDrill, TEntity>(ICubeFact source, TEntity? target, RefSet<TDrill> drilldown)
+        /// <summary>
+        /// Get the CubeSlice of the current Cube + CubeSlice for the target element
+        /// </summary>
+        /// <typeparam name="TEntity">the  dimension being drilled down to</typeparam>
+        /// <param name="source">the current cube</param>
+        /// <returns>source.CubeSlice + new dimension slice</returns>
+        public static string CubeSlice<TEntity>(ICubeFact source)
             where TEntity : Element<TEntity>, ICubeDimension, new()
-            where TDrill : Element<TDrill>, new()
         {
-            // if the dimension already has a value, get any drilldown values of the same type
-            if (target is not null)
+            var template = new TEntity() as ICubeDimension;
+            if (int.TryParse(template.CubeSlice, out var id))
             {
-                foreach (var row in drilldown)
-                {
-                    var fact = row as ICubeDrillDown;
-                    if (fact?.To?.CubeSlice == source.CubeSlice)
-                    {
-                        yield return row;
-                    }
-                }
-            }
-            // if the dimension is empty, get drilldown values adding the slice id
-            else
-            {
-                var template = new TEntity() as ICubeDimension;
                 var parts = source.CubeSlice?.Split(',') ?? Array.Empty<string>();
                 var newParts = new int[parts.Length + 1];
                 for (int c = 1; c < newParts.Length; c++)
                 {
                     if (int.TryParse(parts[c - 1], out int part))
                     {
+                        // if already included
+                        if (part == id) return source.CubeSlice!;
                         newParts[c] = part;
                     }
                 }
                 newParts[0] = int.Parse(template.CubeSlice);
                 Array.Sort(newParts);
                 var slice = String.Join(',', newParts);
+                return slice;
 
-                foreach (var row in drilldown)
-                {
-                    var fact = row as ICubeDrillDown;
-                    if (fact?.To?.CubeSlice == slice)
-                    {
-                        yield return row;
-                    }
-                }
             }
+            return source.CubeSlice;
+        }
+        /// <summary>
+        /// Get the CubeSlice for a new Cube
+        /// </summary>
+        /// <param name="source">an array of Dimensions</param>
+        /// <returns>the cubeslice to use as a key</returns>
+        public static string CubeSlice(ICubeDimension?[] source)
+        {
+            var slices = source.Where(cd => cd != null).Select(cd => int.Parse(cd!.CubeSlice)).ToArray();
+            Array.Sort(slices);
+            var slice = String.Join(",", slices);
+            return slice;
         }
 
         /// <summary>
@@ -271,10 +272,10 @@ namespace Hiperspace
         public static string CubeName(params ICubeDimension?[]? dimensions)
         {
             StringBuilder sb = new StringBuilder();
-            if (dimensions  is null || dimensions.Length == 0) return string.Empty;
+            if (dimensions is null || dimensions.Length == 0) return string.Empty;
             for (int i = 0; i < dimensions.Length; i++)
             {
-                if (dimensions[i]  is null)
+                if (dimensions[i] is null)
                     continue;
                 else
                 {
@@ -342,7 +343,7 @@ namespace Hiperspace
             };
         }
 
-        public static HashSet<Graph.HiperEdge> Path<T> (T subject, Graph.Route? route, int? length = null, HashSet<string>? targets = null) 
+        public static HashSet<Graph.HiperEdge> Path<T>(T subject, Graph.Route? route, int? length = null, HashSet<string>? targets = null)
             where T : Element<T>, new()
         {
             var node = subject.Cast<Node>();
@@ -353,12 +354,28 @@ namespace Hiperspace
             }
             return new HashSet<Graph.HiperEdge>();
         }
-        public static T? Cast<T,S> (S? s)
+        public static T? Cast<T, S>(S? s)
             where T : Element<T>, new()
             where S : Element<T>, new()
         {
             return s?.Cast<T>();
         }
 
+        public static double? StdDev(Vector? vector)
+        {
+            if (vector is null) return null;
+            return vector.Value.StandardDeviation();
+        }
+
+        public static double? Percentile(Vector? vector, int? percent)
+        {
+            if (vector is null || percent is null) return null;
+            if (percent < 0 || percent > 100) throw new ArgumentOutOfRangeException(nameof(percent));
+            vector.Value.Sort();
+            var doubles = vector.Value.Doubles;
+            if (doubles is null || doubles.Length == 0) return null;
+            var position = doubles.Length / 100 * percent.Value;
+            return doubles[position];
+        }
     }
 }

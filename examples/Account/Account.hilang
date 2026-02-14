@@ -3,7 +3,7 @@
 %function ( unary, credit, Acc.Totals.Credit, Decimal);
 %function ( unary, debit, Acc.Totals.Debit, Decimal);
 
-@CubeDimension(Name)
+@CubeDimension(Description)
 entity Acc.Sector : Versioned #30
 (
     "name of the sector"
@@ -19,7 +19,7 @@ entity Acc.Sector : Versioned #30
 ];
 
 "A Customer"
-@CubeDimension, CubeHierarchy(Parent)
+@CubeDimension, CubeHierarchy(Parent, Children, Tier)
 entity Acc.Customer : Versioned #3 
 (
     " name  of the customer"
@@ -29,17 +29,18 @@ entity Acc.Customer : Versioned #3
     Address         : String #3,
     SSN             : String #4,
     Parent		    : Acc.Customer #5,
-    Sector          : Acc.Sector #11 
+    Sector          : Acc.Sector #11, 
+    Tier            : Int32 #18
 }
 [
     "Account that the customer owns"
-    Accounts        : Acc.Account #67, 
+    Accounts        : Acc.Account #20, 
     Children        : Acc.Customer (Parent = this) #27
 ];
 
 "a transaction against account"
 @DeltaIndex(31), CubeFact(26)
-segment Acc.Transaction : Versioned #25 
+segment Acc.Transaction : Versioned #45  
 (
     "when the transaction was authorised"
     At              : DateTime #2
@@ -63,8 +64,8 @@ segment Acc.Transaction : Versioned #25
 ];
 
 "An Account for a customer"
-@CubeDimension(Title)
-segment Acc.Account : Versioned #20 
+@CubeDimension
+segment Acc.Account : Versioned #40
 (
     Title           : String #2
 )
@@ -74,10 +75,10 @@ segment Acc.Account : Versioned #20
 }
 [
     "transactions against the account"
-    Transactions    : Acc.Transaction #73,
+    Transactions    : Acc.Transaction #25,
 
     "the last closing balance"
-    Balance         : Acc.Balance #68,
+    Balance         : Acc.Balance #21,
 
     /* calculations */
     @CubeMeasure(Aggregate.Sum)
@@ -87,19 +88,19 @@ segment Acc.Account : Versioned #20
 ];
 
 " Balance is the rolled up value for the account computed for a time"
-aspect Acc.Balance : Versioned #21
+aspect Acc.Balance : Versioned #41
 {
     "DateTime of the max balance"
     When            : DateTime #3,
 
-    "Current closign balance at time When"
+    "Current closing balance at time When"
     Current         : Decimal #4
 };
 
 /* **********************************************************************
 API for remote execution
 ********************************************************************** */
-message API.CustomerCube #49
+message API.CustomerActivity #49
 ( 
     Customer        : Acc.Customer #1
 )
@@ -107,10 +108,6 @@ message API.CustomerCube #49
     CustomerTree    : List<Acc.Customer> #2,
     Sector          : List<Acc.Sector> #3,
     Accounts        : List<Acc.Account> #4 ,
-
-    "Using the generated cube element from Transaction and its dimensions"
     Cube            : List<Acc.Transaction_Cube> #5,
-
-    "Using the generated cube drilldown from cube"
-    Drilldown       : List<Acc.Transaction_CubeDrillDown> #6
+    Facts           : List<Acc.Transaction_Fact> #11,
 };

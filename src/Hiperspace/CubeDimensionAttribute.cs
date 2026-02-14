@@ -43,7 +43,7 @@ namespace Hiperspace
         public string CubeSlice { get; }
         
         /// <summary>
-        /// Namer of the cube element
+        /// Name of the cube element
         /// </summary>
         /// <example>Customer</example>
         public string CubeName { get; }

@@ -20,6 +20,17 @@ namespace Hiperspace
         public CubeFactAttribute() : base() { }
     }
     /// <summary>
+    /// Indicates that this attribute is a reference to cube fact
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+    public class CubeFactReferenceAttribute : Attribute
+    {
+        public CubeFactReferenceAttribute() : base()
+        {
+        }
+    }
+
+    /// <summary>
     /// An element that provides the CubeFactAttribute 
     /// </summary>
     public interface ICubeFact
@@ -58,11 +69,6 @@ namespace Hiperspace
         public IDictionary<string, (Aggregate, object)> Measures { get; }
 
         /// <summary>
-        /// Indicate that the Cube Slice is a Fact rather than a summary for a dimension
-        /// </summary>
-        public Boolean? IsFact { get; set; }
-
-        /// <summary>
         /// Calculate the summary using the the drilldown elements, and measure methods 
         /// </summary>
         /// <remarks>
@@ -73,23 +79,5 @@ namespace Hiperspace
         /// method.
         /// </remarks>
         public ICubeFact Calculate();
-
-        public IEnumerable<ICubeDrillDown> DrillDown { get; }
-    }
-
-    /// <summary>
-    /// Represents a drilldown operation within a cube structure, providing access hierarchy and other dimensions
-    /// </summary>
-    public interface ICubeDrillDown
-    {
-        /// <summary>
-        /// the owner of this drilldown segment <see cref="ICubeFact"/> 
-        /// </summary>
-        public ICubeFact owner { get; }
-
-        /// <summary>
-        /// the target cube that is either a a levewl down in a hierarchy, another dimension or a fact
-        /// </summary>
-        public ICubeFact To { get; }
     }
 }

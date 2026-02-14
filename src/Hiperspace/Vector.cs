@@ -6,6 +6,7 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using ProtoBuf;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using TP = System.Numerics.Tensors.TensorPrimitives;
 
@@ -189,9 +190,9 @@ namespace Hiperspace
                     (other.Ints is not null, other.Floats is not null, other.Doubles is not null))
             {
                 // same
-                case ((true, _, _), ( true, _, _)): return;
-                case ((_, true, _), ( _, true, _)): return;
-                case ((_, _, true), ( _, _, true)): return;
+                case ((true, _, _), (true, _, _)): return;
+                case ((_, true, _), (_, true, _)): return;
+                case ((_, _, true), (_, _, true)): return;
                 // narrow other or expand this
                 case ((_, true, _), (_, _, true)):
                     {
@@ -245,7 +246,7 @@ namespace Hiperspace
         /// <param name="method">distance method</param>
         /// <returns>distance using method</returns>
         /// <remarks>as other is the search criteria, cast to wider if needed</remarks>
-        public double? Nearest (Vector other, Method method)
+        public double? Nearest(Vector other, Method method)
         {
             if (Float())
             {
@@ -292,6 +293,7 @@ namespace Hiperspace
             HashCode hc = new HashCode();
             hc.Add(Ints);
             hc.Add(Floats);
+            hc.Add(Doubles);
             return hc.ToHashCode();
         }
 
@@ -306,7 +308,7 @@ namespace Hiperspace
             left.Align(ref right);
             if (left.Ints is not null && right.Ints is not null)
             {
-                if (left.Ints.Length != right.Ints.Length) 
+                if (left.Ints.Length != right.Ints.Length)
                     return false;
                 for (int c = 0; c < left.Ints.Length; c++)
                 {
@@ -617,8 +619,8 @@ namespace Hiperspace
             {
                 first.Align(ref vectors[c]);
                 var v = vectors[c];
-                var len = v.Ints is not null ? v.Ints.Length : 
-                          v.Floats is not null ?  v.Floats.Length : 
+                var len = v.Ints is not null ? v.Ints.Length :
+                          v.Floats is not null ? v.Floats.Length :
                           v.Doubles is not null ? v.Doubles.Length : 0;
 
                 min = min < len ? min : len;
@@ -697,7 +699,7 @@ namespace Hiperspace
             }
             else if (Doubles is not null)
             {
-                var copy = new double [Doubles.Length];
+                var copy = new double[Doubles.Length];
                 Array.Copy(Doubles, copy, Doubles.Length);
                 Array.Sort(copy);
                 return new Vector(copy);
@@ -777,6 +779,183 @@ namespace Hiperspace
                 return result;
             }
             return null;
+        }
+        // Average of elements
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public double? Average()
+        {
+            switch (Ints is not null, Floats is not null, Doubles is not null)
+            {
+                case (_, true, _):
+                    {
+                        if (Floats!.Length == 0) return null;
+                        var ones = new float[Floats.Length];
+                        for (int i = 0; i < ones.Length; i++) ones[i] = 1f;
+                        double sum = TP.Dot(Floats, ones);
+                        return sum / Floats.Length;
+                    }
+                case (_, _, true):
+                    {
+                        if (Doubles!.Length == 0) return null;
+                        double sum = 0.0;
+                        for (int c = 0; c < Doubles.Length; c++)
+                            sum += Doubles[c];
+                        return sum / Doubles.Length;
+                    }
+                case (true, _, _):
+                    {
+                        if (Ints!.Length == 0) return null;
+                        double sum = 0.0;
+                        for (int c = 0; c < Ints.Length; c++)
+                            sum += Ints[c];
+                        return sum / Ints.Length;
+                    }
+            }
+            return null;
+        }
+
+        // Standard deviation (population)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public double? StandardDeviation()
+        {
+            var avg = Average();
+            if (avg is null) return null;
+            double mean = avg.Value;
+
+            switch (Ints is not null, Floats is not null, Doubles is not null)
+            {
+                case (_, true, _):
+                    {
+                        if (Floats!.Length == 0) return null;
+                        double sumSquaredDiff = 0.0;
+                        for (int c = 0; c < Floats.Length; c++)
+                        {
+                            double diff = Floats[c] - mean;
+                            sumSquaredDiff += diff * diff;
+                        }
+                        return Math.Sqrt(sumSquaredDiff / Floats.Length);
+                    }
+                case (_, _, true):
+                    {
+                        if (Doubles!.Length == 0) return null;
+                        double sumSquaredDiff = 0.0;
+                        for (int c = 0; c < Doubles.Length; c++)
+                        {
+                            double diff = Doubles[c] - mean;
+                            sumSquaredDiff += diff * diff;
+                        }
+                        return Math.Sqrt(sumSquaredDiff / Doubles.Length);
+                    }
+                case (true, _, _):
+                    {
+                        if (Ints!.Length == 0) return null;
+                        double sumSquaredDiff = 0.0;
+                        for (int c = 0; c < Ints.Length; c++)
+                        {
+                            double diff = Ints[c] - mean;
+                            sumSquaredDiff += diff * diff;
+                        }
+                        return Math.Sqrt(sumSquaredDiff / Ints.Length);
+                    }
+            }
+            return null;
+        }
+        /// <summary>
+        /// Join (concatenate) this vector with another vector to form a new vector
+        /// </summary>
+        /// <param name="other">The vector to append to this vector</param>
+        /// <returns>A new vector containing elements from both vectors</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Vector Join(Vector? other)
+        {
+            if (other == null) return this;
+            return Join(this, other.Value);
+        }
+
+        /// <summary>
+        /// Join (concatenate) two vectors to form a new vector
+        /// </summary>
+        /// <param name="left">The first vector</param>
+        /// <param name="right">The second vector to append</param>
+        /// <returns>A new vector containing elements from both vectors</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector Join(Vector left, Vector right)
+        {
+            left.Align(ref right);
+
+            switch (left.Ints is not null, left.Floats is not null, left.Doubles is not null)
+            {
+                case (_, true, _):
+                    {
+                        if (right.Floats is null) return left;
+                        int leftLen = left.Floats!.Length;
+                        int rightLen = right.Floats.Length;
+                        var result = new float[leftLen + rightLen];
+                        Array.Copy(left.Floats, 0, result, 0, leftLen);
+                        Array.Copy(right.Floats, 0, result, leftLen, rightLen);
+                        return new Vector(result);
+                    }
+                case (_, _, true):
+                    {
+                        if (right.Doubles is null) return left;
+                        int leftLen = left.Doubles!.Length;
+                        int rightLen = right.Doubles.Length;
+                        var result = new double[leftLen + rightLen];
+                        Array.Copy(left.Doubles, 0, result, 0, leftLen);
+                        Array.Copy(right.Doubles, 0, result, leftLen, rightLen);
+                        return new Vector(result);
+                    }
+                case (true, _, _):
+                    {
+                        if (right.Ints is null) return left;
+                        int leftLen = left.Ints!.Length;
+                        int rightLen = right.Ints.Length;
+                        var result = new Int32[leftLen + rightLen];
+                        Array.Copy(left.Ints, 0, result, 0, leftLen);
+                        Array.Copy(right.Ints, 0, result, leftLen, rightLen);
+                        return new Vector(result);
+                    }
+            }
+            return new Vector();
+        }
+    }
+
+    /// <summary>
+    /// Utility class to Accumulate doubles for StdDev and Percentile aggregation of Cubes
+    /// instance.
+    /// </summary>
+    /// <remarks>The VectorAggregator class extends List<double> to provide convenient aggregation of numeric
+    /// values for vector operations. An implicit conversion operator allows instances of VectorAggregator to be
+    /// converted to Vector objects, enabling seamless integration with APIs that consume Vector types.</remarks>
+    public class VectorAggregator : List<double>
+    {
+        public VectorAggregator Merge(double? item)
+        {
+            if (item is not null) Add(item.Value);
+            return this;
+        }
+        public VectorAggregator Merge(decimal? item)
+        {
+            if (item is not null) Add(Convert.ToDouble(item.Value));
+            return this;
+        }
+        public VectorAggregator Merge(int? item)
+        {
+            if (item is not null) Add(item.Value);
+            return this;
+        }
+        public VectorAggregator Merge(long? item)
+        {
+            if (item is not null) Add(item.Value);
+            return this;
+        }
+
+        public static implicit operator Vector(VectorAggregator aggregator)
+        {
+            if (aggregator == null || aggregator.Count == 0)
+                return new Vector();
+            var arr = aggregator.ToArray();
+            return new Vector(arr);
         }
     }
 }

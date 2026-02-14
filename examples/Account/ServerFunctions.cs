@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace API
 {
-    public partial class CustomerCube : IMessage
+    public partial class CustomerActivity : IMessage
     {
         public Task<IMessage> InvokeAsync(CancellationToken token = default)
         {
@@ -12,7 +12,6 @@ namespace API
             var customerTree = new List<Acc.Customer>();
             var accounts = new List<Acc.Account>();
             var cube = new List<Acc.Transaction_Cube>();
-            var drill = new List<Acc.Transaction_CubeDrillDown>();
             var sectors = new HashSet<Acc.Sector>();
 
             customerTree.Add(Customer!);
@@ -21,26 +20,24 @@ namespace API
             {
                 accounts.AddRange(customer.Accounts);
             }
-            Drilldowns(Customer.Transaction_Cube, cube, drill);
             foreach (var cust in customerTree)
             {
-                if (cust.Sector != null)
+                if (cust.Sector is not null)
                     sectors.Add(cust.Sector);
             }
 
-            return Task.FromResult<IMessage>(new CustomerCube(this)
+            return Task.FromResult<IMessage>(new CustomerActivity(this)
             {
                 CustomerTree = customerTree,
                 Accounts = accounts,
                 Cube = cube,
-                Drilldown = drill,
                 Sector = sectors.ToList()
             });
         }
 
-        private IEnumerable<Acc.Customer> Children (Acc.Customer? customer)
+        private IEnumerable<Acc.Customer> Children(Acc.Customer? customer)
         {
-            if (customer == null) yield break;
+            if (customer is null) yield break;
             foreach (var child in customer.Children)
             {
                 yield return child;
@@ -51,22 +48,15 @@ namespace API
             }
         }
 
-        private void Drilldowns 
+        private void Drilldowns
             (Acc.Transaction_Cube? source
-            , List<Acc.Transaction_Cube> cube 
-            , List<Acc.Transaction_CubeDrillDown> drill)
+            , List<Acc.Transaction_Cube> cube)
         {
-            if (source == null) return;
+            if (source is null) return;
             cube.Add(source);
-            foreach (var item in source.DrillDown)
-            {
-                drill.Add(item);
-                if (item.To != null)
-                    Drilldowns(item.To, cube, drill);
-            }
         }
 
-        public async IAsyncEnumerable<IMessage> InvokeStreamAsync([EnumeratorCancellation]CancellationToken token = default)
+        public async IAsyncEnumerable<IMessage> InvokeStreamAsync([EnumeratorCancellation] CancellationToken token = default)
         {
             yield return await InvokeAsync(token);
         }
