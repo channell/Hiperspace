@@ -859,5 +859,13 @@ namespace Hiperspace.Heap
         {
             return _primary.UseSequenceAsync(key);
         }
+        public override Transaction BeginTransaction(Transaction? current = null)
+        {
+            return _primary.BeginTransaction(current ?? base.BeginTransaction());
+        }
+        public override void CompleteTransaction(Transaction transaction)
+        {
+            _primary.CompleteTransaction(transaction);
+        }
     }
 }

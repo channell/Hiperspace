@@ -623,5 +623,13 @@ namespace Hiperspace
         {
             return _durableSpace.UseSequenceAsync(key);
         }
+        public override Transaction BeginTransaction(Transaction? current = null)
+        {
+            return _durableSpace.BeginTransaction(current ?? base.BeginTransaction());
+        }
+        public override void CompleteTransaction(Transaction transaction)
+        {
+            _durableSpace.CompleteTransaction(transaction);
+        }
     }
 }

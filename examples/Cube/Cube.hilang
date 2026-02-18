@@ -43,7 +43,8 @@ entity Cube.Sector
 entity Cube.Product 
 	= Node (SKey = SKey, Name = Id, TypeName = "Product"),
 	  Cube.Edges (From = this, To = Parent, FromTypeName = "Product-Parent", ToTypeName = "Product-Child", Name = Id) 
-(Id : String) { Parent : Cube.Product, Tier : Int32  } [Children : Cube.Product (Parent = this), ProductInstruments : Cube.Instrument (Product = this)];
+(Id : String) { Parent : Cube.Product, Tier : Int32  } 
+[Children : Cube.Product (Parent = this), ProductInstruments : Cube.Instrument (Product = this), RAG = RAG (this)];
 
 entity Cube.Account 
 	= Node (SKey = SKey, Name = Id, TypeName = "Account"),
@@ -78,7 +79,9 @@ entity Cube.Contract : Versioned
 		@CubeMeasure(Aggregate.Sum) 
 		Value = Quantity * Market,
 		@CubeMeasure(Aggregate.StdDev) 
-		StdDev = Value
+		StdDev = Value,
+		@CubeMeasure(Aggregate.Average) 
+		Avg = ToDouble(Value)
 	];
 
 view Valued : Versioned
@@ -90,3 +93,30 @@ entity Banking.FI.Trade : Banking.Trade = Banking.Trade();
 entity Banking.FX.Trade : Banking.Trade = Banking.Trade();
 entity Banking.EQ.Trade : Banking.Trade = Banking.Trade();
 entity Banking.Book (Id : String) [Trades : Banking.Trade (Book = this)];
+
+%function(unary, RAG, Cube.Functions.RAG, Cube.RAG);
+enum Cube.RAG
+{
+	Red #1,
+	Amber #2,
+	Green #3,
+	"If it does not have a parent, it does not have RAG status within it"
+	None #4,
+	"Missing data"
+	Unknown #5
+};
+
+enum Hiperspace.TransactionState
+{
+    Begin #0,
+    Commit #1,
+    Rollback #2,
+    Complete #4
+};
+entity Hiperspace.Transaction
+(
+	Id : Guid
+)
+{
+	State : Hiperspace.TransactionState
+};

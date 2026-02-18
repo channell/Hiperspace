@@ -7,6 +7,7 @@
 // ---------------------------------------------------------------------------------------
 using ProtoBuf;
 using System.Numerics;
+using System.Reflection.PortableExecutable;
 using System.Runtime.CompilerServices;
 using TP = System.Numerics.Tensors.TensorPrimitives;
 
@@ -918,8 +919,96 @@ namespace Hiperspace
             }
             return new Vector();
         }
-    }
 
+
+        /// <summary>
+        /// Subtract the Vector for consistent delta aggregation
+        /// </summary>
+        /// <param name="other">The vector to append to this vector</param>
+        /// <returns>A new vector containing elements from both vectors</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int Count()
+        {
+            if (Ints is not null) return Ints.Length;
+            else if (Floats is not null) return Floats.Length;
+            else if (Doubles is not null) return Doubles.Length;
+            return 0;
+        }
+
+
+        /// <summary>
+        /// Remove all elements from this vector that match elements in the other vector (set difference)
+        /// </summary>
+        /// <param name="other">The vector containing elements to remove</param>
+        /// <returns>A new vector containing elements from this vector that don't match any element in other</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Vector Subtract(Vector? other)
+        {
+            if (other is null || other.Value.Count() == 0) return this;
+            return Subtract(this, other.Value);
+        }
+
+        /// <summary>
+        /// Remove all elements from the left vector that match elements in the right vector (set difference)
+        /// </summary>
+        /// <param name="left">The source vector</param>
+        /// <param name="right">The vector containing elements to remove</param>
+        /// <returns>A new vector containing elements from left that don't match any element in right</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector Subtract(Vector left, Vector right)
+        {
+            if (left.Count() == 0) return new Vector();
+            if (right.Count() == 0) return left;
+
+            // Convert both to doubles and sort
+            var leftCopy = left;
+            var rightCopy = right;
+            leftCopy.Double();
+            rightCopy.Double();
+
+            var leftSorted = leftCopy.Sort();
+            var rightSorted = rightCopy.Sort();
+
+            if (leftSorted.Doubles is null || rightSorted.Doubles is null)
+                return new Vector();
+
+            var leftDoubles = leftSorted.Doubles;
+            var rightDoubles = rightSorted.Doubles;
+
+            // Build result list containing elements from left not in right
+            var result = new List<double>();
+            int rightIndex = 0;
+
+            for (int leftIndex = 0; leftIndex < leftDoubles.Length; leftIndex++)
+            {
+                double leftValue = leftDoubles[leftIndex];
+                bool found = false;
+
+                // Advance rightIndex to find matching or greater element
+                while (rightIndex < rightDoubles.Length && rightDoubles[rightIndex] < leftValue)
+                {
+                    rightIndex++;
+                }
+
+                // Check if we found a match
+                if (rightIndex < rightDoubles.Length && Math.Abs(rightDoubles[rightIndex] - leftValue) < double.Epsilon)
+                {
+                    found = true;
+                }
+
+                // Only add if not found in right vector
+                if (!found)
+                {
+                    result.Add(leftValue);
+                }
+            }
+
+            if (result.Count == 0)
+                return new Vector();
+
+            return new Vector(result.ToArray());
+        }
+    }
     /// <summary>
     /// Utility class to Accumulate doubles for StdDev and Percentile aggregation of Cubes
     /// instance.

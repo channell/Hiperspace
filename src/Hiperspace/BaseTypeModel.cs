@@ -2,6 +2,7 @@
 using ProtoBuf;
 using ProtoBuf.Meta;
 using ProtoBuf.Serializers;
+using System.Runtime.CompilerServices;
 
 namespace Hiperspace;
 
@@ -30,6 +31,11 @@ public class BaseTypeModel
     , ISerializer<Graph.HiperEdge.ValueType>
     , ISerializer<KeyRef<Graph.HiperEdge.KeyType, Graph.HiperEdge>>
     , ISerializer<Graph.HiperEdge>
+    , ISerializerProxy<Hiperspace.TransactionState>
+    , ISerializer<Hiperspace.Transaction.KeyType>
+    , ISerializer<Hiperspace.Transaction.ValueType>
+    , ISerializer<KeyRef<Hiperspace.Transaction.KeyType, Hiperspace.Transaction>>
+    , ISerializer<Hiperspace.Transaction>
 {
     public SerializerFeatures Features => SerializerFeatures.CategoryMessage;
 
@@ -1127,4 +1133,124 @@ public class BaseTypeModel
         ((ISerializer<Graph.HiperEdge.KeyType>)this).Write(ref state, item._key);
         ((ISerializer<Graph.HiperEdge.ValueType>)this).Write(ref state, item._value);
     }
+    [SpecialName]
+    ISerializer<Hiperspace.TransactionState> ISerializerProxy<Hiperspace.TransactionState>.Serializer
+    {
+        get => EnumSerializer.CreateInt32<Hiperspace.TransactionState>();
+    }
+    Hiperspace.Transaction.KeyType ISerializer<Hiperspace.Transaction.KeyType>.Read(ref ProtoReader.State state, Hiperspace.Transaction.KeyType value)
+    {
+        int num;
+        while ((num = state.ReadFieldHeader()) > 0)
+        {
+            switch (num)
+            {
+
+                case 1:
+                    value.Id = BclHelpers.ReadGuid(ref state);
+                    break;
+                default:
+                    state.SkipField();
+                    break;
+            }
+        }
+        return value;
+    }
+    void ISerializer<Hiperspace.Transaction.KeyType>.Write(ref ProtoWriter.State state, Hiperspace.Transaction.KeyType value)
+    {
+
+        if (value.Id is not null)
+        {
+            state.WriteFieldHeader(1, WireType.String);
+            BclHelpers.WriteGuid(ref state, value.Id.Value);
+        }
+    }
+
+    Hiperspace.Transaction.ValueType ISerializer<Hiperspace.Transaction.ValueType>.Read(ref ProtoReader.State state, Hiperspace.Transaction.ValueType value)
+    {
+        int num;
+        while ((num = state.ReadFieldHeader()) > 0)
+        {
+            switch (num)
+            {
+
+                case 2:
+                    value.State = (Hiperspace.TransactionState)state.ReadInt32();
+                    break;
+                default:
+                    state.SkipField();
+                    break;
+            }
+        }
+        return value;
+    }
+    void ISerializer<Hiperspace.Transaction.ValueType>.Write(ref ProtoWriter.State state, Hiperspace.Transaction.ValueType value)
+    {
+
+        if (value.State is not null)
+        {
+            state.WriteInt32Varint(2, (int)value.State.Value);
+        }
+    }
+
+    KeyRef<Hiperspace.Transaction.KeyType, Hiperspace.Transaction> ISerializer<KeyRef<Hiperspace.Transaction.KeyType, Hiperspace.Transaction>>.Read(ref ProtoReader.State state, KeyRef<Hiperspace.Transaction.KeyType, Hiperspace.Transaction> item)
+    {
+        var value = item.Key;
+        int num;
+        while ((num = state.ReadFieldHeader()) > 0)
+        {
+            switch (num)
+            {
+
+                case 1:
+                    value.Id = BclHelpers.ReadGuid(ref state);
+                    break;
+                default:
+                    state.SkipField();
+                    break;
+            }
+        }
+        return new KeyRef<Hiperspace.Transaction.KeyType, Hiperspace.Transaction>(value);
+    }
+
+    void ISerializer<KeyRef<Hiperspace.Transaction.KeyType, Hiperspace.Transaction>>.Write(ref ProtoWriter.State state, KeyRef<Hiperspace.Transaction.KeyType, Hiperspace.Transaction> item)
+    {
+        var value = item.Key;
+
+        if (value.Id is not null)
+        {
+            state.WriteFieldHeader(1, WireType.String);
+            BclHelpers.WriteGuid(ref state, value.Id.Value);
+        }
+    }
+
+    Hiperspace.Transaction ISerializer<Hiperspace.Transaction>.Read(ref ProtoReader.State state, Hiperspace.Transaction item)
+    {
+        item = item ?? new();
+        int num;
+        while ((num = state.ReadFieldHeader()) > 0)
+        {
+            switch (num)
+            {
+
+                case 1:
+                    item._key.Id = BclHelpers.ReadGuid(ref state);
+                    break;
+
+                case 2:
+                    item._value.State = (Hiperspace.TransactionState)state.ReadInt32();
+                    break;
+                default:
+                    state.SkipField();
+                    break;
+            }
+        }
+        return item;
+    }
+    void ISerializer<Hiperspace.Transaction>.Write(ref ProtoWriter.State state, Hiperspace.Transaction item)
+    {
+        ((ISerializer<Hiperspace.Transaction.KeyType>)this).Write(ref state, item._key);
+        ((ISerializer<Hiperspace.Transaction.ValueType>)this).Write(ref state, item._value);
+    }
+
 }

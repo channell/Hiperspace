@@ -1129,5 +1129,20 @@ namespace Hiperspace
             }
             return max;
         }
+        public override Transaction BeginTransaction(Transaction? current = null)
+        {
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                current = _spaces[c].BeginTransaction(current ?? base.BeginTransaction());
+            }
+            return current!;
+        }
+        public override void CompleteTransaction(Transaction transaction)
+        {
+            for (int c = 0; c < _spaces.Length; c++)
+            {
+                _spaces[c].CompleteTransaction(transaction);
+            }
+        }
     }
 }

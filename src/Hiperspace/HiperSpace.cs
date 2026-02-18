@@ -5,6 +5,7 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using Hiperspace.Heap;
 using Hiperspace.Meta;
 using ProtoBuf.Meta;
 using System.IO.Compression;
@@ -14,7 +15,7 @@ using System.Runtime.InteropServices.Marshalling;
 
 namespace Hiperspace
 {
-    public abstract class HiperSpace : IDisposable
+    public abstract partial class HiperSpace : IDisposable
     {
         protected bool _disposedValue;
 
@@ -917,5 +918,13 @@ namespace Hiperspace
         /// <returns>The next sequence number for the specified key.</returns>
         /// TODO: change to abstract in the next version
         public virtual Task<ulong> UseSequenceAsync(byte[] key) { throw new NotImplementedException("Update the HiLang compiler and/or drivers"); }
+
+        public virtual Transaction BeginTransaction(Transaction? current = null)
+        {
+            if (current == null)
+                current = new Transaction(this);
+            return current;
+        }
+        public virtual void CompleteTransaction(Transaction transaction) { }
     }
 }

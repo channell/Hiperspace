@@ -1138,5 +1138,13 @@ namespace Hiperspace
             }
             return sequence;
         }
+        public override Transaction BeginTransaction(Transaction? current = null)
+        {
+            return _write.BeginTransaction(current ?? base.BeginTransaction());
+        }
+        public override void CompleteTransaction(Transaction transaction)
+        {
+            _write.CompleteTransaction(transaction);
+        }
     }
 }
