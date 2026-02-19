@@ -433,29 +433,36 @@ namespace Hiperspace.Rocks
                 while (range.Valid())
                 {
                     var k = range.Key();
-                    var keypart = new byte[k.Length - sizeof(ulong) - 1];
-                    var span = new Span<byte>(k, 1, k.Length - sizeof(ulong) - 1);
-                    span.CopyTo(keypart);
-                    if (Compare(keypart, key) == 0)
+                    if (k.Length > sizeof(ulong) + 1)
                     {
-                        var ver = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(k, k.Length - sizeof(ulong), sizeof(ulong))));
-                        if (version.HasValue)
+
+                        var keypart = new byte[k.Length - sizeof(ulong) - 1];
+                        var span = new Span<byte>(k, 1, k.Length - sizeof(ulong) - 1);
+                        span.CopyTo(keypart);
+                        if (Compare(keypart, key) == 0)
                         {
-                            if (ver <= version.Value.Ticks && ver > lastVersion)
+                            var ver = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(k, k.Length - sizeof(ulong), sizeof(ulong))));
+                            if (version.HasValue)
                             {
-                                lastVersion = ver;
-                                lastValue = range.Value();
+                                if (ver <= version.Value.Ticks && ver > lastVersion)
+                                {
+                                    lastVersion = ver;
+                                    lastValue = range.Value();
+                                }
+                            }
+                            else
+                            {
+                                var result = range.Value();
+                                RaiseOnAfterGet(ref key, ref result);
+                                return (result, new DateTime(ver));
                             }
                         }
                         else
-                        {
-                            var result = range.Value();
-                            RaiseOnAfterGet(ref key, ref result);
-                            return (result, new DateTime(ver));
-                        }
+                            break;
                     }
                     else
                         break;
+
                     range.Next();
                 }
             }
