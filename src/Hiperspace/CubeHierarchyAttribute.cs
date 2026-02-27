@@ -65,7 +65,7 @@ namespace Hiperspace
         /// <summary>
         /// Child elements of this entity
         /// </summary>
-        public IEnumerable<TEntity> Children { get => throw new NotImplementedException("This property is provided by a compatible HiLang model and will become mandatory in the next release"); }
+        public IEnumerable<TEntity> Children { get => throw new NotImplementedException("This property is not provided by a compatible HiLang model and will become mandatory in the next release"); }
 
         /// <summary>
         /// Recursively retrieve all children for this hierarchy down to leaf nodes
@@ -90,9 +90,17 @@ namespace Hiperspace
         public IEnumerable<TEntity> AllParents()
         {
             if (Parent is not null)
+            {
                 yield return Parent;
-            foreach (var parent in AllParents())
-                yield return parent;
+                var hier = Parent as ICubeHierarchy<TEntity>;
+                if (hier is not null)
+                {
+                    foreach (var parent in hier.AllParents())
+                    {
+                        yield return parent;
+                    }
+                }
+            }
         }
     }
 }

@@ -1,0 +1,6 @@
+# sparx
+```mermaid
+classDiagram
+
+```
+

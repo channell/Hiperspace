@@ -918,6 +918,21 @@ namespace Hiperspace
             }
             return new Vector();
         }
+
+        /// <summary>
+        /// Count the elements in the vector
+        /// </summary>
+        /// <param name="other">The vector to append to this vector</param>
+        /// <returns>A new vector containing elements from both vectors</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public int Count()
+        {
+            if (Ints is not null) return Ints.Length;
+            else if (Floats is not null) return Floats.Length;
+            else if (Doubles is not null) return Doubles.Length;
+            return 0;
+        }
+
     }
 
     /// <summary>

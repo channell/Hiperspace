@@ -1,12 +1,12 @@
 %domain(Cube);
-
+%ids;
 "An additional edge helper for Cube.Edges"
-view Cube.Edge_ : Edge = Edge();
+view Cube.Edge_ : Edge = Edge() #4;
 
 "Bidirectional Edge, implemented with two Cube.Edges"
 view Cube.Edges
     = Edge  (From = From, To = To, Name = Name, TypeName = FromTypeName) , 
-      Cube.Edge_ (From = To, To = From, Name = Name, TypeName = ToTypeName)
+      Cube.Edge_ (From = To, To = From, Name = Name, TypeName = ToTypeName) #5
 (
     From            : Node      #7,
     To              : Node      #8,
@@ -17,62 +17,62 @@ view Cube.Edges
     Name        : String    #6,
 };
 
-view Cube.Edges2 : Cube.Edges = Cube.Edges();
+view Cube.Edges2 : Cube.Edges = Cube.Edges() #6;
 
-@CubeDimension(Id), CubeHierarchy(Parent, Children, Tier), Versioned, DeltaIndex
+@CubeDimension(Id), CubeHierarchy(Parent, Children, Tier), Versioned, DeltaIndex(7)
 entity Cube.Portfolio 
 	= Node (SKey = SKey, Name = Id, TypeName = "Portfolio"),
-	  Cube.Edges (From = this, To = Parent, FromTypeName = "Portfolio-Parent", ToTypeName = "Portfolio-Child", Name = Id)
-(Id : String) 
-{ Parent : Cube.Portfolio, Tier : Int32 } 
-[Children : Cube.Portfolio (Parent = this)];
+	  Cube.Edges (From = this, To = Parent, FromTypeName = "Portfolio-Parent", ToTypeName = "Portfolio-Child", Name = Id) #11
+(Id : String #1) 
+{ Parent : Cube.Portfolio #2, Tier : Int32 #3 } 
+[Children : Cube.Portfolio (Parent = this) #8];
 
 @CubeDimension(ISO)
 entity Cube.Country 
-	= Node (SKey = SKey, Name = ISO, TypeName = "Country")
-(ISO : String) 
-[Instruments : Cube.Instrument (Country = this)];
+	= Node (SKey = SKey, Name = ISO, TypeName = "Country") #13
+(ISO : String #1) 
+[Instruments : Cube.Instrument (Country = this) #12];
 
-@CubeDimension(Name), CubeHierarchy(Parent, Children, Tier), Versioned, DeltaIndex
+@CubeDimension(Name), CubeHierarchy(Parent, Children, Tier), Versioned, DeltaIndex(14)
 entity Cube.Sector 
 	= Node (SKey = SKey, Name = Name, TypeName = "Sector") ,
-	  Cube.Edges (From = this, To = Parent, FromTypeName = "Sector-Parent", ToTypeName = "Sector-Child", Name = Name) 
-(Id : Int32) { Name : String, Parent : Cube.Sector, Tier : Int32 } [Children : Cube.Sector (Parent = this), Customers : Cube.Customer (Sector = this)];
+	  Cube.Edges (From = this, To = Parent, FromTypeName = "Sector-Parent", ToTypeName = "Sector-Child", Name = Name) #19 
+(Id : Int32 #1) { Name : String #2, Parent : Cube.Sector #3, Tier : Int32 #4 } [Children : Cube.Sector (Parent = this) #15, Customers : Cube.Customer (Sector = this) #16];
 
-@CubeDimension(Id), CubeHierarchy(Parent, Children, Tier), Versioned, DeltaIndex
+@CubeDimension(Id), CubeHierarchy(Parent, Children, Tier), Versioned, DeltaIndex(20)
 entity Cube.Product 
 	= Node (SKey = SKey, Name = Id, TypeName = "Product"),
-	  Cube.Edges (From = this, To = Parent, FromTypeName = "Product-Parent", ToTypeName = "Product-Child", Name = Id) 
-(Id : String) { Parent : Cube.Product, Tier : Int32  } [Children : Cube.Product (Parent = this), ProductInstruments : Cube.Instrument (Product = this)];
+	  Cube.Edges (From = this, To = Parent, FromTypeName = "Product-Parent", ToTypeName = "Product-Child", Name = Id) #25 
+(Id : String #1) { Parent : Cube.Product #2, Tier : Int32 #3  } [Children : Cube.Product (Parent = this) #21, ProductInstruments : Cube.Instrument (Product = this) #22];
 
 entity Cube.Account 
 	= Node (SKey = SKey, Name = Id, TypeName = "Account"),
-	  Cube.Edges (From = this, To = Customer, FromTypeName = "Customer-Account", ToTypeName = "Account-Customer", Name = Id)
-(Id : String) {Customer : Cube.Customer} [FirstAccount : First.Acc (Account = this) ];
+	  Cube.Edges (From = this, To = Customer, FromTypeName = "Customer-Account", ToTypeName = "Account-Customer", Name = Id) #28
+(Id : String #1) {Customer : Cube.Customer #2} [FirstAccount : First.Acc (Account = this) #78 ];
 
 entity Cube.Customer 
 	= Node (SKey = SKey, Name = Id, TypeName = "Customer"),
-	  Cube.Edges (From = this, To = Sector, FromTypeName = "Customer-Sector", ToTypeName = "Sector-Customer", Name  = Id) 
-(Id : String) {Sector : Cube.Sector} [Accounts : Cube.Account (Customer = this), FirstAccount : First.Acc ];
-aspect First.Acc 
-{ Account : Cube.Account };
+	  Cube.Edges (From = this, To = Sector, FromTypeName = "Customer-Sector", ToTypeName = "Sector-Customer", Name  = Id) #32 
+(Id : String #1) {Sector : Cube.Sector #2} [Accounts : Cube.Account (Customer = this) #29, FirstAccount : First.Acc #49 ];
+aspect First.Acc #51 
+{ @AlternateIndex("Cube.CustomerFirstAccount", 78) Account : Cube.Account #3 };
 
-@DeltaIndex, Versioned
-aspect Cube.Price { Market : Decimal };
+@DeltaIndex(45), Versioned
+aspect Cube.Price { Market : Decimal #3 };
 
 entity Cube.Instrument 
 	= Node (SKey = SKey, Name = ISIN, TypeName = "Instrument"), 
 	  Cube.Edges (From = this, To = Country, FromTypeName = "Instrument-Country", ToTypeName = "Country-Instrument", Name  = ISIN) ,
-	  Cube.Edges2 (From = this, To = Product, FromTypeName = "Instrument-Product", ToTypeName = "Product-Instrument", Name  = ISIN) 
-(ISIN : String) 
-{Country : Cube.Country, Product : Cube.Product} [Price : Cube.Price, Market = Price.Market];
+	  Cube.Edges2 (From = this, To = Product, FromTypeName = "Instrument-Product", ToTypeName = "Product-Instrument", Name  = ISIN) #40 
+(ISIN : String #1) 
+{Country : Cube.Country #2, Product : Cube.Product #3} [Price : Cube.Price #47, Market = Price.Market];
 
-@CubeFact
+@CubeFact(77, 81)
 entity Cube.Contract : Versioned 
 	= Valued (name = "some", Value = Value, Deleted = Deleted)
-	, Node (SKey = SKey, Name = "", TypeName = "Contract") 
-	(Id : Int64) 
-	{Quantity : Decimal, Instrument : Cube.Instrument, Portfolio : Cube.Portfolio, Account : Cube.Account} 
+	, Node (SKey = SKey, Name = "", TypeName = "Contract") #44 
+	(Id : Int64 #1) 
+	{Quantity : Decimal #3, Instrument : Cube.Instrument #4, Portfolio : Cube.Portfolio #5, Account : Cube.Account #6} 
 	[
 		Market = Instrument.Market, 
 		@CubeMeasure(Aggregate.Sum) 
@@ -81,12 +81,12 @@ entity Cube.Contract : Versioned
 		StdDev = Value
 	];
 
-view Valued : Versioned
+view Valued : Versioned #3
 	(name : String) 
 	{Value : Decimal};
 
-view Banking.Trade (Id : String) {Book : Banking.Book};
-entity Banking.FI.Trade : Banking.Trade = Banking.Trade();
-entity Banking.FX.Trade : Banking.Trade = Banking.Trade();
-entity Banking.EQ.Trade : Banking.Trade = Banking.Trade();
-entity Banking.Book (Id : String) [Trades : Banking.Trade (Book = this)];
+view Banking.Trade #53 (Id : String) {@AlternateIndex("Banking.EQ.Trade", 60),AlternateIndex("Banking.FI.Trade", 56),AlternateIndex("Banking.FX.Trade", 58) ,AlternateIndex("Banking.EQ.Trade", 96) ,AlternateIndex("Banking.FI.Trade", 94) ,AlternateIndex("Banking.FX.Trade", 95) Book : Banking.Book};
+entity Banking.FI.Trade : Banking.Trade = Banking.Trade() #57;
+entity Banking.FX.Trade : Banking.Trade = Banking.Trade() #59;
+entity Banking.EQ.Trade : Banking.Trade = Banking.Trade() #61;
+entity Banking.Book #55 (Id : String #1) [Trades : Banking.Trade (Book = this) #58];

@@ -6,71 +6,31 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>Hiperspace Heap Store</Title>
     <Description>Hiperspace heap store for session, edge and testing purposes</Description>
-    <Copyright>Cepheis Ltd (C) 2023, 2024, 2025</Copyright>
+    <Copyright>Cepheis Ltd (C) 2023, 2024, 2025, 2026</Copyright>
     <LangVersion>13.0</LangVersion>
-    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20260214
+    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20260227
 # Overview
+## Cube Enhancements
+A minor enhancement has been made to fully qualify references to **Hiperspace.Functions**. This prevents naming conflicts when a domain also uses **Functions**.
 
-## Cube enhancements
-`@CubeDimension` and `@CubeHierarchy` updated to better support generic access to Cube data from Graph Pivot-Table view.  
-* `@CubeDimension` name parameter now refers to the property that provides the name of the element in a Pivot-Table dimension.
-* `@CubeHierarchy` has additional parameters for *Children* and *Level*
+When one of a Cube’s **Dimensions** is `Node`, the `Node` view is added to the Cube along with `Edge` definitions that represent navigation between the **Dimension** and the Cube. In this release, the naming of these edges has been updated to ensure consistent navigation through a HiperGraph, using a common TypeName convention:
 
-Create GPU Accelerated Graph Search introduced a problem for cubes in that every single permutation of aggregate would be evaluated to produce the Graph cache resulting in:
-* A dense MOLAP cube 
-* Expensive invalidation when cube *facts* change
+* TypeName `Cube:Drilldown` for navigation from a  *Dimension* to the *Cube*.
+* TypeName `Cube:Dimension` for navigation from the *Cube* to a *Dimension*.
 
-The  **Cube** model has been split into *_Fact* entity containing just base aggregates projected from `@CubeFact` elements, and *_Cube* elements that are calculated *on demand* for summaries.
+### Example
+In the [Cube Example](https://github.com/channell/Hiperspace/blob/master/examples/Cube/Cube.hilang) ***Customer Sector*** and ***Product*** are *Dimensions* that can also be viewed as `Nodes`. The ***Contract Cube*** therefore has `Node` and `Edges` added as a views because.
 
-*Drilldown* performed well when then was a very small number of dimensions and hierarchy levels, but poorly when the complexity increases.  The mode has been changed from using *Drilldown* as an index for aggregate calculation  to a scan of matching *facts*
+ [image]blogs/Blogs/Butterfly/product-model.png[/image]
+ 
+ * ***Contact*** (*Cube*) has one ***Account*** and ***Account*** has one ***Customer*** and ***Customer*** has one ***Sector*** (*Dimension*), it is inferred that  ***Sector*** is a *Dimension* of *Cube* ***Contact***.
+ *  ***Contact*** (*Cube*) has one ***Instrument*** and ***Instrument*** has one ***Product***, it is inferred that ***Product*** is a *Dimension* of *Cube* ***Contract***.
 
-### Is Fact
-`IsFact` attribute of *_Cube* and *_Fact* has been removed, as it is no longer needed.  This is a help for BI access of Cube data via ODATA.
+When viewed through a **HiperGraph** the *Cube* becomes a `Node` that links ***Sector*** *node* to ***Product*** *Node*
+ 
+If you *drilldown* from ***Product*** to ***Contact_Cube*** and *drilldown* to ***Sector***, the shortest *HiperEdge* from ***Product*** to ***Sector*** is through the ***Contract_Cube*** slice that summarizes the connection between the two `Nodes`.  We call this combination of *HiperGraph* and *Cube* "*HiperCube*", and is useful for **AI** prompts like *"which sector uses most widgets?"*
 
------
-
-### Cube Hierarchy
-Keep hierarchy has been enhanced to include the name of the children property in addition to parent and add level to support aggregation of cube summaries 
-
-An example dimension is Organization that is structured as a hierarchy with *Parent* as a reference to the aggregation line, and *Children* as a collection of organization units below the current node.  When referenced by a `@CubeFact` element, the aggregate values of all `@CubeMeasure`s members show the aggregate value of the *node* and all *child nodes* 
-```
-@CubeDimension, CubeHierarchy(Parent, Children, Tier)
-entity Organization (Name : String) {Description : String, Parent : Organization, Tier : Int32} [Children : Organization (Parent = this)];
-```
-The generated code implements `@CubeHierarchy` using the `ICubeHierarchy&lt;TEntity&gt;` that now includes
-
-|Name|Notes|
-|-|-|-|
-|Parent| Reference to parent, that must be the same type as the element|
-|Children| Collection of child nodes that must be the same type as the element|
-|AllPartents()| Function that recursively yields the entire hierarchy upto root node |
-|AllChildren()|Function that  recursively  yields every child node and all their child nodes |
-| Level | Level in Hierarchy for **Pivot Table** views that have separate tabs for each level of the hierarchy |
-
------
-
-### Cube Measure
-`@CubeMeasure` has been enhanced include [Population Standard Deviation](https://en.wikipedia.org/wiki/Standard_deviation) and [Ranked Percentile](https://en.wikipedia.org/wiki/Percentile) aggregates.  `Aggregate.StdDev` and `Aggregate. Percentile` use the `Vector` pseudo-aggregate member that includes every observation in the *_Fact* element for precise aggregation at the summary level.
-
-```
-@CubeFact, DeltaIndex 
-aspect Valuation {@CubeMeasure(Aggregate.Sum) NPV : Decimal} 
-[@CubeMeasure(Aggregate.StdDev) Deviation = NPV, @CubeMeasure(Aggregate.Percentile, 95) PFE = NPV];
-```
-is equivalent to 
-
-|Name|Notes|
-|-|-|-|-|-|
-| NPV | Total across dimensions, up through hierarchies|
-|Deviation | Populate standard deviation for all elements|
-|PFE|The top 95% of all simulated scenarios across the entire set at each  level|
-
-When the *Hiperspace* is hosted using **Hiperspace.DB** the *_Fact* and *_Cube* elements are automatically recalculated:
-* When a *Fact* changes the **_Fact** entity is recalculated with its *dimension* references
-* When an element that a *Fact* is dependent on changes the **_Fact** entity is recalculated
-* When a **Dimension** changes, any **_Cube** elements that reference it are recalculated.
-
-Because **_Facts**  and **_Cubes** are recalculated using a *delta* of changed elements in real-time, it is possible for **Facts** to be calculated from other aggregated **Facts**. Both ***Facts*** and  ***Cubes*** track history  through time (*using `GetVersions()` functions*)
+[image]blogs/Blogs/Butterfly/product-graph.png[/image]
 </PackageReleaseNotes>
     <PackageLicenseExpression>GPL-2.0-or-later</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>

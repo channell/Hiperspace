@@ -10,7 +10,7 @@ using System.Runtime.CompilerServices;
 namespace Hiperspace
 {
     /// <summary>
-    /// Meta Map to process protobuf byte[] buffer tranform
+    /// Meta Map to process protobuf byte[] buffer transform
     /// </summary>
     public struct MetaMap
     {
@@ -19,13 +19,15 @@ namespace Hiperspace
         private int _current = 0;
         private Stack<(int key, int poppoint, (int member, int key)[])> _stack;
         private int _popPoint;
+        private bool _part;
 
-        public MetaMap((int key, (int member, int key)[] values)[] map, int popPoint)
+        public MetaMap((int key, (int member, int key)[] values)[] map, int popPoint, bool part = false)
         {
             _map = map;
             _currentMap = map[0].values;
             _stack = new Stack<(int key, int poppoint, (int member, int key)[])> (popPoint / 2);
             _popPoint = popPoint;
+            _part = part;
         }
 
         /// <summary>
@@ -73,15 +75,25 @@ namespace Hiperspace
         }
 
         /// <summary>
-        /// Pop the stack if we're past the length of the curent node
+        /// Pop the stack if we're past the length of the current node
         /// </summary>
         /// <param name="pos">position in the byte[] that we've reached</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void PopIf (int pos)
         {
-            while (pos >= _popPoint)
+            if (_part)
             {
-                (_current, _popPoint, _) = _stack.Pop();
+                while (pos >= _popPoint)
+                {
+                    (_current, _popPoint, _) = _stack.Pop();
+                }
+            }
+            else
+            {
+                while (pos > _popPoint)
+                {
+                    (_current, _popPoint, _currentMap) = _stack.Pop();
+                }
             }
         }
 

@@ -263,6 +263,18 @@ namespace Hiperspace
             var slice = String.Join(",", slices);
             return slice;
         }
+        /// <summary>
+        /// Get the CubeSlice for a new Cube
+        /// </summary>
+        /// <param name="source">an array of Dimensions</param>
+        /// <returns>the cubeslice to use as a key</returns>
+        public static string CubeSlice(ISet<ICubeDimension> source)
+        {
+            var slices = source.Where(cd => cd != null).Select(cd => int.Parse(cd!.CubeSlice)).ToArray();
+            Array.Sort(slices);
+            var slice = String.Join(",", slices);
+            return slice;
+        }
 
         /// <summary>
         /// Get the name of a cube observation based on the dimensions provided

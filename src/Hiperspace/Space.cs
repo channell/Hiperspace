@@ -33,7 +33,7 @@ namespace Hiperspace
             var key = ms.ToArray();
             var vpl = Lpv2Vpl(key, map);
 #if DEBUG
-            var lpv = Vpl2lpv(vpl, map);
+            var lpv = Vpl2lpv(vpl, map, false);
             System.Diagnostics.Debug.Assert(key.SequenceEqual(lpv));
 #endif
             return vpl;
@@ -60,15 +60,27 @@ namespace Hiperspace
             try
             {
                 if (model  is null) throw new TypeModelException();
-                var lpv = Vpl2lpv(bytes, map);
+                var lpv = Vpl2lpv(bytes, map, false);
                 var protoStream = new MemoryStream(lpv);
                 protoStream.Position = 0;
                 var key = model.Deserialize<TProto>(protoStream);
                 return key;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw new DataMapException(typeof(TProto), bytes, ex);
+                try
+                {
+                    if (model is null) throw new TypeModelException();
+                    var lpv = Vpl2lpv(bytes, map, true);
+                    var protoStream = new MemoryStream(lpv);
+                    protoStream.Position = 0;
+                    var key = model.Deserialize<TProto>(protoStream);
+                    return key;
+                }
+                catch (Exception ex)
+                {
+                    throw new DataMapException(typeof(TProto), bytes, ex);
+                }
             }
         }
         public static TProto FromVectorKey<TProto>(TypeModel? model, byte[] bytes, (int key, (int member, int key)[] values)[] map)
@@ -216,10 +228,10 @@ namespace Hiperspace
         /// </remarks>
         /// <param name="source"></param>
         /// <returns></returns>
-        public static byte[] Vpl2lpv(byte[] source, (int key, (int member, int key)[] values)[] metadata)
+        public static byte[] Vpl2lpv(byte[] source, (int key, (int member, int key)[] values)[] metadata, bool part)
         {
             if (source.Length == 0) return source;
-            var meta = new MetaMap(metadata, source.Length);
+            var meta = new MetaMap(metadata, source.Length, part);
             byte[] bytes = new byte[source.Length];
             int s = 0;
             int p = 0;

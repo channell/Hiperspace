@@ -1,0 +1,6 @@
+# SocialMedia.mmd
+```mermaid
+classDiagram
+
+```
+

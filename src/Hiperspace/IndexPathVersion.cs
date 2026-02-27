@@ -5,6 +5,8 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using System.Net.NetworkInformation;
+
 namespace Hiperspace
 {
     public abstract class IndexPathVersion<TEntity, TKey> : IndexPath<TEntity, TKey>
@@ -45,6 +47,15 @@ namespace Hiperspace
         public IAsyncEnumerable<TEntity> DeltaAsync(TEntity template)
         {
             return Delta(template).ToAsyncEnumerable();
+        }
+
+        public virtual IEnumerable<TEntity> Delta(TEntity template, DateTime DeltaFrom)
+        {
+            return Delta(template);
+        }
+        public IAsyncEnumerable<TEntity> DeltaAsync(TEntity template, DateTime deltaFrom)
+        {
+            return Delta(template, deltaFrom).ToAsyncEnumerable();
         }
     }
 }

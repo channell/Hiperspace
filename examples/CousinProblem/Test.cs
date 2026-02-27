@@ -89,7 +89,7 @@ namespace CousinProblem
 
                 foreach (var child in ancestors)
                 {
-                    _output.WriteLine($"{child.From?.Name} ({child.From?.TypeName}) has {child.TypeName} to {child.To?.Name} ({child.To?.TypeName})with Length {child.Length} and Wdith {child.Width}");
+                    _output.WriteLine($"{child.From?.Name} ({child.From?.TypeName}) has {child.TypeName} to {child.To?.Name} ({child.To?.TypeName})with Length {child.Length} and Width {child.Width}");
                 }
                 ancestors?.Count.Should().Be(4);
             }
