@@ -3069,7 +3069,7 @@ classDiagram
  Aspect used to search for similar entities
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Any|owner of the segment/aspect as an object|||
 |+|Vector|Hiperspace.Vector||||
 
@@ -3079,7 +3079,7 @@ classDiagram
 Route across a graph of edge/node to form an HiperEdge
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||||
 |+|Rules|HashSet<Graph.Rule>||||
 
@@ -3089,7 +3089,7 @@ Route across a graph of edge/node to form an HiperEdge
 A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 'relation', Rules = [{FromType = 'Person', ToType = 'Person', EdgeType = 'Mother'}]}
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|FromType|String||||
 |#|ToType|String||||
 |#|EdgeType|String||||
@@ -3100,7 +3100,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 Remote execution of path requests
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Node|Node||||
 |#|Route|Graph.Route||||
 |#|Length|Int32||||
@@ -3113,7 +3113,7 @@ Remote execution of path requests
 An additional edge helper for Togaf.Edges
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|Node||||
 |#|To|Node||||
 |#|TypeName|String||||
@@ -3125,7 +3125,7 @@ An additional edge helper for Togaf.Edges
 Bidirectional Edge, implemented with two Togaf.Edges
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|Node||||
 |#|To|Node||||
 |#|FromTypeName|String||||
@@ -3138,7 +3138,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|Node||||
 |#|To|Node||||
 |#|FromTypeName|String||||
@@ -3151,7 +3151,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|Node||||
 |#|To|Node||||
 |#|FromTypeName|String||||
@@ -3164,7 +3164,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|Node||||
 |#|To|Node||||
 |#|FromTypeName|String||||
@@ -3177,7 +3177,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|Node||||
 |#|To|Node||||
 |#|FromTypeName|String||||
@@ -3190,7 +3190,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|Value|Togaf.Business.Goal||||
 
 ---
@@ -3199,7 +3199,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -3224,7 +3224,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -3255,7 +3255,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Organization|Togaf.Organization||||
 |#|Function|Togaf.Business.Function||||
 |#|Capability|Togaf.Business.Capability||||
@@ -3288,7 +3288,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Service||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -3304,7 +3304,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Service||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -3318,7 +3318,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Service||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -3332,7 +3332,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Service||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -3346,7 +3346,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Service||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -3360,7 +3360,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Service||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -3374,7 +3374,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Service||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -3388,7 +3388,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Service||||
 |+|Vector|Hiperspace.Vector||||
 
@@ -3398,7 +3398,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|ContextLabel|String||||
 |#|Host|Togaf.Technology.Host||CubeDimensionReference()||
 |#|Event|Togaf.Business.Event||CubeDimensionReference()||
@@ -3424,7 +3424,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Any|owner of the segment/aspect as an object|||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -3438,7 +3438,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Any|owner of the segment/aspect as an object|||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -3452,7 +3452,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Any|owner of the segment/aspect as an object|||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -3466,7 +3466,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Any|owner of the segment/aspect as an object|||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -3480,7 +3480,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Any|owner of the segment/aspect as an object|||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -3494,7 +3494,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Any|owner of the segment/aspect as an object|||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -3508,7 +3508,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Any|owner of the segment/aspect as an object|||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -3524,7 +3524,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Actor||||
 |#|A|Togaf.Business.Activity||||
 |+|Comment|String||||
@@ -3535,7 +3535,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -3559,7 +3559,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -3584,7 +3584,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -3615,7 +3615,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -3647,7 +3647,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -3676,7 +3676,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -3701,7 +3701,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -3725,7 +3725,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -3751,7 +3751,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 ||Task|Int32|||1|
 ||Decision|Int32|||2|
 ||Event|Int32|||3|
@@ -3762,7 +3762,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -3792,7 +3792,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 ||Start|Int32|||1|
 ||End|Int32|||2|
 ||Intermediate|Int32|||3|
@@ -3803,7 +3803,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -3831,7 +3831,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -3863,7 +3863,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -3889,7 +3889,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -3917,7 +3917,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -3943,7 +3943,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.CourseOfAction||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -3959,7 +3959,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.CourseOfAction||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -3973,7 +3973,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.CourseOfAction||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -3987,7 +3987,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.CourseOfAction||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4001,7 +4001,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.CourseOfAction||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4015,7 +4015,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.CourseOfAction||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4029,7 +4029,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.CourseOfAction||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4043,7 +4043,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.CourseOfAction||||
 |+|Vector|Hiperspace.Vector||||
 
@@ -4053,7 +4053,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.ValueStream||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4069,7 +4069,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.ValueStream||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4083,7 +4083,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.ValueStream||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4097,7 +4097,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.ValueStream||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4111,7 +4111,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.ValueStream||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4125,7 +4125,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.ValueStream||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4139,7 +4139,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.ValueStream||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4153,7 +4153,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.ValueStream||||
 |+|Vector|Hiperspace.Vector||||
 
@@ -4163,7 +4163,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Control||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4179,7 +4179,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Control||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4193,7 +4193,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Control||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4207,7 +4207,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Control||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4221,7 +4221,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Control||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4235,7 +4235,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Control||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4249,7 +4249,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Control||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4263,7 +4263,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Control||||
 |+|Vector|Hiperspace.Vector||||
 
@@ -4273,7 +4273,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Process||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4289,7 +4289,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Process||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4303,7 +4303,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Process||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4317,7 +4317,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Process||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4331,7 +4331,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Process||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4345,7 +4345,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Process||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4359,7 +4359,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Process||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4373,7 +4373,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Process||||
 |+|Vector|Hiperspace.Vector||||
 
@@ -4383,7 +4383,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Event||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4399,7 +4399,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Event||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4413,7 +4413,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Event||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4427,7 +4427,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Event||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4441,7 +4441,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Event||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4455,7 +4455,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Event||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4469,7 +4469,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Event||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4483,7 +4483,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Event||||
 |+|Vector|Hiperspace.Vector||||
 
@@ -4493,7 +4493,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Activity||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4509,7 +4509,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Activity||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4523,7 +4523,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Activity||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4537,7 +4537,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Activity||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4551,7 +4551,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Activity||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4565,7 +4565,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Activity||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4579,7 +4579,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Activity||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4593,7 +4593,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Activity||||
 |+|Vector|Hiperspace.Vector||||
 
@@ -4603,7 +4603,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Measure||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4619,7 +4619,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Measure||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4633,7 +4633,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Measure||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4647,7 +4647,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Measure||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4661,7 +4661,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Measure||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4675,7 +4675,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Measure||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4689,7 +4689,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Measure||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4703,7 +4703,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Measure||||
 |+|Vector|Hiperspace.Vector||||
 
@@ -4713,7 +4713,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Objective||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4729,7 +4729,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Objective||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4743,7 +4743,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Objective||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4757,7 +4757,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Objective||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4771,7 +4771,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Objective||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4785,7 +4785,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Objective||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4799,7 +4799,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Objective||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4813,7 +4813,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Objective||||
 |+|Vector|Hiperspace.Vector||||
 
@@ -4823,7 +4823,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Goal||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4839,7 +4839,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Goal||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4853,7 +4853,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Goal||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4867,7 +4867,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Goal||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4881,7 +4881,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Goal||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4895,7 +4895,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Goal||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4909,7 +4909,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Goal||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4923,7 +4923,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Goal||||
 |+|Vector|Hiperspace.Vector||||
 
@@ -4933,7 +4933,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Product||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4949,7 +4949,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Product||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4963,7 +4963,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Product||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4977,7 +4977,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Product||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -4991,7 +4991,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Product||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5005,7 +5005,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Product||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5019,7 +5019,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Product||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5033,7 +5033,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Product||||
 |+|Vector|Hiperspace.Vector||||
 
@@ -5043,7 +5043,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Capability||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5059,7 +5059,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Capability||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5073,7 +5073,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Capability||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5087,7 +5087,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Capability||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5101,7 +5101,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Capability||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5115,7 +5115,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Capability||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5129,7 +5129,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Capability||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5143,7 +5143,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Capability||||
 |+|Vector|Hiperspace.Vector||||
 
@@ -5153,7 +5153,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Function||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5169,7 +5169,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Function||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5183,7 +5183,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Function||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5197,7 +5197,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Function||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5211,7 +5211,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Function||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5225,7 +5225,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Function||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5239,7 +5239,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Function||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5253,7 +5253,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Function||||
 |+|Vector|Hiperspace.Vector||||
 
@@ -5263,7 +5263,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Actor||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5279,7 +5279,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Actor||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5293,7 +5293,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Actor||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5307,7 +5307,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Actor||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5321,7 +5321,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Actor||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5335,7 +5335,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Actor||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5349,7 +5349,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Actor||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5363,7 +5363,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Actor||||
 |+|Vector|Hiperspace.Vector||||
 
@@ -5373,7 +5373,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Driver||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5389,7 +5389,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Driver||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5403,7 +5403,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Driver||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5417,7 +5417,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Driver||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5431,7 +5431,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Driver||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5445,7 +5445,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Driver||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5459,7 +5459,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Driver||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5473,7 +5473,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Driver||||
 |+|Vector|Hiperspace.Vector||||
 
@@ -5483,7 +5483,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Business.Measure||||
 |#|At|DateTime||||
 |+|Value|Decimal||AlternateIndex(2216)||
@@ -5494,7 +5494,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -5520,7 +5520,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |#|Entity|Togaf.Data.Entity||||
 |#|System|Togaf.Application.System||||
@@ -5537,7 +5537,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -5562,7 +5562,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -5586,7 +5586,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Data.Physical||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5602,7 +5602,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Data.Physical||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5616,7 +5616,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Data.Physical||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5630,7 +5630,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Data.Physical||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5644,7 +5644,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Data.Physical||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5658,7 +5658,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Data.Physical||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5672,7 +5672,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Data.Physical||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5686,7 +5686,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Data.Physical||||
 |+|Vector|Hiperspace.Vector||||
 
@@ -5696,7 +5696,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Data.Logical||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5712,7 +5712,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Data.Logical||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5726,7 +5726,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Data.Logical||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5740,7 +5740,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Data.Logical||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5754,7 +5754,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Data.Logical||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5768,7 +5768,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Data.Logical||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5782,7 +5782,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Data.Logical||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5796,7 +5796,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Data.Logical||||
 |+|Vector|Hiperspace.Vector||||
 
@@ -5806,7 +5806,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Data.Entity||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5822,7 +5822,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Data.Entity||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5836,7 +5836,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Data.Entity||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5850,7 +5850,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Data.Entity||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5864,7 +5864,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Data.Entity||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5878,7 +5878,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Data.Entity||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5892,7 +5892,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Data.Entity||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -5906,7 +5906,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Data.Entity||||
 |+|Vector|Hiperspace.Vector||||
 
@@ -5916,7 +5916,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -5945,7 +5945,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -5971,7 +5971,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -5996,7 +5996,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Application.Deployed||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6012,7 +6012,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Application.Deployed||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6026,7 +6026,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Application.Deployed||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6040,7 +6040,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Application.Deployed||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6054,7 +6054,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Application.Deployed||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6068,7 +6068,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Application.Deployed||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6082,7 +6082,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Application.Deployed||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6096,7 +6096,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Application.Deployed||||
 |+|Vector|Hiperspace.Vector||||
 
@@ -6106,7 +6106,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Application.Component||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6122,7 +6122,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Application.Component||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6136,7 +6136,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Application.Component||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6150,7 +6150,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Application.Component||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6164,7 +6164,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Application.Component||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6178,7 +6178,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Application.Component||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6192,7 +6192,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Application.Component||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6206,7 +6206,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Application.Component||||
 |+|Vector|Hiperspace.Vector||||
 
@@ -6216,7 +6216,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Application.System||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6232,7 +6232,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Application.System||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6246,7 +6246,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Application.System||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6260,7 +6260,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Application.System||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6274,7 +6274,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Application.System||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6288,7 +6288,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Application.System||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6302,7 +6302,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Application.System||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6316,7 +6316,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Application.System||||
 |+|Vector|Hiperspace.Vector||||
 
@@ -6326,7 +6326,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -6354,7 +6354,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -6381,7 +6381,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -6405,7 +6405,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Instance||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6421,7 +6421,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Instance||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6435,7 +6435,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Instance||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6449,7 +6449,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Instance||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6463,7 +6463,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Instance||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6477,7 +6477,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Instance||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6491,7 +6491,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Instance||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6505,7 +6505,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Instance||||
 |+|Vector|Hiperspace.Vector||||
 
@@ -6515,7 +6515,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Host||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6531,7 +6531,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Host||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6545,7 +6545,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Host||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6559,7 +6559,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Host||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6573,7 +6573,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Host||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6587,7 +6587,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Host||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6601,7 +6601,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Host||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6615,7 +6615,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Host||||
 |+|Vector|Hiperspace.Vector||||
 
@@ -6625,7 +6625,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Platform||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6641,7 +6641,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Platform||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6655,7 +6655,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Platform||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6669,7 +6669,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Platform||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6683,7 +6683,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Platform||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6697,7 +6697,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Platform||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6711,7 +6711,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Platform||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -6725,7 +6725,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Platform||||
 |+|Vector|Hiperspace.Vector||||
 
@@ -6735,7 +6735,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Organization|Togaf.Organization||||
 |#|Function|Togaf.Business.Function||||
 |#|Capability|Togaf.Business.Capability||||
@@ -6768,7 +6768,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Organization|Togaf.Organization||||
 |#|Function|Togaf.Business.Function||||
 |#|Capability|Togaf.Business.Capability||||
@@ -6801,7 +6801,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|ContextLabel|String||||
 |#|Host|Togaf.Technology.Host||CubeDimensionReference()||
 |#|Event|Togaf.Business.Event||CubeDimensionReference()||
@@ -6827,7 +6827,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|ContextLabel|String||||
 |#|Host|Togaf.Technology.Host||CubeDimensionReference()||
 |#|Event|Togaf.Business.Event||CubeDimensionReference()||

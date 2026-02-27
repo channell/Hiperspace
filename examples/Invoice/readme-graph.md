@@ -219,7 +219,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|Node||||
 |#|To|Node||||
 |#|TypeName|String||||
@@ -231,7 +231,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|Node||||
 |#|To|Node||||
 |#|TypeName|String||||
@@ -243,7 +243,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|Node||||
 |#|To|Node||||
 |#|TypeName|String||||
@@ -255,7 +255,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|Node||||
 |#|To|Node||||
 |#|TypeName|String||||
@@ -267,7 +267,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|Node||||
 |#|To|Node||||
 |#|TypeName|String||||
@@ -279,7 +279,7 @@ classDiagram
 Route across a graph of edge/node to form an HiperEdge
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||||
 |+|Rules|HashSet<Graph.Rule>||||
 
@@ -289,7 +289,7 @@ Route across a graph of edge/node to form an HiperEdge
 A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 'relation', Rules = [{FromType = 'Person', ToType = 'Person', EdgeType = 'Mother'}]}
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|FromType|String||||
 |#|ToType|String||||
 |#|EdgeType|String||||
@@ -300,7 +300,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 Path from one Node to another Node over a number of routes
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|Node||||
 |#|To|Node||||
 |#|TypeName|String||||
@@ -316,7 +316,7 @@ Path from one Node to another Node over a number of routes
 Remote execution of path requests
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Node|Node||||
 |#|Route|Graph.Route||||
 |#|Length|Int32||||
@@ -329,7 +329,7 @@ Remote execution of path requests
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int32||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
 |+|Street|String||||
@@ -346,7 +346,7 @@ Remote execution of path requests
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int16||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
 |+|Name|String||||
@@ -359,7 +359,7 @@ Remote execution of path requests
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int32||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
 |+|Street|String||||
@@ -378,7 +378,7 @@ Remote execution of path requests
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|ERP.Location.Country||||
 |#|To|ERP.Location.Country||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
@@ -391,7 +391,7 @@ Remote execution of path requests
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int16||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
 |+|Name|String||||
@@ -404,7 +404,7 @@ Remote execution of path requests
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|ERP.Location.Country||||
 |#|To|ERP.Location.Country||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
@@ -417,7 +417,7 @@ Remote execution of path requests
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int32||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
 |+|Name|String||||
@@ -434,7 +434,7 @@ Remote execution of path requests
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|ERP.Products.Product||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
 |+|Name|String||||
@@ -448,7 +448,7 @@ Remote execution of path requests
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int32||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
 |+|Name|String||||
@@ -463,7 +463,7 @@ Remote execution of path requests
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int16||||
 |+|Name|String||||
 ||CommissionRate|Some(Decimal)|||0.0m|
@@ -476,7 +476,7 @@ Remote execution of path requests
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|LineNumber|Int16||||
 |+|Product|ERP.Products.Product||||
 |+|Units|Decimal||||
@@ -492,7 +492,7 @@ Remote execution of path requests
     An order placed by a customer for delivery    <remarks>the store and customer can not be changed once it has been invoiced </remarks>
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|OrderNumber|Int32||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
 |+|Customer|ERP.Client.Customer||||
@@ -521,7 +521,7 @@ Remote execution of path requests
     An order placed by a customer for delivery    <remarks>the store and customer can not be changed once it has been invoiced </remarks>
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|ERP.Sales.Order||||
 |+|TaxDate|DateTime||||
 |+|Total|Decimal||||

@@ -245,7 +245,7 @@ classDiagram
  Aspect used to search for similar entities
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Any|owner of the segment/aspect as an object|||
 |+|Vector|Hiperspace.Vector||||
 
@@ -255,7 +255,7 @@ classDiagram
 Route across a graph of edge/node to form an HiperEdge
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||||
 |+|Rules|HashSet<Graph.Rule>||||
 
@@ -265,7 +265,7 @@ Route across a graph of edge/node to form an HiperEdge
 A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 'relation', Rules = [{FromType = 'Person', ToType = 'Person', EdgeType = 'Mother'}]}
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|FromType|String||||
 |#|ToType|String||||
 |#|EdgeType|String||||
@@ -276,7 +276,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Any|owner of the segment/aspect as an object|||
 |+|Deleted|Boolean|Flag for read horizon filter to hide when true|||
 |+|Latitude|Double||||
@@ -288,7 +288,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|FirstName|String||||
 |+|LastName|String||||
@@ -319,7 +319,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Social.Media.Person||||
 |#|Person|Social.Media.Person||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
@@ -331,7 +331,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Social.Media.Person||||
 |#|Person|Social.Media.Person||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
@@ -344,7 +344,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Social.Media.Person||||
 |#|Tag|Social.Media.Tag||||
 
@@ -354,7 +354,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||||
 |+|Class|Social.Media.TagClass||||
 ||TypeName|Some(String)|||"Tag"|
@@ -365,7 +365,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||||
 |+|IsSubClassOf|Social.Media.TagClass||||
 ||SubClassses|Social.Media.TagClass|||IsSubClassOf = this|
@@ -377,7 +377,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
 |+|Title|String||||
@@ -392,7 +392,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Social.Media.Post||||
 |#|Tag|Social.Media.Tag||||
 
@@ -402,7 +402,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|CreatedDate|DateTime||||
 |+|BrowserUsed|String||||
@@ -427,7 +427,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Social.Media.Post||||
 |#|Creator|Social.Media.Person||||
 |+|CreatedDate|DateTime||||
@@ -445,7 +445,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||||
 |+|Continent|Social.Media.Continent||||
 ||Cities|Social.Media.City|||Country = this|
@@ -457,7 +457,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||||
 |+|Country|Social.Media.Country||||
 ||TypeName|Some(String)|||"City"|
@@ -468,7 +468,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||||
 ||TypeName|Some(String)|||"Continent"|
 
@@ -478,7 +478,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||||
 |+|Location|Social.Media.City||||
 ||TypeName|Some(String)|||"Company"|
@@ -489,7 +489,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||||
 |+|Location|Social.Media.City||||
 ||TypeName|Some(String)|||"University"|
@@ -500,7 +500,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Social.Media.Person||||
 |#|Value|Social.Media.Company||||
 |+|FromDate|DateTime||||
@@ -512,7 +512,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Social.Media.Person||||
 |#|Value|Social.Media.University||||
 |+|FromDate|DateTime||||
@@ -524,7 +524,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Social.Media.Comment||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
 |+|Latitude|Double||||
@@ -536,7 +536,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Social.Media.Comment||||
 |+|Vector|Hiperspace.Vector||||
 
@@ -546,7 +546,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Social.Media.Post||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
 |+|Latitude|Double||||
@@ -558,7 +558,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Social.Media.Post||||
 |+|Vector|Hiperspace.Vector||||
 
@@ -568,7 +568,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Social.Media.Person||||
 |+|Vector|Hiperspace.Vector||||
 
@@ -578,7 +578,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Social.Media.Person||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
 |+|Latitude|Double||||
@@ -590,7 +590,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 Remote execution of path requests
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Node|Node||||
 |#|Route|Graph.Route||||
 |#|Length|Int32||||

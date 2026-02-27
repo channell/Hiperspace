@@ -91,7 +91,7 @@ classDiagram
 Route across a graph of edge/node to form an HiperEdge
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||||
 |+|Rules|HashSet<Graph.Rule>||||
 
@@ -101,7 +101,7 @@ Route across a graph of edge/node to form an HiperEdge
 A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 'relation', Rules = [{FromType = 'Person', ToType = 'Person', EdgeType = 'Mother'}]}
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|FromType|String||||
 |#|ToType|String||||
 |#|EdgeType|String||||
@@ -112,7 +112,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 Remote execution of path requests
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Node|Node||||
 |#|Route|Graph.Route||||
 |#|Length|Int32||||
@@ -125,7 +125,7 @@ Remote execution of path requests
 Calcualtion view for a fixed rate bond
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Mnmonic|String||||
 |+|Convention|String||||
 |+|Calendar|String||||
@@ -146,7 +146,7 @@ Calcualtion view for a fixed rate bond
 Base view that all Instrument types can be converted to
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Mnmonic|String||||
 |+|NPV|Double||||
 |+|CASH|Double||||
@@ -157,7 +157,7 @@ Base view that all Instrument types can be converted to
 A Fixed rate bond stored in hiperspace
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Mnmonic|String||||
 |+|Convention|String||||
 |+|Calendar|String||||
@@ -191,7 +191,7 @@ A Fixed rate bond stored in hiperspace
 A Fixed rate bond stored in hiperspace
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|ContextLabel|String||||
 |#|FixedRate|QL.FixedRate|A Fixed rate bond stored in hiperspace|CubeDimensionReference()||
 |+|NPV|Double||CubeMeasure(Aggregate?.Sum)||

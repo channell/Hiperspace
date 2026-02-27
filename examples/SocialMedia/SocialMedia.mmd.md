@@ -145,7 +145,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|Latitude|Double||||
 |+|Longitude|Double||||
 
@@ -155,7 +155,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|CreatedDate|DateTime||||
 |+|BrowserUsed|String||||
 |+|LocationIP|String||||
@@ -167,7 +167,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|FirstName|String||||
 |+|LastName|String||||
@@ -192,7 +192,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Person|Social.Media.Person||||
 ||Name||||Person?.Name|
 
@@ -202,7 +202,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Person|Social.Media.Person||||
 ||Name||||Person?.Name|
 ||Distance||||distance(owner,Person)|
@@ -213,7 +213,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Post|Social.Media.Post||||
 ||Content||||Post?.Content|
 
@@ -223,7 +223,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Tag|Social.Media.Tag||||
 
 ---
@@ -232,7 +232,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||||
 |+|Class|Social.Media.TagClass||||
 ||TypeName||||"Tag"|
@@ -243,7 +243,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||||
 |+|IsSubClassOf|Social.Media.TagClass||||
 ||SubClassses|Social.Media.TagClass|||IsSubClassOf = this|
@@ -255,7 +255,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Title|String||||
 |+|CreationDate|DateTime||||
@@ -269,7 +269,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Person|Social.Media.Person||||
 ||Name||||Person?.Name|
 
@@ -279,7 +279,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Tag|Social.Media.Tag||||
 
 ---
@@ -288,7 +288,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|LocatedIn|Social.Media.Country||||
 
 ---
@@ -297,7 +297,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Creator|Social.Media.Person||||
 |+|Forum|Social.Media.Forum||||
@@ -315,7 +315,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Creator|Social.Media.Person||||
 |+|Content|String||||
 
@@ -325,7 +325,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||||
 
 ---
@@ -334,7 +334,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|Continent|Social.Media.Continent||||
 ||Cities|Social.Media.City|||Country = this|
 ||TypeName||||"Country"|
@@ -345,7 +345,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|Country|Social.Media.Country||||
 ||TypeName||||"City"|
 
@@ -355,7 +355,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 ||TypeName||||"Continent"|
 
 ---
@@ -364,7 +364,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|Location|Social.Media.City||||
 ||TypeName||||"Company"|
 
@@ -374,7 +374,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|Location|Social.Media.City||||
 ||TypeName||||"University"|
 
@@ -384,7 +384,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Value|T||||
 |+|FromDate|DateTime||||
 |+|ToDate|DateTime||||

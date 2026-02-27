@@ -20,7 +20,7 @@ classDiagram
 National Country
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Code|String||||
 ||AirPorts|Location.Airport|||Country = this|
 
@@ -30,7 +30,7 @@ National Country
 Airport within a country
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Country|Location.Country||||
 |#|Code|String||||
 

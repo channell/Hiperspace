@@ -224,7 +224,7 @@ classDiagram
  Aspect used to search for similar entities
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Any|owner of the segment/aspect as an object|||
 |+|Vector|Hiperspace.Vector||||
 
@@ -234,7 +234,7 @@ classDiagram
 Route across a graph of edge/node to form an HiperEdge
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||||
 |+|Rules|HashSet<Graph.Rule>||||
 
@@ -244,7 +244,7 @@ Route across a graph of edge/node to form an HiperEdge
 A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 'relation', Rules = [{FromType = 'Person', ToType = 'Person', EdgeType = 'Mother'}]}
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|FromType|String||||
 |#|ToType|String||||
 |#|EdgeType|String||||
@@ -255,7 +255,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 Path from one Node to another Node over a number of routes
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|Node||||
 |#|To|Node||||
 |#|TypeName|String||||
@@ -271,7 +271,7 @@ Path from one Node to another Node over a number of routes
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Any|owner of the segment/aspect as an object|||
 |+|Deleted|Boolean|Flag for read horizon filter to hide when true|||
 |+|Latitude|Double||||
@@ -283,7 +283,7 @@ Path from one Node to another Node over a number of routes
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|FirstName|String||||
 |+|LastName|String||||
@@ -314,7 +314,7 @@ Path from one Node to another Node over a number of routes
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Social.Media.Person||||
 |#|Person|Social.Media.Person||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
@@ -326,7 +326,7 @@ Path from one Node to another Node over a number of routes
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Social.Media.Person||||
 |#|Person|Social.Media.Person||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
@@ -339,7 +339,7 @@ Path from one Node to another Node over a number of routes
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Social.Media.Person||||
 |#|Tag|Social.Media.Tag||||
 
@@ -349,7 +349,7 @@ Path from one Node to another Node over a number of routes
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||||
 |+|Class|Social.Media.TagClass||||
 ||TypeName|Some(String)|||"Tag"|
@@ -360,7 +360,7 @@ Path from one Node to another Node over a number of routes
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||||
 |+|IsSubClassOf|Social.Media.TagClass||||
 ||SubClassses|Social.Media.TagClass|||IsSubClassOf = this|
@@ -372,7 +372,7 @@ Path from one Node to another Node over a number of routes
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
 |+|Title|String||||
@@ -387,7 +387,7 @@ Path from one Node to another Node over a number of routes
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Social.Media.Post||||
 |#|Tag|Social.Media.Tag||||
 
@@ -397,7 +397,7 @@ Path from one Node to another Node over a number of routes
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|CreatedDate|DateTime||||
 |+|BrowserUsed|String||||
@@ -422,7 +422,7 @@ Path from one Node to another Node over a number of routes
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Social.Media.Post||||
 |#|Creator|Social.Media.Person||||
 |+|CreatedDate|DateTime||||
@@ -440,7 +440,7 @@ Path from one Node to another Node over a number of routes
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||||
 |+|Continent|Social.Media.Continent||||
 ||Cities|Social.Media.City|||Country = this|
@@ -452,7 +452,7 @@ Path from one Node to another Node over a number of routes
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||||
 |+|Country|Social.Media.Country||||
 ||TypeName|Some(String)|||"City"|
@@ -463,7 +463,7 @@ Path from one Node to another Node over a number of routes
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||||
 ||TypeName|Some(String)|||"Continent"|
 
@@ -473,7 +473,7 @@ Path from one Node to another Node over a number of routes
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||||
 |+|Location|Social.Media.City||||
 ||TypeName|Some(String)|||"Company"|
@@ -484,7 +484,7 @@ Path from one Node to another Node over a number of routes
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||||
 |+|Location|Social.Media.City||||
 ||TypeName|Some(String)|||"University"|
@@ -495,7 +495,7 @@ Path from one Node to another Node over a number of routes
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Social.Media.Person||||
 |#|Value|Social.Media.Company||||
 |+|FromDate|DateTime||||
@@ -507,7 +507,7 @@ Path from one Node to another Node over a number of routes
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Social.Media.Person||||
 |#|Value|Social.Media.University||||
 |+|FromDate|DateTime||||
@@ -519,7 +519,7 @@ Path from one Node to another Node over a number of routes
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Social.Media.Comment||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
 |+|Latitude|Double||||
@@ -531,7 +531,7 @@ Path from one Node to another Node over a number of routes
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Social.Media.Comment||||
 |+|Vector|Hiperspace.Vector||||
 
@@ -541,7 +541,7 @@ Path from one Node to another Node over a number of routes
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Social.Media.Post||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
 |+|Latitude|Double||||
@@ -553,7 +553,7 @@ Path from one Node to another Node over a number of routes
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Social.Media.Post||||
 |+|Vector|Hiperspace.Vector||||
 
@@ -563,7 +563,7 @@ Path from one Node to another Node over a number of routes
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Social.Media.Person||||
 |+|Vector|Hiperspace.Vector||||
 
@@ -573,7 +573,7 @@ Path from one Node to another Node over a number of routes
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Social.Media.Person||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
 |+|Latitude|Double||||
@@ -585,7 +585,7 @@ Path from one Node to another Node over a number of routes
 Remote execution of path requests
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Node|Node||||
 |#|Route|Graph.Route||||
 |#|Length|Int32||||

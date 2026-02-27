@@ -85,7 +85,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String|name of the sector|||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
 |+|Description|String|description of the sector|||
@@ -98,7 +98,7 @@ classDiagram
 A Customer
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String| name  of the customer|||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
 |+|Address|String||||
@@ -116,7 +116,7 @@ A Customer
 A Customer
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Acc.Account||||
 |#|At|DateTime|when the transaction was authorised|||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
@@ -136,7 +136,7 @@ A Customer
 A Customer
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Acc.Customer||||
 |#|Title|String||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
@@ -155,7 +155,7 @@ A Customer
 A Customer
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|ContextLabel|String||||
 |#|Sector|Acc.Sector||CubeDimensionReference()||
 |#|Account|Acc.Account|A Customer|CubeDimensionReference()||
@@ -175,7 +175,7 @@ A Customer
 A Customer
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|CubeSlice|String||||
 |#|ContextLabel|String||||
 |#|Sector|Acc.Sector||CubeDimensionReference()||

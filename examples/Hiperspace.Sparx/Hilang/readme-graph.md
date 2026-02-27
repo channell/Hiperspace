@@ -591,7 +591,7 @@ classDiagram
 Route across a graph of edge/node to form an HiperEdge
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||||
 |+|Rules|HashSet<Graph.Rule>||||
 
@@ -601,7 +601,7 @@ Route across a graph of edge/node to form an HiperEdge
 A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 'relation', Rules = [{FromType = 'Person', ToType = 'Person', EdgeType = 'Mother'}]}
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|FromType|String||||
 |#|ToType|String||||
 |#|EdgeType|String||||
@@ -612,7 +612,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 Path from one Node to another Node over a number of routes
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|Node||||
 |#|To|Node||||
 |#|TypeName|String||||
@@ -628,7 +628,7 @@ Path from one Node to another Node over a number of routes
 Remote execution of path requests
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Node|Node||||
 |#|Route|Graph.Route||||
 |#|Length|Int32||||
@@ -641,7 +641,7 @@ Remote execution of path requests
 when was the item loaded
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Any|owner of the segment/aspect as an object|||
 |+|When|DateTime||||
 
@@ -651,7 +651,7 @@ when was the item loaded
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||Key(), StringLength(255)||
 |+|Organisation|String||StringLength(255)||
 |+|Phone1|String||StringLength(50)||
@@ -668,7 +668,7 @@ when was the item loaded
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Sparx.EA.Connector||||
 |#|Constraint|String||Column()||
 |#|ConnectorEnd|String||Column()||
@@ -682,7 +682,7 @@ when was the item loaded
  All elements in a Sparx model are stored seperately
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Sparx.EA.Operation||||
 |#|Id|Int32||||
 |+|Property|String||StringLength(255)||
@@ -697,7 +697,7 @@ when was the item loaded
  All elements in a Sparx model are stored seperately
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Sparx.EA.Operation||||
 |#|PreCondition|String||Column(), StringLength(255)||
 |+|Type|String||StringLength(50)||
@@ -710,7 +710,7 @@ when was the item loaded
  All elements in a Sparx model are stored seperately
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Sparx.EA.Operation||||
 |#|PostCondition|String||Column(), StringLength(255)||
 |+|Type|String||StringLength(255)||
@@ -723,7 +723,7 @@ when was the item loaded
  All elements in a Sparx model are stored seperately
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Sparx.EA.Operation||||
 |#|Name|String||Column(), StringLength(255)||
 |+|Type|String||StringLength(255)||
@@ -744,7 +744,7 @@ when was the item loaded
  All elements in a Sparx model are stored seperately
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Sparx.EA.Element||||
 |#|Id|Int32||||
 |+|Name|String||StringLength(255)||
@@ -784,7 +784,7 @@ when was the item loaded
  All elements in a Sparx model are stored seperately
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Sparx.EA.Element||||
 |#|Test|String||||
 |#|TestClass|Int32||||
@@ -805,7 +805,7 @@ when was the item loaded
  All elements in a Sparx model are stored seperately
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Sparx.EA.Element||||
 |#|Scenario|String||||
 |+|ScenarioType|String||StringLength(12)||
@@ -821,7 +821,7 @@ when was the item loaded
  All elements in a Sparx model are stored seperately
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Sparx.EA.Element||||
 |#|Risk|String||||
 |+|RiskType|String||StringLength(12)||
@@ -835,7 +835,7 @@ when was the item loaded
  All elements in a Sparx model are stored seperately
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Sparx.EA.Element||||
 |#|Resource|Sparx.EA.Resource||||
 |#|Role|String||||
@@ -855,7 +855,7 @@ when was the item loaded
  All elements in a Sparx model are stored seperately
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Sparx.EA.Element||||
 |#|Id|Int32||Key(), Column("ReqID")||
 |+|Requirement|String||StringLength(255)||
@@ -874,7 +874,7 @@ when was the item loaded
  All elements in a Sparx model are stored seperately
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Sparx.EA.Element||||
 |#|Id|Int32||Key(), Column("PropertyID"), DatabaseGenerated(DatabaseGeneratedOption?.Identity)||
 |+|Property|String||StringLength(255)||
@@ -889,7 +889,7 @@ when was the item loaded
  All elements in a Sparx model are stored seperately
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Sparx.EA.Element||||
 |#|Problem|String||Column(), StringLength(255)||
 |#|ProblemType|String||Column(), StringLength(255)||
@@ -911,7 +911,7 @@ when was the item loaded
  All elements in a Sparx model are stored seperately
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Sparx.EA.Element||||
 |#|Metric|String||Column(), StringLength(255)||
 |+|MetricType|String||StringLength(12)||
@@ -925,7 +925,7 @@ when was the item loaded
  All elements in a Sparx model are stored seperately
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Sparx.EA.Element||||
 |#|FileName|String||Column(), StringLength(255)||
 |+|Type|String||StringLength(50)||
@@ -940,7 +940,7 @@ when was the item loaded
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Diagram|Sparx.EA.Diagram||||
 |#|Element|Sparx.EA.Element||||
 |+|RectTop|Int32||||
@@ -958,7 +958,7 @@ when was the item loaded
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Diagram|Sparx.EA.Diagram||||
 |#|Connector|Sparx.EA.Connector||||
 |+|Geometry|String||||
@@ -974,7 +974,7 @@ when was the item loaded
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int32||Key(), Column("Diagram_ID"), DatabaseGenerated(DatabaseGeneratedOption?.Identity)||
 |+|PackageId|Int32||Column("Package_ID")||
 |+|ParentID|Int32||||
@@ -1015,7 +1015,7 @@ when was the item loaded
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Sparx.EA.Connector||||
 |#|PropertyId|Int32||Key(), Column("PropertyID"), DatabaseGenerated(DatabaseGeneratedOption?.Identity)||
 |+|Property|String||StringLength(255)||
@@ -1030,7 +1030,7 @@ when was the item loaded
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Sparx.EA.Connector||||
 |#|Constraint|String||||
 |+|ConstraintType|String||StringLength(50)||
@@ -1043,7 +1043,7 @@ when was the item loaded
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Effort|String||KeyAttribute(), Column(), StringLength(255)||
 |+|EffortType|String||StringLength(12)||
 |+|EValue|Double||||
@@ -1055,7 +1055,7 @@ when was the item loaded
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Constraint|String||StringLength(255)||
 |#|ConstraintType|String||StringLength(30)||
 |+|Weight|Double||||
@@ -1068,7 +1068,7 @@ when was the item loaded
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int32||Key(), Column("Connector_ID"), DatabaseGenerated(DatabaseGeneratedOption?.Identity)||
 |+|GUID|String||StringLength(40), Column("ea_guid")||
 |+|StartElement|Sparx.EA.Element||||
@@ -1160,7 +1160,7 @@ when was the item loaded
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|PropertyId|Int32||KeyAttribute(), Column("PropertyID"), DatabaseGenerated(DatabaseGeneratedOption?.Identity)||
 |+|GUID|String||StringLength(40), Column("ea_guid")||
 |+|Property|String||StringLength(255)||
@@ -1173,7 +1173,7 @@ when was the item loaded
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Constraint|String||StringLength(255)||
 |+|AttName|String||StringLength(255)||
 |+|Type|String||StringLength(255)||
@@ -1185,7 +1185,7 @@ when was the item loaded
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int32||Key(), DatabaseGenerated(DatabaseGeneratedOption?.Identity), Column("ID")||
 |+|Element|Sparx.EA.Element||||
 |+|Constraint|HashSet<Sparx.EA.AttributeConstraint>||NotMapped(), JsonIgnore()||
@@ -1223,7 +1223,7 @@ when was the item loaded
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int32||Key(), Column("Package_ID"), DatabaseGenerated(DatabaseGeneratedOption?.Identity)||
 |+|Name|String||StringLength(255)||
 |+|Parent|Sparx.EA.Package||||
@@ -1259,7 +1259,7 @@ when was the item loaded
  All elements in a Sparx model are stored seperately
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int32|Unique global key within a model|Key(), Column("Object_ID"), DatabaseGenerated(DatabaseGeneratedOption?.Identity)||
 |+|GUID|String|GUID is used form XMI export/import to identify an elements independent of the database it is currently stored in|StringLength(40), Column("ea_guid")||
 |+|Package|Sparx.EA.Package||||
@@ -1344,7 +1344,7 @@ when was the item loaded
  All elements in a Sparx model are stored seperately
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Sparx.EA.Element||||
 |+|When|DateTime||||
 
@@ -1354,7 +1354,7 @@ when was the item loaded
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Sparx.EA.Package||||
 |+|When|DateTime||||
 
@@ -1364,7 +1364,7 @@ when was the item loaded
  Additional Edge for Element structure
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Element|Sparx.EA.Element||||
 |+|Parent|Sparx.EA.Element||||
 
@@ -1374,7 +1374,7 @@ when was the item loaded
 Index of <b>Element</b> by name - existence of this entity adds the index
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||||
 ||EName|Sparx.EA.Element|||Name = Name|
 

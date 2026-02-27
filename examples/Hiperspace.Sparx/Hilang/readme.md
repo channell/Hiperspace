@@ -532,7 +532,7 @@ classDiagram
 when was the item loaded
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|When|DateTime||||
 
 ---
@@ -541,7 +541,7 @@ when was the item loaded
 Index of <b>Element</b> by name - existence of this entity adds the index
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||||
 ||EName|Sparx.EA.Element|||Name = Name|
 
@@ -551,7 +551,7 @@ Index of <b>Element</b> by name - existence of this entity adds the index
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Constraint|String||Column()||
 |#|ConnectorEnd|String||Column()||
 |#|ConstraintType|String||Column()||
@@ -564,7 +564,7 @@ Index of <b>Element</b> by name - existence of this entity adds the index
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||Key(), StringLength(255)||
 |+|Organisation|String||StringLength(255)||
 |+|Phone1|String||StringLength(50)||
@@ -581,7 +581,7 @@ Index of <b>Element</b> by name - existence of this entity adds the index
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int32||Key(), Column("Package_ID"), DatabaseGenerated(DatabaseGeneratedOption?.Identity)||
 |+|Name|String||StringLength(255)||
 |+|Parent|Sparx.EA.Package||||
@@ -617,7 +617,7 @@ Index of <b>Element</b> by name - existence of this entity adds the index
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int32||||
 |+|Property|String||StringLength(255)||
 |+|VALUE|String||StringLength(255)||
@@ -631,7 +631,7 @@ Index of <b>Element</b> by name - existence of this entity adds the index
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|PreCondition|String||Column(), StringLength(255)||
 |+|Type|String||StringLength(50)||
 |+|Notes|String||Column()||
@@ -643,7 +643,7 @@ Index of <b>Element</b> by name - existence of this entity adds the index
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|PostCondition|String||Column(), StringLength(255)||
 |+|Type|String||StringLength(255)||
 |+|Notes|String||Column()||
@@ -655,7 +655,7 @@ Index of <b>Element</b> by name - existence of this entity adds the index
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||Column(), StringLength(255)||
 |+|Type|String||StringLength(255)||
 |+|Default|String||StringLength(255)||
@@ -675,7 +675,7 @@ Index of <b>Element</b> by name - existence of this entity adds the index
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int32||||
 |+|Name|String||StringLength(255)||
 |+|Scope|String||StringLength(50)||
@@ -714,7 +714,7 @@ Index of <b>Element</b> by name - existence of this entity adds the index
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|TRX|String||||
 |#|TRXType|String||||
 |+|Weight|Double||||
@@ -727,7 +727,7 @@ Index of <b>Element</b> by name - existence of this entity adds the index
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Test|String||||
 |#|TestClass|Int32||||
 |+|TestType|String||StringLength(50)||
@@ -747,7 +747,7 @@ Index of <b>Element</b> by name - existence of this entity adds the index
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Scenario|String||||
 |+|ScenarioType|String||StringLength(12)||
 |+|EValue|Double||||
@@ -762,7 +762,7 @@ Index of <b>Element</b> by name - existence of this entity adds the index
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Risk|String||||
 |+|RiskType|String||StringLength(12)||
 |+|EValue|Double||||
@@ -775,7 +775,7 @@ Index of <b>Element</b> by name - existence of this entity adds the index
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Resource|Sparx.EA.Resource||||
 |#|Role|String||||
 |+|Time|Double||||
@@ -794,7 +794,7 @@ Index of <b>Element</b> by name - existence of this entity adds the index
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int32||Key(), Column("ReqID")||
 |+|Requirement|String||StringLength(255)||
 |+|ReqType|String||StringLength(255)||
@@ -812,7 +812,7 @@ Index of <b>Element</b> by name - existence of this entity adds the index
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int32||Key(), Column("PropertyID"), DatabaseGenerated(DatabaseGeneratedOption?.Identity)||
 |+|Property|String||StringLength(255)||
 |+|Value|String||StringLength(255)||
@@ -826,7 +826,7 @@ Index of <b>Element</b> by name - existence of this entity adds the index
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Problem|String||Column(), StringLength(255)||
 |#|ProblemType|String||Column(), StringLength(255)||
 |+|DateReported|DateTime||||
@@ -847,7 +847,7 @@ Index of <b>Element</b> by name - existence of this entity adds the index
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Metric|String||Column(), StringLength(255)||
 |+|MetricType|String||StringLength(12)||
 |+|EValue|Double||Column()||
@@ -860,7 +860,7 @@ Index of <b>Element</b> by name - existence of this entity adds the index
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|FileName|String||Column(), StringLength(255)||
 |+|Type|String||StringLength(50)||
 |+|Note|String||Column()||
@@ -874,7 +874,7 @@ Index of <b>Element</b> by name - existence of this entity adds the index
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Effort|String||KeyAttribute(), Column(), StringLength(255)||
 |+|EffortType|String||StringLength(12)||
 |+|EValue|Double||||
@@ -886,7 +886,7 @@ Index of <b>Element</b> by name - existence of this entity adds the index
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Constraint|String||StringLength(255)||
 |#|ConstraintType|String||StringLength(30)||
 |+|Weight|Double||||
@@ -899,7 +899,7 @@ Index of <b>Element</b> by name - existence of this entity adds the index
  Additional Edge for Element structure
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Element|Sparx.EA.Element||||
 |+|Parent|Sparx.EA.Element||||
 
@@ -909,7 +909,7 @@ Index of <b>Element</b> by name - existence of this entity adds the index
  All elements in a Sparx model are stored seperately
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int32|Unique global key within a model|Key(), Column("Object_ID"), DatabaseGenerated(DatabaseGeneratedOption?.Identity)||
 |+|GUID|String|GUID is used form XMI export/import to identify an elements independent of the database it is currently stored in|StringLength(40), Column("ea_guid")||
 |+|Package|Sparx.EA.Package||||
@@ -994,7 +994,7 @@ Index of <b>Element</b> by name - existence of this entity adds the index
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Diagram|Sparx.EA.Diagram||||
 |#|Element|Sparx.EA.Element||||
 |+|RectTop|Int32||||
@@ -1012,7 +1012,7 @@ Index of <b>Element</b> by name - existence of this entity adds the index
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Diagram|Sparx.EA.Diagram||||
 |#|Connector|Sparx.EA.Connector||||
 |+|Geometry|String||||
@@ -1028,7 +1028,7 @@ Index of <b>Element</b> by name - existence of this entity adds the index
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int32||Key(), Column("Diagram_ID"), DatabaseGenerated(DatabaseGeneratedOption?.Identity)||
 |+|PackageId|Int32||Column("Package_ID")||
 |+|ParentID|Int32||||
@@ -1069,7 +1069,7 @@ Index of <b>Element</b> by name - existence of this entity adds the index
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|PropertyId|Int32||Key(), Column("PropertyID"), DatabaseGenerated(DatabaseGeneratedOption?.Identity)||
 |+|Property|String||StringLength(255)||
 |+|Value|String||StringLength(255), Column("VALUE")||
@@ -1083,7 +1083,7 @@ Index of <b>Element</b> by name - existence of this entity adds the index
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Constraint|String||||
 |+|ConstraintType|String||StringLength(50)||
 |+|Notes|String||Column()||
@@ -1095,7 +1095,7 @@ Index of <b>Element</b> by name - existence of this entity adds the index
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int32||Key(), Column("Connector_ID"), DatabaseGenerated(DatabaseGeneratedOption?.Identity)||
 |+|GUID|String||StringLength(40), Column("ea_guid")||
 |+|StartElement|Sparx.EA.Element||||
@@ -1187,7 +1187,7 @@ Index of <b>Element</b> by name - existence of this entity adds the index
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|PropertyId|Int32||KeyAttribute(), Column("PropertyID"), DatabaseGenerated(DatabaseGeneratedOption?.Identity)||
 |+|GUID|String||StringLength(40), Column("ea_guid")||
 |+|Property|String||StringLength(255)||
@@ -1200,7 +1200,7 @@ Index of <b>Element</b> by name - existence of this entity adds the index
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Constraint|String||StringLength(255)||
 |+|AttName|String||StringLength(255)||
 |+|Type|String||StringLength(255)||
@@ -1212,7 +1212,7 @@ Index of <b>Element</b> by name - existence of this entity adds the index
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int32||Key(), DatabaseGenerated(DatabaseGeneratedOption?.Identity), Column("ID")||
 |+|Element|Sparx.EA.Element||||
 |+|Constraint|Set<Sparx.EA.AttributeConstraint>||NotMapped(), JsonIgnore()||

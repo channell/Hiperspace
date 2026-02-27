@@ -56,7 +56,7 @@ classDiagram
 A Fixed rate bond stored in hiperspace
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Mnmonic|String||||
 |+|Convention|String||||
 |+|Calendar|String||||
@@ -90,7 +90,7 @@ A Fixed rate bond stored in hiperspace
 A Fixed rate bond stored in hiperspace
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|CubeSlice|String||||
 |#|ContextLabel|String||||
 |#|FixedRate|QL.FixedRate|A Fixed rate bond stored in hiperspace|CubeDimensionReference()||
@@ -106,7 +106,7 @@ A Fixed rate bond stored in hiperspace
 A Fixed rate bond stored in hiperspace
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|ContextLabel|String||||
 |#|FixedRate|QL.FixedRate|A Fixed rate bond stored in hiperspace|CubeDimensionReference()||
 |+|NPV|Double||CubeMeasure(Aggregate?.Sum)||

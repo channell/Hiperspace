@@ -355,7 +355,7 @@ classDiagram
 Bidirectional Edge, implemented with two Togaf.Edges
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|Node||||
 |#|To|Node||||
 |#|FromTypeName|String||||
@@ -368,7 +368,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -381,7 +381,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|Value|Togaf.Business.Goal||||
 
 ---
@@ -390,7 +390,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 ||StrategicEdges||All Togaf.Edges that can be projected as Transitative Togaf.Edges to a Business Goal|Once()|StrategicEdge(this)|
 ||Goals||||Goals(StrategicEdges)|
 
@@ -400,7 +400,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|Principle|Togaf.Has.Principle||||
 |+|Constraint|Togaf.Has.Constraint||||
 |+|Assumption|Togaf.Has.Assumption||||
@@ -415,7 +415,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|Parent|Togaf.Organization||AlternateIndex()||
 ||Children|Togaf.Organization|||Parent = this|
 ||Motivates|Togaf.Business.Driver|||MotivatedBy = this|
@@ -432,7 +432,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|MotivatedBy|Togaf.Organization||AlternateIndex()||
 ||Creates|Togaf.Business.Goal|||By = this|
 ||SameName|Togaf.Business.Driver|||Name = Name|
@@ -443,7 +443,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|In|Togaf.Organization||AlternateIndex()||
 |+|Performs|Togaf.Has.Activity||||
 ||Involved|Togaf.Business.ValueStream|||Involves = this|
@@ -455,7 +455,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|For|Togaf.Organization||AlternateIndex()||
 |+|Parent|Togaf.Business.Function||||
 |+|Delivers|Togaf.Business.Capability||||
@@ -470,7 +470,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|By|Togaf.Organization||||
 |+|Parent|Togaf.Business.Capability||||
 ||Children|Togaf.Business.Capability|||Parent = this|
@@ -486,7 +486,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|By|Togaf.Organization||||
 |+|Parent|Togaf.Business.Product||||
 ||Children|Togaf.Business.Product|||Parent = this|
@@ -499,7 +499,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|By|Togaf.Business.Driver||||
 ||RealizedBy|Togaf.Business.Objective|||For = this|
 ||Follows|Togaf.Business.CourseOfAction|||Leads = this|
@@ -511,7 +511,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|For|Togaf.Business.Goal||||
 ||Measured|Togaf.Business.Measure|||For = this|
 ||SameName|Togaf.Business.Objective|||Name = Name|
@@ -522,7 +522,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|For|Togaf.Business.Objective||||
 |+|Unit|String||||
 |+|Tracks|Togaf.Service||||
@@ -535,7 +535,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|At|DateTime||||
 |+|Value|Decimal||AlternateIndex(2216)||
 
@@ -545,7 +545,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 ||Task|Int32|||1|
 ||Decision|Int32|||2|
 ||Event|Int32|||3|
@@ -556,7 +556,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|By|Togaf.Business.Actor||||
 |+|Type|Togaf.Business.ActivityType||||
 |+|After|Togaf.Business.Activity||||
@@ -573,7 +573,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|Comment|String||||
 
 ---
@@ -582,7 +582,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 ||Start|Int32|||1|
 ||End|Int32|||2|
 ||Intermediate|Int32|||3|
@@ -593,7 +593,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|Type|Togaf.Business.EventType||||
 |+|Trigger|Togaf.Service||||
 ||Activities|Togaf.Business.Activity|||Event = this|
@@ -605,7 +605,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|Decomposes|Togaf.Business.Function||||
 |+|Starts|Togaf.Business.Activity||||
 |+|Operates|Togaf.Business.Capability||||
@@ -621,7 +621,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|URL|String||||
 |+|PartOf|Togaf.Business.Control||||
 ||Includes|Togaf.Business.Control|||PartOf = this|
@@ -634,7 +634,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|URL|String||||
 |+|Parent|Togaf.Business.ValueStream||||
 |+|Enables|Togaf.Business.Capability||||
@@ -649,7 +649,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|URL|String||||
 |+|Enables|Togaf.Business.Capability||||
 |+|Leads|Togaf.Business.Goal||||
@@ -662,7 +662,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|OwnedBy|Togaf.Organization||||
 ||Measures|Togaf.Business.Measure|||Tracks = this|
 ||Triggers|Togaf.Business.Event|||Trigger = this|
@@ -677,7 +677,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|Originator|Togaf.Business.Activity||||
 |+|Provider|Togaf.Service||||
 ||Logical|Togaf.Data.Logical|||Encapsulate = this|
@@ -690,7 +690,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Entity|Togaf.Data.Entity||||
 |#|System|Togaf.Application.System||||
 |+|Comment|String||||
@@ -702,7 +702,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|Encapsulate|Togaf.Data.Entity||||
 |+|Component|Togaf.Application.Component||||
 ||Instantiate|Togaf.Data.Physical|||Instantiate = this|
@@ -714,7 +714,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|Instantiate|Togaf.Data.Logical||||
 |+|Deployed|Togaf.Application.Deployed||||
 ||SameName|Togaf.Data.Physical|||Name = Name|
@@ -725,7 +725,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|Realizes|Togaf.Service||||
 |+|Platform|Togaf.Technology.Platform||||
 ||SystemUsage|Togaf.Data.Usage|||System = this|
@@ -738,7 +738,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|Implements|Togaf.Application.System||||
 |+|Host|Togaf.Technology.Host||||
 ||ComponentUsage|Togaf.Data.Logical|||Component = this|
@@ -751,7 +751,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|Deployes|Togaf.Application.Component||||
 |+|Host|Togaf.Technology.Instance||||
 ||Usage|Togaf.Data.Physical|||Deployed = this|
@@ -763,7 +763,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|Serves|Togaf.Service||||
 ||Hosts|Togaf.Application.System|||Platform = this|
 ||Defines|Togaf.Technology.Host|||Platform = this|
@@ -775,7 +775,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|Platform|Togaf.Technology.Platform||||
 ||Hosts|Togaf.Application.Component|||Host = this|
 ||Instances|Togaf.Technology.Instance|||Host = this|
@@ -786,7 +786,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|Host|Togaf.Technology.Host||||
 ||Hosts|Togaf.Application.Deployed|||Host = this|
 ||SameName|Togaf.Technology.Instance|||Name = Name|
@@ -797,7 +797,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Organization|Togaf.Organization||||
 |#|Function|Togaf.Business.Function||||
 |#|Capability|Togaf.Business.Capability||||
@@ -819,7 +819,7 @@ Bidirectional Edge, implemented with two Togaf.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Organization|Togaf.Organization||||
 |#|Function|Togaf.Business.Function||||
 |#|Capability|Togaf.Business.Capability||||

@@ -105,7 +105,7 @@ classDiagram
 Bidirectional Edge, implemented with two Cube.Edges
 
 | |Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|Node||||
 |#|To|Node||||
 |#|FromTypeName|String||||
@@ -118,7 +118,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 | |Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|String||||
 |+|Parent|Cube.Portfolio||||
 |+|Tier|Int32||||
@@ -130,7 +130,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 | |Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|ISO|String||||
 ||Instruments|Cube.Instrument|||Country = this|
 
@@ -140,7 +140,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 | |Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int32||||
 |+|Name|String||||
 |+|Parent|Cube.Sector||||
@@ -154,7 +154,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 | |Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|String||||
 |+|Parent|Cube.Product||||
 |+|Tier|Int32||||
@@ -167,7 +167,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 | |Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|String||||
 |+|Customer|Cube.Customer||||
 ||FirstAccount|First.Acc|||Account = this|
@@ -178,7 +178,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 | |Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|String||||
 |+|Sector|Cube.Sector||||
 ||Accounts|Cube.Account|||Customer = this|
@@ -190,7 +190,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 | |Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|Account|Cube.Account||AlternateIndex("Cube.CustomerFirstAccount", 78)||
 
 ---
@@ -199,7 +199,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 | |Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|Market|Decimal||||
 
 ---
@@ -208,7 +208,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 | |Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|ISIN|String||||
 |+|Country|Cube.Country||||
 |+|Product|Cube.Product||||
@@ -221,7 +221,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 | |Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int64||||
 |+|Quantity|Decimal||||
 |+|Instrument|Cube.Instrument||||
@@ -237,7 +237,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 | |Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|name|String||||
 |+|Value|Decimal||||
 
@@ -247,7 +247,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 | |Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|String||||
 |+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 96), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95)||
 

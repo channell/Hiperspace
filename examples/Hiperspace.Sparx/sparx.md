@@ -16,7 +16,7 @@ classDiagram
 when was the item loaded
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|When|DateTime||||
 
 ---
@@ -25,7 +25,7 @@ when was the item loaded
 Index of <b>Element</b> by name - existence of this entity adds the index
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||||
 ||EName|Sparx.EA.Element|||Name = Name|
 

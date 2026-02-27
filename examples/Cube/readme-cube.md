@@ -79,7 +79,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|String||||
 |+|Parent|Cube.Portfolio||||
 |+|Tier|Int32||||
@@ -92,7 +92,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|ISO|String||||
 ||Contract_Cube|Cube.Contract_Cube|Reference to the dimension|CubeFactReference()|CubeSlice = "13", Country = this, ContextLabel = contextlabel(this)|
 ||Instruments|Cube.Instrument|||Country = this|
@@ -103,7 +103,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int32||||
 |+|Name|String||||
 |+|Parent|Cube.Sector||||
@@ -118,7 +118,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|String||||
 |+|Parent|Cube.Product||||
 |+|Tier|Int32||||
@@ -132,7 +132,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int64||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
 |+|Quantity|Decimal||||
@@ -153,7 +153,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|CubeSlice|String||||
 |#|ContextLabel|String||||
 |#|Sector|Cube.Sector||CubeDimensionReference()||
@@ -172,7 +172,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|ContextLabel|String||||
 |#|Sector|Cube.Sector||CubeDimensionReference()||
 |#|Country|Cube.Country||CubeDimensionReference()||

@@ -445,7 +445,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -470,7 +470,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -501,7 +501,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Organization|Togaf.Organization||||
 |#|Function|Togaf.Business.Function||||
 |#|Capability|Togaf.Business.Capability||||
@@ -534,7 +534,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|CubeSlice|String||||
 |#|ContextLabel|String||||
 |#|Host|Togaf.Technology.Host||CubeDimensionReference()||
@@ -561,7 +561,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|ContextLabel|String||||
 |#|Host|Togaf.Technology.Host||CubeDimensionReference()||
 |#|Event|Togaf.Business.Event||CubeDimensionReference()||
@@ -587,7 +587,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -618,7 +618,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -650,7 +650,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -679,7 +679,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -707,7 +707,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -739,7 +739,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -768,7 +768,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -796,7 +796,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Name|String||||
 |+|Description|String||||
@@ -823,7 +823,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|CubeSlice|String||||
 |#|ContextLabel|String||||
 |#|Host|Togaf.Technology.Host||CubeDimensionReference()||
@@ -850,7 +850,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Organization|Togaf.Organization||||
 |#|Function|Togaf.Business.Function||||
 |#|Capability|Togaf.Business.Capability||||
@@ -883,7 +883,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Organization|Togaf.Organization||||
 |#|Function|Togaf.Business.Function||||
 |#|Capability|Togaf.Business.Capability||||
@@ -916,7 +916,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|ContextLabel|String||||
 |#|Host|Togaf.Technology.Host||CubeDimensionReference()||
 |#|Event|Togaf.Business.Event||CubeDimensionReference()||
@@ -942,7 +942,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|CubeSlice|String||||
 |#|ContextLabel|String||||
 |#|Host|Togaf.Technology.Host||CubeDimensionReference()||
@@ -969,7 +969,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|ContextLabel|String||||
 |#|Host|Togaf.Technology.Host||CubeDimensionReference()||
 |#|Event|Togaf.Business.Event||CubeDimensionReference()||

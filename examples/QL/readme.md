@@ -39,7 +39,7 @@ classDiagram
 values for FixedRateBond
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|Convention|String||||
 |+|Calendar|String||||
 |+|Effective|DateTime||||
@@ -57,7 +57,7 @@ values for FixedRateBond
 Calcualtion view for a fixed rate bond
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Mnmonic|String||||
 |+|NPV|Double||||
 |+|CASH|Double||||
@@ -68,7 +68,7 @@ Calcualtion view for a fixed rate bond
 Base view that all Instrument types can be converted to
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Mnmonic|String||||
 |+|NPV|Double||||
 |+|CASH|Double||||
@@ -79,7 +79,7 @@ Base view that all Instrument types can be converted to
 A Fixed rate bond stored in hiperspace
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Mnmonic|String||||
 ||_DayCount||||makeDayCounter(DayCount)|
 ||_Calendar||||makeCalendar(Calendar)|

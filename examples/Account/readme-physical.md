@@ -117,7 +117,7 @@ classDiagram
 Route across a graph of edge/node to form an HiperEdge
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||||
 |+|Rules|HashSet<Graph.Rule>||||
 
@@ -127,7 +127,7 @@ Route across a graph of edge/node to form an HiperEdge
 A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 'relation', Rules = [{FromType = 'Person', ToType = 'Person', EdgeType = 'Mother'}]}
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|FromType|String||||
 |#|ToType|String||||
 |#|EdgeType|String||||
@@ -138,7 +138,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 Remote execution of path requests
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Node|Node||||
 |#|Route|Graph.Route||||
 |#|Length|Int32||||
@@ -151,7 +151,7 @@ Remote execution of path requests
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String|name of the sector|||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
 |+|Description|String|description of the sector|||
@@ -164,7 +164,7 @@ Remote execution of path requests
 A Customer
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String| name  of the customer|||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
 |+|Address|String||||
@@ -182,7 +182,7 @@ A Customer
 A Customer
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Acc.Account||||
 |#|At|DateTime|when the transaction was authorised|||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
@@ -202,7 +202,7 @@ A Customer
 A Customer
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Acc.Customer||||
 |#|Title|String||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
@@ -221,7 +221,7 @@ A Customer
 A Customer
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Acc.Account||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
 |+|When|DateTime|DateTime of the max balance|||
@@ -233,7 +233,7 @@ A Customer
 A Customer
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|ContextLabel|String||||
 |#|Sector|Acc.Sector||CubeDimensionReference()||
 |#|Account|Acc.Account|A Customer|CubeDimensionReference()||
@@ -253,7 +253,7 @@ A Customer
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Customer|Acc.Customer||||
 |+|CustomerTree|List<Acc.Customer>||||
 |+|Sector|List<Acc.Sector>||||

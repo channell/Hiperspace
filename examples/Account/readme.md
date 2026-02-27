@@ -61,7 +61,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String|name of the sector|||
 |+|Description|String|description of the sector|||
 ||Customers|Acc.Customer|customers in this sector||Sector = this|
@@ -72,7 +72,7 @@ classDiagram
 A Customer
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String| name  of the customer|||
 |+|Address|String||||
 |+|SSN|String||||
@@ -88,7 +88,7 @@ A Customer
 a transaction against account
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|At|DateTime|when the transaction was authorised|||
 |+|Amount|Decimal|debt or credit to account, with respect to the customer position|CubeMeasure(Aggregate?.Sum)||
 |+|Payee|String|who it was paid to|||
@@ -103,7 +103,7 @@ a transaction against account
 An Account for a customer
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Title|String||||
 |+|Opened|DateTime||||
 |+|Closed|DateTime||||
@@ -119,7 +119,7 @@ An Account for a customer
  Balance is the rolled up value for the account computed for a time
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|When|DateTime|DateTime of the max balance|||
 |+|Current|Decimal|Current closing balance at time When|||
 
@@ -129,7 +129,7 @@ An Account for a customer
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Customer|Acc.Customer||||
 |+|CustomerTree|List<Acc.Customer>||||
 |+|Sector|List<Acc.Sector>||||

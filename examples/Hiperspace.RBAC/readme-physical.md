@@ -353,7 +353,7 @@ classDiagram
  A Access realm is a mechanism used for protecting Web application resources. It gives you the ability to protect a resource with a defined Access constraint and then define the user roles that can access the protected resource.
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Access.RBAC.Realm||||
 |+|Text|String||||
 
@@ -363,7 +363,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|Node||||
 |#|To|Node||||
 |#|TypeName|String||||
@@ -375,7 +375,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|Node||||
 |#|To|Node||||
 |#|TypeName|String||||
@@ -387,7 +387,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|Node||||
 |#|To|Node||||
 |#|TypeName|String||||
@@ -399,7 +399,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|Value|Access.RBAC.Group||||
 
 ---
@@ -408,7 +408,7 @@ classDiagram
 Route across a graph of edge/node to form an HiperEdge
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||||
 |+|Rules|HashSet<Graph.Rule>||||
 
@@ -418,7 +418,7 @@ Route across a graph of edge/node to form an HiperEdge
 A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 'relation', Rules = [{FromType = 'Person', ToType = 'Person', EdgeType = 'Mother'}]}
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|FromType|String||||
 |#|ToType|String||||
 |#|EdgeType|String||||
@@ -429,7 +429,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 Remote execution of path requests
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Node|Node||||
 |#|Route|Graph.Route||||
 |#|Length|Int32||||
@@ -442,7 +442,7 @@ Remote execution of path requests
 Permission enum can be checked with a bitwise and
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 ||Create|Int32|||1|
 ||Delete|Int32|||2|
 ||Update|Int32|||3|
@@ -457,7 +457,7 @@ Permission enum can be checked with a bitwise and
  A Access realm is a mechanism used for protecting Web application resources. It gives you the ability to protect a resource with a defined Access constraint and then define the user roles that can access the protected resource.
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||||
 |+|Author|Access.RBAC.User||||
 ||Valid|Some(Boolean)| Validation constraint for the creation of a realm in hiperspace. ||((((Name == null) || (Author == null)) || (CanCreate == false)) ? false : true)|
@@ -476,7 +476,7 @@ Permission enum can be checked with a bitwise and
 A permission granted to a group user or role on a resource, typically an entity in hiperspace database. 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Any|owner of the segment/aspect as an object|||
 |#|Item|Access.RBAC.Resource| Identify all the resource item. |||
 |#|Right|Access.RBAC.PermissionType| The permission being granted create, update, delete. |||
@@ -501,7 +501,7 @@ A permission granted to a group user or role on a resource, typically an entity 
 Group is a hierarchical organization of users or service accounts
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Realm|Access.RBAC.Realm||||
 |#|Id|Guid||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
@@ -532,7 +532,7 @@ Group is a hierarchical organization of users or service accounts
 User is a security principal that can connect to a resource. Either a person or a service account. 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Realm|Access.RBAC.Realm||||
 |#|Id|Guid||||
 |+|Name|String||||
@@ -561,7 +561,7 @@ User is a security principal that can connect to a resource. Either a person or 
 Royal membership can be validated directly for groups and users but also applies to a collection of permissions. 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Realm|Access.RBAC.Realm||||
 |#|Code|String| Friendly name for his user enroll check. |||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
@@ -588,7 +588,7 @@ Royal membership can be validated directly for groups and users but also applies
 Any security principal (group, user or role) can be a member of a role - it is stored Separately. 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Any|owner of the segment/aspect as an object|||
 |#|Role|Access.RBAC.Role| Reference to the role that this group user or role is a member of |||
 |+|Deleted|Boolean|Flag for read horizon filter to hide when true|||
@@ -607,7 +607,7 @@ Any security principal (group, user or role) can be a member of a role - it is s
 A resource is a subject where permissions can be granted to create, update, delete, or a combination of all
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Subject|String||||
 |+|Approvers|HashSet<RefGroup>| Set of groups that must approve this resource access. |||
 ||Valid|Some(Boolean)|Validation property to implement standard constraints. ||((((((Subject == null) || (Approvers == null)) || (ValidAuthor == false)) || (CanUpdate == false)) || (CanDelete == false)) ? false : true)|
@@ -626,7 +626,7 @@ A resource is a subject where permissions can be granted to create, update, dele
 Royal membership can be validated directly for groups and users but also applies to a collection of permissions. 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Access.RBAC.Role||||
 |#|Role|Access.RBAC.Role| Reference to the role that this group user or role is a member of |||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
@@ -646,7 +646,7 @@ Royal membership can be validated directly for groups and users but also applies
 Royal membership can be validated directly for groups and users but also applies to a collection of permissions. 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Access.RBAC.Role||||
 |#|Item|Access.RBAC.Resource| Identify all the resource item. |||
 |#|Right|Access.RBAC.PermissionType| The permission being granted create, update, delete. |||
@@ -672,7 +672,7 @@ Royal membership can be validated directly for groups and users but also applies
 User is a security principal that can connect to a resource. Either a person or a service account. 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Access.RBAC.User||||
 |#|Role|Access.RBAC.Role| Reference to the role that this group user or role is a member of |||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
@@ -692,7 +692,7 @@ User is a security principal that can connect to a resource. Either a person or 
 User is a security principal that can connect to a resource. Either a person or a service account. 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Access.RBAC.User||||
 |#|Item|Access.RBAC.Resource| Identify all the resource item. |||
 |#|Right|Access.RBAC.PermissionType| The permission being granted create, update, delete. |||
@@ -718,7 +718,7 @@ User is a security principal that can connect to a resource. Either a person or 
 Group is a hierarchical organization of users or service accounts
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Access.RBAC.Group||||
 |#|Role|Access.RBAC.Role| Reference to the role that this group user or role is a member of |||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
@@ -738,7 +738,7 @@ Group is a hierarchical organization of users or service accounts
 Group is a hierarchical organization of users or service accounts
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Access.RBAC.Group||||
 |#|Item|Access.RBAC.Resource| Identify all the resource item. |||
 |#|Right|Access.RBAC.PermissionType| The permission being granted create, update, delete. |||

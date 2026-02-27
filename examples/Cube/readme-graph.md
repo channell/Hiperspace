@@ -234,7 +234,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|name|String||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
 |+|Value|Decimal||||
@@ -245,7 +245,7 @@ classDiagram
 Route across a graph of edge/node to form an HiperEdge
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||||
 |+|Rules|HashSet<Graph.Rule>||||
 
@@ -255,7 +255,7 @@ Route across a graph of edge/node to form an HiperEdge
 A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 'relation', Rules = [{FromType = 'Person', ToType = 'Person', EdgeType = 'Mother'}]}
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|FromType|String||||
 |#|ToType|String||||
 |#|EdgeType|String||||
@@ -266,7 +266,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 Path from one Node to another Node over a number of routes
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|Node||||
 |#|To|Node||||
 |#|TypeName|String||||
@@ -282,7 +282,7 @@ Path from one Node to another Node over a number of routes
 Remote execution of path requests
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Node|Node||||
 |#|Route|Graph.Route||||
 |#|Length|Int32||||
@@ -295,7 +295,7 @@ Remote execution of path requests
 An additional edge helper for Cube.Edges
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|Node||||
 |#|To|Node||||
 |#|TypeName|String||||
@@ -307,7 +307,7 @@ An additional edge helper for Cube.Edges
 Bidirectional Edge, implemented with two Cube.Edges
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|Node||||
 |#|To|Node||||
 |#|FromTypeName|String||||
@@ -320,7 +320,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|Node||||
 |#|To|Node||||
 |#|FromTypeName|String||||
@@ -333,7 +333,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|String||||
 |+|Parent|Cube.Portfolio||||
 |+|Tier|Int32||||
@@ -346,7 +346,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|ISO|String||||
 ||Contract_Cube|Cube.Contract_Cube|Reference to the dimension|CubeFactReference()|CubeSlice = "13", Country = this, ContextLabel = contextlabel(this)|
 ||Instruments|Cube.Instrument|||Country = this|
@@ -357,7 +357,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int32||||
 |+|Name|String||||
 |+|Parent|Cube.Sector||||
@@ -372,7 +372,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|String||||
 |+|Parent|Cube.Product||||
 |+|Tier|Int32||||
@@ -386,7 +386,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|String||||
 |+|Customer|Cube.Customer||||
 ||FirstAccount|First.Acc|||Account = this|
@@ -397,7 +397,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|String||||
 |+|Sector|Cube.Sector||||
 ||Accounts|Cube.Account|||Customer = this|
@@ -409,7 +409,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Cube.Instrument||||
 |+|Market|Decimal||||
 
@@ -419,7 +419,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|ISIN|String||||
 |+|Country|Cube.Country||||
 |+|Product|Cube.Product||||
@@ -432,7 +432,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int64||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
 |+|Quantity|Decimal||||
@@ -453,7 +453,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Cube.Customer||||
 |+|Account|Cube.Account||AlternateIndex("Cube.CustomerFirstAccount", 78)||
 
@@ -463,7 +463,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|ContextLabel|String||||
 |#|Sector|Cube.Sector||CubeDimensionReference()||
 |#|Country|Cube.Country||CubeDimensionReference()||
@@ -482,7 +482,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|Node||||
 |#|To|Node||||
 |#|TypeName|String||||
@@ -494,7 +494,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|Node||||
 |#|To|Node||||
 |#|TypeName|String||||
@@ -506,7 +506,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|Node||||
 |#|To|Node||||
 |#|TypeName|String||||
@@ -518,7 +518,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|Node||||
 |#|To|Node||||
 |#|TypeName|String||||
@@ -530,7 +530,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|Node||||
 |#|To|Node||||
 |#|TypeName|String||||
@@ -542,7 +542,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|Node||||
 |#|To|Node||||
 |#|TypeName|String||||
@@ -554,7 +554,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|Node||||
 |#|To|Node||||
 |#|TypeName|String||||
@@ -566,7 +566,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|Node||||
 |#|To|Node||||
 |#|TypeName|String||||
@@ -578,7 +578,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|owner|Any|owner of the segment/aspect as an object|||
 |+|Account|Cube.Account||AlternateIndex("Cube.CustomerFirstAccount", 78)||
 
@@ -588,7 +588,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|String||||
 |+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 96), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95)||
 
@@ -598,7 +598,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|String||||
 ||Trades|Banking.Trade|||Book = this|
 
@@ -608,7 +608,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|String||||
 |+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 96), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95)||
 
@@ -618,7 +618,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|String||||
 |+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 96), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95)||
 
@@ -628,7 +628,7 @@ Bidirectional Edge, implemented with two Cube.Edges
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|String||||
 |+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 96), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95)||
 

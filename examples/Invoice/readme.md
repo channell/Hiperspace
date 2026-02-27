@@ -138,7 +138,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int32||||
 |+|Street|String||||
 |+|Town|String||||
@@ -154,7 +154,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int16||||
 |+|Name|String||||
 |+|ShippingCharge|Decimal||||
@@ -166,7 +166,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|Name|String||||
 ||StoreSales|ERP.Sales.Order|||Store = this|
 
@@ -176,7 +176,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|ERP.Location.Country||||
 |#|To|ERP.Location.Country||||
 |+|Tax|ERP.Finance.Tax||||
@@ -188,7 +188,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int16||||
 |+|Name|String||||
 |+|Rate|Decimal||||
@@ -200,7 +200,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|From|ERP.Location.Country||||
 |#|To|ERP.Location.Country||||
 |+|Fee|Decimal||||
@@ -212,7 +212,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int32||||
 |+|Name|String||||
 |+|Tax|ERP.Finance.Tax||||
@@ -228,7 +228,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|Name|String||||
 |+|Sell|Decimal||||
 |+|Buy|Decimal||||
@@ -240,7 +240,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int32||||
 |+|Name|String||||
 |+|BillTo|ERP.Location.Address||||
@@ -254,7 +254,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Int16||||
 |+|Name|String||||
 ||CommissionRate||||0.0m|
@@ -267,7 +267,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|LineNumber|Int16||||
 |+|Product|ERP.Products.Product||||
 |+|Units|Decimal||||
@@ -283,7 +283,7 @@ classDiagram
     An order placed by a customer for delivery    <remarks>the store and customer can not be changed once it has been invoiced </remarks>
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|OrderNumber|Int32||||
 |+|Customer|ERP.Client.Customer||||
 |+|Store|ERP.Location.Store||||
@@ -311,7 +311,7 @@ classDiagram
     Frozen value of order 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|TaxDate|DateTime||||
 |+|Total|Decimal||||
 |+|ShippingCost|Decimal||||

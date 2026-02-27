@@ -111,7 +111,7 @@ classDiagram
  Optional note 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|Text|String||||
 
 ---
@@ -120,7 +120,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|Value|T||||
 
 ---
@@ -129,7 +129,7 @@ classDiagram
 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |+|Author|Access.RBAC.User||||
 ||ValidAuthor||||((Author == null) ? false : true)|
 ||ErrorAuthor||||((ValidAuthor == false) ? "Missing user, " : "")|
@@ -141,7 +141,7 @@ classDiagram
 Permission enum can be checked with a bitwise and
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 ||Create|Int32|||1|
 ||Delete|Int32|||2|
 ||Update|Int32|||3|
@@ -156,7 +156,7 @@ Permission enum can be checked with a bitwise and
  A Access realm is a mechanism used for protecting Web application resources. It gives you the ability to protect a resource with a defined Access constraint and then define the user roles that can access the protected resource.
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Name|String||||
 ||Valid|| Validation constraint for the creation of a realm in hiperspace. ||((((Name == null) || (Author == null)) || (CanCreate == false)) ? false : true)|
 ||Exists|Access.RBAC.Realm|||Name = Name|
@@ -171,7 +171,7 @@ Permission enum can be checked with a bitwise and
 A Access principal is any entity that can be authenticated by the operating system, such as a user account, a computer account, or a thread or process that runs in the Access context of a user or computer account, or the Access groups for these accounts. Access principals have long been a foundation for controlling access to securable resources. 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Realm|Access.RBAC.Realm||||
 |+|Name|String||||
 |+|Permission|Access.RBAC.Permission| The set of permissions granted to this security principal, stored in the segment. |||
@@ -185,7 +185,7 @@ A Access principal is any entity that can be authenticated by the operating syst
 A permission granted to a group user or role on a resource, typically an entity in hiperspace database. 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Item|Access.RBAC.Resource| Identify all the resource item. |||
 |#|Right|Access.RBAC.PermissionType| The permission being granted create, update, delete. |||
 |+|Approval|Set<Ref>| The set of roles that have approve this permission. |||
@@ -205,7 +205,7 @@ A permission granted to a group user or role on a resource, typically an entity 
 Group is a hierarchical organization of users or service accounts
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Parent|Access.RBAC.Group| Referenced to the parent group of this group. |||
 ||Root|| Flag for searching to indicate whether this is a root group. ||((Parent == null) ? true : false)|
@@ -225,7 +225,7 @@ Group is a hierarchical organization of users or service accounts
 User is a security principal that can connect to a resource. Either a person or a service account. 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|PublicKey|String||||
 |+|Group|Access.RBAC.Group| Group that this user is a member of. |||
@@ -243,7 +243,7 @@ User is a security principal that can connect to a resource. Either a person or 
 Royal membership can be validated directly for groups and users but also applies to a collection of permissions. 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Code|String| Friendly name for his user enroll check. |||
 ||Valid|| Validation criteria for implementation of constraints and to prevent unauthorized update. ||(((((Code == null) || (ValidBase == false)) || (CanUpdate == false)) || (CanDelete == false)) ? false : true)|
 ||Exists|Access.RBAC.User|||Realm = Realm, Name = Name|
@@ -259,7 +259,7 @@ Royal membership can be validated directly for groups and users but also applies
 Any security principal (group, user or role) can be a member of a role - it is stored Separately. 
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Role|Access.RBAC.Role| Reference to the role that this group user or role is a member of |||
 ||Valid|| Validation criteria to implement standard constraints. ||(((((owner == null) || (Role == null)) || (CanUpdate == false)) || (CanDelete == false)) ? false : true)|
 ||TypeName||||"RBAC-Role-Member"|
@@ -273,7 +273,7 @@ Any security principal (group, user or role) can be a member of a role - it is s
 A resource is a subject where permissions can be granted to create, update, delete, or a combination of all
 
 ||Name|Type|*|@|=|
-|-|-|-|-|-|
+|-|-|-|-|-|-|
 |#|Subject|String||||
 |+|Approvers|Set<Ref>| Set of groups that must approve this resource access. |||
 ||Valid||Validation property to implement standard constraints. ||((((((Subject == null) || (Approvers == null)) || (ValidAuthor == false)) || (CanUpdate == false)) || (CanDelete == false)) ? false : true)|
