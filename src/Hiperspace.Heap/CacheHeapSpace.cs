@@ -70,10 +70,13 @@ namespace Hiperspace.Heap
             var now = DateTime.UtcNow;
             foreach (var v in Find(vbegin, vend))
             {
-                var keypart = new byte[v.Item1.Length - 1];
-                var span = new Span<byte>(v.Item1, 1, v.Item1.Length - 1);
-                span.CopyTo(keypart);
-                yield return (keypart, now, v.Item2);
+                if (v.Item1.Length > sizeof(ulong) + 1)
+                {
+                    var keypart = new byte[v.Item1.Length - 1];
+                    var span = new Span<byte>(v.Item1, 1, v.Item1.Length - 1);
+                    span.CopyTo(keypart);
+                    yield return (keypart, now, v.Item2);
+                }
             }
         }
 

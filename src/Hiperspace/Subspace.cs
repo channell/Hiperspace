@@ -21,12 +21,17 @@ namespace Hiperspace
         protected HiperSpace _space;
         private Horizon[]? _Horizon;
         /// <summary>
-        /// Allow domain specific subspaces to override the horizon with domain critieria conditional on Context
+        /// Allow domain specific subspaces to override the horizon with domain criteria conditional on Context
         /// </summary>
         public virtual Horizon[]? Horizon { get => _Horizon; init { _Horizon = value; } }
         protected DateTime? _version;
         protected DateTime? _delta;
         protected TypeModel _model;
+        
+        /// <summary>
+        /// Gets the current transaction associated with the sub space.
+        /// </summary>
+        public Transaction Transaction { get; protected set;}
 
         /// <summary>
         /// Label applied to the subspace for security verification in Horizon filters
@@ -495,7 +500,7 @@ namespace Hiperspace
             return base.GetHashCode();
         }
         /// <summary>
-        /// Implementation of the Subspace should provide an implementation for entities they map
+        /// implementation of the Subspace should provide an implementation for entities they map
         /// </summary>
         /// <typeparam name="TEntity"></typeparam>
         /// <returns></returns>
@@ -584,13 +589,13 @@ namespace Hiperspace
         }
 
         /// <summary>
-        /// Default implementaiton is to pass down the stack of spaces
+        /// Default implementation is to pass down the stack of spaces
         /// </summary>
         /// <param name="key">key</param>
         /// <returns>key or value</returns>
         /// <remarks>
-        /// Generated implementation will use wire layout struct and TypeModel to deserialise, then call 
-        /// the Domain specifc implmentation that runs on a server
+        /// Generated implementation will use wire layout struct and TypeModel to deserializse, then call 
+        /// the Domain specific implementation that runs on a server
         /// </remarks>
         public override Task<byte[]> InvokeAsync(byte[] key, CancellationToken token = default)
         {
@@ -606,7 +611,7 @@ namespace Hiperspace
         /// <returns>key or value</returns>
         /// <remarks>
         /// Generated implementation will use wire layout struct and TypeModel to deserialise, then call 
-        /// the Domain specifc implmentation that runs on a server
+        /// the Domain specific implementation that runs on a server
         /// </remarks>
         public override IAsyncEnumerable<byte[]> InvokeStreamAsync(byte[] key, CancellationToken token = default)
         {
@@ -680,5 +685,9 @@ namespace Hiperspace
         {
             return _space.UseSequenceAsync(key);
         }
+        public bool Commit() => Commit(Transaction);
+        public override bool Commit(Transaction transaction) => _space.Commit(Transaction);
+        public bool Rollback() => Rollback(Transaction);
+        public override bool Rollback(Transaction transaction) => _space.Rollback(Transaction);
     }
 }

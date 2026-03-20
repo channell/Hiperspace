@@ -9,7 +9,6 @@ using Hiperspace.Meta;
 using RocksDbSharp;
 using System.Buffers.Binary;
 using System.Runtime.CompilerServices;
-using System.Xml.Serialization;
 
 namespace Hiperspace.Rocks
 {
@@ -238,7 +237,7 @@ namespace Hiperspace.Rocks
                 while (range.Valid())
                 {
                     var k = range.Key();
-                    if (Compare(k, vend) <= 0)
+                    if (Compare(k, vend) <= 0 && k.Length > sizeof(long) + 1)
                     {
                         var keypart = new byte[k.Length - sizeof(long) - 1];
                         var span = new Span<byte>(k, 1, k.Length - sizeof(long) - 1);
@@ -291,7 +290,7 @@ namespace Hiperspace.Rocks
                 while (range.Valid())
                 {
                     var k = range.Key();
-                    if (Compare(k, vend) <= 0)
+                    if (Compare(k, vend) <= 0 && k.Length > sizeof(long) + 1)
                     {
                         var keypart = new byte[k.Length - sizeof(long) - 1];
                         var span = new Span<byte>(k, 1, k.Length - sizeof(long) - 1);
@@ -362,7 +361,7 @@ namespace Hiperspace.Rocks
                 while (range.Valid())
                 {
                     var k = range.Key();
-                    if (Compare(k, vend) <= 0)
+                    if (Compare(k, vend) <= 0 && k.Length > sizeof(long) + 1)
                     {
                         var keypart = new byte[k.Length - sizeof(long) - 2];
                         var span = new Span<byte>(k, 2, k.Length - sizeof(long) - 2);
@@ -430,35 +429,30 @@ namespace Hiperspace.Rocks
             using (var iter = _db.NewIterator())
             {
                 var range = iter.Seek(vbegin);
-                while (range.Valid())
+                while (range.Valid() && range.Key().Length > sizeof(ulong) + 1)
                 {
                     var k = range.Key();
-                    if (k.Length > sizeof(ulong) + 1)
-                    {
 
-                        var keypart = new byte[k.Length - sizeof(ulong) - 1];
-                        var span = new Span<byte>(k, 1, k.Length - sizeof(ulong) - 1);
-                        span.CopyTo(keypart);
-                        if (Compare(keypart, key) == 0)
+                    var keypart = new byte[k.Length - sizeof(ulong) - 1];
+                    var span = new Span<byte>(k, 1, k.Length - sizeof(ulong) - 1);
+                    span.CopyTo(keypart);
+                    if (Compare(keypart, key) == 0)
+                    {
+                        var ver = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(k, k.Length - sizeof(ulong), sizeof(ulong))));
+                        if (version.HasValue)
                         {
-                            var ver = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(k, k.Length - sizeof(ulong), sizeof(ulong))));
-                            if (version.HasValue)
+                            if (ver <= version.Value.Ticks && ver > lastVersion)
                             {
-                                if (ver <= version.Value.Ticks && ver > lastVersion)
-                                {
-                                    lastVersion = ver;
-                                    lastValue = range.Value();
-                                }
-                            }
-                            else
-                            {
-                                var result = range.Value();
-                                RaiseOnAfterGet(ref key, ref result);
-                                return (result, new DateTime(ver));
+                                lastVersion = ver;
+                                lastValue = range.Value();
                             }
                         }
                         else
-                            break;
+                        {
+                            var result = range.Value();
+                            RaiseOnAfterGet(ref key, ref result);
+                            return (result, new DateTime(ver));
+                        }
                     }
                     else
                         break;

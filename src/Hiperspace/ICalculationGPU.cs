@@ -12,7 +12,7 @@ namespace Hiperspace
     /// Defines methods for performing high-performance graph traversal and pathfinding operations using GPU
     /// acceleration.
     /// </summary>
-    /// <remarks>Implementations of this interface provide asynchronous and synchronous methods for
+    /// <remarks>implementations of this interface provide asynchronous and synchronous methods for
     /// discovering cycles, paths, and links within a graph structure. These operations are optimized for large-scale
     /// graphs and may leverage GPU resources for improved performance. Thread safety and resource management depend on
     /// the specific implementation.</remarks>

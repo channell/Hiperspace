@@ -30,6 +30,9 @@ public class BaseTypeModel
     , ISerializer<Graph.HiperEdge.ValueType>
     , ISerializer<KeyRef<Graph.HiperEdge.KeyType, Graph.HiperEdge>>
     , ISerializer<Graph.HiperEdge>
+    , ISerializer<MapPair>
+    , ISerializer<MapElement>
+    , ISerializer<MapMap>
 {
     public SerializerFeatures Features => SerializerFeatures.CategoryMessage;
 
@@ -1126,5 +1129,106 @@ public class BaseTypeModel
     {
         ((ISerializer<Graph.HiperEdge.KeyType>)this).Write(ref state, item._key);
         ((ISerializer<Graph.HiperEdge.ValueType>)this).Write(ref state, item._value);
+    }
+    MapPair ISerializer<MapPair>.Read(ref ProtoReader.State state, MapPair value)
+    {
+        int num;
+        while ((num = state.ReadFieldHeader()) > 0)
+        {
+            switch (num)
+            {
+
+
+                case 1:
+                    value._value.Member = state.ReadInt32();
+                    break;
+                case 2:
+                    value._value.Element = state.ReadInt32();
+                    break;
+                default:
+                    state.SkipField();
+                    break;
+            }
+        }
+        return value;
+    }
+    void ISerializer<MapPair>.Write(ref ProtoWriter.State state, MapPair value)
+    {
+
+
+        if (value.Member is not null)
+        {
+            state.WriteFieldHeader(1, WireType.Varint);
+            state.WriteInt32(value.Member.Value);
+        }
+        if (value.Element is not null)
+        {
+            state.WriteFieldHeader(2, WireType.Varint);
+            state.WriteInt32(value.Element.Value);
+        }
+    }
+    MapElement ISerializer<MapElement>.Read(ref ProtoReader.State state, MapElement value)
+    {
+        int num;
+        while ((num = state.ReadFieldHeader()) > 0)
+        {
+            switch (num)
+            {
+
+
+                case 1:
+                    value._value.Element = state.ReadInt32();
+                    break;
+                case 2:
+                    value._value.Map = RepeatedSerializer.CreateList<List<MapPair>, MapPair>().ReadRepeated(ref state, SerializerFeatures.WireTypeString | SerializerFeatures.OptionPackedDisabled, value._value.Map!, this);
+                    break;
+                default:
+                    state.SkipField();
+                    break;
+            }
+        }
+        return value;
+    }
+    void ISerializer<MapElement>.Write(ref ProtoWriter.State state, MapElement value)
+    {
+
+
+        if (value.Element is not null)
+        {
+            state.WriteFieldHeader(1, WireType.Varint);
+            state.WriteInt32(value.Element.Value);
+        }
+        if (value.Map is not null)
+        {
+            RepeatedSerializer.CreateList<List<MapPair>, MapPair>().WriteRepeated(ref state, 2, SerializerFeatures.WireTypeString | SerializerFeatures.OptionPackedDisabled, value.Map, this);
+        }
+    }
+    MapMap ISerializer<MapMap>.Read(ref ProtoReader.State state, MapMap value)
+    {
+        int num;
+        while ((num = state.ReadFieldHeader()) > 0)
+        {
+            switch (num)
+            {
+
+
+                case 2:
+                    value._value.Map = RepeatedSerializer.CreateList<List<MapElement>, MapElement>().ReadRepeated(ref state, SerializerFeatures.WireTypeString | SerializerFeatures.OptionPackedDisabled, value._value.Map!, this);
+                    break;
+                default:
+                    state.SkipField();
+                    break;
+            }
+        }
+        return value;
+    }
+    void ISerializer<MapMap>.Write(ref ProtoWriter.State state, MapMap value)
+    {
+
+
+        if (value.Map is not null)
+        {
+            RepeatedSerializer.CreateList<List<MapElement>, MapElement>().WriteRepeated(ref state, 2, SerializerFeatures.WireTypeString | SerializerFeatures.OptionPackedDisabled, value.Map, this);
+        }
     }
 }

@@ -6,11 +6,8 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using Hiperspace.Meta;
-using ProtoBuf.Meta;
 using System.IO.Compression;
-using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.Marshalling;
 
 namespace Hiperspace
 {
@@ -152,6 +149,7 @@ namespace Hiperspace
             }
             return result;
         }
+
         /// <summary>
         /// Bind a batch of values for server single trip
         /// </summary>
@@ -195,6 +193,20 @@ namespace Hiperspace
             }
             return result;
         }
+        /// <summary>
+        /// Binds a batch of key-value pairs within the specified transaction and returns the results for each pair.
+        /// </summary>
+        /// <param name="batch">An array of tuples containing the key, value, and optional source object for each item to bind. Each tuple
+        /// represents a single key-value pair to be processed.</param>
+        /// <param name="transaction">The transaction context in which the batch binding operation is performed. Must be a valid, active
+        /// transaction.</param>
+        /// <remarks>the default implementation does not use transactions</remarks>
+        /// <returns>An array of results, each containing the bound key and value for the corresponding input pair. The result
+        /// indicates success or failure for each item.</returns>
+        public virtual Result<(byte[] Key, byte[] Value)>[] BatchBind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch, Transaction transaction)
+        {
+            return BatchBind(batch);
+        }
 
         /// <summary>
         /// Bind a batch of values for server single trip async
@@ -219,6 +231,20 @@ namespace Hiperspace
                     return result;
             }
             return result;
+        }
+
+        /// <summary>
+        /// Binds a batch of key-value pairs asynchronously within the specified transaction context.
+        /// </summary>
+        /// <param name="batch">An array of tuples containing the key, value, and optional source object for each item to bind. Each tuple
+        /// represents a single binding operation.</param>
+        /// <param name="transaction">The transaction context in which the batch binding operations are performed.</param>
+        /// <remarks>the default implementation does not use transactions</remarks>
+        /// <returns>A task that represents the asynchronous operation. The task result contains an array of Result objects, each
+        /// holding the bound key and value for the corresponding batch item.</returns>
+        public virtual Task<Result<(byte[] Key, byte[] Value)>[]> BatchBindAsync((byte[] key, byte[] value, object? source)[] batch, Transaction transaction)
+        {
+            return BatchBindAsync(batch);
         }
 
         /// <summary>
@@ -917,5 +943,28 @@ namespace Hiperspace
         /// <returns>The next sequence number for the specified key.</returns>
         /// TODO: change to abstract in the next version
         public virtual Task<ulong> UseSequenceAsync(byte[] key) { throw new NotImplementedException("Update the HiLang compiler and/or drivers"); }
+
+        /// <summary>
+        /// Commits the specified transaction, applying all pending changes.
+        /// </summary>
+        /// <param name="transaction">The transaction to commit. Must represent a valid, active transaction.</param>
+        /// <returns>true if the transaction was successfully committed; otherwise, false.</returns>
+        /// <remarks>
+        /// Hiperspace uses Multi Version Concurrency Control, and uses transaction log for Delta queries
+        /// </remarks>
+        public virtual bool Commit(Transaction transaction) { return true; /* this HiperSpace commits all transactions */ }
+
+        /// <summary>
+        /// Attempts to roll back the specified transaction. Rollback is not supported in the default implementation, and the
+        /// method always returns false.
+        /// </summary>
+        /// <remarks>This implementation commits all transactions immediately and does not support
+        /// rollback. Calling this method will not affect the transaction state.</remarks>
+        /// <param name="transaction">The transaction to attempt to roll back. Cannot be null.</param>
+        /// <returns>false in all cases, as rollback is not supported by this implementation.</returns>
+        /// <remarks>
+        /// Hiperspace uses Multi Version Concurrency Control, and uses transaction log for Delta queries
+        /// </remarks>
+        public virtual bool Rollback(Transaction transaction) { return false; /* this HiperSpace commits all transactions, and cannot rollback */ }
     }
 }

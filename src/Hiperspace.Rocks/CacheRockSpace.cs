@@ -70,10 +70,13 @@ namespace Hiperspace.Rocks
 
             foreach (var (key, value) in Find(vbegin, vend))
             {
-                var keypart = new byte[key.Length - 1];
-                var span = new Span<byte>(key, 1, key.Length - 1);
-                span.CopyTo(keypart);
-                yield return (keypart, DateTime.Now, value);
+                if (key.Length > sizeof(ulong) + 1)
+                {
+                    var keypart = new byte[key.Length - 1];
+                    var span = new Span<byte>(key, 1, key.Length - 1);
+                    span.CopyTo(keypart);
+                    yield return (keypart, DateTime.Now, value);
+                }
             }
         }
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Delta(byte[] begin, DateTime? version)

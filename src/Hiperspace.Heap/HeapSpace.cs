@@ -192,7 +192,7 @@ namespace Hiperspace.Heap
             }
             foreach (var row in cursor)
             {
-                if (Compare(vbegin, row.Key) <= 0 && Compare(vend, row.Key) >= 0)
+                if (Compare(vbegin, row.Key) <= 0 && Compare(vend, row.Key) >= 0 && row.Key.Length > sizeof(ulong) + 1)
                 {
                     var keypart = new byte[row.Key.Length - sizeof(long) - 1];
                     var span = new Span<byte>(row.Key, 1, row.Key.Length - sizeof(long) - 1);
@@ -253,7 +253,7 @@ namespace Hiperspace.Heap
             }
             foreach (var row in cursor)
             {
-                if (Compare(vbegin, row.Key) <= 0 && Compare(vend, row.Key) >= 0)
+                if (Compare(vbegin, row.Key) <= 0 && Compare(vend, row.Key) >= 0 && row.Key.Length > sizeof(ulong) + 2)
                 {
                     var keypart = new byte[row.Key.Length - sizeof(long) - 2];
                     var span = new Span<byte>(row.Key, 2, row.Key.Length - sizeof(long) - 2);
@@ -319,7 +319,7 @@ namespace Hiperspace.Heap
             }
             foreach (var row in cursor)
             {
-                if (Compare(row.Key, vbegin) >= 0 && Compare(row.Key, vend) <= 0)
+                if (Compare(row.Key, vbegin) >= 0 && Compare(row.Key, vend) <= 0 &&  row.Key.Length > sizeof(ulong) + 1)
                 {
                     var keypart = new byte[row.Key.Length - sizeof(long) - 1];
                     var span = new Span<byte>(row.Key, 1, row.Key.Length - sizeof(long) - 1);
@@ -391,20 +391,23 @@ namespace Hiperspace.Heap
             }
             foreach (var row in cursor)
             {
-                var keypart = new byte[row.Key.Length - sizeof(long) - 1];
-                var span = new Span<byte>(row.Key, 1, row.Key.Length - sizeof(long) - 1);
-                span.CopyTo(keypart);
-
-                if (Compare(key, keypart) == 0)
+                if (row.Key.Length > sizeof(ulong) + 1)
                 {
-                    if (finding)
+                    var keypart = new byte[row.Key.Length - sizeof(long) - 1];
+                    var span = new Span<byte>(row.Key, 1, row.Key.Length - sizeof(long) - 1);
+                    span.CopyTo(keypart);
+
+                    if (Compare(key, keypart) == 0)
                     {
-                        finding = false;
-                        var value = row.Value;
-                        RaiseOnAfterGet(ref key, ref value);
+                        if (finding)
+                        {
+                            finding = false;
+                            var value = row.Value;
+                            RaiseOnAfterGet(ref key, ref value);
+                        }
+                        var ver = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(row.Item1, row.Item1.Length - sizeof(ulong), sizeof(ulong))));
+                        yield return (row.Value, new DateTime(ver));
                     }
-                    var ver = (long)(ulong.MaxValue - BinaryPrimitives.ReadUInt64BigEndian(new Span<byte>(row.Item1, row.Item1.Length - sizeof(ulong), sizeof(ulong))));
-                    yield return (row.Value, new DateTime(ver));
                 }
             }
         }

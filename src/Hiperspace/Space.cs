@@ -131,7 +131,7 @@ namespace Hiperspace
         public static byte[] Lpv2Vpl(byte[] source, (int key, (int member, int key)[] values)[] metadata)
         {
             if (source.Length == 0) return source;
-            var meta = new MetaMap(metadata, source.Length);
+            var meta = new Meta.MetaMap(metadata, source.Length);
             byte[] bytes = new byte[source.Length];
             int s = 0;
             int p = 0;
@@ -231,7 +231,7 @@ namespace Hiperspace
         public static byte[] Vpl2lpv(byte[] source, (int key, (int member, int key)[] values)[] metadata, bool part)
         {
             if (source.Length == 0) return source;
-            var meta = new MetaMap(metadata, source.Length, part);
+            var meta = new Meta.MetaMap(metadata, source.Length, part);
             byte[] bytes = new byte[source.Length];
             int s = 0;
             int p = 0;
@@ -323,7 +323,7 @@ namespace Hiperspace
         public static (byte[] begin, byte[] end) Vpl2f(byte[] source, (int key, (int member, int key)[] values)[] metadata)
         {
             if (source.Length == 0) return (source, source);
-            var meta = new MetaMap(metadata, source.Length);
+            var meta = new Meta.MetaMap(metadata, source.Length);
             byte[] bytes = new byte[source.Length];
             byte[] other = new byte[source.Length];
             int s = 0;
@@ -422,7 +422,7 @@ namespace Hiperspace
         public static (byte[] begin, byte[] end) Vpl2s(byte[] source, (int key, (int member, int key)[] values)[] metadata)
         {
             if (source.Length == 0) return (source, source);
-            var meta = new MetaMap(metadata, source.Length);
+            var meta = new Meta.MetaMap(metadata, source.Length);
             byte[] bytes = new byte[source.Length];
             byte[] other = new byte[source.Length];
             int s = 0;

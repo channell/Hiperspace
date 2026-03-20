@@ -7,7 +7,7 @@
 // ---------------------------------------------------------------------------------------
 using System.Runtime.CompilerServices;
 
-namespace Hiperspace
+namespace Hiperspace.Meta
 {
     /// <summary>
     /// Meta Map to process protobuf byte[] buffer transform
@@ -25,9 +25,24 @@ namespace Hiperspace
         {
             _map = map;
             _currentMap = map[0].values;
-            _stack = new Stack<(int key, int poppoint, (int member, int key)[])> (popPoint / 2);
+            _stack = new Stack<(int key, int poppoint, (int member, int key)[])>(popPoint / 2);
             _popPoint = popPoint;
             _part = part;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the MetaMap class using the durably stored map
+        /// </summary>
+        /// <param name="map">The MapMap instance used to initialize the internal map structure. Cannot be null.</param>
+        /// <param name="popPoint">The pop point value that determines stack capacity and influences internal state. Must be a positive
+        /// integer.</param>
+        public MetaMap(MapMap map, int popPoint)
+        {
+            _map = map.ToMap();
+            _currentMap = _map[0].values;
+            _stack = new Stack<(int key, int poppoint, (int member, int key)[])>(popPoint / 2);
+            _popPoint = popPoint;
+            _part = false;
         }
 
         /// <summary>
@@ -36,7 +51,7 @@ namespace Hiperspace
         /// <param name="key">id number of the element</param>
         /// <param name="poppoint">length of this node</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Push (int key, int poppoint)
+        public void Push(int key, int poppoint)
         {
             int s = 0, e = _map.Length - 1, m = _map.Length / 2, ls = m, le = m;
             do
@@ -59,7 +74,7 @@ namespace Hiperspace
                 }
                 else if (key >= _map[m].key)
                     s = m;
-                else 
+                else
                     e = m;
                 m = (s + e) / 2;
                 if (s == ls && e == le)
@@ -79,7 +94,7 @@ namespace Hiperspace
         /// </summary>
         /// <param name="pos">position in the byte[] that we've reached</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void PopIf (int pos)
+        public void PopIf(int pos)
         {
             if (_part)
             {
@@ -103,7 +118,7 @@ namespace Hiperspace
         /// <param name="member">key of the field</param>
         /// <param name="poppoint">length of the current node</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool Next (int member, int poppoint)
+        public bool Next(int member, int poppoint)
         {
             if (_currentMap.Length == 0) return false;
             int s = 0, e = _currentMap.Length - 1, m = _currentMap.Length / 2, ls = m, le = m;
@@ -121,7 +136,7 @@ namespace Hiperspace
                 }
                 else if (member >= _currentMap[m].member)
                     s = m;
-                else 
+                else
                     e = m;
                 m = (s + e) / 2;
                 if (s == ls && e == le)
