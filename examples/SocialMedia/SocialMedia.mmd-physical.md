@@ -244,7 +244,7 @@ classDiagram
 ## View Hiperspace.VectorSpace
  Aspect used to search for similar entities
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|owner|Any|owner of the segment/aspect as an object|||
 |+|Vector|Hiperspace.Vector||||
@@ -254,7 +254,7 @@ classDiagram
 ## Value Graph.Route
 Route across a graph of edge/node to form an HiperEdge
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Name|String||||
 |+|Rules|HashSet<Graph.Rule>||||
@@ -264,7 +264,7 @@ Route across a graph of edge/node to form an HiperEdge
 ## Value Graph.Rule
 A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 'relation', Rules = [{FromType = 'Person', ToType = 'Person', EdgeType = 'Mother'}]}
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|FromType|String||||
 |#|ToType|String||||
@@ -275,7 +275,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 ## View Social.Media.Location
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|owner|Any|owner of the segment/aspect as an object|||
 |+|Deleted|Boolean|Flag for read horizon filter to hide when true|||
@@ -287,7 +287,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 ## EntityImpl Social.Media.Person
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|FirstName|String||||
@@ -318,7 +318,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 ## SegmentImpl Social.Media.Follows
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|owner|Social.Media.Person||||
 |#|Person|Social.Media.Person||||
@@ -330,7 +330,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 ## SegmentImpl Social.Media.Friend
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|owner|Social.Media.Person||||
 |#|Person|Social.Media.Person||||
@@ -343,7 +343,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 ## SegmentImpl Social.Media.Interest
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|owner|Social.Media.Person||||
 |#|Tag|Social.Media.Tag||||
@@ -353,7 +353,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 ## EntityImpl Social.Media.Tag
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Name|String||||
 |+|Class|Social.Media.TagClass||||
@@ -364,7 +364,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 ## EntityImpl Social.Media.TagClass
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Name|String||||
 |+|IsSubClassOf|Social.Media.TagClass||||
@@ -376,7 +376,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 ## EntityImpl Social.Media.Forum
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|Guid||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
@@ -391,7 +391,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 ## SegmentImpl Social.Media.HasTag
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|owner|Social.Media.Post||||
 |#|Tag|Social.Media.Tag||||
@@ -401,7 +401,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 ## EntityImpl Social.Media.Post
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|CreatedDate|DateTime||||
@@ -426,7 +426,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 ## SegmentImpl Social.Media.Comment
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|owner|Social.Media.Post||||
 |#|Creator|Social.Media.Person||||
@@ -444,7 +444,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 ## EntityImpl Social.Media.Country
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Name|String||||
 |+|Continent|Social.Media.Continent||||
@@ -456,7 +456,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 ## EntityImpl Social.Media.City
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Name|String||||
 |+|Country|Social.Media.Country||||
@@ -467,7 +467,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 ## EntityImpl Social.Media.Continent
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Name|String||||
 ||TypeName|Some(String)|||"Continent"|
@@ -477,7 +477,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 ## EntityImpl Social.Media.Company
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Name|String||||
 |+|Location|Social.Media.City||||
@@ -488,7 +488,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 ## EntityImpl Social.Media.University
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Name|String||||
 |+|Location|Social.Media.City||||
@@ -499,7 +499,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 ## SegmentImpl Social.Media.AtCompany
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|owner|Social.Media.Person||||
 |#|Value|Social.Media.Company||||
@@ -511,7 +511,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 ## SegmentImpl Social.Media.AtUniversity
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|owner|Social.Media.Person||||
 |#|Value|Social.Media.University||||
@@ -523,7 +523,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 ## AspectImpl Social.Media.PostReplieLocation
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|owner|Social.Media.Comment||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
@@ -535,7 +535,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 ## AspectImpl Social.Media.PostReplieVectorSpace
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|owner|Social.Media.Comment||||
 |+|Vector|Hiperspace.Vector||||
@@ -545,7 +545,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 ## AspectImpl Social.Media.PostLocation
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|owner|Social.Media.Post||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
@@ -557,7 +557,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 ## AspectImpl Social.Media.PostVectorSpace
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|owner|Social.Media.Post||||
 |+|Vector|Hiperspace.Vector||||
@@ -567,7 +567,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 ## AspectImpl Social.Media.PersonVectorSpace
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|owner|Social.Media.Person||||
 |+|Vector|Hiperspace.Vector||||
@@ -577,7 +577,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 ## AspectImpl Social.Media.PersonLocation
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|owner|Social.Media.Person||||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
@@ -589,7 +589,7 @@ A rule for a route that matched as a type of Edge to a HiperEdge, e.g. { Name = 
 ## Message SocialMedia.PathMessage
 Remote execution of path requests
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Node|Node||||
 |#|Route|Graph.Route||||

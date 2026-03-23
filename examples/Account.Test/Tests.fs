@@ -87,7 +87,7 @@ type  AccountTest (output : ITestOutputHelper) =
         accSpace.Customers.Add cust |> ignore
 
         for n in [0m..4m] do
-            let tran = Transaction ( owner = acc, At = DateTime.Now, Payee = $"Payee {n}", Amount = n )
+            let tran = Acc.Transaction ( owner = acc, At = DateTime.Now, Payee = $"Payee {n}", Amount = n )
             acc.Transactions.Add tran |> ignore
             
         output.WriteLine "Name, Title, At, Movement, AsAt"
@@ -101,7 +101,7 @@ type  AccountTest (output : ITestOutputHelper) =
         Threading.Thread.Sleep(1000)
         output.WriteLine "\nAdd a penny"
         for n in accSpace.Transactions do
-            let a = Transaction(n)
+            let a = Acc.Transaction(n)
             a.Amount <- n.Amount.Value + 0.01m
             acc.Transactions.Add a
 
@@ -140,7 +140,7 @@ type  AccountTest (output : ITestOutputHelper) =
         output.WriteLine "\nAdd a penny"
         for n in snap.Transactions do
             if (match n.Payee with | "Payee 0" | "Payee 1" -> true | _ -> false) then
-                let a = Transaction (Payee = n.Payee, Amount = n.Amount.Value + 0.02m, At = DateTime.Now)
+                let a = Acc.Transaction (Payee = n.Payee, Amount = n.Amount.Value + 0.02m, At = DateTime.Now)
                 acc.Transactions.Add a
 
         use delta = new AccSpace(accSpace, null, Nullable<DateTime>(), beforeDelta)

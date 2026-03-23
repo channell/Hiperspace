@@ -144,7 +144,7 @@ classDiagram
 ## Aspect Social.Media.Location
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |+|Latitude|Double||||
 |+|Longitude|Double||||
@@ -154,7 +154,7 @@ classDiagram
 ## Type Social.Media.Located
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |+|CreatedDate|DateTime||||
 |+|BrowserUsed|String||||
@@ -166,7 +166,7 @@ classDiagram
 ## Entity Social.Media.Person
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|FirstName|String||||
@@ -191,7 +191,7 @@ classDiagram
 ## Segment Social.Media.Follows
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Person|Social.Media.Person||||
 ||Name||||Person?.Name|
@@ -201,7 +201,7 @@ classDiagram
 ## Segment Social.Media.Friend
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Person|Social.Media.Person||||
 ||Name||||Person?.Name|
@@ -212,7 +212,7 @@ classDiagram
 ## Segment Social.Media.Likes
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Post|Social.Media.Post||||
 ||Content||||Post?.Content|
@@ -222,7 +222,7 @@ classDiagram
 ## Segment Social.Media.Interest
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Tag|Social.Media.Tag||||
 
@@ -231,7 +231,7 @@ classDiagram
 ## Entity Social.Media.Tag
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Name|String||||
 |+|Class|Social.Media.TagClass||||
@@ -242,7 +242,7 @@ classDiagram
 ## Entity Social.Media.TagClass
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Name|String||||
 |+|IsSubClassOf|Social.Media.TagClass||||
@@ -254,7 +254,7 @@ classDiagram
 ## Entity Social.Media.Forum
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Title|String||||
@@ -268,7 +268,7 @@ classDiagram
 ## Segment Social.Media.Member
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Person|Social.Media.Person||||
 ||Name||||Person?.Name|
@@ -278,7 +278,7 @@ classDiagram
 ## Segment Social.Media.HasTag
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Tag|Social.Media.Tag||||
 
@@ -287,7 +287,7 @@ classDiagram
 ## Type Social.Media.Message
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |+|LocatedIn|Social.Media.Country||||
 
@@ -296,7 +296,7 @@ classDiagram
 ## Entity Social.Media.Post
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|Guid||||
 |+|Creator|Social.Media.Person||||
@@ -314,7 +314,7 @@ classDiagram
 ## Segment Social.Media.Comment
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Creator|Social.Media.Person||||
 |+|Content|String||||
@@ -324,7 +324,7 @@ classDiagram
 ## Type Social.Media.Named
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Name|String||||
 
@@ -333,7 +333,7 @@ classDiagram
 ## Entity Social.Media.Country
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |+|Continent|Social.Media.Continent||||
 ||Cities|Social.Media.City|||Country = this|
@@ -344,7 +344,7 @@ classDiagram
 ## Entity Social.Media.City
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |+|Country|Social.Media.Country||||
 ||TypeName||||"City"|
@@ -354,7 +354,7 @@ classDiagram
 ## Entity Social.Media.Continent
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 ||TypeName||||"Continent"|
 
@@ -363,7 +363,7 @@ classDiagram
 ## Entity Social.Media.Company
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |+|Location|Social.Media.City||||
 ||TypeName||||"Company"|
@@ -373,7 +373,7 @@ classDiagram
 ## Entity Social.Media.University
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |+|Location|Social.Media.City||||
 ||TypeName||||"University"|
@@ -383,7 +383,7 @@ classDiagram
 ## Segment Social.Media.At<T>
 
 
-||Name|Type|*|@|=|
+| |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Value|T||||
 |+|FromDate|DateTime||||

@@ -100,23 +100,37 @@ namespace Hiperspace
         }
         public static TProto FromValue<TProto>(TypeModel? model, byte[] bytes)
         {
-            if (model  is null) throw new TypeModelException();
-            var protoStream = new MemoryStream(bytes);
-            protoStream.Position = 0;
-            return model.Deserialize<TProto>(protoStream);
+            try
+            {
+                if (model is null) throw new TypeModelException();
+                var protoStream = new MemoryStream(bytes);
+                protoStream.Position = 0;
+                return model.Deserialize<TProto>(protoStream);
+            }
+            catch (Exception ex)
+            {
+                throw new DataMapException(typeof(TProto), bytes, ex);
+            }
         }
         public static (TKey, TValue) From<TKey, TValue>(TypeModel model, byte[] Key, byte[] Value)
         {
-            var keyStream = new MemoryStream(Key);
-            var valueStream = new MemoryStream(Value);
-            return
-                (
-                    model.Deserialize<TKey>(keyStream),
-                    model.Deserialize<TValue>(valueStream)
-                );
+            try
+            { 
+                var keyStream = new MemoryStream(Key);
+                var valueStream = new MemoryStream(Value);
+                return
+                    (
+                        model.Deserialize<TKey>(keyStream),
+                        model.Deserialize<TValue>(valueStream)
+                    );
+            }
+                catch (Exception ex)
+                {
+                    throw new DataMapException(typeof(TKey), Key, ex);
+            }
         }
 
-        const byte icont  = 0b1000_0000;
+const byte icont  = 0b1000_0000;
         const byte ival   = 0b0111_1111;
         const byte btype  = 0b0000_0111;
 
