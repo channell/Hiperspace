@@ -271,6 +271,7 @@ entity Plan.Resource     : Versioned
  * view for BI analysis
  */
 
+@CubeFact
 view BI.Item    = Node (SKey = SKey, Name = Name, TypeName = "BI-Cost-" + TypeName) #210
 (
     WBS             : String,
@@ -281,7 +282,7 @@ view BI.Item    = Node (SKey = SKey, Name = Name, TypeName = "BI-Cost-" + TypeNa
     ActualCost      : Decimal, 
     PlanCost        : Decimal, 
     ImpliedCost     : Decimal,
-    Plan        : Plan.Duration,
+    Plan            : Plan.Duration,
     Actual          : Plan.Duration
 }
 [
@@ -312,11 +313,11 @@ entity Booking.Timesheet     : Versioned #95
     Estimate        : Decimal #6,
     Comment         : String #7,  
     Valid           = Resource = null ||             /* resource can not be null                                */
-                  Task = null ||                 /* task can not be null                                    */
-                  Date <= Task.Duration.Start || /* date before task start is invalid                       */
-                  Date >= Task.Duration.End ||   /* date after task end is invalid                          */
-                  Date <= Task.Actual.Close      /* Closing date for time booking in the Task Actual aspect */
-                  ? false : true #8
+                      Task = null ||                 /* task can not be null                                    */
+                      Date <= Task.Duration.Start || /* date before task start is invalid                       */
+                      Date >= Task.Duration.End ||   /* date after task end is invalid                          */
+                      Date <= Task.Actual.Close      /* Closing date for time booking in the Task Actual aspect */
+                      ? false : true #8
 }
   
 [

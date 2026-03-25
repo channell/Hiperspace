@@ -1,6 +1,15 @@
 # Account-physical
 ```mermaid
 classDiagram
+    class API.CustomerActivity {
+        # Customer  : Acc.Customer
+        + CustomerTree  : List~Acc.Customer~
+        + Sector  : List~Acc.Sector~
+        + Accounts  : List~Acc.Account~
+        + Cube  : List~Acc.Transaction_Cube~
+        + Facts  : List~Acc.Transaction_Fact~
+    }
+    API.CustomerActivity --> Acc.Customer
     class Acc.Sector {
         # Name  : String
         + Deleted  = false
@@ -95,6 +104,20 @@ classDiagram
 > The ‘*’ column contains a description for the element member.  
 > The ‘@’ column contains any properties for the member.
 > The ‘=’ column contains calculated values; or in the case of an enum, the serialized value.
+
+---
+
+## Message API.CustomerActivity
+
+
+| |Name|Type|*|@|=|
+|-|-|-|-|-|-|
+|#|Customer|Acc.Customer||||
+|+|CustomerTree|List<Acc.Customer>||||
+|+|Sector|List<Acc.Sector>||||
+|+|Accounts|List<Acc.Account>||||
+|+|Cube|List<Acc.Transaction_Cube>||||
+|+|Facts|List<Acc.Transaction_Fact>||||
 
 ---
 

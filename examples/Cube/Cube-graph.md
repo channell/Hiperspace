@@ -1,6 +1,11 @@
 # Cube-graph
 ```mermaid
 classDiagram
+    class Banking.Trade {
+        # Id  : String
+        + Book  : Banking.Book
+        + Value  : Decimal
+    }
     class Cube.ContractCountryEdge {
         # From  : Node
         # To  : Node
@@ -61,15 +66,21 @@ classDiagram
     class Banking.EQ.Trade {
         # Id  : String
         + Book  : Banking.Book
+        + Value  : Decimal
     }
+    Banking.EQ.Trade ..|> Banking.Trade
     class Banking.FI.Trade {
         # Id  : String
         + Book  : Banking.Book
+        + Value  : Decimal
     }
+    Banking.FI.Trade ..|> Banking.Trade
     class Banking.FX.Trade {
         # Id  : String
         + Book  : Banking.Book
+        + Value  : Decimal
     }
+    Banking.FX.Trade ..|> Banking.Trade
     class Cube.Account {
         # Id  : String
         + Customer  : Cube.Customer
@@ -108,6 +119,10 @@ classDiagram
         + Deleted  = false
         + Facts  : Int64
         + CubeName () = cubename(Sector,Country,Product,Portfolio)
+        + Sector_SKey () = Sector?.SKey
+        + Country_SKey () = Country?.SKey
+        + Product_SKey () = Product?.SKey
+        + Portfolio_SKey () = Portfolio?.SKey
     }
     Cube.Contract_Cube --> Cube.Sector
     Cube.Contract_Cube --> Cube.Country
@@ -189,6 +204,17 @@ classDiagram
 > The ‘*’ column contains a description for the element member.  
 > The ‘@’ column contains any properties for the member.
 > The ‘=’ column contains calculated values; or in the case of an enum, the serialized value.
+
+---
+
+## View Banking.Trade
+
+
+| |Name|Type|*|@|=|
+|-|-|-|-|-|-|
+|#|Id|String||||
+|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 96), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95)||
+|+|Value|Decimal||||
 
 ---
 
@@ -308,6 +334,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|Id|String||||
 |+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 96), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95)||
+|+|Value|Decimal||||
 
 ---
 
@@ -318,6 +345,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|Id|String||||
 |+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 96), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95)||
+|+|Value|Decimal||||
 
 ---
 
@@ -328,6 +356,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|Id|String||||
 |+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 96), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95)||
+|+|Value|Decimal||||
 
 ---
 
@@ -393,6 +422,10 @@ classDiagram
 ||Deleted|Some(Boolean)|The cube fact has been deleted||false|
 |+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
 ||CubeName|Some(String)|||cubename(Sector,Country,Product,Portfolio)|
+||Sector_SKey|Some(String)|Reference to the the Sector dimension using its Skey for use with ODATA||Sector?.SKey|
+||Country_SKey|Some(String)|Reference to the the Country dimension using its Skey for use with ODATA||Country?.SKey|
+||Product_SKey|Some(String)|Reference to the the Product dimension using its Skey for use with ODATA||Product?.SKey|
+||Portfolio_SKey|Some(String)|Reference to the the Portfolio dimension using its Skey for use with ODATA||Portfolio?.SKey|
 
 ---
 

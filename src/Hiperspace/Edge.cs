@@ -304,10 +304,10 @@ namespace Hiperspace
         #endregion
 
         /// <summary>
-        /// Apply any filters in teh tempate that were not saragable in an index seek
+        /// Apply any filters in the template that were not Sargable in an index seek
         /// </summary>
         /// <param name="other">the template for the search</param>
-        /// <param name="read">for compatability with HiLang generaterdf methods</param>
+        /// <param name="read">for compatibility with HiLang generated methods</param>
         /// <returns>true if it matched the provided values of the template</returns>
         public bool Filter(Edge other, bool read)
         {

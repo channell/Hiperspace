@@ -70,7 +70,7 @@ entity Cube.Instrument
 
 @CubeFact(77, 81)
 entity Cube.Contract : Versioned 
-	= Valued (name = "some", Value = Value, Deleted = Deleted)
+	= Valued (Name = "some", Value = Value, Deleted = Deleted)
 	, Node (SKey = SKey, Name = "", TypeName = "Contract") #44 
 	(Id : Int64 #1) 
 	{Quantity : Decimal #3, Instrument : Cube.Instrument #4, Portfolio : Cube.Portfolio #5, Account : Cube.Account #6} 
@@ -83,11 +83,29 @@ entity Cube.Contract : Versioned
 	];
 
 view Valued : Versioned #3
-	(name : String) 
+	(Name : String) 
 	{Value : Decimal};
 
-view Banking.Trade #53 (Id : String) {@AlternateIndex("Banking.EQ.Trade", 60),AlternateIndex("Banking.FI.Trade", 56),AlternateIndex("Banking.FX.Trade", 58) ,AlternateIndex("Banking.EQ.Trade", 96) ,AlternateIndex("Banking.FI.Trade", 94) ,AlternateIndex("Banking.FX.Trade", 95) Book : Banking.Book};
+view Banking.Trade = Valued (Name = Id, Value = Value, Deleted = false)  #53 
+(
+	Id : String
+) 
+{
+	@AlternateIndex("Banking.EQ.Trade", 60),
+	 AlternateIndex("Banking.FI.Trade", 56),
+	 AlternateIndex("Banking.FX.Trade", 58)
+	,AlternateIndex("Banking.EQ.Trade", 96) ,AlternateIndex("Banking.FI.Trade", 94) ,AlternateIndex("Banking.FX.Trade", 95) Book : Banking.Book,
+	Value : Decimal
+};
 entity Banking.FI.Trade : Banking.Trade = Banking.Trade() #57;
 entity Banking.FX.Trade : Banking.Trade = Banking.Trade() #59;
 entity Banking.EQ.Trade : Banking.Trade = Banking.Trade() #61;
-entity Banking.Book #55 (Id : String #1) [Trades : Banking.Trade (Book = this) #58];
+
+@CubeDimension
+entity Banking.Book #55 
+(
+	Id : String #1
+)
+[
+	Trades : Banking.Trade (Book = this) #58
+];

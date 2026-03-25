@@ -130,7 +130,7 @@ namespace Hiperspace
             }
         }
 
-const byte icont  = 0b1000_0000;
+        const byte icont  = 0b1000_0000;
         const byte ival   = 0b0111_1111;
         const byte btype  = 0b0000_0111;
 
@@ -598,6 +598,48 @@ const byte icont  = 0b1000_0000;
             }
             while (s < bytes.Length) bytes[s++] = 0xFF;
             return bytes;
+        }
+
+        /// <summary>
+        /// Get the Hiperspace element type from the byte array
+        /// </summary>
+        /// <remarks>
+        /// The first tag-id from the protobuf message corresponds to the element type of a serialized message.
+        /// This can be used for permission checks, and as an optimization to determine whether the domain space
+        /// will be able to desterilize it without needing to try deserialization and catch exception
+        /// </remarks>
+        /// <param name="source">The byte array containing the encoded message data. May be null or empty.</param>
+        /// <returns>An integer representing the message type identifier extracted from the source. Returns 0 if the source is
+        /// null, empty, or does not contain a valid message type.</returns>
+        public static int ElementType(byte[] source)
+        {
+            // metadata lookup special case
+            if (source is null || source.Length == 0 || (source.Length == 2 && source[0] == 0 && source[1] == 0))
+                return 0;
+
+            int p = 0;
+            while (p < source.Length)
+            {
+                switch (source[p] & btype)
+                {
+                    case 0 when p == 0:     // special case of VectorSpace keys
+                        p++;
+                        break;
+                    case 2: // LEN prefixed value
+                        int id = (source[p] & ival) >> 3;
+                        int shift = 4;
+                        while ((source[p] & icont) == icont)  // copy varint
+                        {
+                            p++;
+                            id += (source[p] & ival) << shift;
+                            shift += 4;
+                        }
+                        return id;
+                    default:
+                        break;
+                }
+            }
+            return 0;
         }
     }
 }

@@ -1,10 +1,6 @@
 # Cube
 ```mermaid
 classDiagram
-    class Banking.Book {
-        # Id  : String
-        + Trades (Book = this) : Banking.Trade
-    }
     class Cube.Account {
         # Id  : String
         + Customer  : Cube.Customer
@@ -32,10 +28,16 @@ classDiagram
     class Banking.Trade {
         # Id  : String
         + Book  : Banking.Book
-    }
-    class Valued {
-        # name  : String
         + Value  : Decimal
+    }
+    Banking.Trade ..|> Valued
+    class Valued {
+        # Name  : String
+        + Value  : Decimal
+    }
+    class Banking.Book {
+        # Id  : String
+        + Trades (Book = this) : Banking.Trade
     }
     class Cube.Portfolio {
         # Id  : String
@@ -109,16 +111,6 @@ classDiagram
 
 ---
 
-## Entity Banking.Book
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|Id|String||||
-||Trades|Banking.Trade|||Book = this|
-
----
-
 ## Entity Cube.Account
 
 
@@ -171,6 +163,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|Id|String||||
 |+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 96), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95)||
+|+|Value|Decimal||||
 
 ---
 
@@ -179,8 +172,18 @@ classDiagram
 
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
-|#|name|String||||
+|#|Name|String||||
 |+|Value|Decimal||||
+
+---
+
+## Entity Banking.Book
+
+
+| |Name|Type|*|@|=|
+|-|-|-|-|-|-|
+|#|Id|String||||
+||Trades|Banking.Trade|||Book = this|
 
 ---
 

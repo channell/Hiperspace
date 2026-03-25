@@ -1,21 +1,20 @@
 # Cube-physical
 ```mermaid
 classDiagram
-    class Banking.Book {
-        # Id  : String
-        + Trades (Book = this) : Banking.Trade
-    }
     class Banking.EQ.Trade {
         # Id  : String
         + Book  : Banking.Book
+        + Value  : Decimal
     }
     class Banking.FI.Trade {
         # Id  : String
         + Book  : Banking.Book
+        + Value  : Decimal
     }
     class Banking.FX.Trade {
         # Id  : String
         + Book  : Banking.Book
+        + Value  : Decimal
     }
     class Cube.Account {
         # Id  : String
@@ -51,6 +50,10 @@ classDiagram
         + Deleted  = false
         + Facts  : Int64
         + CubeName () = cubename(Sector,Country,Product,Portfolio)
+        + Sector_SKey () = Sector?.SKey
+        + Country_SKey () = Country?.SKey
+        + Product_SKey () = Product?.SKey
+        + Portfolio_SKey () = Portfolio?.SKey
     }
     Cube.Contract_Cube --> Cube.Sector
     Cube.Contract_Cube --> Cube.Country
@@ -68,11 +71,19 @@ classDiagram
         + Facts  : Int64
         + CubeName () = cubename(Sector,Country,Product,Portfolio)
         + StdDev () = stddev(StdDev_Vector)
+        + Sector_SKey () = Sector?.SKey
+        + Country_SKey () = Country?.SKey
+        + Product_SKey () = Product?.SKey
+        + Portfolio_SKey () = Portfolio?.SKey
     }
     Cube.Contract_Fact --> Cube.Sector
     Cube.Contract_Fact --> Cube.Country
     Cube.Contract_Fact --> Cube.Product
     Cube.Contract_Fact --> Cube.Portfolio
+    class Banking.Book {
+        # Id  : String
+        + Trades (Book = this) : Banking.Trade
+    }
     class Cube.Country {
         # ISO  : String
         + Contract_Cube (CubeSlice = "13", Country = this, ContextLabel = contextlabel(this)) : Cube.Contract_Cube
@@ -131,16 +142,6 @@ classDiagram
 
 ---
 
-## EntityImpl Banking.Book
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|Id|String||||
-||Trades|Banking.Trade|||Book = this|
-
----
-
 ## EntityImpl Banking.EQ.Trade
 
 
@@ -148,6 +149,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|Id|String||||
 |+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 96), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95)||
+|+|Value|Decimal||||
 
 ---
 
@@ -158,6 +160,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|Id|String||||
 |+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 96), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95)||
+|+|Value|Decimal||||
 
 ---
 
@@ -168,6 +171,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|Id|String||||
 |+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 96), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95)||
+|+|Value|Decimal||||
 
 ---
 
@@ -233,6 +237,10 @@ classDiagram
 ||Deleted|Some(Boolean)|The cube fact has been deleted||false|
 |+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
 ||CubeName|Some(String)|||cubename(Sector,Country,Product,Portfolio)|
+||Sector_SKey|Some(String)|Reference to the the Sector dimension using its Skey for use with ODATA||Sector?.SKey|
+||Country_SKey|Some(String)|Reference to the the Country dimension using its Skey for use with ODATA||Country?.SKey|
+||Product_SKey|Some(String)|Reference to the the Product dimension using its Skey for use with ODATA||Product?.SKey|
+||Portfolio_SKey|Some(String)|Reference to the the Portfolio dimension using its Skey for use with ODATA||Portfolio?.SKey|
 
 ---
 
@@ -252,6 +260,20 @@ classDiagram
 |+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
 ||CubeName|Some(String)|||cubename(Sector,Country,Product,Portfolio)|
 ||StdDev|Some(Double)||CubeMeasure(Aggregate?.StdDev)|stddev(StdDev_Vector)|
+||Sector_SKey|Some(String)|Reference to the the Sector dimension using its Skey for use with ODATA||Sector?.SKey|
+||Country_SKey|Some(String)|Reference to the the Country dimension using its Skey for use with ODATA||Country?.SKey|
+||Product_SKey|Some(String)|Reference to the the Product dimension using its Skey for use with ODATA||Product?.SKey|
+||Portfolio_SKey|Some(String)|Reference to the the Portfolio dimension using its Skey for use with ODATA||Portfolio?.SKey|
+
+---
+
+## EntityImpl Banking.Book
+
+
+| |Name|Type|*|@|=|
+|-|-|-|-|-|-|
+|#|Id|String||||
+||Trades|Banking.Trade|||Book = this|
 
 ---
 
