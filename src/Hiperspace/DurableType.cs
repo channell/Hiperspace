@@ -78,11 +78,29 @@ namespace Hiperspace
         Transaction = 8,
 
         /// <summary>
-        /// Specifies that the key is a transaction checkpoint for database recovery after restart
+        /// Logs the end (commit/rollback) of a transaction 
         /// </summary>
         /// <remarks>
-        /// {9}, {9|transaction}
+        /// used in recovery to backout any transactions (since checkpoint) that were not committed and 
+        /// for calculation change content
+        /// {9|transaction}, {9|commit (true/false}
         /// </remarks>
-        Checkpoint = 9,
+        TransactionEnd = 9,
+
+        /// <summary>
+        /// Optionally Logs the start of a transaction with audit information 
+        /// </summary>
+        /// <remarks>
+        /// {10|transaction}, {10|audit message}
+        /// </remarks>
+        Audit = 10,
+
+        /// <summary>
+        /// Specifies the highest transaction that completed for transaction recovery after a restart
+        /// </summary>
+        /// <remarks>
+        /// {10}, {10|transaction}
+        /// </remarks>
+        Checkpoint = 11,
     }
 }

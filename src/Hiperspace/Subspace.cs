@@ -43,6 +43,8 @@ namespace Hiperspace
         /// </summary>
         public IPrincipal? UserLabel { get; set; }
 
+        public string? DatabaseLabel { get; init; }
+
         /// <summary>
         /// Hold a reference to the IoC service provider to enable "stored procedures" (IMessage implementations)
         /// to access registered services that can provide additional functionality when the message is invoked
@@ -87,7 +89,7 @@ namespace Hiperspace
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SubSpace"/> class with the specified parameters, to simplify dynanmic construction 
+        /// Initializes a new instance of the <see cref="SubSpace"/> class with the specified parameters, to simplify dynamic construction 
         /// </summary>
         /// <param name="parameters">The parameters used to configure the <see cref="SubSpace"/> instance, including space, horizon, and labels.</param>
         protected SubSpace (SubSpaceParameters parameters) : this(parameters.Space, parameters.Horizon, parameters.AsAt, parameters.DeltaFrom)
@@ -97,13 +99,14 @@ namespace Hiperspace
             RemoteLabel = parameters.RemoteLabel;
             _space = parameters.Space;
             ServiceProvider = parameters.ServiceProvider;
+            DatabaseLabel = parameters.DatabaseLabel;
         }
 
         /// <summary>
         /// Invoked when the component has completed its initialization phase.
         /// </summary>
         /// <remarks>Override this method to perform additional setup after initialization. 
-        /// Domain SubSpaces can use this function for post construction initialisation
+        /// Domain SubSpaces can use this function for post construction initialization
         /// e.g. for a GraphSpace that needs to updated properties after construction
         /// called once during the component's lifecycle
         /// </remarks>
@@ -173,8 +176,8 @@ namespace Hiperspace
         }
 
         /// <summary>
-        /// The meta map is a optimised map used to serialise and deserialise the byte[], for range based access 
-        /// within the key store. protobuf messages are transformed from length-prefix value to value prefix length 
+        /// The meta map is a optimized map used to serialize and reserialize the byte[], for range based access 
+        /// within the key store. Protobuf messages are transformed from length-prefix value to value prefix length 
         /// using this map
         /// </summary>
         public virtual (int key, (int member, int key)[] values)[] MetaMap { get; }
@@ -188,7 +191,7 @@ namespace Hiperspace
         /// containing a member and a key. Returns <see langword="null"/> if no metadata mappings are available.
         /// </returns>
         /// <remarks>
-        /// This method must be overriden for remote clients that can not performed syncronous IO to the server
+        /// This method must be overridden for remote clients that can not performed synchronous IO to the server
         /// </remarks>
         public virtual Task<(int key, (int member, int key)[] values)[]> MetaMapAsync()
         {
@@ -224,7 +227,7 @@ namespace Hiperspace
         /// </summary>
         /// <remarks>
         /// This method will be overridden in generated domain space to provide to use each Elements cast operator to convert to a node.
-        /// The default implementation can't use the implicit operqator, and returns a value only if the concrete object is already of the target type
+        /// The default implementation can't use the implicit operator, and returns a value only if the concrete object is already of the target type
         /// <returns>The typed object associated with the specified identifier, or <see langword="null"/> if it is missing or can't be cast to the type</returns>
         public abstract TEntity? Get<TEntity>(string sid) where TEntity : class;
         
@@ -605,7 +608,7 @@ namespace Hiperspace
         }
 
         /// <summary>
-        /// Default implementaiton is to pass down the stack of spaces
+        /// Default implementation is to pass down the stack of spaces
         /// </summary>
         /// <param name="key">key</param>
         /// <returns>key or value</returns>
@@ -672,7 +675,7 @@ namespace Hiperspace
         /// Gets the GPU-accelerated graph processing interface used for computational tasks.
         /// </summary>
         /// <remarks>
-        /// This property will be set if the Host supports GPU Excelorated graph search
+        /// This property will be set if the Host supports GPU Accelerated graph search
         /// </remarks>
 
         public Hiperspace.ICalculationGPU? CalculationGPU { get; init; }
@@ -686,8 +689,8 @@ namespace Hiperspace
             return _space.UseSequenceAsync(key);
         }
         public bool Commit() => Commit(Transaction);
-        public override bool Commit(Transaction transaction) => _space.Commit(Transaction);
+        public override bool Commit(Transaction transaction) => _space?.Commit(Transaction) ?? true;
         public bool Rollback() => Rollback(Transaction);
-        public override bool Rollback(Transaction transaction) => _space.Rollback(Transaction);
+        public override bool Rollback(Transaction transaction) => _space?.Rollback(Transaction) ?? false;
     }
 }

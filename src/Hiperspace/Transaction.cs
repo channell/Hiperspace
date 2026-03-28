@@ -6,6 +6,8 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using System.Buffers.Binary;
+using System.Diagnostics;
+using System.Numerics;
 
 namespace Hiperspace
 {
@@ -60,6 +62,21 @@ namespace Hiperspace
 #endif
             TimeStamp = DateTime.UtcNow.Ticks;
             Random = BinaryPrimitives.ReadInt64BigEndian(slice);
+        }
+
+        public Transaction (Guid guid)
+        {
+            var bytes = new Span<byte>(guid.ToByteArray());
+            TimeStamp = BinaryPrimitives.ReadInt64BigEndian(bytes.Slice(0, sizeof(long)));
+            Random = BinaryPrimitives.ReadInt64BigEndian(bytes.Slice(sizeof(long), sizeof(long)));
+        }
+
+        public static implicit operator Guid (Transaction transaction)
+        {
+            var bytes = new byte[16];
+            BinaryPrimitives.WriteInt64BigEndian(bytes.AsSpan(0, sizeof(long)), transaction.TimeStamp);
+            BinaryPrimitives.WriteInt64BigEndian(bytes.AsSpan(sizeof(long), sizeof(long)), transaction.Random);
+            return new Guid(bytes);
         }
 
         /// <summary>

@@ -119,10 +119,6 @@ classDiagram
         + Deleted  = false
         + Facts  : Int64
         + CubeName () = cubename(Sector,Country,Product,Portfolio)
-        + Sector_SKey () = Sector?.SKey
-        + Country_SKey () = Country?.SKey
-        + Product_SKey () = Product?.SKey
-        + Portfolio_SKey () = Portfolio?.SKey
     }
     Cube.Contract_Cube --> Cube.Sector
     Cube.Contract_Cube --> Cube.Country
@@ -422,10 +418,6 @@ classDiagram
 ||Deleted|Some(Boolean)|The cube fact has been deleted||false|
 |+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
 ||CubeName|Some(String)|||cubename(Sector,Country,Product,Portfolio)|
-||Sector_SKey|Some(String)|Reference to the the Sector dimension using its Skey for use with ODATA||Sector?.SKey|
-||Country_SKey|Some(String)|Reference to the the Country dimension using its Skey for use with ODATA||Country?.SKey|
-||Product_SKey|Some(String)|Reference to the the Product dimension using its Skey for use with ODATA||Product?.SKey|
-||Portfolio_SKey|Some(String)|Reference to the the Portfolio dimension using its Skey for use with ODATA||Portfolio?.SKey|
 
 ---
 

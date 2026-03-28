@@ -45,6 +45,10 @@ namespace Hiperspace
         /// Was the subspace opened by a remote client, and need to have Horizon security re-applied 
         /// </summary>
         public bool RemoteLabel;
+        /// <summary>
+        /// Label from the database to support generation of domain specific SKey 
+        /// </summary>
+        public string? DatabaseLabel;
 
         /// <summary>
         /// Gets or sets the service provider used to resolve application services.
@@ -188,6 +192,12 @@ namespace Hiperspace
         {
             CalculationGPU = cachingGraphGPU;
             SubSpaceEventSink = cachingGraphGPU;
+            return this;
+        }
+
+        public SubSpaceParameters WithDatabaseLabel (string databaseLabel)
+        {
+            DatabaseLabel = databaseLabel;
             return this;
         }
     }
