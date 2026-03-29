@@ -153,10 +153,13 @@ classDiagram
     Togaf.Has.Activity --|> ManyActivity
     Togaf.Has.Activity ..|> Togaf.Edges
     class Togaf.Has.WorkPackage {
+        + ProjectKey  : String
         + StrategicEdges () = StrategicEdge(this)
         + Goals () = Goals(StrategicEdges)
+        + Project () = externalnode(ProjectKey)
     }
     Togaf.Has.WorkPackage --|> Togaf.Base
+    Togaf.Has.WorkPackage ..|> Togaf.Edges
     class Togaf.Business.ActivityType {
         Task = 1
         Decision = 2
@@ -604,8 +607,10 @@ classDiagram
 
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
+|+|ProjectKey|String||||
 ||StrategicEdges|Some(HashSet<Graph.HiperEdge>)|All Togaf.Edges that can be projected as Transitative Togaf.Edges to a Business Goal|Once()|StrategicEdge(this)|
 ||Goals|Some(HashSet<Togaf.GoalRef>)|||Goals(StrategicEdges)|
+||Project|Some(Node)|||externalnode(ProjectKey)|
 
 ---
 

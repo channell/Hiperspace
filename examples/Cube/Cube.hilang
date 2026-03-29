@@ -1,6 +1,6 @@
 %domain(Cube);
-%ids;%json;
-%markdown;
+%ids;
+%markdown;%json;
 "An additional edge helper for Cube.Edges"
 view Cube.Edge_ : Edge = Edge() #4;
 
@@ -79,7 +79,11 @@ entity Cube.Contract : Versioned
 		@CubeMeasure(Aggregate.Sum) 
 		Value = Quantity * Market,
 		@CubeMeasure(Aggregate.StdDev) 
-		StdDev = Value
+		StdDev = Value,
+		@CubeMeasure(Aggregate.Percentile, 95) 
+		Percentile = Value,
+		@CubeMeasure(Aggregate.Average) 
+		Avg = Value
 	];
 
 view Valued : Versioned #3
@@ -94,7 +98,7 @@ view Banking.Trade = Valued (Name = Id, Value = Value, Deleted = false)  #53
 	@AlternateIndex("Banking.EQ.Trade", 60),
 	 AlternateIndex("Banking.FI.Trade", 56),
 	 AlternateIndex("Banking.FX.Trade", 58)
-	,AlternateIndex("Banking.EQ.Trade", 96) ,AlternateIndex("Banking.FI.Trade", 94) ,AlternateIndex("Banking.FX.Trade", 95) Book : Banking.Book,
+	,AlternateIndex("Banking.EQ.Trade", 98) ,AlternateIndex("Banking.FI.Trade", 96) ,AlternateIndex("Banking.FX.Trade", 97) ,AlternateIndex("Banking.EQ.Trade", 119) ,AlternateIndex("Banking.FI.Trade", 117) ,AlternateIndex("Banking.FX.Trade", 118) ,AlternateIndex("Banking.FI.Trade", 94) ,AlternateIndex("Banking.FX.Trade", 95) Book : Banking.Book,
 	Value : Decimal
 };
 entity Banking.FI.Trade : Banking.Trade = Banking.Trade() #57;

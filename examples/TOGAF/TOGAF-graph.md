@@ -1321,11 +1321,14 @@ classDiagram
         + Name  : String
         + Description  : String
         + Deleted  = false
+        + ProjectKey  : String
         + ValidBase () = (((Id == null) || (Name == null)) ? false : true)
         + StrategicEdges () = StrategicEdge(this)
         + Goals () = Goals(StrategicEdges)
+        + Project () = externalnode(ProjectKey)
     }
     Togaf.Application.ComponentWorkPackage ..|> Togaf.Edge_
+    Togaf.Application.ComponentWorkPackage ..|> Togaf.Edges
     class Togaf.Application.DeployedAssumption {
         # owner  : Togaf.Application.Deployed
         # Id  : Guid
@@ -1386,11 +1389,14 @@ classDiagram
         + Name  : String
         + Description  : String
         + Deleted  = false
+        + ProjectKey  : String
         + ValidBase () = (((Id == null) || (Name == null)) ? false : true)
         + StrategicEdges () = StrategicEdge(this)
         + Goals () = Goals(StrategicEdges)
+        + Project () = externalnode(ProjectKey)
     }
     Togaf.Application.DeployedWorkPackage ..|> Togaf.Edge_
+    Togaf.Application.DeployedWorkPackage ..|> Togaf.Edges
     class Togaf.Application.SystemAssumption {
         # owner  : Togaf.Application.System
         # Id  : Guid
@@ -1451,11 +1457,14 @@ classDiagram
         + Name  : String
         + Description  : String
         + Deleted  = false
+        + ProjectKey  : String
         + ValidBase () = (((Id == null) || (Name == null)) ? false : true)
         + StrategicEdges () = StrategicEdge(this)
         + Goals () = Goals(StrategicEdges)
+        + Project () = externalnode(ProjectKey)
     }
     Togaf.Application.SystemWorkPackage ..|> Togaf.Edge_
+    Togaf.Application.SystemWorkPackage ..|> Togaf.Edges
     class Togaf.Business.ActivityAssumption {
         # owner  : Togaf.Business.Activity
         # Id  : Guid
@@ -1516,11 +1525,14 @@ classDiagram
         + Name  : String
         + Description  : String
         + Deleted  = false
+        + ProjectKey  : String
         + ValidBase () = (((Id == null) || (Name == null)) ? false : true)
         + StrategicEdges () = StrategicEdge(this)
         + Goals () = Goals(StrategicEdges)
+        + Project () = externalnode(ProjectKey)
     }
     Togaf.Business.ActivityWorkPackage ..|> Togaf.Edge_
+    Togaf.Business.ActivityWorkPackage ..|> Togaf.Edges
     class Togaf.Business.ActorAssumption {
         # owner  : Togaf.Business.Actor
         # Id  : Guid
@@ -1581,11 +1593,14 @@ classDiagram
         + Name  : String
         + Description  : String
         + Deleted  = false
+        + ProjectKey  : String
         + ValidBase () = (((Id == null) || (Name == null)) ? false : true)
         + StrategicEdges () = StrategicEdge(this)
         + Goals () = Goals(StrategicEdges)
+        + Project () = externalnode(ProjectKey)
     }
     Togaf.Business.ActorWorkPackage ..|> Togaf.Edge_
+    Togaf.Business.ActorWorkPackage ..|> Togaf.Edges
     class Togaf.Business.CapabilityAssumption {
         # owner  : Togaf.Business.Capability
         # Id  : Guid
@@ -1646,11 +1661,14 @@ classDiagram
         + Name  : String
         + Description  : String
         + Deleted  = false
+        + ProjectKey  : String
         + ValidBase () = (((Id == null) || (Name == null)) ? false : true)
         + StrategicEdges () = StrategicEdge(this)
         + Goals () = Goals(StrategicEdges)
+        + Project () = externalnode(ProjectKey)
     }
     Togaf.Business.CapabilityWorkPackage ..|> Togaf.Edge_
+    Togaf.Business.CapabilityWorkPackage ..|> Togaf.Edges
     class Togaf.Business.ControlAssumption {
         # owner  : Togaf.Business.Control
         # Id  : Guid
@@ -1711,11 +1729,14 @@ classDiagram
         + Name  : String
         + Description  : String
         + Deleted  = false
+        + ProjectKey  : String
         + ValidBase () = (((Id == null) || (Name == null)) ? false : true)
         + StrategicEdges () = StrategicEdge(this)
         + Goals () = Goals(StrategicEdges)
+        + Project () = externalnode(ProjectKey)
     }
     Togaf.Business.ControlWorkPackage ..|> Togaf.Edge_
+    Togaf.Business.ControlWorkPackage ..|> Togaf.Edges
     class Togaf.Business.CourseOfActionAssumption {
         # owner  : Togaf.Business.CourseOfAction
         # Id  : Guid
@@ -1776,11 +1797,14 @@ classDiagram
         + Name  : String
         + Description  : String
         + Deleted  = false
+        + ProjectKey  : String
         + ValidBase () = (((Id == null) || (Name == null)) ? false : true)
         + StrategicEdges () = StrategicEdge(this)
         + Goals () = Goals(StrategicEdges)
+        + Project () = externalnode(ProjectKey)
     }
     Togaf.Business.CourseOfActionWorkPackage ..|> Togaf.Edge_
+    Togaf.Business.CourseOfActionWorkPackage ..|> Togaf.Edges
     class Togaf.Business.DriverAssumption {
         # owner  : Togaf.Business.Driver
         # Id  : Guid
@@ -1841,11 +1865,14 @@ classDiagram
         + Name  : String
         + Description  : String
         + Deleted  = false
+        + ProjectKey  : String
         + ValidBase () = (((Id == null) || (Name == null)) ? false : true)
         + StrategicEdges () = StrategicEdge(this)
         + Goals () = Goals(StrategicEdges)
+        + Project () = externalnode(ProjectKey)
     }
     Togaf.Business.DriverWorkPackage ..|> Togaf.Edge_
+    Togaf.Business.DriverWorkPackage ..|> Togaf.Edges
     class Togaf.Business.EventAssumption {
         # owner  : Togaf.Business.Event
         # Id  : Guid
@@ -1906,11 +1933,14 @@ classDiagram
         + Name  : String
         + Description  : String
         + Deleted  = false
+        + ProjectKey  : String
         + ValidBase () = (((Id == null) || (Name == null)) ? false : true)
         + StrategicEdges () = StrategicEdge(this)
         + Goals () = Goals(StrategicEdges)
+        + Project () = externalnode(ProjectKey)
     }
     Togaf.Business.EventWorkPackage ..|> Togaf.Edge_
+    Togaf.Business.EventWorkPackage ..|> Togaf.Edges
     class Togaf.Business.FunctionAssumption {
         # owner  : Togaf.Business.Function
         # Id  : Guid
@@ -1971,11 +2001,14 @@ classDiagram
         + Name  : String
         + Description  : String
         + Deleted  = false
+        + ProjectKey  : String
         + ValidBase () = (((Id == null) || (Name == null)) ? false : true)
         + StrategicEdges () = StrategicEdge(this)
         + Goals () = Goals(StrategicEdges)
+        + Project () = externalnode(ProjectKey)
     }
     Togaf.Business.FunctionWorkPackage ..|> Togaf.Edge_
+    Togaf.Business.FunctionWorkPackage ..|> Togaf.Edges
     class Togaf.Business.GoalAssumption {
         # owner  : Togaf.Business.Goal
         # Id  : Guid
@@ -2036,11 +2069,14 @@ classDiagram
         + Name  : String
         + Description  : String
         + Deleted  = false
+        + ProjectKey  : String
         + ValidBase () = (((Id == null) || (Name == null)) ? false : true)
         + StrategicEdges () = StrategicEdge(this)
         + Goals () = Goals(StrategicEdges)
+        + Project () = externalnode(ProjectKey)
     }
     Togaf.Business.GoalWorkPackage ..|> Togaf.Edge_
+    Togaf.Business.GoalWorkPackage ..|> Togaf.Edges
     class Togaf.Business.MeasureAssumption {
         # owner  : Togaf.Business.Measure
         # Id  : Guid
@@ -2101,11 +2137,14 @@ classDiagram
         + Name  : String
         + Description  : String
         + Deleted  = false
+        + ProjectKey  : String
         + ValidBase () = (((Id == null) || (Name == null)) ? false : true)
         + StrategicEdges () = StrategicEdge(this)
         + Goals () = Goals(StrategicEdges)
+        + Project () = externalnode(ProjectKey)
     }
     Togaf.Business.MeasureWorkPackage ..|> Togaf.Edge_
+    Togaf.Business.MeasureWorkPackage ..|> Togaf.Edges
     class Togaf.Business.ObjectiveAssumption {
         # owner  : Togaf.Business.Objective
         # Id  : Guid
@@ -2166,11 +2205,14 @@ classDiagram
         + Name  : String
         + Description  : String
         + Deleted  = false
+        + ProjectKey  : String
         + ValidBase () = (((Id == null) || (Name == null)) ? false : true)
         + StrategicEdges () = StrategicEdge(this)
         + Goals () = Goals(StrategicEdges)
+        + Project () = externalnode(ProjectKey)
     }
     Togaf.Business.ObjectiveWorkPackage ..|> Togaf.Edge_
+    Togaf.Business.ObjectiveWorkPackage ..|> Togaf.Edges
     class Togaf.Business.ProcessAssumption {
         # owner  : Togaf.Business.Process
         # Id  : Guid
@@ -2231,11 +2273,14 @@ classDiagram
         + Name  : String
         + Description  : String
         + Deleted  = false
+        + ProjectKey  : String
         + ValidBase () = (((Id == null) || (Name == null)) ? false : true)
         + StrategicEdges () = StrategicEdge(this)
         + Goals () = Goals(StrategicEdges)
+        + Project () = externalnode(ProjectKey)
     }
     Togaf.Business.ProcessWorkPackage ..|> Togaf.Edge_
+    Togaf.Business.ProcessWorkPackage ..|> Togaf.Edges
     class Togaf.Business.ProductAssumption {
         # owner  : Togaf.Business.Product
         # Id  : Guid
@@ -2296,11 +2341,14 @@ classDiagram
         + Name  : String
         + Description  : String
         + Deleted  = false
+        + ProjectKey  : String
         + ValidBase () = (((Id == null) || (Name == null)) ? false : true)
         + StrategicEdges () = StrategicEdge(this)
         + Goals () = Goals(StrategicEdges)
+        + Project () = externalnode(ProjectKey)
     }
     Togaf.Business.ProductWorkPackage ..|> Togaf.Edge_
+    Togaf.Business.ProductWorkPackage ..|> Togaf.Edges
     class Togaf.Business.ValueStreamAssumption {
         # owner  : Togaf.Business.ValueStream
         # Id  : Guid
@@ -2361,11 +2409,14 @@ classDiagram
         + Name  : String
         + Description  : String
         + Deleted  = false
+        + ProjectKey  : String
         + ValidBase () = (((Id == null) || (Name == null)) ? false : true)
         + StrategicEdges () = StrategicEdge(this)
         + Goals () = Goals(StrategicEdges)
+        + Project () = externalnode(ProjectKey)
     }
     Togaf.Business.ValueStreamWorkPackage ..|> Togaf.Edge_
+    Togaf.Business.ValueStreamWorkPackage ..|> Togaf.Edges
     class Togaf.Data.EntityAssumption {
         # owner  : Togaf.Data.Entity
         # Id  : Guid
@@ -2426,11 +2477,14 @@ classDiagram
         + Name  : String
         + Description  : String
         + Deleted  = false
+        + ProjectKey  : String
         + ValidBase () = (((Id == null) || (Name == null)) ? false : true)
         + StrategicEdges () = StrategicEdge(this)
         + Goals () = Goals(StrategicEdges)
+        + Project () = externalnode(ProjectKey)
     }
     Togaf.Data.EntityWorkPackage ..|> Togaf.Edge_
+    Togaf.Data.EntityWorkPackage ..|> Togaf.Edges
     class Togaf.Data.LogicalAssumption {
         # owner  : Togaf.Data.Logical
         # Id  : Guid
@@ -2491,11 +2545,14 @@ classDiagram
         + Name  : String
         + Description  : String
         + Deleted  = false
+        + ProjectKey  : String
         + ValidBase () = (((Id == null) || (Name == null)) ? false : true)
         + StrategicEdges () = StrategicEdge(this)
         + Goals () = Goals(StrategicEdges)
+        + Project () = externalnode(ProjectKey)
     }
     Togaf.Data.LogicalWorkPackage ..|> Togaf.Edge_
+    Togaf.Data.LogicalWorkPackage ..|> Togaf.Edges
     class Togaf.Data.PhysicalAssumption {
         # owner  : Togaf.Data.Physical
         # Id  : Guid
@@ -2556,11 +2613,14 @@ classDiagram
         + Name  : String
         + Description  : String
         + Deleted  = false
+        + ProjectKey  : String
         + ValidBase () = (((Id == null) || (Name == null)) ? false : true)
         + StrategicEdges () = StrategicEdge(this)
         + Goals () = Goals(StrategicEdges)
+        + Project () = externalnode(ProjectKey)
     }
     Togaf.Data.PhysicalWorkPackage ..|> Togaf.Edge_
+    Togaf.Data.PhysicalWorkPackage ..|> Togaf.Edges
     class Togaf.ServiceAssumption {
         # owner  : Togaf.Service
         # Id  : Guid
@@ -2621,11 +2681,14 @@ classDiagram
         + Name  : String
         + Description  : String
         + Deleted  = false
+        + ProjectKey  : String
         + ValidBase () = (((Id == null) || (Name == null)) ? false : true)
         + StrategicEdges () = StrategicEdge(this)
         + Goals () = Goals(StrategicEdges)
+        + Project () = externalnode(ProjectKey)
     }
     Togaf.ServiceWorkPackage ..|> Togaf.Edge_
+    Togaf.ServiceWorkPackage ..|> Togaf.Edges
     class Togaf.Technology.HostAssumption {
         # owner  : Togaf.Technology.Host
         # Id  : Guid
@@ -2686,11 +2749,14 @@ classDiagram
         + Name  : String
         + Description  : String
         + Deleted  = false
+        + ProjectKey  : String
         + ValidBase () = (((Id == null) || (Name == null)) ? false : true)
         + StrategicEdges () = StrategicEdge(this)
         + Goals () = Goals(StrategicEdges)
+        + Project () = externalnode(ProjectKey)
     }
     Togaf.Technology.HostWorkPackage ..|> Togaf.Edge_
+    Togaf.Technology.HostWorkPackage ..|> Togaf.Edges
     class Togaf.Technology.InstanceAssumption {
         # owner  : Togaf.Technology.Instance
         # Id  : Guid
@@ -2751,11 +2817,14 @@ classDiagram
         + Name  : String
         + Description  : String
         + Deleted  = false
+        + ProjectKey  : String
         + ValidBase () = (((Id == null) || (Name == null)) ? false : true)
         + StrategicEdges () = StrategicEdge(this)
         + Goals () = Goals(StrategicEdges)
+        + Project () = externalnode(ProjectKey)
     }
     Togaf.Technology.InstanceWorkPackage ..|> Togaf.Edge_
+    Togaf.Technology.InstanceWorkPackage ..|> Togaf.Edges
     class Togaf.Technology.PlatformAssumption {
         # owner  : Togaf.Technology.Platform
         # Id  : Guid
@@ -2816,11 +2885,14 @@ classDiagram
         + Name  : String
         + Description  : String
         + Deleted  = false
+        + ProjectKey  : String
         + ValidBase () = (((Id == null) || (Name == null)) ? false : true)
         + StrategicEdges () = StrategicEdge(this)
         + Goals () = Goals(StrategicEdges)
+        + Project () = externalnode(ProjectKey)
     }
     Togaf.Technology.PlatformWorkPackage ..|> Togaf.Edge_
+    Togaf.Technology.PlatformWorkPackage ..|> Togaf.Edges
     class Togaf.Edge_ {
         # From  : Node
         # To  : Node
@@ -4606,9 +4678,11 @@ classDiagram
 |+|Name|String||||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
+|+|ProjectKey|String||||
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
 ||StrategicEdges|Some(HashSet<Graph.HiperEdge>)|All Togaf.Edges that can be projected as Transitative Togaf.Edges to a Business Goal|Once()|StrategicEdge(this)|
 ||Goals|Some(HashSet<Togaf.GoalRef>)|||Goals(StrategicEdges)|
+||Project|Some(Node)|||externalnode(ProjectKey)|
 
 ---
 
@@ -4706,9 +4780,11 @@ classDiagram
 |+|Name|String||||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
+|+|ProjectKey|String||||
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
 ||StrategicEdges|Some(HashSet<Graph.HiperEdge>)|All Togaf.Edges that can be projected as Transitative Togaf.Edges to a Business Goal|Once()|StrategicEdge(this)|
 ||Goals|Some(HashSet<Togaf.GoalRef>)|||Goals(StrategicEdges)|
+||Project|Some(Node)|||externalnode(ProjectKey)|
 
 ---
 
@@ -4806,9 +4882,11 @@ classDiagram
 |+|Name|String||||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
+|+|ProjectKey|String||||
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
 ||StrategicEdges|Some(HashSet<Graph.HiperEdge>)|All Togaf.Edges that can be projected as Transitative Togaf.Edges to a Business Goal|Once()|StrategicEdge(this)|
 ||Goals|Some(HashSet<Togaf.GoalRef>)|||Goals(StrategicEdges)|
+||Project|Some(Node)|||externalnode(ProjectKey)|
 
 ---
 
@@ -4906,9 +4984,11 @@ classDiagram
 |+|Name|String||||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
+|+|ProjectKey|String||||
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
 ||StrategicEdges|Some(HashSet<Graph.HiperEdge>)|All Togaf.Edges that can be projected as Transitative Togaf.Edges to a Business Goal|Once()|StrategicEdge(this)|
 ||Goals|Some(HashSet<Togaf.GoalRef>)|||Goals(StrategicEdges)|
+||Project|Some(Node)|||externalnode(ProjectKey)|
 
 ---
 
@@ -5006,9 +5086,11 @@ classDiagram
 |+|Name|String||||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
+|+|ProjectKey|String||||
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
 ||StrategicEdges|Some(HashSet<Graph.HiperEdge>)|All Togaf.Edges that can be projected as Transitative Togaf.Edges to a Business Goal|Once()|StrategicEdge(this)|
 ||Goals|Some(HashSet<Togaf.GoalRef>)|||Goals(StrategicEdges)|
+||Project|Some(Node)|||externalnode(ProjectKey)|
 
 ---
 
@@ -5106,9 +5188,11 @@ classDiagram
 |+|Name|String||||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
+|+|ProjectKey|String||||
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
 ||StrategicEdges|Some(HashSet<Graph.HiperEdge>)|All Togaf.Edges that can be projected as Transitative Togaf.Edges to a Business Goal|Once()|StrategicEdge(this)|
 ||Goals|Some(HashSet<Togaf.GoalRef>)|||Goals(StrategicEdges)|
+||Project|Some(Node)|||externalnode(ProjectKey)|
 
 ---
 
@@ -5206,9 +5290,11 @@ classDiagram
 |+|Name|String||||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
+|+|ProjectKey|String||||
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
 ||StrategicEdges|Some(HashSet<Graph.HiperEdge>)|All Togaf.Edges that can be projected as Transitative Togaf.Edges to a Business Goal|Once()|StrategicEdge(this)|
 ||Goals|Some(HashSet<Togaf.GoalRef>)|||Goals(StrategicEdges)|
+||Project|Some(Node)|||externalnode(ProjectKey)|
 
 ---
 
@@ -5306,9 +5392,11 @@ classDiagram
 |+|Name|String||||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
+|+|ProjectKey|String||||
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
 ||StrategicEdges|Some(HashSet<Graph.HiperEdge>)|All Togaf.Edges that can be projected as Transitative Togaf.Edges to a Business Goal|Once()|StrategicEdge(this)|
 ||Goals|Some(HashSet<Togaf.GoalRef>)|||Goals(StrategicEdges)|
+||Project|Some(Node)|||externalnode(ProjectKey)|
 
 ---
 
@@ -5406,9 +5494,11 @@ classDiagram
 |+|Name|String||||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
+|+|ProjectKey|String||||
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
 ||StrategicEdges|Some(HashSet<Graph.HiperEdge>)|All Togaf.Edges that can be projected as Transitative Togaf.Edges to a Business Goal|Once()|StrategicEdge(this)|
 ||Goals|Some(HashSet<Togaf.GoalRef>)|||Goals(StrategicEdges)|
+||Project|Some(Node)|||externalnode(ProjectKey)|
 
 ---
 
@@ -5506,9 +5596,11 @@ classDiagram
 |+|Name|String||||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
+|+|ProjectKey|String||||
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
 ||StrategicEdges|Some(HashSet<Graph.HiperEdge>)|All Togaf.Edges that can be projected as Transitative Togaf.Edges to a Business Goal|Once()|StrategicEdge(this)|
 ||Goals|Some(HashSet<Togaf.GoalRef>)|||Goals(StrategicEdges)|
+||Project|Some(Node)|||externalnode(ProjectKey)|
 
 ---
 
@@ -5606,9 +5698,11 @@ classDiagram
 |+|Name|String||||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
+|+|ProjectKey|String||||
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
 ||StrategicEdges|Some(HashSet<Graph.HiperEdge>)|All Togaf.Edges that can be projected as Transitative Togaf.Edges to a Business Goal|Once()|StrategicEdge(this)|
 ||Goals|Some(HashSet<Togaf.GoalRef>)|||Goals(StrategicEdges)|
+||Project|Some(Node)|||externalnode(ProjectKey)|
 
 ---
 
@@ -5706,9 +5800,11 @@ classDiagram
 |+|Name|String||||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
+|+|ProjectKey|String||||
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
 ||StrategicEdges|Some(HashSet<Graph.HiperEdge>)|All Togaf.Edges that can be projected as Transitative Togaf.Edges to a Business Goal|Once()|StrategicEdge(this)|
 ||Goals|Some(HashSet<Togaf.GoalRef>)|||Goals(StrategicEdges)|
+||Project|Some(Node)|||externalnode(ProjectKey)|
 
 ---
 
@@ -5806,9 +5902,11 @@ classDiagram
 |+|Name|String||||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
+|+|ProjectKey|String||||
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
 ||StrategicEdges|Some(HashSet<Graph.HiperEdge>)|All Togaf.Edges that can be projected as Transitative Togaf.Edges to a Business Goal|Once()|StrategicEdge(this)|
 ||Goals|Some(HashSet<Togaf.GoalRef>)|||Goals(StrategicEdges)|
+||Project|Some(Node)|||externalnode(ProjectKey)|
 
 ---
 
@@ -5906,9 +6004,11 @@ classDiagram
 |+|Name|String||||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
+|+|ProjectKey|String||||
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
 ||StrategicEdges|Some(HashSet<Graph.HiperEdge>)|All Togaf.Edges that can be projected as Transitative Togaf.Edges to a Business Goal|Once()|StrategicEdge(this)|
 ||Goals|Some(HashSet<Togaf.GoalRef>)|||Goals(StrategicEdges)|
+||Project|Some(Node)|||externalnode(ProjectKey)|
 
 ---
 
@@ -6006,9 +6106,11 @@ classDiagram
 |+|Name|String||||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
+|+|ProjectKey|String||||
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
 ||StrategicEdges|Some(HashSet<Graph.HiperEdge>)|All Togaf.Edges that can be projected as Transitative Togaf.Edges to a Business Goal|Once()|StrategicEdge(this)|
 ||Goals|Some(HashSet<Togaf.GoalRef>)|||Goals(StrategicEdges)|
+||Project|Some(Node)|||externalnode(ProjectKey)|
 
 ---
 
@@ -6106,9 +6208,11 @@ classDiagram
 |+|Name|String||||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
+|+|ProjectKey|String||||
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
 ||StrategicEdges|Some(HashSet<Graph.HiperEdge>)|All Togaf.Edges that can be projected as Transitative Togaf.Edges to a Business Goal|Once()|StrategicEdge(this)|
 ||Goals|Some(HashSet<Togaf.GoalRef>)|||Goals(StrategicEdges)|
+||Project|Some(Node)|||externalnode(ProjectKey)|
 
 ---
 
@@ -6206,9 +6310,11 @@ classDiagram
 |+|Name|String||||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
+|+|ProjectKey|String||||
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
 ||StrategicEdges|Some(HashSet<Graph.HiperEdge>)|All Togaf.Edges that can be projected as Transitative Togaf.Edges to a Business Goal|Once()|StrategicEdge(this)|
 ||Goals|Some(HashSet<Togaf.GoalRef>)|||Goals(StrategicEdges)|
+||Project|Some(Node)|||externalnode(ProjectKey)|
 
 ---
 
@@ -6306,9 +6412,11 @@ classDiagram
 |+|Name|String||||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
+|+|ProjectKey|String||||
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
 ||StrategicEdges|Some(HashSet<Graph.HiperEdge>)|All Togaf.Edges that can be projected as Transitative Togaf.Edges to a Business Goal|Once()|StrategicEdge(this)|
 ||Goals|Some(HashSet<Togaf.GoalRef>)|||Goals(StrategicEdges)|
+||Project|Some(Node)|||externalnode(ProjectKey)|
 
 ---
 
@@ -6406,9 +6514,11 @@ classDiagram
 |+|Name|String||||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
+|+|ProjectKey|String||||
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
 ||StrategicEdges|Some(HashSet<Graph.HiperEdge>)|All Togaf.Edges that can be projected as Transitative Togaf.Edges to a Business Goal|Once()|StrategicEdge(this)|
 ||Goals|Some(HashSet<Togaf.GoalRef>)|||Goals(StrategicEdges)|
+||Project|Some(Node)|||externalnode(ProjectKey)|
 
 ---
 
@@ -6506,9 +6616,11 @@ classDiagram
 |+|Name|String||||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
+|+|ProjectKey|String||||
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
 ||StrategicEdges|Some(HashSet<Graph.HiperEdge>)|All Togaf.Edges that can be projected as Transitative Togaf.Edges to a Business Goal|Once()|StrategicEdge(this)|
 ||Goals|Some(HashSet<Togaf.GoalRef>)|||Goals(StrategicEdges)|
+||Project|Some(Node)|||externalnode(ProjectKey)|
 
 ---
 
@@ -6606,9 +6718,11 @@ classDiagram
 |+|Name|String||||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
+|+|ProjectKey|String||||
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
 ||StrategicEdges|Some(HashSet<Graph.HiperEdge>)|All Togaf.Edges that can be projected as Transitative Togaf.Edges to a Business Goal|Once()|StrategicEdge(this)|
 ||Goals|Some(HashSet<Togaf.GoalRef>)|||Goals(StrategicEdges)|
+||Project|Some(Node)|||externalnode(ProjectKey)|
 
 ---
 
@@ -6706,9 +6820,11 @@ classDiagram
 |+|Name|String||||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
+|+|ProjectKey|String||||
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
 ||StrategicEdges|Some(HashSet<Graph.HiperEdge>)|All Togaf.Edges that can be projected as Transitative Togaf.Edges to a Business Goal|Once()|StrategicEdge(this)|
 ||Goals|Some(HashSet<Togaf.GoalRef>)|||Goals(StrategicEdges)|
+||Project|Some(Node)|||externalnode(ProjectKey)|
 
 ---
 
@@ -6806,9 +6922,11 @@ classDiagram
 |+|Name|String||||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
+|+|ProjectKey|String||||
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
 ||StrategicEdges|Some(HashSet<Graph.HiperEdge>)|All Togaf.Edges that can be projected as Transitative Togaf.Edges to a Business Goal|Once()|StrategicEdge(this)|
 ||Goals|Some(HashSet<Togaf.GoalRef>)|||Goals(StrategicEdges)|
+||Project|Some(Node)|||externalnode(ProjectKey)|
 
 ---
 
@@ -6906,9 +7024,11 @@ classDiagram
 |+|Name|String||||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
+|+|ProjectKey|String||||
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
 ||StrategicEdges|Some(HashSet<Graph.HiperEdge>)|All Togaf.Edges that can be projected as Transitative Togaf.Edges to a Business Goal|Once()|StrategicEdge(this)|
 ||Goals|Some(HashSet<Togaf.GoalRef>)|||Goals(StrategicEdges)|
+||Project|Some(Node)|||externalnode(ProjectKey)|
 
 ---
 

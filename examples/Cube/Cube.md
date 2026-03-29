@@ -76,6 +76,8 @@ classDiagram
         + Market () = Instrument?.Market
         + Value () = (Quantity * Market)
         + StdDev () = Value
+        + Percentile () = Value
+        + Avg () = Value
     }
     Cube.Contract ..|> Valued
     class Cube.Price {
@@ -162,7 +164,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|String||||
-|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 96), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95)||
+|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 98), AlternateIndex("Banking.FI.Trade", 96), AlternateIndex("Banking.FX.Trade", 97), AlternateIndex("Banking.EQ.Trade", 119), AlternateIndex("Banking.FI.Trade", 117), AlternateIndex("Banking.FX.Trade", 118), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95)||
 |+|Value|Decimal||||
 
 ---
@@ -249,6 +251,8 @@ classDiagram
 ||Market|Some(Decimal)|||Instrument?.Market|
 ||Value|Some(Decimal)||CubeMeasure(Aggregate?.Sum)|(Quantity * Market)|
 ||StdDev|Some(Decimal)||CubeMeasure(Aggregate?.StdDev)|Value|
+||Percentile|Some(Decimal)||CubeMeasure(Aggregate?.Percentile, 95)|Value|
+||Avg|Some(Decimal)||CubeMeasure(Aggregate?.Average)|Value|
 
 ---
 

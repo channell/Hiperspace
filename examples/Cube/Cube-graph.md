@@ -116,9 +116,12 @@ classDiagram
         # Portfolio  : Cube.Portfolio
         + Value  : Decimal
         + StdDev  : Double
+        + Percentile  : Double
+        + Avg_Sum  : Decimal
         + Deleted  = false
         + Facts  : Int64
         + CubeName () = cubename(Sector,Country,Product,Portfolio)
+        + Avg () = (Avg_Sum / Facts)
     }
     Cube.Contract_Cube --> Cube.Sector
     Cube.Contract_Cube --> Cube.Country
@@ -147,6 +150,8 @@ classDiagram
         + Market () = Instrument?.Market
         + Value () = (Quantity * Market)
         + StdDev () = Value
+        + Percentile () = Value
+        + Avg () = Value
         + Sector_Dimension () = Account?.Customer?.Sector
         + Country_Dimension () = Instrument?.Country
         + Product_Dimension () = Instrument?.Product
@@ -209,7 +214,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|String||||
-|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 96), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95)||
+|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 98), AlternateIndex("Banking.FI.Trade", 96), AlternateIndex("Banking.FX.Trade", 97), AlternateIndex("Banking.EQ.Trade", 119), AlternateIndex("Banking.FI.Trade", 117), AlternateIndex("Banking.FX.Trade", 118), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95)||
 |+|Value|Decimal||||
 
 ---
@@ -329,7 +334,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|String||||
-|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 96), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95)||
+|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 98), AlternateIndex("Banking.FI.Trade", 96), AlternateIndex("Banking.FX.Trade", 97), AlternateIndex("Banking.EQ.Trade", 119), AlternateIndex("Banking.FI.Trade", 117), AlternateIndex("Banking.FX.Trade", 118), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95)||
 |+|Value|Decimal||||
 
 ---
@@ -340,7 +345,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|String||||
-|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 96), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95)||
+|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 98), AlternateIndex("Banking.FI.Trade", 96), AlternateIndex("Banking.FX.Trade", 97), AlternateIndex("Banking.EQ.Trade", 119), AlternateIndex("Banking.FI.Trade", 117), AlternateIndex("Banking.FX.Trade", 118), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95)||
 |+|Value|Decimal||||
 
 ---
@@ -351,7 +356,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|String||||
-|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 96), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95)||
+|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 98), AlternateIndex("Banking.FI.Trade", 96), AlternateIndex("Banking.FX.Trade", 97), AlternateIndex("Banking.EQ.Trade", 119), AlternateIndex("Banking.FI.Trade", 117), AlternateIndex("Banking.FX.Trade", 118), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95)||
 |+|Value|Decimal||||
 
 ---
@@ -415,9 +420,12 @@ classDiagram
 |#|Portfolio|Cube.Portfolio||CubeDimensionReference()||
 |+|Value|Decimal||CubeMeasure(Aggregate?.Sum)||
 |+|StdDev|Double||CubeMeasure(Aggregate?.StdVector)||
+|+|Percentile|Double||CubeMeasure(Aggregate?.PerVector, 95)||
+|+|Avg_Sum|Decimal||CubeMeasure(Aggregate?.AverageTotal)||
 ||Deleted|Some(Boolean)|The cube fact has been deleted||false|
 |+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
 ||CubeName|Some(String)|||cubename(Sector,Country,Product,Portfolio)|
+||Avg|Some(Decimal)||CubeMeasure(Aggregate?.Average)|(Avg_Sum / Facts)|
 
 ---
 
@@ -446,6 +454,8 @@ classDiagram
 ||Market|Some(Decimal)|||Instrument?.Market|
 ||Value|Some(Decimal)||CubeMeasure(Aggregate?.Sum)|(Quantity * Market)|
 ||StdDev|Some(Decimal)||CubeMeasure(Aggregate?.StdDev)|Value|
+||Percentile|Some(Decimal)||CubeMeasure(Aggregate?.Percentile, 95)|Value|
+||Avg|Some(Decimal)||CubeMeasure(Aggregate?.Average)|Value|
 ||Sector_Dimension|Some(Cube.Sector)|||Account?.Customer?.Sector|
 ||Country_Dimension|Some(Cube.Country)|||Instrument?.Country|
 ||Product_Dimension|Some(Cube.Product)|||Instrument?.Product|

@@ -84,12 +84,17 @@ segment Togaf.Has.WorkPackage : Togaf.Base
     = Node        ( SKey = SKey, Name = Name, TypeName = "AF-WorkPackage"),
       Edge        (From = owner, To = this, Name = Name, TypeName = "AF-Has-WorkPackage"),
       Togaf.Edge_ (To = owner, From = this, Name = Name, TypeName = "AF-WorkPackage-For"),
+      Togaf.Edges (From = this, To = Project, Name = Name, FromTypeName = "AF-WorkPackage-Plan", ToTypeName = "AF-Plan-WorkPackage"),
       Graph.HiperEdge = StrategicEdges #2675 
+{
+    ProjectKey      : String #29 
+}
 [
     "All Togaf.Edges that can be projected as Transitative Togaf.Edges to a Business Goal"
     @Once
     StrategicEdges  = StrategicEdge(this),
-    Goals           = Goals(StrategicEdges)
+    Goals           = Goals(StrategicEdges),
+    Project         = externalnode(ProjectKey)
 ];
 
 type Togaf.General.Base : Togaf.Base, HasVectorSpace
