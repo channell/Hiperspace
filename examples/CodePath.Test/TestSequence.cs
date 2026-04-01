@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using AwesomeAssertions;
 using Hiperspace.Heap;
 using Hiperspace.Rocks;
 

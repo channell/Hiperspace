@@ -4,7 +4,7 @@ open System
 open Xunit
 open System.IO
 open Hiperspace
-open FluentAssertions
+open AwesomeAssertions
 open Xunit.Abstractions
 open Hiperspace.Meta
 open System.Text.Json

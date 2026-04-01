@@ -8,45 +8,47 @@
     <Description>Hiperspace heap store for session, edge and testing purposes</Description>
     <Copyright>Cepheis Ltd (C) 2023, 2024, 2025, 2026</Copyright>
     <LangVersion>13.0</LangVersion>
-    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20260320
+    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20260401
 # Overview
-This release introduces two significant enhancements to hyperspace, to support [Mult-version concurrency control](https://en.wikipedia.org/wiki/Multiversion_concurrency_control) in **Hiperspace.DB**, and [Mermaid](https://mermaid.js.org/) [Markdown](https://en.wikipedia.org/wiki/Markdown) documentation for **#AI** agents.
-
-## Multi-Version Concurrency Control (MVCC)
-MVCC is rarely needed for normal Hiperspace transactions because it is possible to use [CQRS](https://en.wikipedia.org/wiki/Command_Query_Responsibility_Segregation) to apply a change to *elements* in Hiperspace that are invisible to other sessions (using `Horizon` filters), but this is not practical for **Cube** aggregation, where it would be possible to have inconsistent aggregates while updates are applied in real-time.
-
-This implementation of MVCC follows the [ISO SQL](https://en.wikipedia.org/wiki/SQL) standard that every database change is enrolled in a transaction and only visible to other sessions when the *transaction* is committed and backed-out on rollback.  There are no nested transactions, since the implementation (in **Hiperspace.DB**) is efficient and combined with the `@DeltaIndex` functionality for efficient point-in-time access.
-
-For local *hiperspaces* (e.g. [Hiperspace.Rocks](https://www.nuget.org/packages/Hiperspace.Rocks)) transactions are automatic, and `Rollback()` will return false 
+This release includes minor enhancement to the graph functionality when used with **Hiperspace.DB** graph view.  **Hiperspace.DB** provides a *graph* view that aggregates alll databases, so that graph shows all connections both local and foreign.   In the following example *Togaf.Has.WorkPackage*  includes a value *ProjectKey* that could be a stringified `SKey` reference to a project plan in another database.  When the *project* is viewed as a graph in  **Hiperspace.DB**, the graph includes paths between a *project plan* and *strategic goals*.
 
 ```
-public bool Commit() =&gt; Commit(Transaction);
-public bool Rollback() =&gt; Rollback(Transaction);
+segment Togaf.Has.WorkPackage : Togaf.Base 
+    = Node        ( SKey = SKey, Name = Name, TypeName = "AF-WorkPackage"),
+      Edge        (From = owner, To = this, Name = Name, TypeName = "AF-Has-WorkPackage"),
+      Togaf.Edge_ (To = owner, From = this, Name = Name, TypeName = "AF-WorkPackage-For"),
+      Togaf.Edges (From = this, To = Project, Name = Name, FromTypeName = "AF-WorkPackage-Plan", ToTypeName = "AF-Plan-WorkPackage"),
+      Graph.HiperEdge = StrategicEdges #2675 
+{
+    ProjectKey      : String #29 
+}
+[
+    "All Togaf.Edges that can be projected as Transitative Togaf.Edges to a Business Goal"
+    @Once
+    StrategicEdges  = StrategicEdge(this),
+    Project         = externalnode(ProjectKey)
+];
 ```
+For efficiency, the `SKey` property has been changed from a [Base64](https://en.wikipedia.org/wiki/Base64) encoding of the *key* to add the option of a database prefix.  The `Node SKey` "Togaf.ascxyz==" will only search for matching items "abcxyz==" in the *Togaf* database.  Within the *Togaf* database, only the specific segment is searched because the *key* includes the `#Id` of the element set.
 
-## MarkDown documentation with HiLang
-The [HILang](https://www.nuget.org/packages/HiLang) *schema* compiler generates a *Domain Specific DataBase* that can be used in a client application (including web-assembly) for object persistence either to a local hiperspace (e.g. [Hiperspace.Rocks](https://www.nuget.org/packages/Hiperspace.Rocks)) or remotely using **Hiperspace.DB** either with *lazy loading* of reference or *eager loading* using `message`.  Message is analogous to stored procedures that execute on the server (using message `key`) and return full object `value` in response using a shared DSDB code.
-
-Code is generated during compilation to produce a DSDB with a number of transformations:
-* Segments (many) are specialized for the Element that references them
-* Aspects (one) are specialized for the Element that references them
-* `@CubeFact` elements are transformed adding properties for aggregation
-* `@CubeFact` elements are transformed to provide `_Cube` aggregates and `_Fact` cube cell aggregates
-* `@CubeDimension` elements are transformed to include *DrillDown* to aggregates via *lazy* property
-
-These transformations are not visible to **AI Agents** because the generated code is ephemeral (*using the Indonesian word **hilang***).  For *agent-based development*, the HiLang schema can be generated to markdown files using the `%markdown` directive in source.
-
-### Schema.md
-For each `.hilang` schema file a matching `.md` file is generated containing formatted documentation in a **AI** friendly form, with a *mermaid* diagram of the data-model.  This documentation file matches the structure of the `.hilang` schema 
-
-### Schema-physical.md
-For each `.hilang` schema file a matching `.md` file is generated containing formatted documentation in a **AI** friendly form, with a *mermaid* diagram of the data-model.  This documentation file matches the generated classes, including all the transformations referenced above
-
-### Schema-cube.md
-This markdown file contains only `_Cube` elements and the related *dimensions*
-
-### Schema-graph.md
-This markdown file contains only graph (`Node` and `Edge`) elements and a diagram of relations
+the following SQL query would return a table of all *project plans* and *Goals* that can be reached through the {component, service, function, process, capability, etc} that are in some way associated with the *Work Package*
+```
+SELECT project.Name AS "Project Name"
+     , goal.Name AS "Goal Name"
+     , project.SKey as "Project Id"
+     , goal.SKey as "Goal Id"
+FROM   Nodes as project
+     , project.Tos as planedge
+     , planedge.To as workpackage
+     , workpackage.Tos as workedge 
+     , workedge.To as goal
+WHERE  project.TypeName = 'Plan'
+  AND  planedge.TypeName = 'AF-Plan-WorkPackage'
+  AND  workpackage.TypeName = 'AF-WorkPackage'
+  AND  workedge.TypeName = 'Strategic-Goal'
+  AND  goal.TypeName = 'AF-Goal';
+```
+NB the five table join uses *implicit* joins in  `Hiperspace.SQL` because `project.Tos` and `workpackage.Tos` are `Set&lt;Edge&gt;` properties that are *implicitly* filtered by the source `Node`
 </PackageReleaseNotes>
     <PackageLicenseExpression>GPL-2.0-or-later</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>

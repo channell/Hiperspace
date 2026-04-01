@@ -1,4 +1,4 @@
-﻿using FluentAssertions.Execution;
+﻿using AwesomeAssertions.Execution;
 using Hiperspace;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using System;

@@ -1,5 +1,5 @@
 ﻿using Cousins;
-using FluentAssertions;
+using AwesomeAssertions;
 using HiLang.CSGen;
 using Hiperspace;
 using Hiperspace.Heap;

@@ -3,7 +3,7 @@ module Tests
 open System
 open Xunit
 open Hiperspace
-open FluentAssertions
+open AwesomeAssertions
 open Xunit.Abstractions
 open Access
 

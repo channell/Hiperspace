@@ -3,7 +3,7 @@ using ERP;
 using ERP.Location;
 using ERP.Client;
 using Xunit.Priority;
-using FluentAssertions;
+using AwesomeAssertions;
 using ERP.Products;
 using Hiperspace.Heap;
 using Hiperspace;
