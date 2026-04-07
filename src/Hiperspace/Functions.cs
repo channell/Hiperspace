@@ -293,7 +293,7 @@ namespace Hiperspace
                 {
                     if (sb.Length > 0)
                         sb.Append(',');
-                    sb.Append($"{dimensions[i]?.CubeName}:{dimensions[i]?.SKey}");
+                    sb.Append($"{dimensions[i]?.CubeName}:{dimensions[i]?.Name}");
                 }
             }
             return sb.ToString();

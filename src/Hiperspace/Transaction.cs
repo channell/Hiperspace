@@ -21,8 +21,8 @@ namespace Hiperspace
     /// </remarks>
     public struct Transaction
     {
-        public long TimeStamp;
-        public long Random;
+        public readonly long TimeStamp;
+        public readonly long Random;
 
         /// <summary>
         /// Initializes a new instance of the Transaction class with the specified timestamp.
@@ -83,5 +83,11 @@ namespace Hiperspace
         /// Gets the date and time represented by the transaction timestamp.
         /// </summary>
         public DateTime DateTime => new DateTime(TimeStamp);
+
+        public override string ToString()
+        {
+            var guid = (Guid)this;
+            return guid.ToString();
+        }
     }
 }

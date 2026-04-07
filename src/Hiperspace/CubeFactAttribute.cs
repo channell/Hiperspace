@@ -79,5 +79,10 @@ namespace Hiperspace
         /// method.
         /// </remarks>
         public ICubeFact Calculate();
+
+        /// <summary>
+        /// Gets the number of underlying facts associated with this cube node.
+        /// </summary>
+        public Int64? Facts { get; }
     }
 }
