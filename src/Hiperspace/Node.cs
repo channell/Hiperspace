@@ -5,6 +5,7 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using Graph.Cube;
 using ProtoBuf;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
@@ -49,6 +50,8 @@ namespace Hiperspace
             _value = new ValueType();
         }
 
+        [ProtoMember(1)]
+
         public override string SKey
         {
             get => _key.SKey;
@@ -58,15 +61,17 @@ namespace Hiperspace
                 _key.SKey = value;
             }
         }
+        [ProtoMember(3)]
         public string? Name
         {
             get => _value.Name;
             set
             {
-                if (SetSpace is not null && _value.Name != value) throw new Hiperspace.MutationException($"CubeName can not be changed once bound to a Space");
+                if (SetSpace is not null && _value.Name != value) throw new Hiperspace.MutationException($"Name can not be changed once bound to a Space");
                 _value.Name = value;
             }
         }
+        [ProtoMember(2)]
         public string? TypeName
         {
             get => _value.TypeName;
@@ -74,6 +79,19 @@ namespace Hiperspace
             {
                 if (SetSpace is not null && _value.TypeName != value) throw new Hiperspace.MutationException($"TypeName can not be changed once bound to a Space");
                 _value.TypeName = value;
+            }
+        }
+        [ProtoMember(4)]
+        public List<Graph.Cube.Measure>? Measures
+        {
+            get
+            {
+                return _value.Measures;
+            }
+            set
+            {
+                if (SetSpace is not null && _value.Measures != value) throw new Hiperspace.ValueMutationException($"Measures");
+                _value.Measures = value;
             }
         }
 
@@ -329,9 +347,11 @@ namespace Hiperspace
             {
                 Name = item.Name;
                 TypeName = item.TypeName;
+                Measures = item.Measures;
             }
             [ProtoMember(2)] public String? Name;
             [ProtoMember(3)] public String? TypeName;
+            [ProtoMember(4)] public List<Graph.Cube.Measure>? Measures;
         }
 
         #endregion

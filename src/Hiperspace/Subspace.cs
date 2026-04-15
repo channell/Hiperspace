@@ -10,6 +10,7 @@ using ProtoBuf.Meta;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Security.Principal;
+using static Hiperspace.SubSpaceParameters;
 
 namespace Hiperspace
 {
@@ -27,7 +28,8 @@ namespace Hiperspace
         protected DateTime? _version;
         protected DateTime? _delta;
         protected TypeModel _model;
-        
+        public readonly CachingPolicy CachePolicy = OperatingSystem.IsBrowser() ? CachingPolicy.Cache : CachingPolicy.Space;
+
         /// <summary>
         /// Gets the current transaction associated with the sub space.
         /// </summary>
@@ -100,6 +102,13 @@ namespace Hiperspace
             _space = parameters.Space;
             ServiceProvider = parameters.ServiceProvider;
             DatabaseLabel = parameters.DatabaseLabel;
+            CachePolicy =  
+                parameters.CachePolicy == CachingPolicy.Default ? 
+                ( OperatingSystem.IsBrowser() ? 
+                  CachingPolicy.Cache : 
+                  CachingPolicy.Space 
+                ) : 
+                parameters.CachePolicy;
         }
 
         /// <summary>

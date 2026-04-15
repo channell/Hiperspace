@@ -33,6 +33,8 @@ public class BaseTypeModel
     , ISerializer<MapPair>
     , ISerializer<MapElement>
     , ISerializer<MapMap>
+    , ISerializer<Graph.Cube.MeasureValue>
+    , ISerializer<Graph.Cube.Measure>
 {
     public SerializerFeatures Features => SerializerFeatures.CategoryMessage;
 
@@ -523,6 +525,9 @@ public class BaseTypeModel
                         }
                         break;
                     }
+                case 4:
+                    value.Measures = RepeatedSerializer.CreateList<List<Graph.Cube.Measure>, Graph.Cube.Measure>().ReadRepeated(ref state, SerializerFeatures.WireTypeString | SerializerFeatures.OptionPackedDisabled, value.Measures!, this);
+                    break;
                 default:
                     state.SkipField();
                     break;
@@ -537,6 +542,10 @@ public class BaseTypeModel
         state.WriteString(2, name, null);
         name = value.TypeName;
         state.WriteString(3, name, null);
+        if (value.Measures is not null)
+        {
+            RepeatedSerializer.CreateList<List<Graph.Cube.Measure>, Graph.Cube.Measure>().WriteRepeated(ref state, 4, SerializerFeatures.WireTypeString | SerializerFeatures.OptionPackedDisabled, value.Measures, this);
+        }
     }
     KeyRef<Node.KeyType, Node> ISerializer<KeyRef<Node.KeyType, Node>>.Read(ref ProtoReader.State state, KeyRef<Node.KeyType, Node> value)
     {
@@ -597,6 +606,9 @@ public class BaseTypeModel
                         }
                         break;
                     }
+                case 4:
+                    item._value.Measures = RepeatedSerializer.CreateList<List<Graph.Cube.Measure>, Graph.Cube.Measure>().ReadRepeated(ref state, SerializerFeatures.WireTypeString | SerializerFeatures.OptionPackedDisabled, item._value.Measures!, this);
+                    break;
                 default:
                     state.SkipField();
                     break;
@@ -1229,6 +1241,99 @@ public class BaseTypeModel
         if (value.Map is not null)
         {
             RepeatedSerializer.CreateList<List<MapElement>, MapElement>().WriteRepeated(ref state, 2, SerializerFeatures.WireTypeString | SerializerFeatures.OptionPackedDisabled, value.Map, this);
+        }
+    }
+    Graph.Cube.MeasureValue ISerializer<Graph.Cube.MeasureValue>.Read(ref ProtoReader.State state, Graph.Cube.MeasureValue value)
+    {
+        int num;
+        while ((num = state.ReadFieldHeader()) > 0)
+        {
+            switch (num)
+            {
+
+
+                case 1:
+                    value._value.Integer = state.ReadInt64();
+                    break;
+                case 2:
+                    value._value.Double = state.ReadDouble();
+                    break;
+                case 3:
+                    value._value.Decimal = BclHelpers.ReadDecimal(ref state);
+                    break;
+                case 4:
+                    value._value.String = state.ReadString();
+                    break;
+                case 5:
+                    value._value.DateTime = BclHelpers.ReadDateTime(ref state);
+                    break;
+                default:
+                    state.SkipField();
+                    break;
+            }
+        }
+        return value;
+    }
+    void ISerializer<Graph.Cube.MeasureValue>.Write(ref ProtoWriter.State state, Graph.Cube.MeasureValue value)
+    {
+
+
+        if (value.Integer is not null)
+        {
+            state.WriteFieldHeader(1, WireType.Varint);
+            state.WriteInt64(value.Integer.Value);
+        }
+        if (value.Double is not null)
+        {
+            state.WriteFieldHeader(2, WireType.Fixed64);
+            state.WriteDouble(value.Double.Value);
+        }
+        if (value.Decimal is not null)
+        {
+            state.WriteFieldHeader(3, WireType.String);
+            BclHelpers.WriteDecimal(ref state, value.Decimal.Value);
+        }
+        state.WriteString(4, value.String);
+        if (value.DateTime is not null)
+        {
+            state.WriteFieldHeader(5, WireType.String);
+            BclHelpers.WriteDateTime(ref state, value.DateTime.Value);
+        }
+    }
+    Graph.Cube.Measure ISerializer<Graph.Cube.Measure>.Read(ref ProtoReader.State state, Graph.Cube.Measure value)
+    {
+        int num;
+        while ((num = state.ReadFieldHeader()) > 0)
+        {
+            switch (num)
+            {
+
+                case 1:
+                    value._key.Name = state.ReadString();
+                    break;
+
+                case 2:
+                    {
+                        Graph.Cube.MeasureValue o = new();
+                        o = state.ReadMessage<Graph.Cube.MeasureValue>(SerializerFeatures.CategoryRepeated, o, this);
+                        value._value.Value = o;
+                    }
+                    break;
+                default:
+                    state.SkipField();
+                    break;
+            }
+        }
+        return value;
+    }
+    void ISerializer<Graph.Cube.Measure>.Write(ref ProtoWriter.State state, Graph.Cube.Measure value)
+    {
+
+        state.WriteString(1, value.Name);
+
+        if (value.Value is not null)
+        {
+            state.WriteMessage<Graph.Cube.MeasureValue>(2, SerializerFeatures.CategoryRepeated, value.Value.Value, this);
         }
     }
 }

@@ -359,7 +359,7 @@ namespace Hiperspace
             where T : Element<T>, new()
         {
             var node = subject.Cast<Node>();
-            if (node is not null && subject?.SetSpace?.Space is not null && route is not null && OperatingSystem.IsBrowser() == false)
+            if (node is not null && subject?.SetSpace?.Space is not null && route is not null)
             {
                 var space = subject.SetSpace.Space;
                 return space.FindPathsAsync(node, route.Value, length, targets).GetAwaiter().GetResult();

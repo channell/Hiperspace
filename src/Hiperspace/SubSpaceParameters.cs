@@ -71,6 +71,31 @@ namespace Hiperspace
         public ISubSpaceEventSink SubSpaceEventSink;
 
         /// <summary>
+        /// Policy when resolving references for Find and Get
+        /// </summary>
+        /// <remarks>
+        /// Generalization of the test for <see cref="OperatingSystem.IsBrowser()" /> for use with message calls.
+        /// Blazor clients do not <i>currently</i> support synchronous IO, and must always use a cache unless async
+        /// </remarks>
+        public enum CachingPolicy
+        {
+            /// <summary>
+            /// deduce policy from <see cref="OperatingSystem.IsBrowser()" />
+            /// </summary>
+            Default = 0,
+            /// <summary>
+            /// Resolve synchronous references with the cache only 
+            /// </summary>
+            Cache = 1,
+            /// <summary>
+            /// Resolve synchronous references from Hiperspace
+            /// </summary>
+            Space = 3
+        }
+
+        public CachingPolicy CachePolicy;
+
+        /// <summary>
         /// Associates the specified <see cref="HiperSpace"/> with the current <see cref="SubSpaceParameters"/> instance.
         /// </summary>
         /// <param name="space">The <see cref="HiperSpace"/> to associate with this instance. Cannot be null.</param>
@@ -198,6 +223,17 @@ namespace Hiperspace
         public SubSpaceParameters WithDatabaseLabel (string databaseLabel)
         {
             DatabaseLabel = databaseLabel;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the cache policy for the current instance and returns the updated parameters object.
+        /// </summary>
+        /// <param name="policy">The caching policy to apply to this instance.</param>
+        /// <returns>Copy of the current instance with the specified cache policy applied.</returns>
+        public SubSpaceParameters WithCachePolicy (CachingPolicy policy)
+        {
+            CachePolicy = policy;
             return this;
         }
     }
