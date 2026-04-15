@@ -18,47 +18,22 @@
     <RepositoryUrl>https://github.com/channell/Hiperspace</RepositoryUrl>
     <Nullable>enable</Nullable>
     <LangVersion>13.0</LangVersion>
-    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20260401
+    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20260415
 # Overview
-This release includes minor enhancement to the graph functionality when used with **Hiperspace.DB** graph view.  **Hiperspace.DB** provides a *graph* view that aggregates alll databases, so that graph shows all connections both local and foreign.   In the following example *Togaf.Has.WorkPackage*  includes a value *ProjectKey* that could be a stringified `SKey` reference to a project plan in another database.  When the *project* is viewed as a graph in  **Hiperspace.DB**, the graph includes paths between a *project plan* and *strategic goals*.
+This release is a minor update to support the presentation Cube data in  Graph views with **Hiperspace.DB**, and minor updated to external references.
+## Fact enhancement
+Every instance of a `_Fact` or `_Cube` element now includes a `Facts` property that excludes `Node` that is a view of a fact but have no underlying value.
+## Node Enhancement 
+`Node` now includes a `Measures` property, which is a `List&lt;MeasureValue&gt;` to eliminate the need to separately fetch measures when displaying `Cube` `Node` in a **Hiperspace.DB** graph display.  Normally a *graph* showing "*which client Sectors trade which products*" would involve connecting the edges *Sector-&gt;Client-&gt;Account-&gt;Trade-&gt;Leg-&gt;Asset-&gt;Instrument-&gt;Product* or `HiperEdge` *Sector=&gt;Trade=&gt;Product*, and then aggregate results.  When *Sector* and *Product* are *`@CubeDimension`* and *Trade* is a *`@CubeFact`* the aggregate values are available directly through *Sector-&gt;Trade_Cube-&gt;Product* with *streaming calculation* in **Hiperspace.DB**.  Displaying aggregate values in a graph is so useful for analysis that it is worth extending the `Node` model to include them as an optional property.
+ [image]Sites/hiperspace/cube/hipercube.png[/image]
+&gt; **NB** This diagram is from a `HiperGraph` of the Sector "All", Product hierarchy aggregates are connected to the Sector hierarchy (without spider connections)
+## Hilang enhancement
+* Added support for `enum` values in messages.
+* Resolved issue with self-referencing messages `message Dimension { Branches : List&lt;Dimension&gt; };`
+* Name resolution of types now uses global namespace resolution to avoid clashes.  
 
-```
-segment Togaf.Has.WorkPackage : Togaf.Base 
-    = Node        ( SKey = SKey, Name = Name, TypeName = "AF-WorkPackage"),
-      Edge        (From = owner, To = this, Name = Name, TypeName = "AF-Has-WorkPackage"),
-      Togaf.Edge_ (To = owner, From = this, Name = Name, TypeName = "AF-WorkPackage-For"),
-      Togaf.Edges (From = this, To = Project, Name = Name, FromTypeName = "AF-WorkPackage-Plan", ToTypeName = "AF-Plan-WorkPackage"),
-      Graph.HiperEdge = StrategicEdges #2675 
-{
-    ProjectKey      : String #29 
-}
-[
-    "All Togaf.Edges that can be projected as Transitative Togaf.Edges to a Business Goal"
-    @Once
-    StrategicEdges  = StrategicEdge(this),
-    Project         = externalnode(ProjectKey)
-];
-```
-For efficiency, the `SKey` property has been changed from a [Base64](https://en.wikipedia.org/wiki/Base64) encoding of the *key* to add the option of a database prefix.  The `Node SKey` "Togaf.ascxyz==" will only search for matching items "abcxyz==" in the *Togaf* database.  Within the *Togaf* database, only the specific segment is searched because the *key* includes the `#Id` of the element set.
-
-the following SQL query would return a table of all *project plans* and *Goals* that can be reached through the {component, service, function, process, capability, etc} that are in some way associated with the *Work Package*
-```
-SELECT project.Name AS "Project Name"
-     , goal.Name AS "Goal Name"
-     , project.SKey as "Project Id"
-     , goal.SKey as "Goal Id"
-FROM   Nodes as project
-     , project.Tos as planedge
-     , planedge.To as workpackage
-     , workpackage.Tos as workedge 
-     , workedge.To as goal
-WHERE  project.TypeName = 'Plan'
-  AND  planedge.TypeName = 'AF-Plan-WorkPackage'
-  AND  workpackage.TypeName = 'AF-WorkPackage'
-  AND  workedge.TypeName = 'Strategic-Goal'
-  AND  goal.TypeName = 'AF-Goal';
-```
-NB the five table join uses *implicit* joins in  `Hiperspace.SQL` because `project.Tos` and `workpackage.Tos` are `Set&lt;Edge&gt;` properties that are *implicitly* filtered by the source `Node`
+## SubSpace enhancement
+Currently Blazer Web Assembly clients cannot (*currently*) support threads and therefore cannot perform synchronous IO - `FindAsync()` and `GetAsync()`  requests can be routed (*over **gRpc***) to a remote store, `Find()` and `Get()` request are therefore *cache-local*. the test for `OperatingSystem.IsBrowser()` has been replaced  with a `CachePolicy` that default to *`CachingPolicy.Cache`* for Browser and *`CachingPolicy.Space`* otherwise.  This allows `message` to be used to *pre-fetch* dependencies on the server-side in addition to browser.
 </PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
