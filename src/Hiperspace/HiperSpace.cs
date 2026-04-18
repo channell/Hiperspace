@@ -952,7 +952,7 @@ namespace Hiperspace
         /// <remarks>
         /// Hiperspace uses Multi Version Concurrency Control, and uses transaction log for Delta queries
         /// </remarks>
-        public virtual bool Commit(Transaction transaction) { return true; /* this HiperSpace commits all transactions */ }
+        public virtual bool Commit(Transaction? transaction) { return true; /* this HiperSpace commits all transactions */ }
 
         /// <summary>
         /// Attempts to roll back the specified transaction. Rollback is not supported in the default implementation, and the
@@ -965,6 +965,6 @@ namespace Hiperspace
         /// <remarks>
         /// Hiperspace uses Multi Version Concurrency Control, and uses transaction log for Delta queries
         /// </remarks>
-        public virtual bool Rollback(Transaction transaction) { return false; /* this HiperSpace commits all transactions, and cannot rollback */ }
+        public virtual bool Rollback(Transaction? transaction) { return false; /* this HiperSpace commits all transactions, and cannot rollback */ }
     }
 }

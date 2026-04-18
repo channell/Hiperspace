@@ -8,6 +8,7 @@
 using Hiperspace.Meta;
 using ProtoBuf.Meta;
 using System.Linq.Expressions;
+using System.Net.Mail;
 using System.Runtime.CompilerServices;
 using System.Security.Principal;
 using static Hiperspace.SubSpaceParameters;
@@ -28,12 +29,12 @@ namespace Hiperspace
         protected DateTime? _version;
         protected DateTime? _delta;
         protected TypeModel _model;
-        public readonly CachingPolicy CachePolicy = OperatingSystem.IsBrowser() ? CachingPolicy.Cache : CachingPolicy.Space;
+        public CachingPolicy CachePolicy { get; protected set; } = OperatingSystem.IsBrowser() ? CachingPolicy.Cache : CachingPolicy.Space;
 
         /// <summary>
-        /// Gets the current transaction associated with the sub space.
+        /// Optional transaction for drivers that support transactions.
         /// </summary>
-        public Transaction Transaction { get; protected set;}
+        public Transaction? Transaction { get; protected set;}
 
         /// <summary>
         /// Label applied to the subspace for security verification in Horizon filters
@@ -99,7 +100,7 @@ namespace Hiperspace
             ContextLabel = parameters.ContextLabel;
             UserLabel = parameters.UserLabel;
             RemoteLabel = parameters.RemoteLabel;
-            _space = parameters.Space;
+            CalculationGPU = parameters.CalculationGPU;
             ServiceProvider = parameters.ServiceProvider;
             DatabaseLabel = parameters.DatabaseLabel;
             CachePolicy =  
@@ -698,8 +699,8 @@ namespace Hiperspace
             return _space.UseSequenceAsync(key);
         }
         public bool Commit() => Commit(Transaction);
-        public override bool Commit(Transaction transaction) => _space?.Commit(Transaction) ?? true;
+        public override bool Commit(Transaction? transaction) => _space?.Commit(Transaction) ?? true;
         public bool Rollback() => Rollback(Transaction);
-        public override bool Rollback(Transaction transaction) => _space?.Rollback(Transaction) ?? false;
+        public override bool Rollback(Transaction? transaction) => _space?.Rollback(Transaction) ?? false;
     }
 }

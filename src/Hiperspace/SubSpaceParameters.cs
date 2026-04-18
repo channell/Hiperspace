@@ -93,7 +93,90 @@ namespace Hiperspace
             Space = 3
         }
 
+        /// <summary>
+        /// Sets the caching policy to use for data bind and retrieval.
+        /// </summary>
         public CachingPolicy CachePolicy;
+
+        /// <summary>
+        /// Specifies the transactional behavior to use when executing an operation.
+        /// </summary>
+        /// <remarks>Use this enumeration to indicate whether an operation should execute within a new
+        /// transaction, participate in an existing parent transaction, or not use transactions. The selected policy
+        /// affects how changes are committed or rolled back in transactional environments.</remarks>
+        public enum TransactionalPolicy
+        {
+            /// <summary>
+            /// Indicates that the Space is not transactional.
+            /// </summary>
+            NotTransactional = 0,
+
+            /// <summary>
+            /// Specifies that a new transaction should be started.
+            /// </summary>
+            Transactional = 1,
+
+            /// <summary>
+            /// Indicates that the space participates in the transaction of its parent space.
+            /// </summary>
+            /// <remarks>
+            /// Changes within a transaction are not visible to child SubSpaces unless it is a continuation of the 
+            /// the parent transaction.
+            /// </remarks>
+            ParentTransaction = 3,
+
+            /// <summary>
+            /// Transaction is a continuation of a prior transaction
+            /// </summary>
+            ContinueTransaction = 5
+        }
+
+        public TransactionalPolicy TransactionPolicy;
+
+        /// <summary>
+        /// Optional prior transaction that this SubSpace participates in
+        /// </summary>
+        public Transaction? Transaction;
+
+        /// <summary>
+        /// Sets the transaction policy to use for subsequent operations and returns the updated parameters instance.
+        /// </summary>
+        /// <param name="policy">The transaction policy to apply. Determines how transactions are managed for operations using these
+        /// parameters.</param>
+        /// <returns>The current instance with the specified transaction policy applied.</returns>
+        public SubSpaceParameters WithTransactionPolicy (TransactionalPolicy policy)
+        {
+            TransactionPolicy = policy;
+            return this;
+        }
+
+        /// <summary>
+        /// Enables transactional behavior for the current instance and returns the updated parameters object.
+        /// </summary>
+        /// <remarks>Call this method to configure the parameters for use within a transaction. Subsequent
+        /// operations using this instance will follow transactional semantics.</remarks>
+        /// <returns>The current <see cref="SubSpaceParameters"/> instance with transactional settings applied.</returns>
+        public SubSpaceParameters WithTransaction()
+        {
+            Transaction = new Transaction();
+            TransactionPolicy = TransactionalPolicy.Transactional;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets an existing transaction to continue for subsequent operations and configures the parameters to continue within the
+        /// specified transaction.
+        /// </summary>
+        /// <remarks>Calling this method sets the transaction policy to continue using the provided
+        /// transaction for all operations performed with this parameter instance.</remarks>
+        /// <param name="transaction">The transaction to associate with the parameters. Cannot be null.</param>
+        /// <returns>The current <see cref="SubSpaceParameters"/> instance with the specified transaction applied.</returns>
+        public SubSpaceParameters WithTransaction(Transaction transaction)
+        {
+            Transaction = transaction;
+            TransactionPolicy = TransactionalPolicy.ContinueTransaction;
+            return this;
+        }
 
         /// <summary>
         /// Associates the specified <see cref="HiperSpace"/> with the current <see cref="SubSpaceParameters"/> instance.

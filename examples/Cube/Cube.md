@@ -25,12 +25,6 @@ classDiagram
     class First.Acc {
         + Account  : Cube.Account
     }
-    class Banking.Trade {
-        # Id  : String
-        + Book  : Banking.Book
-        + Value  : Decimal
-    }
-    Banking.Trade ..|> Valued
     class Valued {
         # Name  : String
         + Value  : Decimal
@@ -113,6 +107,17 @@ classDiagram
 
 ---
 
+## Type Banking.TradeBase
+
+
+| |Name|Type|*|@|=|
+|-|-|-|-|-|-|
+|#|Id|String||||
+|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 98), AlternateIndex("Banking.FI.Trade", 96), AlternateIndex("Banking.FX.Trade", 97), AlternateIndex("Banking.EQ.Trade", 119), AlternateIndex("Banking.FI.Trade", 117), AlternateIndex("Banking.FX.Trade", 118), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95), AlternateIndex("Banking.EQ.Trade", 145), AlternateIndex("Banking.FI.Trade", 143), AlternateIndex("Banking.FX.Trade", 144)||
+|+|Value|Decimal||CubeMeasure(Aggregate?.Sum)||
+
+---
+
 ## Entity Cube.Account
 
 
@@ -155,17 +160,6 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |+|Account|Cube.Account||AlternateIndex("Cube.CustomerFirstAccount", 78)||
-
----
-
-## View Banking.Trade
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|Id|String||||
-|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 98), AlternateIndex("Banking.FI.Trade", 96), AlternateIndex("Banking.FX.Trade", 97), AlternateIndex("Banking.EQ.Trade", 119), AlternateIndex("Banking.FI.Trade", 117), AlternateIndex("Banking.FX.Trade", 118), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95)||
-|+|Value|Decimal||||
 
 ---
 

@@ -21,8 +21,19 @@ classDiagram
     Cube.Contract_Cube --> Cube.Country
     Cube.Contract_Cube --> Cube.Product
     Cube.Contract_Cube --> Cube.Portfolio
+    class Banking.Trade_Cube {
+        # CubeSlice  : String
+        # ContextLabel  : String
+        # Book  : Banking.Book
+        + Value  : Decimal
+        + Deleted  = false
+        + Facts  : Int64
+        + CubeName () = cubename(Book)
+    }
+    Banking.Trade_Cube --> Banking.Book
     class Banking.Book {
         # Id  : String
+        + Trade_Cube (CubeSlice = "55", Book = this, ContextLabel = contextlabel(this)) : Banking.Trade_Cube
         + Trades (Book = this) : Banking.Trade
     }
     class Cube.Country {
@@ -103,12 +114,28 @@ classDiagram
 
 ---
 
+## EntityImpl Banking.Trade_Cube
+
+
+| |Name|Type|*|@|=|
+|-|-|-|-|-|-|
+|#|CubeSlice|String||||
+|#|ContextLabel|String||||
+|#|Book|Banking.Book||CubeDimensionReference()||
+|+|Value|Decimal||CubeMeasure(Aggregate?.Sum)||
+||Deleted|Some(Boolean)|The cube fact has been deleted||false|
+|+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
+||CubeName|Some(String)|||cubename(Book)|
+
+---
+
 ## EntityImpl Banking.Book
 
 
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|String||||
+||Trade_Cube|Banking.Trade_Cube|Reference to the dimension|CubeFactReference()|CubeSlice = "55", Book = this, ContextLabel = contextlabel(this)|
 ||Trades|Banking.Trade|||Book = this|
 
 ---

@@ -1,11 +1,6 @@
 # Cube-graph
 ```mermaid
 classDiagram
-    class Banking.Trade {
-        # Id  : String
-        + Book  : Banking.Book
-        + Value  : Decimal
-    }
     class Cube.ContractCountryEdge {
         # From  : Node
         # To  : Node
@@ -157,6 +152,12 @@ classDiagram
         + Product_Dimension () = Instrument?.Product
         + Portfolio_Dimension () = Portfolio
     }
+    class Banking.Trade {
+        # Id  : String
+        + Book  : Banking.Book
+        + Value  : Decimal
+        + Book_Dimension () = Book
+    }
     class Cube.Portfolio {
         # Id  : String
         + Parent  : Cube.Portfolio
@@ -205,17 +206,6 @@ classDiagram
 > The ‘*’ column contains a description for the element member.  
 > The ‘@’ column contains any properties for the member.
 > The ‘=’ column contains calculated values; or in the case of an enum, the serialized value.
-
----
-
-## View Banking.Trade
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|Id|String||||
-|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 98), AlternateIndex("Banking.FI.Trade", 96), AlternateIndex("Banking.FX.Trade", 97), AlternateIndex("Banking.EQ.Trade", 119), AlternateIndex("Banking.FI.Trade", 117), AlternateIndex("Banking.FX.Trade", 118), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95)||
-|+|Value|Decimal||||
 
 ---
 
@@ -334,8 +324,8 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|String||||
-|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 98), AlternateIndex("Banking.FI.Trade", 96), AlternateIndex("Banking.FX.Trade", 97), AlternateIndex("Banking.EQ.Trade", 119), AlternateIndex("Banking.FI.Trade", 117), AlternateIndex("Banking.FX.Trade", 118), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95)||
-|+|Value|Decimal||||
+|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 98), AlternateIndex("Banking.FI.Trade", 96), AlternateIndex("Banking.FX.Trade", 97), AlternateIndex("Banking.EQ.Trade", 119), AlternateIndex("Banking.FI.Trade", 117), AlternateIndex("Banking.FX.Trade", 118), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95), AlternateIndex("Banking.EQ.Trade", 145), AlternateIndex("Banking.FI.Trade", 143), AlternateIndex("Banking.FX.Trade", 144)||
+|+|Value|Decimal||CubeMeasure(Aggregate?.Sum)||
 
 ---
 
@@ -345,8 +335,8 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|String||||
-|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 98), AlternateIndex("Banking.FI.Trade", 96), AlternateIndex("Banking.FX.Trade", 97), AlternateIndex("Banking.EQ.Trade", 119), AlternateIndex("Banking.FI.Trade", 117), AlternateIndex("Banking.FX.Trade", 118), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95)||
-|+|Value|Decimal||||
+|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 98), AlternateIndex("Banking.FI.Trade", 96), AlternateIndex("Banking.FX.Trade", 97), AlternateIndex("Banking.EQ.Trade", 119), AlternateIndex("Banking.FI.Trade", 117), AlternateIndex("Banking.FX.Trade", 118), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95), AlternateIndex("Banking.EQ.Trade", 145), AlternateIndex("Banking.FI.Trade", 143), AlternateIndex("Banking.FX.Trade", 144)||
+|+|Value|Decimal||CubeMeasure(Aggregate?.Sum)||
 
 ---
 
@@ -356,8 +346,8 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|String||||
-|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 98), AlternateIndex("Banking.FI.Trade", 96), AlternateIndex("Banking.FX.Trade", 97), AlternateIndex("Banking.EQ.Trade", 119), AlternateIndex("Banking.FI.Trade", 117), AlternateIndex("Banking.FX.Trade", 118), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95)||
-|+|Value|Decimal||||
+|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 98), AlternateIndex("Banking.FI.Trade", 96), AlternateIndex("Banking.FX.Trade", 97), AlternateIndex("Banking.EQ.Trade", 119), AlternateIndex("Banking.FI.Trade", 117), AlternateIndex("Banking.FX.Trade", 118), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95), AlternateIndex("Banking.EQ.Trade", 145), AlternateIndex("Banking.FI.Trade", 143), AlternateIndex("Banking.FX.Trade", 144)||
+|+|Value|Decimal||CubeMeasure(Aggregate?.Sum)||
 
 ---
 
@@ -460,6 +450,18 @@ classDiagram
 ||Country_Dimension|Some(Cube.Country)|||Instrument?.Country|
 ||Product_Dimension|Some(Cube.Product)|||Instrument?.Product|
 ||Portfolio_Dimension|Some(Cube.Portfolio)|||Portfolio|
+
+---
+
+## View Banking.Trade
+
+
+| |Name|Type|*|@|=|
+|-|-|-|-|-|-|
+|#|Id|String||||
+|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 98), AlternateIndex("Banking.FI.Trade", 96), AlternateIndex("Banking.FX.Trade", 97), AlternateIndex("Banking.EQ.Trade", 119), AlternateIndex("Banking.FI.Trade", 117), AlternateIndex("Banking.FX.Trade", 118), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95), AlternateIndex("Banking.EQ.Trade", 145), AlternateIndex("Banking.FI.Trade", 143), AlternateIndex("Banking.FX.Trade", 144)||
+|+|Value|Decimal||CubeMeasure(Aggregate?.Sum)||
+||Book_Dimension|Some(Banking.Book)|||Book|
 
 ---
 

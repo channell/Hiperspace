@@ -90,7 +90,7 @@ view Valued : Versioned #3
 	(Name : String) 
 	{Value : Decimal};
 
-view Banking.Trade = Valued (Name = Id, Value = Value, Deleted = false)  #53 
+type Banking.TradeBase
 (
 	Id : String
 ) 
@@ -98,12 +98,25 @@ view Banking.Trade = Valued (Name = Id, Value = Value, Deleted = false)  #53
 	@AlternateIndex("Banking.EQ.Trade", 60),
 	 AlternateIndex("Banking.FI.Trade", 56),
 	 AlternateIndex("Banking.FX.Trade", 58)
-	,AlternateIndex("Banking.EQ.Trade", 98) ,AlternateIndex("Banking.FI.Trade", 96) ,AlternateIndex("Banking.FX.Trade", 97) ,AlternateIndex("Banking.EQ.Trade", 119) ,AlternateIndex("Banking.FI.Trade", 117) ,AlternateIndex("Banking.FX.Trade", 118) ,AlternateIndex("Banking.FI.Trade", 94) ,AlternateIndex("Banking.FX.Trade", 95) Book : Banking.Book,
+	,AlternateIndex("Banking.EQ.Trade", 98) 
+	,AlternateIndex("Banking.FI.Trade", 96) 
+	,AlternateIndex("Banking.FX.Trade", 97) 
+	,AlternateIndex("Banking.EQ.Trade", 119) 
+	,AlternateIndex("Banking.FI.Trade", 117) 
+	,AlternateIndex("Banking.FX.Trade", 118) 
+	,AlternateIndex("Banking.FI.Trade", 94) 
+	,AlternateIndex("Banking.FX.Trade", 95) 
+	,AlternateIndex("Banking.EQ.Trade", 145) ,AlternateIndex("Banking.FI.Trade", 143) ,AlternateIndex("Banking.FX.Trade", 144) Book : Banking.Book,
+	@CubeMeasure(Aggregate.Sum)
 	Value : Decimal
 };
-entity Banking.FI.Trade : Banking.Trade = Banking.Trade() #57;
-entity Banking.FX.Trade : Banking.Trade = Banking.Trade() #59;
-entity Banking.EQ.Trade : Banking.Trade = Banking.Trade() #61;
+
+@CubeFact(124, 128)
+view Banking.Trade : Banking.TradeBase = Valued (Name = Id, Value = Value, Deleted = false)  #53;
+
+entity Banking.FI.Trade : Banking.TradeBase = Banking.Trade() #57;
+entity Banking.FX.Trade : Banking.TradeBase = Banking.Trade() #59;
+entity Banking.EQ.Trade : Banking.TradeBase = Banking.Trade() #61;
 
 @CubeDimension
 entity Banking.Book #55 

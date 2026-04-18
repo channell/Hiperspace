@@ -79,8 +79,28 @@ classDiagram
     Cube.Contract_Fact --> Cube.Country
     Cube.Contract_Fact --> Cube.Product
     Cube.Contract_Fact --> Cube.Portfolio
+    class Banking.Trade_Cube {
+        # CubeSlice  : String
+        # ContextLabel  : String
+        # Book  : Banking.Book
+        + Value  : Decimal
+        + Deleted  = false
+        + Facts  : Int64
+        + CubeName () = cubename(Book)
+    }
+    Banking.Trade_Cube --> Banking.Book
+    class Banking.Trade_Fact {
+        # ContextLabel  : String
+        # Book  : Banking.Book
+        + Value  : Decimal
+        + Deleted  = false
+        + Facts  : Int64
+        + CubeName () = cubename(Book)
+    }
+    Banking.Trade_Fact --> Banking.Book
     class Banking.Book {
         # Id  : String
+        + Trade_Cube (CubeSlice = "55", Book = this, ContextLabel = contextlabel(this)) : Banking.Trade_Cube
         + Trades (Book = this) : Banking.Trade
     }
     class Cube.Country {
@@ -149,8 +169,8 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|String||||
-|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 98), AlternateIndex("Banking.FI.Trade", 96), AlternateIndex("Banking.FX.Trade", 97), AlternateIndex("Banking.EQ.Trade", 119), AlternateIndex("Banking.FI.Trade", 117), AlternateIndex("Banking.FX.Trade", 118), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95)||
-|+|Value|Decimal||||
+|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 98), AlternateIndex("Banking.FI.Trade", 96), AlternateIndex("Banking.FX.Trade", 97), AlternateIndex("Banking.EQ.Trade", 119), AlternateIndex("Banking.FI.Trade", 117), AlternateIndex("Banking.FX.Trade", 118), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95), AlternateIndex("Banking.EQ.Trade", 145), AlternateIndex("Banking.FI.Trade", 143), AlternateIndex("Banking.FX.Trade", 144)||
+|+|Value|Decimal||CubeMeasure(Aggregate?.Sum)||
 
 ---
 
@@ -160,8 +180,8 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|String||||
-|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 98), AlternateIndex("Banking.FI.Trade", 96), AlternateIndex("Banking.FX.Trade", 97), AlternateIndex("Banking.EQ.Trade", 119), AlternateIndex("Banking.FI.Trade", 117), AlternateIndex("Banking.FX.Trade", 118), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95)||
-|+|Value|Decimal||||
+|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 98), AlternateIndex("Banking.FI.Trade", 96), AlternateIndex("Banking.FX.Trade", 97), AlternateIndex("Banking.EQ.Trade", 119), AlternateIndex("Banking.FI.Trade", 117), AlternateIndex("Banking.FX.Trade", 118), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95), AlternateIndex("Banking.EQ.Trade", 145), AlternateIndex("Banking.FI.Trade", 143), AlternateIndex("Banking.FX.Trade", 144)||
+|+|Value|Decimal||CubeMeasure(Aggregate?.Sum)||
 
 ---
 
@@ -171,8 +191,8 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|String||||
-|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 98), AlternateIndex("Banking.FI.Trade", 96), AlternateIndex("Banking.FX.Trade", 97), AlternateIndex("Banking.EQ.Trade", 119), AlternateIndex("Banking.FI.Trade", 117), AlternateIndex("Banking.FX.Trade", 118), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95)||
-|+|Value|Decimal||||
+|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 98), AlternateIndex("Banking.FI.Trade", 96), AlternateIndex("Banking.FX.Trade", 97), AlternateIndex("Banking.EQ.Trade", 119), AlternateIndex("Banking.FI.Trade", 117), AlternateIndex("Banking.FX.Trade", 118), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95), AlternateIndex("Banking.EQ.Trade", 145), AlternateIndex("Banking.FI.Trade", 143), AlternateIndex("Banking.FX.Trade", 144)||
+|+|Value|Decimal||CubeMeasure(Aggregate?.Sum)||
 
 ---
 
@@ -267,12 +287,42 @@ classDiagram
 
 ---
 
+## EntityImpl Banking.Trade_Cube
+
+
+| |Name|Type|*|@|=|
+|-|-|-|-|-|-|
+|#|CubeSlice|String||||
+|#|ContextLabel|String||||
+|#|Book|Banking.Book||CubeDimensionReference()||
+|+|Value|Decimal||CubeMeasure(Aggregate?.Sum)||
+||Deleted|Some(Boolean)|The cube fact has been deleted||false|
+|+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
+||CubeName|Some(String)|||cubename(Book)|
+
+---
+
+## EntityImpl Banking.Trade_Fact
+
+
+| |Name|Type|*|@|=|
+|-|-|-|-|-|-|
+|#|ContextLabel|String||||
+|#|Book|Banking.Book||CubeDimensionReference()||
+|+|Value|Decimal||CubeMeasure(Aggregate?.Sum)||
+||Deleted|Some(Boolean)|The cube fact has been deleted||false|
+|+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
+||CubeName|Some(String)|||cubename(Book)|
+
+---
+
 ## EntityImpl Banking.Book
 
 
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|String||||
+||Trade_Cube|Banking.Trade_Cube|Reference to the dimension|CubeFactReference()|CubeSlice = "55", Book = this, ContextLabel = contextlabel(this)|
 ||Trades|Banking.Trade|||Book = this|
 
 ---

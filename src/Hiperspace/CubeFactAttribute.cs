@@ -84,5 +84,20 @@ namespace Hiperspace
         /// Gets the number of underlying facts associated with this cube node.
         /// </summary>
         public Int64? Facts { get; }
+
+    }
+
+    /// <summary>
+    /// Typed Cube Fact with drilldown function
+    /// </summary>
+    /// <typeparam name="TFact"></typeparam>
+    public interface ICubeFact<TFact> : ICubeFact where TFact : ICubeFact<TFact>
+    {
+        /// <summary>
+        /// Drilldown from the cube/fact to the set associated with the dimension
+        /// </summary>
+        /// <param name="dimension">dimension to drilldown too</param>
+        /// <returns>set of Drilldown Facts</returns>
+        public IEnumerable<TFact> DrillDown(Type dimension);
     }
 }
