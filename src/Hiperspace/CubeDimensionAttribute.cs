@@ -60,5 +60,17 @@ namespace Hiperspace
         /// The default value is provided for backward compatibility 
         /// </remarks>
         public string? Name => SKey;
+
+        /// <summary>
+        /// Get the named fact if this element is a dimension of it
+        /// </summary>
+        /// <param name="name">the named cube of interest</param>
+        /// <remarks>
+        /// Used in Hiperspace.DB to retrieve facts associated with the dimension
+        /// </remarks>
+        /// <returns>
+        /// optional <see cref="ICubeFact"/> if there is a value, or one can be calculated
+        /// </returns>
+        public ICubeFact? GetCube(string name);
     }
 }

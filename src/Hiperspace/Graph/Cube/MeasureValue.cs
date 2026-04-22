@@ -352,6 +352,24 @@ namespace Graph.Cube
             if (_value.String is not null) return _value.String.ToString();
             return "N/A";
         }
+        public static Graph.Cube.Measure FromFact(KeyValuePair<string, (Aggregate, object)> kv)
+        {
+            var measure = new Graph.Cube.Measure
+            {
+                Name = kv.Key,
+            };
+            if (kv.Value.Item2 is Int64 i64)
+                measure.Value = new Graph.Cube.MeasureValue { Double = i64 };
+            else if (kv.Value.Item2 is Double d)
+                measure.Value = new Graph.Cube.MeasureValue { Double = d };
+            else if (kv.Value.Item2 is Decimal m)
+                measure.Value = new Graph.Cube.MeasureValue { Decimal = m };
+            else if (kv.Value.Item2 is DateTime dt)
+                measure.Value = new Graph.Cube.MeasureValue { DateTime = dt };
+            else if (kv.Value.Item2 is String s)
+                measure.Value = new Graph.Cube.MeasureValue { String = s };
+            return measure;
+        }
     }
     #endregion
 }

@@ -316,21 +316,7 @@ namespace Graph.Cube
             var result = new List<Graph.Cube.Measure>();
             foreach (var kv in measures)
             {
-                var measure = new Graph.Cube.Measure
-                {
-                    Name = kv.Key,
-                };
-                if (kv.Value.Item2 is Int64 i64)
-                    measure.Value = new Graph.Cube.MeasureValue { Double = i64 };
-                else if (kv.Value.Item2 is Double d)
-                    measure.Value = new Graph.Cube.MeasureValue { Double = d };
-                else if (kv.Value.Item2 is Decimal m)
-                    measure.Value = new Graph.Cube.MeasureValue { Decimal = m };
-                else if (kv.Value.Item2 is DateTime dt)
-                    measure.Value = new Graph.Cube.MeasureValue { DateTime = dt };
-                else if (kv.Value.Item2 is String s)
-                    measure.Value = new Graph.Cube.MeasureValue { String = s };
-                result.Add(measure);
+                result.Add(MeasureValue.FromFact(kv));
             }
             return result;
         }

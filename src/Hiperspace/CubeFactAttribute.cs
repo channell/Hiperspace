@@ -5,6 +5,7 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using System.Diagnostics;
 using System.Numerics;
 
 namespace Hiperspace
@@ -85,19 +86,16 @@ namespace Hiperspace
         /// </summary>
         public Int64? Facts { get; }
 
-    }
-
-    /// <summary>
-    /// Typed Cube Fact with drilldown function
-    /// </summary>
-    /// <typeparam name="TFact"></typeparam>
-    public interface ICubeFact<TFact> : ICubeFact where TFact : ICubeFact<TFact>
-    {
         /// <summary>
         /// Drilldown from the cube/fact to the set associated with the dimension
         /// </summary>
         /// <param name="dimension">dimension to drilldown too</param>
         /// <returns>set of Drilldown Facts</returns>
-        public IEnumerable<TFact> DrillDown(Type dimension);
+        public IEnumerable<ICubeFact> DrillDown(Type dimension);
+
+        /// <summary>
+        /// The Skey of the underlying element
+        /// </summary>
+        public string SKey { get; }
     }
 }

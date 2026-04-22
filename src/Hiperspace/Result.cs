@@ -6,6 +6,7 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 
 namespace Hiperspace
 {
@@ -88,7 +89,7 @@ namespace Hiperspace
                 if (_value is null)
                 {
                     if (Exception is not null)
-                        throw Exception;
+                        ExceptionDispatchInfo.Throw(Exception);
                     else
                         throw new NullReferenceException(Reason);
                 }
