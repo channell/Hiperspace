@@ -18,22 +18,86 @@
     <RepositoryUrl>https://github.com/channell/Hiperspace</RepositoryUrl>
     <Nullable>enable</Nullable>
     <LangVersion>13.0</LangVersion>
-    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20260415
+    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20260424
 # Overview
 This release is a minor update to support the presentation Cube data in  Graph views with **Hiperspace.DB**, and minor updated to external references.
 ## Fact enhancement
-Every instance of a `_Fact` or `_Cube` element now includes a `Facts` property that excludes `Node` that is a view of a fact but have no underlying value.
-## Node Enhancement 
-`Node` now includes a `Measures` property, which is a `List&lt;MeasureValue&gt;` to eliminate the need to separately fetch measures when displaying `Cube` `Node` in a **Hiperspace.DB** graph display.  Normally a *graph* showing "*which client Sectors trade which products*" would involve connecting the edges *Sector-&gt;Client-&gt;Account-&gt;Trade-&gt;Leg-&gt;Asset-&gt;Instrument-&gt;Product* or `HiperEdge` *Sector=&gt;Trade=&gt;Product*, and then aggregate results.  When *Sector* and *Product* are *`@CubeDimension`* and *Trade* is a *`@CubeFact`* the aggregate values are available directly through *Sector-&gt;Trade_Cube-&gt;Product* with *streaming calculation* in **Hiperspace.DB**.  Displaying aggregate values in a graph is so useful for analysis that it is worth extending the `Node` model to include them as an optional property.
- [image]Sites/hiperspace/cube/hipercube.png[/image]
-&gt; **NB** This diagram is from a `HiperGraph` of the Sector "All", Product hierarchy aggregates are connected to the Sector hierarchy (without spider connections)
-## Hilang enhancement
-* Added support for `enum` values in messages.
-* Resolved issue with self-referencing messages `message Dimension { Branches : List&lt;Dimension&gt; };`
-* Name resolution of types now uses global namespace resolution to avoid clashes.  
+A specific `ICubeFact&lt;TFact&gt;` inteface has been added to include `public IEnumerable&lt;TFact&gt; DrillDown(Type dimension);` for generic drilldown from one Cube to the next level when viewed in **Hiperspace.DB**.
+
+The `ICubeDimension` interface now has a `GetCube()` function to get the named `ICubeFact` for use with a **PivotTable** view of the *Cube* through **Hiperspace.DB**.
 
 ## SubSpace enhancement
-Currently Blazer Web Assembly clients cannot (*currently*) support threads and therefore cannot perform synchronous IO - `FindAsync()` and `GetAsync()`  requests can be routed (*over **gRpc***) to a remote store, `Find()` and `Get()` request are therefore *cache-local*. the test for `OperatingSystem.IsBrowser()` has been replaced  with a `CachePolicy` that default to *`CachingPolicy.Cache`* for Browser and *`CachingPolicy.Space`* otherwise.  This allows `message` to be used to *pre-fetch* dependencies on the server-side in addition to browser.
+`SubSpaceParameters` has been enhanced to include `TransactionalPolicy`
+
+|Policy|Notes|
+|-|-|
+|NotTransactional|Indicates that the Space is not transactional|
+|Transactional|Specifies that a new transaction should be started|
+|ParentTransaction|Indicates that the space participates in the transaction of its parent space|
+|ContinueTransaction|Transaction is a continuation of a prior (long-running) transaction|
+
+---
+
+## Hilang enhancement
+Added support sdupport for Cube aggregation of views in addition to {*entity, segment, aspect*}.
+
+Consider the model where there are seperate *entitites* for {*FX, FI, EQ*} Trades that have different values for Entities, Bonds, Foreign Exchange, but can all be *viewed* as a Trade that has a booking_id, and a valuation (NPV).  This change adds support for **Cube** analytics of *views*  combining all trades in all entities that provide the view.
+
+```
+type Banking.TradeBase
+(
+ Id : String
+) 
+{
+ Book : Banking.Book,
+ @CubeMeasure(Aggregate.Sum)
+ NPV : Decimal
+};
+
+@CubeFact
+view Banking.Trade : Banking.TradeBase;
+
+entity Banking.FI.Trade : Banking.TradeBase = Banking.Trade();
+entity Banking.FX.Trade : Banking.TradeBase = Banking.Trade();
+entity Banking.EQ.Trade : Banking.TradeBase = Banking.Trade();
+
+@CubeDimension
+entity Banking.Book ( Id : String ) [ Trades : Banking.Trade (Book = this)];
+```
+When the schema is compiled with [HiLang](https://www.nuget.org/packages/HiLang), `Banking.Book` has an additional property `Trade_Cube`  that aggregates NPV over the full set trades that can be *viewed* as a `Banking.Trade`.
+
+### Enhanced List support
+Keys in a hilang element can be:
+* A Value including value elements defined in Hilang and primatives (e.g. String, Int32, Guid, etc)
+* A Reference to an entity (only the Key-part of the referened entity is serialised)
+* A List of Values (e.g. List&lt;String&gt;) but not a Set&lt;&gt; since a Set order can change
+
+Key support for `List&lt;&gt;` in keys has been extended to include Keys of Lists of Values of Lists of Values, that can be placed in a `SortedSet`.  Examples include [FINIOS CDM](https://www.finos.org/common-domain-model) that supports complex identifiers that include list of identifiers
+ 
+```
+value CDM.PartyIdentifier ( identifier : String );
+entity CDM.Party ( partyId : CDM.PartyIdentifier );
+value CDM.PriceQuantity;
+value CDM.AssetIdentifier
+(
+    identifer : String,
+    version : Int32
+);
+value CDM.Identifer
+(
+    assignedIdentifier : List&lt;CDM.AssetIdentifier&gt;,
+    issuerReference : CDM.Party,
+    issuer : String
+);
+entity CDM.TradeLot
+(
+    lotIdentifier : List&lt;CDM.Identifer&gt;
+)
+{
+    priceQuantity : List&lt;CDM.PriceQuantity&gt;
+};
+```
+In this example `CDM.TradeLot` has a key that is a  `List&lt;CDM.Identifer&gt;` which itself contains a `List&lt;CDM.AssetIdentifier&gt;`.  Lists are supported in [HiLang](https://www.nuget.org/packages/HiLang) models since the they can be unambiguously serialised to a store and retrived later.  **NB** `CDM.Identifer` contains a reference to `CDM.Party` which is a *entity* so only the *key* is stored, with `CDM.Party` retrived only when needed.
 </PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
