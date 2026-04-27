@@ -68,7 +68,7 @@ entity Cube.Instrument
 (ISIN : String #1) 
 {Country : Cube.Country #2, Product : Cube.Product #3} [Price : Cube.Price #47, Market = Price.Market];
 
-@CubeFact(77, 81)
+@CubeFact(77, 81), DeltaIndex(137)
 entity Cube.Contract : Versioned 
 	= Valued (Name = "some", Value = Value, Deleted = Deleted)
 	, Node (SKey = SKey, Name = "", TypeName = "Contract") #44 
@@ -90,35 +90,25 @@ view Valued : Versioned #3
 	(Name : String) 
 	{Value : Decimal};
 
+@Versioned
 type Banking.TradeBase
 (
 	Id : String
 ) 
 {
-	@AlternateIndex("Banking.EQ.Trade", 60),
-	 AlternateIndex("Banking.FI.Trade", 56),
-	 AlternateIndex("Banking.FX.Trade", 58)
-	,AlternateIndex("Banking.EQ.Trade", 98) 
-	,AlternateIndex("Banking.FI.Trade", 96) 
-	,AlternateIndex("Banking.FX.Trade", 97) 
-	,AlternateIndex("Banking.EQ.Trade", 119) 
-	,AlternateIndex("Banking.FI.Trade", 117) 
-	,AlternateIndex("Banking.FX.Trade", 118) 
-	,AlternateIndex("Banking.FI.Trade", 94) 
-	,AlternateIndex("Banking.FX.Trade", 95) 
-	,AlternateIndex("Banking.EQ.Trade", 145) ,AlternateIndex("Banking.FI.Trade", 143) ,AlternateIndex("Banking.FX.Trade", 144) Book : Banking.Book,
+	@AlternateIndex("Banking.EQ.Trade", 145) ,AlternateIndex("Banking.FI.Trade", 143) ,AlternateIndex("Banking.FX.Trade", 144) Book : Banking.Book,
 	@CubeMeasure(Aggregate.Sum)
 	Value : Decimal
 };
 
-@CubeFact(124, 128)
-view Banking.Trade : Banking.TradeBase = Valued (Name = Id, Value = Value, Deleted = false)  #53;
+@/*CubeFact(240, 246), */DeltaIndex(153)
+view Banking.Trade : Banking.TradeBase = Valued (Name = Id, Value = Value, Deleted = false) #192;
 
-entity Banking.FI.Trade : Banking.TradeBase = Banking.Trade() #57;
-entity Banking.FX.Trade : Banking.TradeBase = Banking.Trade() #59;
-entity Banking.EQ.Trade : Banking.TradeBase = Banking.Trade() #61;
+entity Banking.FI.Trade : Banking.TradeBase = Banking.Trade() #171;
+entity Banking.FX.Trade : Banking.TradeBase = Banking.Trade() #173;
+entity Banking.EQ.Trade : Banking.TradeBase = Banking.Trade() #175;
 
-@CubeDimension
+/*@CubeDimension*/
 entity Banking.Book #55 
 (
 	Id : String #1

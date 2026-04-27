@@ -1,6 +1,10 @@
 # Cube
 ```mermaid
 classDiagram
+    class Banking.Book {
+        # Id  : String
+        + Trades (Book = this) : Banking.Trade
+    }
     class Cube.Account {
         # Id  : String
         + Customer  : Cube.Customer
@@ -28,10 +32,6 @@ classDiagram
     class Valued {
         # Name  : String
         + Value  : Decimal
-    }
-    class Banking.Book {
-        # Id  : String
-        + Trades (Book = this) : Banking.Trade
     }
     class Cube.Portfolio {
         # Id  : String
@@ -107,14 +107,13 @@ classDiagram
 
 ---
 
-## Type Banking.TradeBase
+## Entity Banking.Book
 
 
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|String||||
-|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 60), AlternateIndex("Banking.FI.Trade", 56), AlternateIndex("Banking.FX.Trade", 58), AlternateIndex("Banking.EQ.Trade", 98), AlternateIndex("Banking.FI.Trade", 96), AlternateIndex("Banking.FX.Trade", 97), AlternateIndex("Banking.EQ.Trade", 119), AlternateIndex("Banking.FI.Trade", 117), AlternateIndex("Banking.FX.Trade", 118), AlternateIndex("Banking.FI.Trade", 94), AlternateIndex("Banking.FX.Trade", 95), AlternateIndex("Banking.EQ.Trade", 145), AlternateIndex("Banking.FI.Trade", 143), AlternateIndex("Banking.FX.Trade", 144)||
-|+|Value|Decimal||CubeMeasure(Aggregate?.Sum)||
+||Trades|Banking.Trade|||Book = this|
 
 ---
 
@@ -170,16 +169,6 @@ classDiagram
 |-|-|-|-|-|-|
 |#|Name|String||||
 |+|Value|Decimal||||
-
----
-
-## Entity Banking.Book
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|Id|String||||
-||Trades|Banking.Trade|||Book = this|
 
 ---
 
@@ -256,6 +245,17 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |+|Market|Decimal||||
+
+---
+
+## Type Banking.TradeBase
+
+
+| |Name|Type|*|@|=|
+|-|-|-|-|-|-|
+|#|Id|String||||
+|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 145), AlternateIndex("Banking.FI.Trade", 143), AlternateIndex("Banking.FX.Trade", 144)||
+|+|Value|Decimal||CubeMeasure(Aggregate?.Sum)||
 
 ---
 
