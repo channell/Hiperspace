@@ -61,6 +61,7 @@ classDiagram
         + Deleted  = false
         + Facts  : Int64
         + CubeName () = cubename(Sector,Country,Product,Portfolio)
+        + CubeDimensions () = cubedimensions(Sector,Country,Product,Portfolio)
         + Avg () = (Avg_Sum / Facts)
     }
     Cube.Contract_Cube --> Cube.Sector
@@ -171,5 +172,6 @@ classDiagram
 ||Deleted|Some(Boolean)|The cube fact has been deleted||false|
 |+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
 ||CubeName|Some(String)|||cubename(Sector,Country,Product,Portfolio)|
+||CubeDimensions|Some(Int32)|||cubedimensions(Sector,Country,Product,Portfolio)|
 ||Avg|Some(Decimal)||CubeMeasure(Aggregate?.Average)|(Avg_Sum / Facts)|
 

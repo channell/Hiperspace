@@ -370,6 +370,32 @@ namespace Graph.Cube
                 measure.Value = new Graph.Cube.MeasureValue { String = s };
             return measure;
         }
+
+        /// <summary>
+        /// the type for rendering in a dynamic Blazor grid
+        /// </summary>
+        public Type GetDynamicType()
+        {
+            if (_value.Double is not null) return typeof(double);
+            if (_value.Integer is not null) return typeof(long);
+            if (_value.Decimal is not null) return typeof(decimal);
+            if (_value.DateTime is not null) return typeof(DateTime);
+            if (_value.String is not null) return typeof(string);
+            return typeof(object);
+        }
+
+        /// <summary>
+        /// the value for rendering in a dynamic Blazor grid
+        /// </summary>
+        public object? GetDynamicValue()
+        {
+            if (_value.Double is not null) return _value.Double;
+            if (_value.Integer is not null) return _value.Integer;
+            if (_value.Decimal is not null) return _value.Decimal;
+            if (_value.DateTime is not null) return _value.DateTime;
+            if (_value.String is not null) return _value.String;
+            return null;
+        }
     }
     #endregion
 }

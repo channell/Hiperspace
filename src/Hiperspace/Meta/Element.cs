@@ -192,5 +192,13 @@ namespace Hiperspace.Meta
                             yield return (Index[c].Id, $"{Name.Reference}.{Index[c].Name} index id changed from {Index[c].Id} to {value.Id}");
             }
         }
+        public static bool operator ==(Element left, Element right)
+        {
+            return left.Equals(right);
+        }
+        public static bool operator !=(Element left, Element right)
+        {
+            return !(left.Equals(right));
+        }
     }
 }

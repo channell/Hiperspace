@@ -52,5 +52,13 @@ namespace Hiperspace.Meta
                     hc.Add(Parameters[c].GetHashCode());
             return hc.ToHashCode();
         }
+        public static bool operator ==(Name left, Name right)
+        {
+            return left.Equals(right);
+        }
+        public static bool operator !=(Name left, Name right)
+        {
+            return !(left.Equals(right));
+        }
     }
 }

@@ -141,26 +141,26 @@ entity Plan.Tasks.Task     : Versioned
     BIWBS       = Parent = null ? Project.WBS + "." + WBS : Parent.BIWBS + "." + WBS,  
     "Cost of prior tasks that can not be recovered"
     @CubeMeasure(Aggregate.Sum)
-    SunkCost    = 0.0 + sum (After.LinkCost),
+    SunkCost    = 0.0 + sum (After.LinkCost) #250,
     PctComplete = Actual.Duration.Time / Duration.Time,
     @CubeMeasure(Aggregate.Sum)
-    Effort      = count (Resources.Weight) * Duration.Time,
+    Effort      = count (Resources.Weight) * Duration.Time #252,
     ImpResCost  = 0.0 + sum (Resources.ImpliedCost),
     @CubeMeasure(Aggregate.Sum)
     PlanCost    = Cost +
                   sum (SubTasks.PlanCost) +
                   sum (Resources.UseCost) + 
-                  0.0 + (sum (Resources.TimeCost) * Duration.Time),
+                  0.0 + (sum (Resources.TimeCost) * Duration.Time) #254,
     @CubeMeasure(Aggregate.Sum)
     ActualCost  = Cost +
                   sum (SubTasks.ActualCost) +
                   sum (Resources.UseCost) + 
-                  (Actual.Cost),
+                  (Actual.Cost) #255,
     @CubeMeasure(Aggregate.Sum)
     ImpliedCost = Cost +
                   sum (SubTasks.ImpliedCost) +
                   sum (Resources.UseCost) + 
-                  zeronull(ImpResCost)
+                  zeronull(ImpResCost) #256
 ];
 
 @Versioned

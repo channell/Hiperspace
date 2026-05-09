@@ -813,8 +813,14 @@ namespace Hiperspace
                         if (result is MemberExpression memberExpression &&
                             memberExpression.Expression?.Type is not null)
                         {
-                            var nullValue = Expression.Constant(null, memberExpression.Expression.Type);
-                            var nullResult = Expression.Constant(null, result.Type);
+                            var nullValue =
+                                memberExpression.Expression.Type.IsValueType ?
+                                Expression.Constant(Activator.CreateInstance(memberExpression.Expression.Type), memberExpression.Expression.Type) :
+                                Expression.Constant(null, memberExpression.Expression.Type);
+                            var nullResult =
+                                result.Type.IsValueType ?
+                                Expression.Constant(Activator.CreateInstance(result.Type), result.Type) :
+                                Expression.Constant(null, result.Type);
                             var isNull = Expression.Equal(memberExpression.Expression, nullValue);
                             var condition = Expression.Condition(isNull, nullResult, result);
                             result = condition;

@@ -429,6 +429,7 @@ classDiagram
         + Deleted  = false
         + Facts  : Int64
         + CubeName () = cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
+        + CubeDimensions () = cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
     }
     Togaf.Financial.Cost_Cube --> Togaf.Technology.Host
     Togaf.Financial.Cost_Cube --> Togaf.Business.Event
@@ -460,6 +461,57 @@ classDiagram
     Togaf.Financial.Cost_Cube ..|> Togaf.Business.EventCostEdge
     Togaf.Financial.Cost_Cube ..|> Togaf.Financial.CostSystemEdge
     Togaf.Financial.Cost_Cube ..|> Togaf.Application.SystemCostEdge
+    class Togaf.Financial.Cost_Fact {
+        # ContextLabel  : String
+        # Host  : Togaf.Technology.Host
+        # Event  : Togaf.Business.Event
+        # System  : Togaf.Application.System
+        # Service  : Togaf.Service
+        # Process  : Togaf.Business.Process
+        # Product  : Togaf.Business.Product
+        # Platform  : Togaf.Technology.Platform
+        # Function  : Togaf.Business.Function
+        # Capability  : Togaf.Business.Capability
+        # Organization  : Togaf.Organization
+        + RevX  : Decimal
+        + CapX  : Decimal
+        + OpeX  : Decimal
+        + Hours  : Int64
+        + Deleted  = false
+        + Facts  : Int64
+        + CubeName () = cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
+        + CubeDimensions () = cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
+    }
+    Togaf.Financial.Cost_Fact --> Togaf.Technology.Host
+    Togaf.Financial.Cost_Fact --> Togaf.Business.Event
+    Togaf.Financial.Cost_Fact --> Togaf.Application.System
+    Togaf.Financial.Cost_Fact --> Togaf.Service
+    Togaf.Financial.Cost_Fact --> Togaf.Business.Process
+    Togaf.Financial.Cost_Fact --> Togaf.Business.Product
+    Togaf.Financial.Cost_Fact --> Togaf.Technology.Platform
+    Togaf.Financial.Cost_Fact --> Togaf.Business.Function
+    Togaf.Financial.Cost_Fact --> Togaf.Business.Capability
+    Togaf.Financial.Cost_Fact --> Togaf.Organization
+    Togaf.Financial.Cost_Fact ..|> Togaf.Financial.CostHostEdge
+    Togaf.Financial.Cost_Fact ..|> Togaf.Technology.HostCostEdge
+    Togaf.Financial.Cost_Fact ..|> Togaf.Financial.CostPlatformEdge
+    Togaf.Financial.Cost_Fact ..|> Togaf.Technology.PlatformCostEdge
+    Togaf.Financial.Cost_Fact ..|> Togaf.Financial.CostOrganizationEdge
+    Togaf.Financial.Cost_Fact ..|> Togaf.OrganizationCostEdge
+    Togaf.Financial.Cost_Fact ..|> Togaf.Financial.CostServiceEdge
+    Togaf.Financial.Cost_Fact ..|> Togaf.ServiceCostEdge
+    Togaf.Financial.Cost_Fact ..|> Togaf.Financial.CostFunctionEdge
+    Togaf.Financial.Cost_Fact ..|> Togaf.Business.FunctionCostEdge
+    Togaf.Financial.Cost_Fact ..|> Togaf.Financial.CostProcessEdge
+    Togaf.Financial.Cost_Fact ..|> Togaf.Business.ProcessCostEdge
+    Togaf.Financial.Cost_Fact ..|> Togaf.Financial.CostProductEdge
+    Togaf.Financial.Cost_Fact ..|> Togaf.Business.ProductCostEdge
+    Togaf.Financial.Cost_Fact ..|> Togaf.Financial.CostCapabilityEdge
+    Togaf.Financial.Cost_Fact ..|> Togaf.Business.CapabilityCostEdge
+    Togaf.Financial.Cost_Fact ..|> Togaf.Financial.CostEventEdge
+    Togaf.Financial.Cost_Fact ..|> Togaf.Business.EventCostEdge
+    Togaf.Financial.Cost_Fact ..|> Togaf.Financial.CostSystemEdge
+    Togaf.Financial.Cost_Fact ..|> Togaf.Application.SystemCostEdge
     class Togaf.Financial.Income_Cube {
         # CubeSlice  : String
         # ContextLabel  : String
@@ -480,6 +532,7 @@ classDiagram
         + Deleted  = false
         + Facts  : Int64
         + CubeName () = cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
+        + CubeDimensions () = cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
     }
     Togaf.Financial.Income_Cube --> Togaf.Technology.Host
     Togaf.Financial.Income_Cube --> Togaf.Business.Event
@@ -511,6 +564,57 @@ classDiagram
     Togaf.Financial.Income_Cube ..|> Togaf.Business.EventIncomeEdge
     Togaf.Financial.Income_Cube ..|> Togaf.Financial.IncomeSystemEdge
     Togaf.Financial.Income_Cube ..|> Togaf.Application.SystemIncomeEdge
+    class Togaf.Financial.Income_Fact {
+        # ContextLabel  : String
+        # Host  : Togaf.Technology.Host
+        # Event  : Togaf.Business.Event
+        # System  : Togaf.Application.System
+        # Service  : Togaf.Service
+        # Process  : Togaf.Business.Process
+        # Product  : Togaf.Business.Product
+        # Platform  : Togaf.Technology.Platform
+        # Function  : Togaf.Business.Function
+        # Capability  : Togaf.Business.Capability
+        # Organization  : Togaf.Organization
+        + RevX  : Decimal
+        + CapX  : Decimal
+        + OpeX  : Decimal
+        + Hours  : Int64
+        + Deleted  = false
+        + Facts  : Int64
+        + CubeName () = cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
+        + CubeDimensions () = cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
+    }
+    Togaf.Financial.Income_Fact --> Togaf.Technology.Host
+    Togaf.Financial.Income_Fact --> Togaf.Business.Event
+    Togaf.Financial.Income_Fact --> Togaf.Application.System
+    Togaf.Financial.Income_Fact --> Togaf.Service
+    Togaf.Financial.Income_Fact --> Togaf.Business.Process
+    Togaf.Financial.Income_Fact --> Togaf.Business.Product
+    Togaf.Financial.Income_Fact --> Togaf.Technology.Platform
+    Togaf.Financial.Income_Fact --> Togaf.Business.Function
+    Togaf.Financial.Income_Fact --> Togaf.Business.Capability
+    Togaf.Financial.Income_Fact --> Togaf.Organization
+    Togaf.Financial.Income_Fact ..|> Togaf.Financial.IncomeHostEdge
+    Togaf.Financial.Income_Fact ..|> Togaf.Technology.HostIncomeEdge
+    Togaf.Financial.Income_Fact ..|> Togaf.Financial.IncomePlatformEdge
+    Togaf.Financial.Income_Fact ..|> Togaf.Technology.PlatformIncomeEdge
+    Togaf.Financial.Income_Fact ..|> Togaf.Financial.IncomeOrganizationEdge
+    Togaf.Financial.Income_Fact ..|> Togaf.OrganizationIncomeEdge
+    Togaf.Financial.Income_Fact ..|> Togaf.Financial.IncomeServiceEdge
+    Togaf.Financial.Income_Fact ..|> Togaf.ServiceIncomeEdge
+    Togaf.Financial.Income_Fact ..|> Togaf.Financial.IncomeFunctionEdge
+    Togaf.Financial.Income_Fact ..|> Togaf.Business.FunctionIncomeEdge
+    Togaf.Financial.Income_Fact ..|> Togaf.Financial.IncomeProcessEdge
+    Togaf.Financial.Income_Fact ..|> Togaf.Business.ProcessIncomeEdge
+    Togaf.Financial.Income_Fact ..|> Togaf.Financial.IncomeProductEdge
+    Togaf.Financial.Income_Fact ..|> Togaf.Business.ProductIncomeEdge
+    Togaf.Financial.Income_Fact ..|> Togaf.Financial.IncomeCapabilityEdge
+    Togaf.Financial.Income_Fact ..|> Togaf.Business.CapabilityIncomeEdge
+    Togaf.Financial.Income_Fact ..|> Togaf.Financial.IncomeEventEdge
+    Togaf.Financial.Income_Fact ..|> Togaf.Business.EventIncomeEdge
+    Togaf.Financial.Income_Fact ..|> Togaf.Financial.IncomeSystemEdge
+    Togaf.Financial.Income_Fact ..|> Togaf.Application.SystemIncomeEdge
     class Togaf.Complexity_Cube {
         # CubeSlice  : String
         # ContextLabel  : String
@@ -530,6 +634,7 @@ classDiagram
         + Deleted  = false
         + Facts  : Int64
         + CubeName () = cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
+        + CubeDimensions () = cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
         + M () = ((E - N) + (2 * P))
     }
     Togaf.Complexity_Cube --> Togaf.Technology.Host
@@ -562,6 +667,57 @@ classDiagram
     Togaf.Complexity_Cube ..|> Togaf.Business.EventComplexityEdge
     Togaf.Complexity_Cube ..|> Togaf.ComplexitySystemEdge
     Togaf.Complexity_Cube ..|> Togaf.Application.SystemComplexityEdge
+    class Togaf.Complexity_Fact {
+        # ContextLabel  : String
+        # Host  : Togaf.Technology.Host
+        # Event  : Togaf.Business.Event
+        # System  : Togaf.Application.System
+        # Service  : Togaf.Service
+        # Process  : Togaf.Business.Process
+        # Product  : Togaf.Business.Product
+        # Platform  : Togaf.Technology.Platform
+        # Function  : Togaf.Business.Function
+        # Capability  : Togaf.Business.Capability
+        # Organization  : Togaf.Organization
+        + E  : Decimal
+        + N  : Decimal
+        + P  : Decimal
+        + Deleted  = false
+        + Facts  : Int64
+        + CubeName () = cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
+        + CubeDimensions () = cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
+        + M () = ((E - N) + (2 * P))
+    }
+    Togaf.Complexity_Fact --> Togaf.Technology.Host
+    Togaf.Complexity_Fact --> Togaf.Business.Event
+    Togaf.Complexity_Fact --> Togaf.Application.System
+    Togaf.Complexity_Fact --> Togaf.Service
+    Togaf.Complexity_Fact --> Togaf.Business.Process
+    Togaf.Complexity_Fact --> Togaf.Business.Product
+    Togaf.Complexity_Fact --> Togaf.Technology.Platform
+    Togaf.Complexity_Fact --> Togaf.Business.Function
+    Togaf.Complexity_Fact --> Togaf.Business.Capability
+    Togaf.Complexity_Fact --> Togaf.Organization
+    Togaf.Complexity_Fact ..|> Togaf.ComplexityHostEdge
+    Togaf.Complexity_Fact ..|> Togaf.Technology.HostComplexityEdge
+    Togaf.Complexity_Fact ..|> Togaf.ComplexityPlatformEdge
+    Togaf.Complexity_Fact ..|> Togaf.Technology.PlatformComplexityEdge
+    Togaf.Complexity_Fact ..|> Togaf.ComplexityOrganizationEdge
+    Togaf.Complexity_Fact ..|> Togaf.OrganizationComplexityEdge
+    Togaf.Complexity_Fact ..|> Togaf.ComplexityServiceEdge
+    Togaf.Complexity_Fact ..|> Togaf.ServiceComplexityEdge
+    Togaf.Complexity_Fact ..|> Togaf.ComplexityFunctionEdge
+    Togaf.Complexity_Fact ..|> Togaf.Business.FunctionComplexityEdge
+    Togaf.Complexity_Fact ..|> Togaf.ComplexityProcessEdge
+    Togaf.Complexity_Fact ..|> Togaf.Business.ProcessComplexityEdge
+    Togaf.Complexity_Fact ..|> Togaf.ComplexityProductEdge
+    Togaf.Complexity_Fact ..|> Togaf.Business.ProductComplexityEdge
+    Togaf.Complexity_Fact ..|> Togaf.ComplexityCapabilityEdge
+    Togaf.Complexity_Fact ..|> Togaf.Business.CapabilityComplexityEdge
+    Togaf.Complexity_Fact ..|> Togaf.ComplexityEventEdge
+    Togaf.Complexity_Fact ..|> Togaf.Business.EventComplexityEdge
+    Togaf.Complexity_Fact ..|> Togaf.ComplexitySystemEdge
+    Togaf.Complexity_Fact ..|> Togaf.Application.SystemComplexityEdge
     class Togaf.Business.Capability {
         # Id  : Guid
         + Name  : String
@@ -3735,6 +3891,34 @@ classDiagram
 ||Deleted|Some(Boolean)|The cube fact has been deleted||false|
 |+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
 ||CubeName|Some(String)|||cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
+||CubeDimensions|Some(Int32)|||cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
+
+---
+
+## EntityImpl Togaf.Financial.Cost_Fact
+
+
+| |Name|Type|*|@|=|
+|-|-|-|-|-|-|
+|#|ContextLabel|String||||
+|#|Host|Togaf.Technology.Host||CubeDimensionReference()||
+|#|Event|Togaf.Business.Event||CubeDimensionReference()||
+|#|System|Togaf.Application.System||CubeDimensionReference()||
+|#|Service|Togaf.Service||CubeDimensionReference()||
+|#|Process|Togaf.Business.Process||CubeDimensionReference()||
+|#|Product|Togaf.Business.Product||CubeDimensionReference()||
+|#|Platform|Togaf.Technology.Platform||CubeDimensionReference()||
+|#|Function|Togaf.Business.Function||CubeDimensionReference()||
+|#|Capability|Togaf.Business.Capability||CubeDimensionReference()||
+|#|Organization|Togaf.Organization||CubeDimensionReference()||
+|+|RevX|Decimal||CubeMeasure(Aggregate?.Sum)||
+|+|CapX|Decimal||CubeMeasure(Aggregate?.Sum)||
+|+|OpeX|Decimal||CubeMeasure(Aggregate?.Sum)||
+|+|Hours|Int64||CubeMeasure(Aggregate?.Sum)||
+||Deleted|Some(Boolean)|The cube fact has been deleted||false|
+|+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
+||CubeName|Some(String)|||cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
+||CubeDimensions|Some(Int32)|||cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
 
 ---
 
@@ -3762,6 +3946,34 @@ classDiagram
 ||Deleted|Some(Boolean)|The cube fact has been deleted||false|
 |+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
 ||CubeName|Some(String)|||cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
+||CubeDimensions|Some(Int32)|||cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
+
+---
+
+## EntityImpl Togaf.Financial.Income_Fact
+
+
+| |Name|Type|*|@|=|
+|-|-|-|-|-|-|
+|#|ContextLabel|String||||
+|#|Host|Togaf.Technology.Host||CubeDimensionReference()||
+|#|Event|Togaf.Business.Event||CubeDimensionReference()||
+|#|System|Togaf.Application.System||CubeDimensionReference()||
+|#|Service|Togaf.Service||CubeDimensionReference()||
+|#|Process|Togaf.Business.Process||CubeDimensionReference()||
+|#|Product|Togaf.Business.Product||CubeDimensionReference()||
+|#|Platform|Togaf.Technology.Platform||CubeDimensionReference()||
+|#|Function|Togaf.Business.Function||CubeDimensionReference()||
+|#|Capability|Togaf.Business.Capability||CubeDimensionReference()||
+|#|Organization|Togaf.Organization||CubeDimensionReference()||
+|+|RevX|Decimal||CubeMeasure(Aggregate?.Sum)||
+|+|CapX|Decimal||CubeMeasure(Aggregate?.Sum)||
+|+|OpeX|Decimal||CubeMeasure(Aggregate?.Sum)||
+|+|Hours|Int64||CubeMeasure(Aggregate?.Sum)||
+||Deleted|Some(Boolean)|The cube fact has been deleted||false|
+|+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
+||CubeName|Some(String)|||cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
+||CubeDimensions|Some(Int32)|||cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
 
 ---
 
@@ -3788,6 +4000,34 @@ classDiagram
 ||Deleted|Some(Boolean)|The cube fact has been deleted||false|
 |+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
 ||CubeName|Some(String)|||cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
+||CubeDimensions|Some(Int32)|||cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
+||M|Some(Decimal)||CubeExtent()|((E - N) + (2 * P))|
+
+---
+
+## EntityImpl Togaf.Complexity_Fact
+
+
+| |Name|Type|*|@|=|
+|-|-|-|-|-|-|
+|#|ContextLabel|String||||
+|#|Host|Togaf.Technology.Host||CubeDimensionReference()||
+|#|Event|Togaf.Business.Event||CubeDimensionReference()||
+|#|System|Togaf.Application.System||CubeDimensionReference()||
+|#|Service|Togaf.Service||CubeDimensionReference()||
+|#|Process|Togaf.Business.Process||CubeDimensionReference()||
+|#|Product|Togaf.Business.Product||CubeDimensionReference()||
+|#|Platform|Togaf.Technology.Platform||CubeDimensionReference()||
+|#|Function|Togaf.Business.Function||CubeDimensionReference()||
+|#|Capability|Togaf.Business.Capability||CubeDimensionReference()||
+|#|Organization|Togaf.Organization||CubeDimensionReference()||
+|+|E|Decimal||CubeMeasure(Aggregate?.Sum)||
+|+|N|Decimal||CubeMeasure(Aggregate?.Sum)||
+|+|P|Decimal||CubeMeasure(Aggregate?.Sum)||
+||Deleted|Some(Boolean)|The cube fact has been deleted||false|
+|+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
+||CubeName|Some(String)|||cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
+||CubeDimensions|Some(Int32)|||cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
 ||M|Some(Decimal)||CubeExtent()|((E - N) + (2 * P))|
 
 ---
@@ -3798,7 +4038,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|By|Togaf.Organization||||
@@ -3830,7 +4070,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|For|Togaf.Organization||AlternateIndex()||
@@ -3861,7 +4101,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|By|Togaf.Organization||||
@@ -3890,7 +4130,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|Parent|Togaf.Organization||AlternateIndex()||
@@ -3915,7 +4155,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|Realizes|Togaf.Service||||
@@ -3944,7 +4184,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|Type|Togaf.Business.EventType||||
@@ -3972,7 +4212,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|Decomposes|Togaf.Business.Function||||
@@ -4004,7 +4244,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|OwnedBy|Togaf.Organization||||
@@ -4035,7 +4275,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|Platform|Togaf.Technology.Platform||||
@@ -4062,7 +4302,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|Serves|Togaf.Service||||
@@ -4189,7 +4429,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|Implements|Togaf.Application.System||||
@@ -4215,7 +4455,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|Deployes|Togaf.Application.Component||||
@@ -4240,7 +4480,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|By|Togaf.Business.Actor||||
@@ -4270,7 +4510,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|In|Togaf.Organization||AlternateIndex()||
@@ -4295,7 +4535,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|URL|String||||
@@ -4321,7 +4561,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|URL|String||||
@@ -4347,7 +4587,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|MotivatedBy|Togaf.Organization||AlternateIndex()||
@@ -4371,7 +4611,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|By|Togaf.Business.Driver||||
@@ -4396,7 +4636,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|For|Togaf.Business.Objective||||
@@ -4422,7 +4662,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|For|Togaf.Business.Goal||||
@@ -4446,7 +4686,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|URL|String||||
@@ -4474,7 +4714,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|Originator|Togaf.Business.Activity||||
@@ -4500,7 +4740,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|Encapsulate|Togaf.Data.Entity||||
@@ -4525,7 +4765,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|Instantiate|Togaf.Data.Logical||||
@@ -4551,7 +4791,7 @@ classDiagram
 |#|Id|Guid||||
 |#|Entity|Togaf.Data.Entity||||
 |#|System|Togaf.Application.System||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|Comment|String||||
@@ -4566,7 +4806,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|Host|Togaf.Technology.Host||||
@@ -4591,7 +4831,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Application.Component||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -4605,7 +4845,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Application.Component||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -4619,7 +4859,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Application.Component||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -4633,7 +4873,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Application.Component||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -4647,7 +4887,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Application.Component||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -4661,7 +4901,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Application.Component||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -4675,7 +4915,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Application.Component||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|ProjectKey|String||||
@@ -4693,7 +4933,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Application.Deployed||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -4707,7 +4947,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Application.Deployed||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -4721,7 +4961,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Application.Deployed||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -4735,7 +4975,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Application.Deployed||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -4749,7 +4989,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Application.Deployed||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -4763,7 +5003,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Application.Deployed||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -4777,7 +5017,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Application.Deployed||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|ProjectKey|String||||
@@ -4795,7 +5035,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Application.System||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -4809,7 +5049,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Application.System||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -4823,7 +5063,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Application.System||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -4837,7 +5077,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Application.System||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -4851,7 +5091,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Application.System||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -4865,7 +5105,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Application.System||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -4879,7 +5119,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Application.System||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|ProjectKey|String||||
@@ -4897,7 +5137,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Activity||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -4911,7 +5151,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Activity||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -4925,7 +5165,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Activity||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -4939,7 +5179,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Activity||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -4953,7 +5193,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Activity||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -4967,7 +5207,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Activity||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -4981,7 +5221,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Activity||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|ProjectKey|String||||
@@ -4999,7 +5239,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Actor||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5013,7 +5253,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Actor||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5027,7 +5267,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Actor||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5041,7 +5281,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Actor||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5055,7 +5295,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Actor||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5069,7 +5309,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Actor||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5083,7 +5323,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Actor||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|ProjectKey|String||||
@@ -5101,7 +5341,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Capability||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5115,7 +5355,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Capability||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5129,7 +5369,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Capability||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5143,7 +5383,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Capability||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5157,7 +5397,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Capability||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5171,7 +5411,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Capability||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5185,7 +5425,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Capability||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|ProjectKey|String||||
@@ -5203,7 +5443,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Control||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5217,7 +5457,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Control||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5231,7 +5471,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Control||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5245,7 +5485,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Control||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5259,7 +5499,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Control||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5273,7 +5513,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Control||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5287,7 +5527,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Control||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|ProjectKey|String||||
@@ -5305,7 +5545,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.CourseOfAction||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5319,7 +5559,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.CourseOfAction||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5333,7 +5573,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.CourseOfAction||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5347,7 +5587,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.CourseOfAction||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5361,7 +5601,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.CourseOfAction||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5375,7 +5615,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.CourseOfAction||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5389,7 +5629,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.CourseOfAction||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|ProjectKey|String||||
@@ -5407,7 +5647,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Driver||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5421,7 +5661,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Driver||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5435,7 +5675,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Driver||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5449,7 +5689,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Driver||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5463,7 +5703,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Driver||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5477,7 +5717,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Driver||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5491,7 +5731,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Driver||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|ProjectKey|String||||
@@ -5509,7 +5749,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Event||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5523,7 +5763,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Event||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5537,7 +5777,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Event||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5551,7 +5791,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Event||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5565,7 +5805,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Event||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5579,7 +5819,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Event||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5593,7 +5833,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Event||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|ProjectKey|String||||
@@ -5611,7 +5851,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Function||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5625,7 +5865,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Function||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5639,7 +5879,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Function||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5653,7 +5893,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Function||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5667,7 +5907,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Function||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5681,7 +5921,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Function||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5695,7 +5935,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Function||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|ProjectKey|String||||
@@ -5713,7 +5953,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Goal||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5727,7 +5967,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Goal||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5741,7 +5981,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Goal||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5755,7 +5995,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Goal||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5769,7 +6009,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Goal||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5783,7 +6023,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Goal||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5797,7 +6037,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Goal||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|ProjectKey|String||||
@@ -5815,7 +6055,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Measure||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5829,7 +6069,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Measure||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5843,7 +6083,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Measure||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5857,7 +6097,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Measure||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5871,7 +6111,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Measure||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5885,7 +6125,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Measure||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5899,7 +6139,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Measure||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|ProjectKey|String||||
@@ -5917,7 +6157,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Objective||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5931,7 +6171,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Objective||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5945,7 +6185,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Objective||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5959,7 +6199,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Objective||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5973,7 +6213,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Objective||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -5987,7 +6227,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Objective||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6001,7 +6241,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Objective||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|ProjectKey|String||||
@@ -6019,7 +6259,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Process||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6033,7 +6273,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Process||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6047,7 +6287,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Process||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6061,7 +6301,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Process||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6075,7 +6315,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Process||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6089,7 +6329,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Process||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6103,7 +6343,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Process||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|ProjectKey|String||||
@@ -6121,7 +6361,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Product||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6135,7 +6375,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Product||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6149,7 +6389,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Product||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6163,7 +6403,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Product||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6177,7 +6417,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Product||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6191,7 +6431,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Product||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6205,7 +6445,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.Product||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|ProjectKey|String||||
@@ -6223,7 +6463,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.ValueStream||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6237,7 +6477,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.ValueStream||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6251,7 +6491,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.ValueStream||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6265,7 +6505,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.ValueStream||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6279,7 +6519,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.ValueStream||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6293,7 +6533,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.ValueStream||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6307,7 +6547,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Business.ValueStream||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|ProjectKey|String||||
@@ -6325,7 +6565,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Data.Entity||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6339,7 +6579,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Data.Entity||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6353,7 +6593,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Data.Entity||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6367,7 +6607,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Data.Entity||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6381,7 +6621,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Data.Entity||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6395,7 +6635,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Data.Entity||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6409,7 +6649,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Data.Entity||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|ProjectKey|String||||
@@ -6427,7 +6667,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Data.Logical||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6441,7 +6681,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Data.Logical||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6455,7 +6695,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Data.Logical||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6469,7 +6709,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Data.Logical||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6483,7 +6723,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Data.Logical||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6497,7 +6737,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Data.Logical||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6511,7 +6751,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Data.Logical||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|ProjectKey|String||||
@@ -6529,7 +6769,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Data.Physical||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6543,7 +6783,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Data.Physical||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6557,7 +6797,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Data.Physical||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6571,7 +6811,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Data.Physical||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6585,7 +6825,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Data.Physical||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6599,7 +6839,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Data.Physical||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6613,7 +6853,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Data.Physical||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|ProjectKey|String||||
@@ -6631,7 +6871,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Service||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6645,7 +6885,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Service||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6659,7 +6899,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Service||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6673,7 +6913,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Service||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6687,7 +6927,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Service||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6701,7 +6941,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Service||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6715,7 +6955,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Service||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|ProjectKey|String||||
@@ -6733,7 +6973,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Host||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6747,7 +6987,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Host||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6761,7 +7001,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Host||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6775,7 +7015,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Host||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6789,7 +7029,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Host||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6803,7 +7043,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Host||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6817,7 +7057,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Host||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|ProjectKey|String||||
@@ -6835,7 +7075,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Instance||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6849,7 +7089,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Instance||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6863,7 +7103,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Instance||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6877,7 +7117,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Instance||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6891,7 +7131,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Instance||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6905,7 +7145,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Instance||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6919,7 +7159,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Instance||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|ProjectKey|String||||
@@ -6937,7 +7177,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Platform||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6951,7 +7191,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Platform||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6965,7 +7205,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Platform||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6979,7 +7219,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Platform||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -6993,7 +7233,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Platform||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -7007,7 +7247,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Platform||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|
@@ -7021,7 +7261,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|owner|Togaf.Technology.Platform||||
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 |+|ProjectKey|String||||

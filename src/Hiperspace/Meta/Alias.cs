@@ -62,5 +62,13 @@ namespace Hiperspace.Meta
                     foreach (var diff in Parameters[c].Difference($"{path}.{Name}", value))
                         yield return diff;
         }
+        public static bool operator ==(Alias left, Alias right)
+        {
+            return left.Equals(right);
+        }
+        public static bool operator !=(Alias left, Alias right)
+        {
+            return !(left.Equals(right));
+        }
     }
 }

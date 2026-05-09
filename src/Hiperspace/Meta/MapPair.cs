@@ -20,7 +20,7 @@ namespace Hiperspace.Meta
 
     [ProtoContract]
 
-    public partial struct MapPair
+    public partial struct MapPair : IEquatable<MapPair>
     {
         internal KeyType _key;
         internal ValueType _value;
@@ -304,6 +304,11 @@ namespace Hiperspace.Meta
         public (int member, int key) ToMap()
         {
             return (Member ?? 0, Element ?? 0);
+        }
+
+        public bool Equals(MapPair other)
+        {
+            return _key.Equals(other._key);
         }
     }
     #endregion

@@ -18,5 +18,10 @@ namespace Hiperspace
         /// <typeparam name="TView"></typeparam>
         /// <returns>Teh Element as athe required type for null if it does not support it</returns>
         public abstract TView? Cast<TView>() where TView : class;
+
+        /// <summary>
+        /// Gets the set space associated with this instance, used for dynamic access to Cubes
+        /// </summary>
+        public ISetSpace? SetSpace { get; }
     }
 }

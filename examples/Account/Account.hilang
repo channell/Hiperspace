@@ -56,11 +56,11 @@ segment Acc.Transaction : Versioned #45
 }
 [
     @CubeExtent
-    Debit           = debit(Amount),
+    Debit           = debit(Amount) #63,
     @CubeExtent
-    Credit          = credit(Amount),
+    Credit          = credit(Amount) #64,
     @CubeMeasure(Aggregate.Average)
-    Amount2         = Amount
+    Amount2         = Amount #65
 ];
 
 "An Account for a customer"
@@ -82,7 +82,7 @@ segment Acc.Account : Versioned #40
 
     /* calculations */
     @CubeMeasure(Aggregate.Sum)
-    CurrentBalance  = deltasum(Transactions.Amount),
+    CurrentBalance  = deltasum(Transactions.Amount) #59,
     Debit           = sum(Transactions.Debit),
     Credit          = sum(Transactions.Credit),
 ];

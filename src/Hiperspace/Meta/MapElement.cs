@@ -20,7 +20,7 @@ namespace Hiperspace.Meta
 
     [ProtoContract]
 
-    public partial struct MapElement
+    public partial struct MapElement : IEquatable<MapElement>
     {
         internal KeyType _key;
         internal ValueType _value;
@@ -308,6 +308,11 @@ namespace Hiperspace.Meta
             var pairs = Map?.Select(i => i.ToMap()).ToArray() ?? Array.Empty<(int member, int key)>();
             Array.Sort(pairs);
             return (Element ?? 0,  pairs);
+        }
+
+        public bool Equals(MapElement other)
+        {
+            return _key.Equals(other._key);
         }
     }
     #endregion

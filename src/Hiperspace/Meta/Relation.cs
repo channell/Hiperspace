@@ -44,5 +44,15 @@ namespace Hiperspace.Meta
             if (!DataType.Equals(other.DataType))
                 yield return (Id, $"{path}.{Name} dataType changed from {DataType} to {other.DataType}");
         }
+
+        public static bool operator ==(Relation left, Relation right)
+        {
+            return left.Equals(right);
+        }
+        public static bool operator !=(Relation left, Relation right)
+        {
+            return !(left.Equals(right));
+        }
+
     }
 }

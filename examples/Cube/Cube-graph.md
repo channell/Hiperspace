@@ -147,6 +147,7 @@ classDiagram
         + Deleted  = false
         + Facts  : Int64
         + CubeName () = cubename(Sector,Country,Product,Portfolio)
+        + CubeDimensions () = cubedimensions(Sector,Country,Product,Portfolio)
         + Avg () = (Avg_Sum / Facts)
     }
     Cube.Contract_Cube --> Cube.Sector
@@ -161,6 +162,36 @@ classDiagram
     Cube.Contract_Cube ..|> Cube.ProductContractEdge
     Cube.Contract_Cube ..|> Cube.ContractPortfolioEdge
     Cube.Contract_Cube ..|> Cube.PortfolioContractEdge
+    class Cube.Contract_Fact {
+        # ContextLabel  : String
+        # Sector  : Cube.Sector
+        # Country  : Cube.Country
+        # Product  : Cube.Product
+        # Portfolio  : Cube.Portfolio
+        + Value  : Decimal
+        + StdDev_Vector  : Vector
+        + Percentile_Vector  : Vector
+        + Avg_Sum  : Decimal
+        + Deleted  = false
+        + Facts  : Int64
+        + CubeName () = cubename(Sector,Country,Product,Portfolio)
+        + CubeDimensions () = cubedimensions(Sector,Country,Product,Portfolio)
+        + Avg () = (Avg_Sum / Facts)
+        + StdDev () = stddev(StdDev_Vector)
+        + Percentile () = percentile(Percentile_Vector,95)
+    }
+    Cube.Contract_Fact --> Cube.Sector
+    Cube.Contract_Fact --> Cube.Country
+    Cube.Contract_Fact --> Cube.Product
+    Cube.Contract_Fact --> Cube.Portfolio
+    Cube.Contract_Fact ..|> Cube.ContractSectorEdge
+    Cube.Contract_Fact ..|> Cube.SectorContractEdge
+    Cube.Contract_Fact ..|> Cube.ContractCountryEdge
+    Cube.Contract_Fact ..|> Cube.CountryContractEdge
+    Cube.Contract_Fact ..|> Cube.ContractProductEdge
+    Cube.Contract_Fact ..|> Cube.ProductContractEdge
+    Cube.Contract_Fact ..|> Cube.ContractPortfolioEdge
+    Cube.Contract_Fact ..|> Cube.PortfolioContractEdge
     class Banking.Trade {
         # Id  : String
         + Book  : Banking.Book
@@ -457,7 +488,32 @@ classDiagram
 ||Deleted|Some(Boolean)|The cube fact has been deleted||false|
 |+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
 ||CubeName|Some(String)|||cubename(Sector,Country,Product,Portfolio)|
+||CubeDimensions|Some(Int32)|||cubedimensions(Sector,Country,Product,Portfolio)|
 ||Avg|Some(Decimal)||CubeMeasure(Aggregate?.Average)|(Avg_Sum / Facts)|
+
+---
+
+## EntityImpl Cube.Contract_Fact
+
+
+| |Name|Type|*|@|=|
+|-|-|-|-|-|-|
+|#|ContextLabel|String||||
+|#|Sector|Cube.Sector||CubeDimensionReference()||
+|#|Country|Cube.Country||CubeDimensionReference()||
+|#|Product|Cube.Product||CubeDimensionReference()||
+|#|Portfolio|Cube.Portfolio||CubeDimensionReference()||
+|+|Value|Decimal||CubeMeasure(Aggregate?.Sum)||
+|+|StdDev_Vector|Vector||CubeMeasure(Aggregate?.StdVector)||
+|+|Percentile_Vector|Vector||CubeMeasure(Aggregate?.PerVector, 95)||
+|+|Avg_Sum|Decimal||CubeMeasure(Aggregate?.AverageTotal)||
+||Deleted|Some(Boolean)|The cube fact has been deleted||false|
+|+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
+||CubeName|Some(String)|||cubename(Sector,Country,Product,Portfolio)|
+||CubeDimensions|Some(Int32)|||cubedimensions(Sector,Country,Product,Portfolio)|
+||Avg|Some(Decimal)||CubeMeasure(Aggregate?.Average)|(Avg_Sum / Facts)|
+||StdDev|Some(Double)||CubeMeasure(Aggregate?.StdDev)|stddev(StdDev_Vector)|
+||Percentile|Some(Double)||CubeMeasure(Aggregate?.Percentile)|percentile(Percentile_Vector,95)|
 
 ---
 
@@ -467,7 +523,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|String||||
-|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 145), AlternateIndex("Banking.FI.Trade", 143), AlternateIndex("Banking.FX.Trade", 144)||
+|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 145), AlternateIndex("Banking.FI.Trade", 143), AlternateIndex("Banking.FX.Trade", 144), AlternateIndex("Banking.Trade", 58)||
 |+|Value|Decimal||CubeMeasure(Aggregate?.Sum)||
 
 ---
@@ -478,7 +534,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|String||||
-|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 145), AlternateIndex("Banking.FI.Trade", 143), AlternateIndex("Banking.FX.Trade", 144)||
+|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 145), AlternateIndex("Banking.FI.Trade", 143), AlternateIndex("Banking.FX.Trade", 144), AlternateIndex("Banking.Trade", 58)||
 |+|Value|Decimal||CubeMeasure(Aggregate?.Sum)||
 
 ---
@@ -489,7 +545,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|String||||
-|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 145), AlternateIndex("Banking.FI.Trade", 143), AlternateIndex("Banking.FX.Trade", 144)||
+|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 145), AlternateIndex("Banking.FI.Trade", 143), AlternateIndex("Banking.FX.Trade", 144), AlternateIndex("Banking.Trade", 58)||
 |+|Value|Decimal||CubeMeasure(Aggregate?.Sum)||
 
 ---
@@ -500,7 +556,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|String||||
-|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 145), AlternateIndex("Banking.FI.Trade", 143), AlternateIndex("Banking.FX.Trade", 144)||
+|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 145), AlternateIndex("Banking.FI.Trade", 143), AlternateIndex("Banking.FX.Trade", 144), AlternateIndex("Banking.Trade", 58)||
 |+|Value|Decimal||CubeMeasure(Aggregate?.Sum)||
 
 ---

@@ -804,7 +804,7 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|Guid||||
-|+|Name|String||||
+|+|Name|String||AlternateIndex("Togaf.Data.Usage", 1757), AlternateIndex("Togaf.Organization", 19), AlternateIndex("Togaf.Service", 1328)||
 |+|Description|String||||
 ||Deleted|Some(Boolean)|||false|
 ||ValidBase|Some(Boolean)|||(((Id == null) \|\| (Name == null)) ? false : true)|

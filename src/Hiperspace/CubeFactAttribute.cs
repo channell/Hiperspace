@@ -30,10 +30,38 @@ namespace Hiperspace
         {
         }
     }
+    /// <summary>
+    /// A base Fact stream calculated in Hiperspace.DB
+    /// </summary>
+    public interface ICubeFactBase
+    {
+        /// <summary>
+        /// Set of dimensions for this Cube fact
+        /// </summary>
+        public ISet<ICubeDimension> Dimensions { get; }
+
+        /// <summary>
+        /// Dictionary of measures for this Cube fact
+        /// </summary>
+        public IDictionary<string, (Aggregate, object)> Measures { get; }
+
+        /// <summary>
+        /// Gets the number of underlying facts associated with this cube node.
+        /// </summary>
+        public Int64? Facts { get; }
+
+        /// <summary>
+        /// The Skey of the underlying element
+        /// </summary>
+        public string SKey { get; }
+    }
 
     /// <summary>
     /// An element that provides the CubeFactAttribute 
     /// </summary>
+    /// <remarks>
+    /// TODO Make ICubeFact a specialization of ICubeFactBase in the next version
+    /// </remarks>
     public interface ICubeFact
     {
         /// <summary>

@@ -300,6 +300,27 @@ namespace Hiperspace
         }
 
         /// <summary>
+        /// Return the number of dimensions for this Cube, to indicate the level of the summary
+        /// </summary>
+        /// <param name="dimensions">the cube's collection of dimensions</param>
+        /// <returns>count</returns>
+        /// <remarks>
+        /// 1 : a top level summary that describes the the node at the source of the edge
+        /// 2 : Intersection between two nodes, and the summary of the connection
+        /// # : etc
+        /// </remarks>
+        public static int CubeDimensions (params ICubeDimension?[]? dimensions)
+        {
+            if (dimensions is null || dimensions?.Length == 0) return 0;
+            int i = 0;
+            for (int c = 0; c < dimensions!.Length; c++)
+            {
+                if (dimensions[c] is not null) i++;
+            }
+            return i;
+        }
+
+        /// <summary>
         /// Retrieves the context label associated with the SubSpace of the specified element.
         /// </summary>
         /// <typeparam name="T">The type of the element, which must inherit from <see cref="Element{T}"/></typeparam>

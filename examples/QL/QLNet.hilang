@@ -85,9 +85,9 @@ entity QL.FixedRate       : QL.Values.FixedRateBond = QL.FixedRateBond() #55  /*
     _Yield          = makeCurve (Effective, Rate, _DayCount),
     _Engine         = makeEngine (Engine, _Yield),
     @Once           /* Calculated once, and value cached for use by other functions */
-    Bond            = makeFixedRateBond(SettlementDays, FaceAmount, _Schedule, Coupons, _DayCount),
+    Bond            = makeFixedRateBond(SettlementDays, FaceAmount, _Schedule, Coupons, _DayCount) #72,
     @CubeMeasure(Aggregate.Sum)
-    NPV             = NPV(Bond),
+    NPV             = NPV(Bond) #73,
     @CubeMeasure(Aggregate.Sum)
-    CASH            = CASH(Bond)
+    CASH            = CASH(Bond) #74
 ];

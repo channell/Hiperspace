@@ -21,6 +21,7 @@ namespace Hiperspace
         public abstract Result<TEntity> Bind(SubSpace subSpace);
         public abstract void Unbind(SubSpace subSpace);
         public SetSpace<TEntity>? SetSpace { get; protected set; }
+        ISetSpace? IElement.SetSpace => SetSpace;
 
         public abstract int CompareTo(TEntity? other);
 
@@ -41,12 +42,12 @@ namespace Hiperspace
         /// <summary>
         /// Cast helper for F# code
         /// </summary>
-        /// <typeparam name="TView">any view tyope that may be projected from the element</typeparam>
+        /// <typeparam name="TView">any view type that may be projected from the element</typeparam>
         /// <param name="view">optional target value to drive cast</param>
         /// <returns>the object as the view type or null</returns>
         public TView? As<TView>(TView? view = null) where TView : Element<TView>, new()
         {
-            return this as TView;
+            return this.Cast<TView>();
         }
         /// <summary>
         /// Helper function for KeyRef<> to bind the key to a blank entity

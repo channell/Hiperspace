@@ -77,13 +77,13 @@ entity Cube.Contract : Versioned
 	[
 		Market = Instrument.Market, 
 		@CubeMeasure(Aggregate.Sum) 
-		Value = Quantity * Market,
+		Value = Quantity * Market #91,
 		@CubeMeasure(Aggregate.StdDev) 
-		StdDev = Value,
+		StdDev = Value #92,
 		@CubeMeasure(Aggregate.Percentile, 95) 
-		Percentile = Value,
+		Percentile = Value #93,
 		@CubeMeasure(Aggregate.Average) 
-		Avg = Value
+		Avg = Value #94
 	];
 
 view Valued : Versioned #3
@@ -96,7 +96,10 @@ type Banking.TradeBase
 	Id : String
 ) 
 {
-	@AlternateIndex("Banking.EQ.Trade", 145) ,AlternateIndex("Banking.FI.Trade", 143) ,AlternateIndex("Banking.FX.Trade", 144) Book : Banking.Book,
+	@AlternateIndex("Banking.EQ.Trade", 145) 
+	,AlternateIndex("Banking.FI.Trade", 143) 
+	,AlternateIndex("Banking.FX.Trade", 144) 
+	,AlternateIndex("Banking.Trade", 58) Book : Banking.Book,
 	@CubeMeasure(Aggregate.Sum)
 	Value : Decimal
 };
