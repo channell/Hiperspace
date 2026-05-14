@@ -205,77 +205,60 @@ namespace Hiperspace
 
         public void Add(TEntity item)
         {
-            bool taken = false;
-            _lock.Enter(ref taken);
-            if (taken)
+            if (SetSpace is not null)
             {
-                try
+                _lock.Scoped(() =>
                 {
-                    _new = false;
-                    if (SetSpace is not null)
+                    if (!Cached.Add(item))
                     {
-                        _binder(item);
-                        SetSpace.Bind(item, true, true);
-                        if (!Cached.Add(item))
-                        {
-                            Cached.Remove(item);
-                            Cached.Add(item);
-                        }
+                        Cached.Remove(item);
+                        Cached.Add(item);
                     }
-                    else
-                    {
-                        _binder(item);
-                        if (!Cached.Add(item))
-                        {
-                            Cached.Remove(item);
-                            Cached.Add(item);
-                        }
-                    }
-                }
-                finally
-                {
-                    _lock.Exit();
-                }
-            }
-            else
-                throw new LockRecursionException();
+                });
         }
+        else
+            {
+                _binder(item);
+                _lock.Scoped(() =>
+                {
+                    if (!Cached.Add(item))
+                    {
+                        Cached.Remove(item);
+                        Cached.Add(item);
+                    }
+                });
+            }
+        }
+
         public async Task AddAsync(TEntity item)
         {
-            bool taken = false;
-            _lock.Enter(ref taken);
-            if (taken)
+            _new = false;
+            if (SetSpace is not null)
             {
-                try
+                _binder(item);
+                await SetSpace.BindAsync(item, true, true);
+                _lock.Scoped(() =>
                 {
-                    _new = false;
-                    if (SetSpace is not null)
+                    if (!Cached.Add(item))
                     {
-                        _binder(item);
-                        await SetSpace.BindAsync(item, true, true);
-                        if (!Cached.Add(item))
-                        {
-                            Cached.Remove(item);
-                            Cached.Add(item);
-                        }
+                        Cached.Remove(item);
+                        Cached.Add(item);
                     }
-                    else
-                    {
-                        _binder(item);
-                        if (!Cached.Add(item))
-                        {
-                            Cached.Remove(item);
-                            Cached.Add(item);
-                        }
-                    }
-                }
-                finally
-                {
-                    _lock.Exit();
-                }
+                });
             }
             else
-                throw new LockRecursionException();
+            {
+                _lock.Scoped(() =>
+                {
+                    _binder(item);
+
+                    if (!Cached.Add(item))
+                    {
+                        Cached.Remove(item);
+                        Cached.Add(item);
+                    }
+                });
+            }
         }
 
         public bool IsReadOnly => Lazy().IsReadOnly;
@@ -295,28 +278,17 @@ namespace Hiperspace
 
         bool ISet<TEntity>.Add(TEntity item)
         {
-            bool taken = false;
-            _lock.Enter(ref taken);
-            if (taken)
+            bool added = false;
+            _lock.Scoped(() =>
             {
-                bool added;
-                try
+                added = Cached.Add(item);
+                if (!added)
                 {
+                    Cached.Remove(item);
                     added = Cached.Add(item);
-                    if (!added)
-                    {
-                        Cached.Remove(item);
-                        added = Cached.Add(item);
-                    }
                 }
-                finally
-                {
-                    _lock.Exit();
-                }
-                return added;
-            }
-            else
-                throw new LockRecursionException();
+            });
+            return added;
         }
 
         public void ExceptWith(IEnumerable<TEntity> other)
