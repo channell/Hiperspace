@@ -1,174 +1,6 @@
 # TOGAF-graph
 ```mermaid
 classDiagram
-    class Togaf.Application.SystemComplexityEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Application.SystemCostEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Application.SystemIncomeEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Business.CapabilityComplexityEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Business.CapabilityCostEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Business.CapabilityIncomeEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Business.EventComplexityEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Business.EventCostEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Business.EventIncomeEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Business.FunctionComplexityEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Business.FunctionCostEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Business.FunctionIncomeEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Business.ProcessComplexityEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Business.ProcessCostEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Business.ProcessIncomeEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Business.ProductComplexityEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Business.ProductCostEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Business.ProductIncomeEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.ComplexityCapabilityEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.ComplexityEventEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.ComplexityFunctionEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.ComplexityHostEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.ComplexityOrganizationEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.ComplexityPlatformEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.ComplexityProcessEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.ComplexityProductEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.ComplexityServiceEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.ComplexitySystemEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
     class Togaf.Edges2 {
         # From  : Node
         # To  : Node
@@ -205,198 +37,6 @@ classDiagram
     }
     Togaf.Edges5 ..|> Togaf.Edge_
     Togaf.Edges5 ..|> Togaf.Edges
-    class Togaf.Financial.CostCapabilityEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Financial.CostEventEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Financial.CostFunctionEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Financial.CostHostEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Financial.CostOrganizationEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Financial.CostPlatformEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Financial.CostProcessEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Financial.CostProductEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Financial.CostServiceEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Financial.CostSystemEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Financial.IncomeCapabilityEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Financial.IncomeEventEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Financial.IncomeFunctionEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Financial.IncomeHostEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Financial.IncomeOrganizationEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Financial.IncomePlatformEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Financial.IncomeProcessEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Financial.IncomeProductEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Financial.IncomeServiceEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Financial.IncomeSystemEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.OrganizationComplexityEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.OrganizationCostEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.OrganizationIncomeEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.ServiceComplexityEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.ServiceCostEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.ServiceIncomeEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Technology.HostComplexityEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Technology.HostCostEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Technology.HostIncomeEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Technology.PlatformComplexityEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Technology.PlatformCostEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Togaf.Technology.PlatformIncomeEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
     class Togaf.Has.Activity {
         # owner  : Togaf.Business.Actor
         # A  : Togaf.Business.Activity
@@ -430,6 +70,7 @@ classDiagram
         + Facts  : Int64
         + CubeName () = cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
         + CubeDimensions () = cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
+        + DrillDowns() () = drilldownEdges(this)
     }
     Togaf.Financial.Cost_Cube --> Togaf.Technology.Host
     Togaf.Financial.Cost_Cube --> Togaf.Business.Event
@@ -441,26 +82,6 @@ classDiagram
     Togaf.Financial.Cost_Cube --> Togaf.Business.Function
     Togaf.Financial.Cost_Cube --> Togaf.Business.Capability
     Togaf.Financial.Cost_Cube --> Togaf.Organization
-    Togaf.Financial.Cost_Cube ..|> Togaf.Financial.CostHostEdge
-    Togaf.Financial.Cost_Cube ..|> Togaf.Technology.HostCostEdge
-    Togaf.Financial.Cost_Cube ..|> Togaf.Financial.CostPlatformEdge
-    Togaf.Financial.Cost_Cube ..|> Togaf.Technology.PlatformCostEdge
-    Togaf.Financial.Cost_Cube ..|> Togaf.Financial.CostOrganizationEdge
-    Togaf.Financial.Cost_Cube ..|> Togaf.OrganizationCostEdge
-    Togaf.Financial.Cost_Cube ..|> Togaf.Financial.CostServiceEdge
-    Togaf.Financial.Cost_Cube ..|> Togaf.ServiceCostEdge
-    Togaf.Financial.Cost_Cube ..|> Togaf.Financial.CostFunctionEdge
-    Togaf.Financial.Cost_Cube ..|> Togaf.Business.FunctionCostEdge
-    Togaf.Financial.Cost_Cube ..|> Togaf.Financial.CostProcessEdge
-    Togaf.Financial.Cost_Cube ..|> Togaf.Business.ProcessCostEdge
-    Togaf.Financial.Cost_Cube ..|> Togaf.Financial.CostProductEdge
-    Togaf.Financial.Cost_Cube ..|> Togaf.Business.ProductCostEdge
-    Togaf.Financial.Cost_Cube ..|> Togaf.Financial.CostCapabilityEdge
-    Togaf.Financial.Cost_Cube ..|> Togaf.Business.CapabilityCostEdge
-    Togaf.Financial.Cost_Cube ..|> Togaf.Financial.CostEventEdge
-    Togaf.Financial.Cost_Cube ..|> Togaf.Business.EventCostEdge
-    Togaf.Financial.Cost_Cube ..|> Togaf.Financial.CostSystemEdge
-    Togaf.Financial.Cost_Cube ..|> Togaf.Application.SystemCostEdge
     class Togaf.Financial.Cost_Fact {
         # ContextLabel  : String
         # Host  : Togaf.Technology.Host
@@ -481,6 +102,7 @@ classDiagram
         + Facts  : Int64
         + CubeName () = cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
         + CubeDimensions () = cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
+        + DrillDowns() () = drilldownEdges(this)
     }
     Togaf.Financial.Cost_Fact --> Togaf.Technology.Host
     Togaf.Financial.Cost_Fact --> Togaf.Business.Event
@@ -492,26 +114,6 @@ classDiagram
     Togaf.Financial.Cost_Fact --> Togaf.Business.Function
     Togaf.Financial.Cost_Fact --> Togaf.Business.Capability
     Togaf.Financial.Cost_Fact --> Togaf.Organization
-    Togaf.Financial.Cost_Fact ..|> Togaf.Financial.CostHostEdge
-    Togaf.Financial.Cost_Fact ..|> Togaf.Technology.HostCostEdge
-    Togaf.Financial.Cost_Fact ..|> Togaf.Financial.CostPlatformEdge
-    Togaf.Financial.Cost_Fact ..|> Togaf.Technology.PlatformCostEdge
-    Togaf.Financial.Cost_Fact ..|> Togaf.Financial.CostOrganizationEdge
-    Togaf.Financial.Cost_Fact ..|> Togaf.OrganizationCostEdge
-    Togaf.Financial.Cost_Fact ..|> Togaf.Financial.CostServiceEdge
-    Togaf.Financial.Cost_Fact ..|> Togaf.ServiceCostEdge
-    Togaf.Financial.Cost_Fact ..|> Togaf.Financial.CostFunctionEdge
-    Togaf.Financial.Cost_Fact ..|> Togaf.Business.FunctionCostEdge
-    Togaf.Financial.Cost_Fact ..|> Togaf.Financial.CostProcessEdge
-    Togaf.Financial.Cost_Fact ..|> Togaf.Business.ProcessCostEdge
-    Togaf.Financial.Cost_Fact ..|> Togaf.Financial.CostProductEdge
-    Togaf.Financial.Cost_Fact ..|> Togaf.Business.ProductCostEdge
-    Togaf.Financial.Cost_Fact ..|> Togaf.Financial.CostCapabilityEdge
-    Togaf.Financial.Cost_Fact ..|> Togaf.Business.CapabilityCostEdge
-    Togaf.Financial.Cost_Fact ..|> Togaf.Financial.CostEventEdge
-    Togaf.Financial.Cost_Fact ..|> Togaf.Business.EventCostEdge
-    Togaf.Financial.Cost_Fact ..|> Togaf.Financial.CostSystemEdge
-    Togaf.Financial.Cost_Fact ..|> Togaf.Application.SystemCostEdge
     class Togaf.Financial.Income_Cube {
         # CubeSlice  : String
         # ContextLabel  : String
@@ -533,6 +135,7 @@ classDiagram
         + Facts  : Int64
         + CubeName () = cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
         + CubeDimensions () = cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
+        + DrillDowns() () = drilldownEdges(this)
     }
     Togaf.Financial.Income_Cube --> Togaf.Technology.Host
     Togaf.Financial.Income_Cube --> Togaf.Business.Event
@@ -544,26 +147,6 @@ classDiagram
     Togaf.Financial.Income_Cube --> Togaf.Business.Function
     Togaf.Financial.Income_Cube --> Togaf.Business.Capability
     Togaf.Financial.Income_Cube --> Togaf.Organization
-    Togaf.Financial.Income_Cube ..|> Togaf.Financial.IncomeHostEdge
-    Togaf.Financial.Income_Cube ..|> Togaf.Technology.HostIncomeEdge
-    Togaf.Financial.Income_Cube ..|> Togaf.Financial.IncomePlatformEdge
-    Togaf.Financial.Income_Cube ..|> Togaf.Technology.PlatformIncomeEdge
-    Togaf.Financial.Income_Cube ..|> Togaf.Financial.IncomeOrganizationEdge
-    Togaf.Financial.Income_Cube ..|> Togaf.OrganizationIncomeEdge
-    Togaf.Financial.Income_Cube ..|> Togaf.Financial.IncomeServiceEdge
-    Togaf.Financial.Income_Cube ..|> Togaf.ServiceIncomeEdge
-    Togaf.Financial.Income_Cube ..|> Togaf.Financial.IncomeFunctionEdge
-    Togaf.Financial.Income_Cube ..|> Togaf.Business.FunctionIncomeEdge
-    Togaf.Financial.Income_Cube ..|> Togaf.Financial.IncomeProcessEdge
-    Togaf.Financial.Income_Cube ..|> Togaf.Business.ProcessIncomeEdge
-    Togaf.Financial.Income_Cube ..|> Togaf.Financial.IncomeProductEdge
-    Togaf.Financial.Income_Cube ..|> Togaf.Business.ProductIncomeEdge
-    Togaf.Financial.Income_Cube ..|> Togaf.Financial.IncomeCapabilityEdge
-    Togaf.Financial.Income_Cube ..|> Togaf.Business.CapabilityIncomeEdge
-    Togaf.Financial.Income_Cube ..|> Togaf.Financial.IncomeEventEdge
-    Togaf.Financial.Income_Cube ..|> Togaf.Business.EventIncomeEdge
-    Togaf.Financial.Income_Cube ..|> Togaf.Financial.IncomeSystemEdge
-    Togaf.Financial.Income_Cube ..|> Togaf.Application.SystemIncomeEdge
     class Togaf.Financial.Income_Fact {
         # ContextLabel  : String
         # Host  : Togaf.Technology.Host
@@ -584,6 +167,7 @@ classDiagram
         + Facts  : Int64
         + CubeName () = cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
         + CubeDimensions () = cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
+        + DrillDowns() () = drilldownEdges(this)
     }
     Togaf.Financial.Income_Fact --> Togaf.Technology.Host
     Togaf.Financial.Income_Fact --> Togaf.Business.Event
@@ -595,26 +179,6 @@ classDiagram
     Togaf.Financial.Income_Fact --> Togaf.Business.Function
     Togaf.Financial.Income_Fact --> Togaf.Business.Capability
     Togaf.Financial.Income_Fact --> Togaf.Organization
-    Togaf.Financial.Income_Fact ..|> Togaf.Financial.IncomeHostEdge
-    Togaf.Financial.Income_Fact ..|> Togaf.Technology.HostIncomeEdge
-    Togaf.Financial.Income_Fact ..|> Togaf.Financial.IncomePlatformEdge
-    Togaf.Financial.Income_Fact ..|> Togaf.Technology.PlatformIncomeEdge
-    Togaf.Financial.Income_Fact ..|> Togaf.Financial.IncomeOrganizationEdge
-    Togaf.Financial.Income_Fact ..|> Togaf.OrganizationIncomeEdge
-    Togaf.Financial.Income_Fact ..|> Togaf.Financial.IncomeServiceEdge
-    Togaf.Financial.Income_Fact ..|> Togaf.ServiceIncomeEdge
-    Togaf.Financial.Income_Fact ..|> Togaf.Financial.IncomeFunctionEdge
-    Togaf.Financial.Income_Fact ..|> Togaf.Business.FunctionIncomeEdge
-    Togaf.Financial.Income_Fact ..|> Togaf.Financial.IncomeProcessEdge
-    Togaf.Financial.Income_Fact ..|> Togaf.Business.ProcessIncomeEdge
-    Togaf.Financial.Income_Fact ..|> Togaf.Financial.IncomeProductEdge
-    Togaf.Financial.Income_Fact ..|> Togaf.Business.ProductIncomeEdge
-    Togaf.Financial.Income_Fact ..|> Togaf.Financial.IncomeCapabilityEdge
-    Togaf.Financial.Income_Fact ..|> Togaf.Business.CapabilityIncomeEdge
-    Togaf.Financial.Income_Fact ..|> Togaf.Financial.IncomeEventEdge
-    Togaf.Financial.Income_Fact ..|> Togaf.Business.EventIncomeEdge
-    Togaf.Financial.Income_Fact ..|> Togaf.Financial.IncomeSystemEdge
-    Togaf.Financial.Income_Fact ..|> Togaf.Application.SystemIncomeEdge
     class Togaf.Complexity_Cube {
         # CubeSlice  : String
         # ContextLabel  : String
@@ -635,6 +199,7 @@ classDiagram
         + Facts  : Int64
         + CubeName () = cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
         + CubeDimensions () = cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
+        + DrillDowns() () = drilldownEdges(this)
         + M () = ((E - N) + (2 * P))
     }
     Togaf.Complexity_Cube --> Togaf.Technology.Host
@@ -647,26 +212,6 @@ classDiagram
     Togaf.Complexity_Cube --> Togaf.Business.Function
     Togaf.Complexity_Cube --> Togaf.Business.Capability
     Togaf.Complexity_Cube --> Togaf.Organization
-    Togaf.Complexity_Cube ..|> Togaf.ComplexityHostEdge
-    Togaf.Complexity_Cube ..|> Togaf.Technology.HostComplexityEdge
-    Togaf.Complexity_Cube ..|> Togaf.ComplexityPlatformEdge
-    Togaf.Complexity_Cube ..|> Togaf.Technology.PlatformComplexityEdge
-    Togaf.Complexity_Cube ..|> Togaf.ComplexityOrganizationEdge
-    Togaf.Complexity_Cube ..|> Togaf.OrganizationComplexityEdge
-    Togaf.Complexity_Cube ..|> Togaf.ComplexityServiceEdge
-    Togaf.Complexity_Cube ..|> Togaf.ServiceComplexityEdge
-    Togaf.Complexity_Cube ..|> Togaf.ComplexityFunctionEdge
-    Togaf.Complexity_Cube ..|> Togaf.Business.FunctionComplexityEdge
-    Togaf.Complexity_Cube ..|> Togaf.ComplexityProcessEdge
-    Togaf.Complexity_Cube ..|> Togaf.Business.ProcessComplexityEdge
-    Togaf.Complexity_Cube ..|> Togaf.ComplexityProductEdge
-    Togaf.Complexity_Cube ..|> Togaf.Business.ProductComplexityEdge
-    Togaf.Complexity_Cube ..|> Togaf.ComplexityCapabilityEdge
-    Togaf.Complexity_Cube ..|> Togaf.Business.CapabilityComplexityEdge
-    Togaf.Complexity_Cube ..|> Togaf.ComplexityEventEdge
-    Togaf.Complexity_Cube ..|> Togaf.Business.EventComplexityEdge
-    Togaf.Complexity_Cube ..|> Togaf.ComplexitySystemEdge
-    Togaf.Complexity_Cube ..|> Togaf.Application.SystemComplexityEdge
     class Togaf.Complexity_Fact {
         # ContextLabel  : String
         # Host  : Togaf.Technology.Host
@@ -686,6 +231,7 @@ classDiagram
         + Facts  : Int64
         + CubeName () = cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
         + CubeDimensions () = cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
+        + DrillDowns() () = drilldownEdges(this)
         + M () = ((E - N) + (2 * P))
     }
     Togaf.Complexity_Fact --> Togaf.Technology.Host
@@ -698,26 +244,6 @@ classDiagram
     Togaf.Complexity_Fact --> Togaf.Business.Function
     Togaf.Complexity_Fact --> Togaf.Business.Capability
     Togaf.Complexity_Fact --> Togaf.Organization
-    Togaf.Complexity_Fact ..|> Togaf.ComplexityHostEdge
-    Togaf.Complexity_Fact ..|> Togaf.Technology.HostComplexityEdge
-    Togaf.Complexity_Fact ..|> Togaf.ComplexityPlatformEdge
-    Togaf.Complexity_Fact ..|> Togaf.Technology.PlatformComplexityEdge
-    Togaf.Complexity_Fact ..|> Togaf.ComplexityOrganizationEdge
-    Togaf.Complexity_Fact ..|> Togaf.OrganizationComplexityEdge
-    Togaf.Complexity_Fact ..|> Togaf.ComplexityServiceEdge
-    Togaf.Complexity_Fact ..|> Togaf.ServiceComplexityEdge
-    Togaf.Complexity_Fact ..|> Togaf.ComplexityFunctionEdge
-    Togaf.Complexity_Fact ..|> Togaf.Business.FunctionComplexityEdge
-    Togaf.Complexity_Fact ..|> Togaf.ComplexityProcessEdge
-    Togaf.Complexity_Fact ..|> Togaf.Business.ProcessComplexityEdge
-    Togaf.Complexity_Fact ..|> Togaf.ComplexityProductEdge
-    Togaf.Complexity_Fact ..|> Togaf.Business.ProductComplexityEdge
-    Togaf.Complexity_Fact ..|> Togaf.ComplexityCapabilityEdge
-    Togaf.Complexity_Fact ..|> Togaf.Business.CapabilityComplexityEdge
-    Togaf.Complexity_Fact ..|> Togaf.ComplexityEventEdge
-    Togaf.Complexity_Fact ..|> Togaf.Business.EventComplexityEdge
-    Togaf.Complexity_Fact ..|> Togaf.ComplexitySystemEdge
-    Togaf.Complexity_Fact ..|> Togaf.Application.SystemComplexityEdge
     class Togaf.Business.Capability {
         # Id  : Guid
         + Name  : String
@@ -3073,342 +2599,6 @@ classDiagram
 
 ---
 
-## View Togaf.Application.SystemComplexityEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Application.SystemCostEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Application.SystemIncomeEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Business.CapabilityComplexityEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Business.CapabilityCostEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Business.CapabilityIncomeEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Business.EventComplexityEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Business.EventCostEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Business.EventIncomeEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Business.FunctionComplexityEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Business.FunctionCostEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Business.FunctionIncomeEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Business.ProcessComplexityEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Business.ProcessCostEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Business.ProcessIncomeEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Business.ProductComplexityEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Business.ProductCostEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Business.ProductIncomeEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.ComplexityCapabilityEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.ComplexityEventEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.ComplexityFunctionEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.ComplexityHostEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.ComplexityOrganizationEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.ComplexityPlatformEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.ComplexityProcessEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.ComplexityProductEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.ComplexityServiceEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.ComplexitySystemEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
 ## View Togaf.Edges2
 
 
@@ -3461,390 +2651,6 @@ classDiagram
 
 ---
 
-## View Togaf.Financial.CostCapabilityEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Financial.CostEventEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Financial.CostFunctionEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Financial.CostHostEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Financial.CostOrganizationEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Financial.CostPlatformEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Financial.CostProcessEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Financial.CostProductEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Financial.CostServiceEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Financial.CostSystemEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Financial.IncomeCapabilityEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Financial.IncomeEventEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Financial.IncomeFunctionEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Financial.IncomeHostEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Financial.IncomeOrganizationEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Financial.IncomePlatformEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Financial.IncomeProcessEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Financial.IncomeProductEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Financial.IncomeServiceEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Financial.IncomeSystemEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.OrganizationComplexityEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.OrganizationCostEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.OrganizationIncomeEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.ServiceComplexityEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.ServiceCostEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.ServiceIncomeEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Technology.HostComplexityEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Technology.HostCostEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Technology.HostIncomeEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Technology.PlatformComplexityEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Technology.PlatformCostEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Togaf.Technology.PlatformIncomeEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
 ## SegmentImpl Togaf.Has.Activity
 
 
@@ -3892,6 +2698,7 @@ classDiagram
 |+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
 ||CubeName|Some(String)|||cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
 ||CubeDimensions|Some(Int32)|||cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
+||DrillDowns()|Some(HashSet<Edge>)|Drilldown to Edges||drilldownEdges(this)|
 
 ---
 
@@ -3919,6 +2726,7 @@ classDiagram
 |+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
 ||CubeName|Some(String)|||cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
 ||CubeDimensions|Some(Int32)|||cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
+||DrillDowns()|Some(HashSet<Edge>)|Drilldown to Edges||drilldownEdges(this)|
 
 ---
 
@@ -3947,6 +2755,7 @@ classDiagram
 |+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
 ||CubeName|Some(String)|||cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
 ||CubeDimensions|Some(Int32)|||cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
+||DrillDowns()|Some(HashSet<Edge>)|Drilldown to Edges||drilldownEdges(this)|
 
 ---
 
@@ -3974,6 +2783,7 @@ classDiagram
 |+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
 ||CubeName|Some(String)|||cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
 ||CubeDimensions|Some(Int32)|||cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
+||DrillDowns()|Some(HashSet<Edge>)|Drilldown to Edges||drilldownEdges(this)|
 
 ---
 
@@ -4001,6 +2811,7 @@ classDiagram
 |+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
 ||CubeName|Some(String)|||cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
 ||CubeDimensions|Some(Int32)|||cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
+||DrillDowns()|Some(HashSet<Edge>)|Drilldown to Edges||drilldownEdges(this)|
 ||M|Some(Decimal)||CubeExtent()|((E - N) + (2 * P))|
 
 ---
@@ -4028,6 +2839,7 @@ classDiagram
 |+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
 ||CubeName|Some(String)|||cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
 ||CubeDimensions|Some(Int32)|||cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
+||DrillDowns()|Some(HashSet<Edge>)|Drilldown to Edges||drilldownEdges(this)|
 ||M|Some(Decimal)||CubeExtent()|((E - N) + (2 * P))|
 
 ---

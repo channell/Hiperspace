@@ -67,6 +67,7 @@ classDiagram
         + Facts  : Int64
         + CubeName () = cubename(Sector,Account,Customer)
         + CubeDimensions () = cubedimensions(Sector,Account,Customer)
+        + DrillDowns() () = drilldownEdges(this)
         + Amount2 () = (Amount2_Sum / Facts)
         + Debit () = debit(Amount)
         + Credit () = credit(Amount)
@@ -86,6 +87,7 @@ classDiagram
         + Facts  : Int64
         + CubeName () = cubename(Sector,Account,Customer)
         + CubeDimensions () = cubedimensions(Sector,Account,Customer)
+        + DrillDowns() () = drilldownEdges(this)
         + Amount2 () = (Amount2_Sum / Facts)
         + Debit () = debit(Amount)
         + Credit () = credit(Amount)
@@ -208,6 +210,7 @@ A Customer
 |+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
 ||CubeName|Some(String)|||cubename(Sector,Account,Customer)|
 ||CubeDimensions|Some(Int32)|||cubedimensions(Sector,Account,Customer)|
+||DrillDowns()|Some(HashSet<Edge>)|Drilldown to Edges||drilldownEdges(this)|
 ||Amount2|Some(Decimal)||CubeMeasure(Aggregate?.Average)|(Amount2_Sum / Facts)|
 ||Debit|Some(Decimal)||CubeExtent()|debit(Amount)|
 ||Credit|Some(Decimal)||CubeExtent()|credit(Amount)|
@@ -230,6 +233,7 @@ A Customer
 |+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
 ||CubeName|Some(String)|||cubename(Sector,Account,Customer)|
 ||CubeDimensions|Some(Int32)|||cubedimensions(Sector,Account,Customer)|
+||DrillDowns()|Some(HashSet<Edge>)|Drilldown to Edges||drilldownEdges(this)|
 ||Amount2|Some(Decimal)||CubeMeasure(Aggregate?.Average)|(Amount2_Sum / Facts)|
 ||Debit|Some(Decimal)||CubeExtent()|debit(Amount)|
 ||Credit|Some(Decimal)||CubeExtent()|credit(Amount)|

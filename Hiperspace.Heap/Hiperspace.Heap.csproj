@@ -1,0 +1,96 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+	<ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Hiperspace Heap Store</Title>
+    <Description>Hiperspace heap store for session, edge and testing purposes</Description>
+    <Copyright>Cepheis Ltd (C) 2023, 2024, 2025, 2026</Copyright>
+    <LangVersion>13.0</LangVersion>
+    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20260509
+# Overview
+This release is a minor update to support the presentation Cube data in  Graph views with **Hiperspace.DB**, and minor updated to external references.
+
+## Cube enhancement
+
+### Aggregation
+Hiperspace **Cubes** are declarative and stream-calculated by `Hiperspace.DB`, and viewable in graphs as a *Node* with Measures and a `TypeName` begining with `"Cube:"` (for aggregates) or `"Fact:"` for leaves within a *Cube* hierarchy.  This release changes the presentation of *Cube* nodes that do not relate to any underlying facts:
+* Do not return a facts collection when the `Facts` property is zero
+* Do not return leaf dimensions (to a Pivot-Table) when there are no child dimensions or Measures
+
+
+### Validation
+Validation rules have been relaxed to create **cubes** even if it doesn't have any measures.  **Cubes** provide summary information for a single or multiple *Dimensions*, but sometimes the only *measure* you need is the number of connections included:
+
+```
+entity Customer = Node () (Id : Int32) {Name : String} [TypeName = "Customer"];
+entity Order  = Node (), Edge (From = Customer, To = this, TypeName= "Order"), Edge_ (From = this, To = Product, TypeName = "Ordered" )
+  (Id : Int32) {Customer : Customer, Product : Product} [Name = Customer.Name + "-" + Product.Name, TypeName = "Order"];
+entity Product = Node () (Id : Int32) {Name : String} [TypeName = "Product"];
+```
+[image]Sites/hiperspace/cube/spread.svg[/image]
+ 
+If we're not interested in each order, a **Cube**  can be used to simplify the graph to 
+
+[image]Sites/hiperspace/cube/summary1.svg[/image]
+
+by changing the model to 
+```
+@CubeDimension entity Customer = Node () (Id : Int32) {Name : String} [TypeName = "Customer"];
+@CubeFact entity Order (Id : Int32) {Customer : Customer, Product : Product};
+@CubeDimension entity Product = Node () (Id : Int32) {Name : String} [TypeName = "Product"];
+```
+If any of the *dimensions* to a **Cube** can be viewed as a *Node*, the `_Cube` and `_Fact` elements become a `Node` with *Drilldown* `Edge` to each dimension.
+This change enables **Cube** to be used to simplify a *graph*, even when the only thing being measured is the number edges being replaced.  
+
+### View enhancement
+The addition of the Cube summaries enhances the presentation of Graphs but introduced a level of detail that might be a distration for analysis.  If you have a trade *cube* with dimensions {Sector, Product, Country} and drilldown to the lowest level of detail, a Graph search will include each level of detail all with *node* `"Cube:Contract_Cube"` and *edges* `"Cube:Drilldown"`  and `"Cube:Dimension"`.  Too enable more targeted analysis, *node* `TypeName` has been enhanced to include the number of dimensions included in each cube:
+* {Sector} Cube has TypeName `"Cube:Contract_Cube:1"`  with Sector-&gt;Cube (TypeName `"Cube:Drilldown:1"`
+* {Sector, Product} Cube has TypeName `"Cube:Contract_Cube:2"` with Sector-&gt;Cube (TypeName `"Cube:Drilldown:2"`
+* {Sector, Product, Country} Cube has TypeName `"Cube:Contract_Cube:3"` with Sector-&gt;Cube (TypeName `"Cube:Drilldown:3"`
+
+---
+
+## Element enhancement
+
+The `IElement` interface of `Element&lt;TElement&gt;` has been updated to include an `ISetSpace` reference for the transformation of `ICubeFact` *facts* to the acyclic directed graph needed to render **Cubes** as a *Pivot-Table* with *drilldown* to futher details.
+
+## HiLang enhancement
+Extent expressions do not *normally* need `#id` to be recorded because they are not stored (calculated when needed from an element), but this is not the case for cube measures.  Source editing has been added to carry forward the same `id`  as the model changes.
+
+---
+
+Release also includes updates to referenced libraries
+</PackageReleaseNotes>
+    <PackageLicenseExpression>GPL-2.0-or-later</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
+    <Authors>Stephen Channell</Authors>
+    <Company>Cepheis Ltd</Company>
+    <PackageProjectUrl>https://www.cepheis.com/hiperspace/Hiperspace-Heap</PackageProjectUrl>
+    <PackageIcon>Hiper.png</PackageIcon>
+    <RepositoryUrl>https://github.com/channell/Hiperspace/tree/master/src/Hiperspace.Heap</RepositoryUrl>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\Hiper.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Nerdbank.GitVersioning">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="readme.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Hiperspace\Hiperspace.csproj" />
+  </ItemGroup>
+</Project>

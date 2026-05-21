@@ -1000,6 +1000,10 @@ public class BaseTypeModel
                 case 14:
                     value.Length = state.ReadInt32();
                     break;
+                case 15:
+                    value.Measures = RepeatedSerializer.CreateList<List<Graph.Cube.Measure>, Graph.Cube.Measure>().ReadRepeated(ref state, SerializerFeatures.WireTypeString | SerializerFeatures.OptionPackedDisabled, value.Measures!, this);
+                    break;
+
                 default:
                     state.SkipField();
                     break;
@@ -1028,6 +1032,10 @@ public class BaseTypeModel
         {
             state.WriteFieldHeader(14, WireType.Varint);
             state.WriteInt32(value.Length.Value);
+        }
+        if (value.Measures is not null)
+        {
+            RepeatedSerializer.CreateList<List<Graph.Cube.Measure>, Graph.Cube.Measure>().WriteRepeated(ref state, 11, SerializerFeatures.WireTypeString | SerializerFeatures.OptionPackedDisabled, value.Measures, this);
         }
     }
 
@@ -1128,6 +1136,9 @@ public class BaseTypeModel
                     break;
                 case 14:
                     item._value.Length = state.ReadInt32();
+                    break;
+                case 15:
+                    item.Measures = RepeatedSerializer.CreateList<List<Graph.Cube.Measure>, Graph.Cube.Measure>().ReadRepeated(ref state, SerializerFeatures.WireTypeString | SerializerFeatures.OptionPackedDisabled, value.Measures!, this);
                     break;
 
                 default:

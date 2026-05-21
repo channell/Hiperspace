@@ -1,36 +1,6 @@
 # Cube-graph
 ```mermaid
 classDiagram
-    class Cube.ContractCountryEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Cube.ContractPortfolioEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Cube.ContractProductEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Cube.ContractSectorEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Cube.CountryContractEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
     class Cube.Edges2 {
         # From  : Node
         # To  : Node
@@ -40,24 +10,6 @@ classDiagram
     }
     Cube.Edges2 ..|> Cube.Edge_
     Cube.Edges2 ..|> Cube.Edges
-    class Cube.PortfolioContractEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Cube.ProductContractEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
-    class Cube.SectorContractEdge {
-        # From  : Node
-        # To  : Node
-        # TypeName  : String
-        + Name  : String
-    }
     class Cube.Account {
         # Id  : String
         + Customer  : Cube.Customer
@@ -148,20 +100,13 @@ classDiagram
         + Facts  : Int64
         + CubeName () = cubename(Sector,Country,Product,Portfolio)
         + CubeDimensions () = cubedimensions(Sector,Country,Product,Portfolio)
+        + DrillDowns() () = drilldownEdges(this)
         + Avg () = (Avg_Sum / Facts)
     }
     Cube.Contract_Cube --> Cube.Sector
     Cube.Contract_Cube --> Cube.Country
     Cube.Contract_Cube --> Cube.Product
     Cube.Contract_Cube --> Cube.Portfolio
-    Cube.Contract_Cube ..|> Cube.ContractSectorEdge
-    Cube.Contract_Cube ..|> Cube.SectorContractEdge
-    Cube.Contract_Cube ..|> Cube.ContractCountryEdge
-    Cube.Contract_Cube ..|> Cube.CountryContractEdge
-    Cube.Contract_Cube ..|> Cube.ContractProductEdge
-    Cube.Contract_Cube ..|> Cube.ProductContractEdge
-    Cube.Contract_Cube ..|> Cube.ContractPortfolioEdge
-    Cube.Contract_Cube ..|> Cube.PortfolioContractEdge
     class Cube.Contract_Fact {
         # ContextLabel  : String
         # Sector  : Cube.Sector
@@ -176,6 +121,7 @@ classDiagram
         + Facts  : Int64
         + CubeName () = cubename(Sector,Country,Product,Portfolio)
         + CubeDimensions () = cubedimensions(Sector,Country,Product,Portfolio)
+        + DrillDowns() () = drilldownEdges(this)
         + Avg () = (Avg_Sum / Facts)
         + StdDev () = stddev(StdDev_Vector)
         + Percentile () = percentile(Percentile_Vector,95)
@@ -184,14 +130,6 @@ classDiagram
     Cube.Contract_Fact --> Cube.Country
     Cube.Contract_Fact --> Cube.Product
     Cube.Contract_Fact --> Cube.Portfolio
-    Cube.Contract_Fact ..|> Cube.ContractSectorEdge
-    Cube.Contract_Fact ..|> Cube.SectorContractEdge
-    Cube.Contract_Fact ..|> Cube.ContractCountryEdge
-    Cube.Contract_Fact ..|> Cube.CountryContractEdge
-    Cube.Contract_Fact ..|> Cube.ContractProductEdge
-    Cube.Contract_Fact ..|> Cube.ProductContractEdge
-    Cube.Contract_Fact ..|> Cube.ContractPortfolioEdge
-    Cube.Contract_Fact ..|> Cube.PortfolioContractEdge
     class Banking.Trade {
         # Id  : String
         + Book  : Banking.Book
@@ -239,66 +177,6 @@ classDiagram
 
 ---
 
-## View Cube.ContractCountryEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Cube.ContractPortfolioEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Cube.ContractProductEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Cube.ContractSectorEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Cube.CountryContractEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
 ## View Cube.Edges2
 
 
@@ -308,42 +186,6 @@ classDiagram
 |#|To|Node||||
 |#|FromTypeName|String||||
 |#|ToTypeName|String||||
-|+|Name|String||||
-
----
-
-## View Cube.PortfolioContractEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Cube.ProductContractEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
-|+|Name|String||||
-
----
-
-## View Cube.SectorContractEdge
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|TypeName|String||||
 |+|Name|String||||
 
 ---
@@ -489,6 +331,7 @@ classDiagram
 |+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
 ||CubeName|Some(String)|||cubename(Sector,Country,Product,Portfolio)|
 ||CubeDimensions|Some(Int32)|||cubedimensions(Sector,Country,Product,Portfolio)|
+||DrillDowns()|Some(HashSet<Edge>)|Drilldown to Edges||drilldownEdges(this)|
 ||Avg|Some(Decimal)||CubeMeasure(Aggregate?.Average)|(Avg_Sum / Facts)|
 
 ---
@@ -511,6 +354,7 @@ classDiagram
 |+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
 ||CubeName|Some(String)|||cubename(Sector,Country,Product,Portfolio)|
 ||CubeDimensions|Some(Int32)|||cubedimensions(Sector,Country,Product,Portfolio)|
+||DrillDowns()|Some(HashSet<Edge>)|Drilldown to Edges||drilldownEdges(this)|
 ||Avg|Some(Decimal)||CubeMeasure(Aggregate?.Average)|(Avg_Sum / Facts)|
 ||StdDev|Some(Double)||CubeMeasure(Aggregate?.StdDev)|stddev(StdDev_Vector)|
 ||Percentile|Some(Double)||CubeMeasure(Aggregate?.Percentile)|percentile(Percentile_Vector,95)|

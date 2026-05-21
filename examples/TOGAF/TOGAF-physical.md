@@ -33,6 +33,7 @@ classDiagram
         + Facts  : Int64
         + CubeName () = cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
         + CubeDimensions () = cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
+        + DrillDowns() () = drilldownEdges(this)
     }
     Togaf.Financial.Cost_Cube --> Togaf.Technology.Host
     Togaf.Financial.Cost_Cube --> Togaf.Business.Event
@@ -64,6 +65,7 @@ classDiagram
         + Facts  : Int64
         + CubeName () = cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
         + CubeDimensions () = cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
+        + DrillDowns() () = drilldownEdges(this)
     }
     Togaf.Financial.Cost_Fact --> Togaf.Technology.Host
     Togaf.Financial.Cost_Fact --> Togaf.Business.Event
@@ -96,6 +98,7 @@ classDiagram
         + Facts  : Int64
         + CubeName () = cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
         + CubeDimensions () = cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
+        + DrillDowns() () = drilldownEdges(this)
     }
     Togaf.Financial.Income_Cube --> Togaf.Technology.Host
     Togaf.Financial.Income_Cube --> Togaf.Business.Event
@@ -127,6 +130,7 @@ classDiagram
         + Facts  : Int64
         + CubeName () = cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
         + CubeDimensions () = cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
+        + DrillDowns() () = drilldownEdges(this)
     }
     Togaf.Financial.Income_Fact --> Togaf.Technology.Host
     Togaf.Financial.Income_Fact --> Togaf.Business.Event
@@ -158,6 +162,7 @@ classDiagram
         + Facts  : Int64
         + CubeName () = cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
         + CubeDimensions () = cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
+        + DrillDowns() () = drilldownEdges(this)
         + M () = ((E - N) + (2 * P))
     }
     Togaf.Complexity_Cube --> Togaf.Technology.Host
@@ -189,6 +194,7 @@ classDiagram
         + Facts  : Int64
         + CubeName () = cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
         + CubeDimensions () = cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)
+        + DrillDowns() () = drilldownEdges(this)
         + M () = ((E - N) + (2 * P))
     }
     Togaf.Complexity_Fact --> Togaf.Technology.Host
@@ -2348,6 +2354,7 @@ classDiagram
 |+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
 ||CubeName|Some(String)|||cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
 ||CubeDimensions|Some(Int32)|||cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
+||DrillDowns()|Some(HashSet<Edge>)|Drilldown to Edges||drilldownEdges(this)|
 
 ---
 
@@ -2375,6 +2382,7 @@ classDiagram
 |+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
 ||CubeName|Some(String)|||cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
 ||CubeDimensions|Some(Int32)|||cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
+||DrillDowns()|Some(HashSet<Edge>)|Drilldown to Edges||drilldownEdges(this)|
 
 ---
 
@@ -2403,6 +2411,7 @@ classDiagram
 |+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
 ||CubeName|Some(String)|||cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
 ||CubeDimensions|Some(Int32)|||cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
+||DrillDowns()|Some(HashSet<Edge>)|Drilldown to Edges||drilldownEdges(this)|
 
 ---
 
@@ -2430,6 +2439,7 @@ classDiagram
 |+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
 ||CubeName|Some(String)|||cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
 ||CubeDimensions|Some(Int32)|||cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
+||DrillDowns()|Some(HashSet<Edge>)|Drilldown to Edges||drilldownEdges(this)|
 
 ---
 
@@ -2457,6 +2467,7 @@ classDiagram
 |+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
 ||CubeName|Some(String)|||cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
 ||CubeDimensions|Some(Int32)|||cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
+||DrillDowns()|Some(HashSet<Edge>)|Drilldown to Edges||drilldownEdges(this)|
 ||M|Some(Decimal)||CubeExtent()|((E - N) + (2 * P))|
 
 ---
@@ -2484,6 +2495,7 @@ classDiagram
 |+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
 ||CubeName|Some(String)|||cubename(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
 ||CubeDimensions|Some(Int32)|||cubedimensions(Host,Event,System,Service,Process,Product,Platform,Function,Capability,Organization)|
+||DrillDowns()|Some(HashSet<Edge>)|Drilldown to Edges||drilldownEdges(this)|
 ||M|Some(Decimal)||CubeExtent()|((E - N) + (2 * P))|
 
 ---
