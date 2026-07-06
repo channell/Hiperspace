@@ -1,0 +1,94 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.050.001.01"), ValidationCheck
+type ISO20022.Auth050001.Document
+{
+}
+[
+    @XmlElement FinInstrmRptgInstrmClssfctnRpt : ISO20022.Auth050001.FinancialInstrumentReportingInstrumentClassificationReportV01,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(FinInstrmRptgInstrmClssfctnRpt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.050.001.01"), ValidationCheck
+aspect ISO20022.Auth050001.FinancialInstrumentReportingInstrumentClassificationReportV01
+{
+    @XmlElement SplmtryData        : List<ISO20022.Auth050001.SupplementaryData1>,
+    @XmlElement InstrmClssfctn     : List<ISO20022.Auth050001.SecuritiesInstrumentClassification2>,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("SplmtryData", SplmtryData), 
+        validElement(SplmtryData), 
+        validRequired ("InstrmClssfctn", InstrmClssfctn), 
+        validList ("InstrmClssfctn", InstrmClssfctn), 
+        validElement(InstrmClssfctn))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:auth.050.001.01")
+enum ISO20022.Auth050001.Modification1Code
+{
+    @XmlEnum ("ADDD") ADDD          #1,
+    @XmlEnum ("DELE") DELE          #2,
+    @XmlEnum ("MODI") MODI          #3,
+    @XmlEnum ("NOCH") NOCH          #4,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.050.001.01"), ValidationCheck
+value ISO20022.Auth050001.Period2
+{
+    @XmlElement ToDt               : DateTime,
+    @XmlElement FrDt               : DateTime,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.050.001.01"), ValidationCheck, AnyKey
+value ISO20022.Auth050001.Period4Choice
+{
+    @XmlElement FrDtToDt           : ISO20022.Auth050001.Period2,
+    @XmlElement ToDt               : DateTime,
+    @XmlElement FrDt               : DateTime,
+    @XmlElement Dt                 : DateTime,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(FrDtToDt), 
+        validChoice (FrDtToDt, ToDt, FrDt, Dt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.050.001.01"), ValidationCheck
+value ISO20022.Auth050001.SecuritiesInstrumentClassification2
+{
+    @XmlElement LastUpdtd          : DateTime,
+    @XmlElement VldtyPrd           : ISO20022.Auth050001.Period4Choice,
+    @XmlElement Mod                : String,
+    @XmlElement Idr                : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(VldtyPrd), 
+        validPattern ("Idr", Idr, "[A-Z]{6,6}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.050.001.01"), ValidationCheck
+value ISO20022.Auth050001.SupplementaryData1
+{
+    @XmlElement Envlp              : ISO20022.Auth050001.SupplementaryDataEnvelope1,
+    @XmlElement PlcAndNm           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Envlp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.050.001.01"), ValidationCheck
+value ISO20022.Auth050001.SupplementaryDataEnvelope1
+{
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];

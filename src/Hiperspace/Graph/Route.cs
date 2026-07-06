@@ -8,6 +8,7 @@
 #nullable enable
 using Hiperspace;
 using ProtoBuf;
+using ProtoBuf.WellKnownTypes;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
@@ -113,6 +114,12 @@ namespace Graph
 
             }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public void BindAll(SubSpace space, HashSet<IElement> path, bool cache = true)
+            {
+
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void Unbind(SubSpace space)
             {
 
@@ -188,6 +195,11 @@ namespace Graph
 
             }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public void BindAll(SubSpace space, HashSet<IElement> path, bool cache = true)
+            {
+
+            }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void Unbind(SubSpace space)
             {
 
@@ -259,6 +271,13 @@ namespace Graph
 
             }
             return Result.Skip(this);
+        }
+        public Result<Route> BindAll(SubSpace subSpace, HashSet<IElement> path, bool cache = true)
+        {
+            _key.BindAll(subSpace, path, cache);
+            _value.BindAll(subSpace, path, cache);
+
+            return Result.Ok(this);
         }
         public void Unbind(SubSpace subSpace)
         {

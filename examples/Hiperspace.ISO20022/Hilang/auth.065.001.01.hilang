@@ -1,0 +1,94 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.065.001.01"), ValidationCheck
+value ISO20022.Auth065001.BackTestingMethodology1
+{
+    @XmlElement Desc               : String,
+    @XmlElement VartnMrgnCleanInd  : String,
+    @XmlElement MdlCnfdncLvl       : Decimal,
+    @XmlElement RskMdlTp           : ISO20022.Auth065001.ModelType1Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(RskMdlTp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.065.001.01"), ValidationCheck
+aspect ISO20022.Auth065001.CCPBackTestingDefinitionReportV01
+{
+    @XmlElement SplmtryData        : List<ISO20022.Auth065001.SupplementaryData1>,
+    @XmlElement Mthdlgy            : List<ISO20022.Auth065001.BackTestingMethodology1>,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("SplmtryData", SplmtryData), 
+        validElement(SplmtryData), 
+        validRequired ("Mthdlgy", Mthdlgy), 
+        validList ("Mthdlgy", Mthdlgy), 
+        validElement(Mthdlgy))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.065.001.01"), ValidationCheck
+type ISO20022.Auth065001.Document
+{
+}
+[
+    @XmlElement CCPBckTstgDefRpt   : ISO20022.Auth065001.CCPBackTestingDefinitionReportV01,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(CCPBckTstgDefRpt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.065.001.01"), ValidationCheck
+value ISO20022.Auth065001.GenericIdentification36
+{
+    @XmlElement SchmeNm            : String,
+    @XmlElement Issr               : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.065.001.01"), ValidationCheck, AnyKey
+value ISO20022.Auth065001.ModelType1Choice
+{
+    @XmlElement Prtry              : ISO20022.Auth065001.GenericIdentification36,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Prtry), 
+        validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:auth.065.001.01")
+enum ISO20022.Auth065001.ModelType1Code
+{
+    @XmlEnum ("SAMO") SAMO          #1,
+    @XmlEnum ("VARI") VARI          #2,
+    @XmlEnum ("SPAN") SPAN          #3,
+    @XmlEnum ("ORIA") ORIA          #4,
+    @XmlEnum ("OTHR") OTHR          #5,
+    @XmlEnum ("EXPS") EXPS          #6,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.065.001.01"), ValidationCheck
+value ISO20022.Auth065001.SupplementaryData1
+{
+    @XmlElement Envlp              : ISO20022.Auth065001.SupplementaryDataEnvelope1,
+    @XmlElement PlcAndNm           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Envlp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.065.001.01"), ValidationCheck
+value ISO20022.Auth065001.SupplementaryDataEnvelope1
+{
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];

@@ -15,24 +15,6 @@ namespace Hiperspace.Heap
 
         public CacheHeapSpace() : base() { }
 
-        [Obsolete("use Bind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
-        public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, object? source = null)
-        {
-            var fullkey = new byte[key.Length + 1];
-            key.CopyTo(fullkey, 1);
-            var node = new HeapNode(fullkey, value);
-            lock (_heap)
-            {
-                if (_heap.TryGetValue(node, out HeapNode? result) && Compare(result.Value, value) != 0)
-                {
-                    return Result.Skip(result.Value);
-                }
-                _heap.Remove(node);
-                _heap.Add(node);
-                RaiseOnBind(key, value, source);
-                return Result.Ok(value);
-            }
-        }
         public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
         {
             var fullkey = new byte[key.Length + 1];
@@ -55,12 +37,6 @@ namespace Hiperspace.Heap
         {
             return Task.Run(() => Bind(key, value, source));
         }
-        [Obsolete("use BindAsync((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
-        public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, object? source)
-        {
-            return Task.Run(() => Bind(key, value, version, source));
-        }
-
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Find(byte[] begin, byte[] end, DateTime? version)
         {
             var vbegin = new byte[begin.Length + 1];

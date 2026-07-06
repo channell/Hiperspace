@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-	<TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+	<PropertyGroup>
+	<TargetFrameworks>net8.0;net9.0;net10.0;netstandard2.0</TargetFrameworks>
 	<ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
@@ -18,63 +18,78 @@
     <RepositoryUrl>https://github.com/channell/Hiperspace</RepositoryUrl>
     <Nullable>enable</Nullable>
     <LangVersion>13.0</LangVersion>
-    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20260509
+    <PackageReleaseNotes>https://www.cepheis.com/hiperspace/20260706
 # Overview
-This release is a minor update to support the presentation Cube data in  Graph views with **Hiperspace.DB**, and minor updated to external references.
+This release is a significantly enhances support for [XML Schema](https://www.w3.org/XML/Schema), an introduces generated mapping for [ISO20022](https://www.iso20022.org/) messages.
 
-## Cube enhancement
+ISO20022 includes a large family of 761 XSD schema files comprising 39954 separate type definitions (*many of which are duplicated in each schema file, but some specific domain variations*). 
+As a *proof-of-principle* the message schema has been mapped *as-is* with payments messages augmented to show how a **Graph** and **Cube** functionality can be added with minimal changes to store messages in hiperspace.  *Messages* stored in hiperspace are *naturally* compressed from the XML or JSON source using protobuf encoding that replaces type names with the equivalent  **#id** and native types instead of text encoding. 
 
-### Aggregation
-Hiperspace **Cubes** are declarative and stream-calculated by `Hiperspace.DB`, and viewable in graphs as a *Node* with Measures and a `TypeName` begining with `"Cube:"` (for aggregates) or `"Fact:"` for leaves within a *Cube* hierarchy.  This release changes the presentation of *Cube* nodes that do not relate to any underlying facts:
-* Do not return a facts collection when the `Facts` property is zero
-* Do not return leaf dimensions (to a Pivot-Table) when there are no child dimensions or Measures
+## Hilangc changes
+Import of XSD schema has been added to the command-line tool 
 
+|Option |┃| Notes|
+|-|-|-|
+|--xsd|┃| Import the XML schema file (.xsd) to an equivalent hilang model |
+| --xn|┃| Set the XML schema tag for all imported elements |
+| --xe|┃| Import references to a list of names as *entities*|
+| --xs|┃| Import references to a list of names as *segments*|
+| --xa|┃| Import references to a list of names as *aspects*|
+| --xt|┃| Import references to a list of names as abstract *types* - the default is *values*|
 
-### Validation
-Validation rules have been relaxed to create **cubes** even if it doesn't have any measures.  **Cubes** provide summary information for a single or multiple *Dimensions*, but sometimes the only *measure* you need is the number of connections included:
+## Hilang changes
+The  directive `%reference (domain.schema.dll);`  imports *elements* from pre-compiled domain schema [all.hilang](https://github.com/channell/Hiperspace.ISO20022/blob/main/all/all.hilang) uses the reference import to build a consolidated ISO20022 schema including element definitions from each domain specific models {acmt, admi, auth, caaa, caad, caam, cafc, cafm, cafr, cain, camt, canm, casp, casr, catm, catp, colr, fxtr, head, pacs, pain, reda, remt, secl, seev, semt, sese, setr, trck, tsin, tsmt, tsrv}
 
+The directive `%annotations;` has been added to simplify maintenance of XSD mapping. The code
 ```
-entity Customer = Node () (Id : Int32) {Name : String} [TypeName = "Customer"];
-entity Order  = Node (), Edge (From = Customer, To = this, TypeName= "Order"), Edge_ (From = this, To = Product, TypeName = "Ordered" )
-  (Id : Int32) {Customer : Customer, Product : Product} [Name = Customer.Name + "-" + Product.Name, TypeName = "Order"];
-entity Product = Node () (Id : Int32) {Name : String} [TypeName = "Product"];
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:pain.001.001.12"), ValidationCheck
+entity ISO20022.Pain001001.CustomerCreditTransferInitiationV12 #35044
+(
+    @XmlElement GrpHdr             : ISO20022.Pain001001.GroupHeader114 #1,
+)
+{
+    @XmlElement SplmtryData        : List&lt;ISO20022.Pain001001.SupplementaryData1&gt; #2,
+};
 ```
-[image]Sites/hiperspace/cube/spread.svg[/image]
- 
-If we're not interested in each order, a **Cube**  can be used to simplify the graph to 
-
-[image]Sites/hiperspace/cube/summary1.svg[/image]
-
-by changing the model to 
+could be modeled as 
 ```
-@CubeDimension entity Customer = Node () (Id : Int32) {Name : String} [TypeName = "Customer"];
-@CubeFact entity Order (Id : Int32) {Customer : Customer, Product : Product};
-@CubeDimension entity Product = Node () (Id : Int32) {Name : String} [TypeName = "Product"];
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:pain.001.001.12"), ValidationCheck
+entity ISO20022.Pain001001.CustomerCreditTransferInitiationV12 #35044
+{
+    @Key, XmlElement GrpHdr             : ISO20022.Pain001001.GroupHeader114 #1,
+    @XmlElement SplmtryData             : List&lt;ISO20022.Pain001001.SupplementaryData1&gt; #2,
+};
 ```
-If any of the *dimensions* to a **Cube** can be viewed as a *Node*, the `_Cube` and `_Fact` elements become a `Node` with *Drilldown* `Edge` to each dimension.
-This change enables **Cube** to be used to simplify a *graph*, even when the only thing being measured is the number edges being replaced.  
+to transform the the `GrpHdr` element of `ISO20022.Pain001001.CustomerCreditTransferInitiationV12` from a *value* to a *key* without reordering the memvbers of the element.  
+This is intended to simplify the tracking of a golden-source of model using code change-control tools
 
-### View enhancement
-The addition of the Cube summaries enhances the presentation of Graphs but introduced a level of detail that might be a distration for analysis.  If you have a trade *cube* with dimensions {Sector, Product, Country} and drilldown to the lowest level of detail, a Graph search will include each level of detail all with *node* `"Cube:Contract_Cube"` and *edges* `"Cube:Drilldown"`  and `"Cube:Dimension"`.  Too enable more targeted analysis, *node* `TypeName` has been enhanced to include the number of dimensions included in each cube:
-* {Sector} Cube has TypeName `"Cube:Contract_Cube:1"`  with Sector-&gt;Cube (TypeName `"Cube:Drilldown:1"`
-* {Sector, Product} Cube has TypeName `"Cube:Contract_Cube:2"` with Sector-&gt;Cube (TypeName `"Cube:Drilldown:2"`
-* {Sector, Product, Country} Cube has TypeName `"Cube:Contract_Cube:3"` with Sector-&gt;Cube (TypeName `"Cube:Drilldown:3"`
+## Hiperspace changes
+Various Hiperspace structures have been changed from `struct` to `class` to avoid stack-space issues with huge models.
+`netstandard2.0` has been added as a target for Hiperspace assembly to enable meta-data definitions to be read by Hilang during compilation (or generation using *hilangc*)
 
----
+Interface functions that were marked as Obsolete in earlier releases have been removed.
 
-## Element enhancement
+Additional Transactional versions of the `Bind`,  `Get` and `Find` functions have been added, initially using the old functions. These functions take a **MVCC Transaction** reference has an additional parameter and a [DurableType](https://github.com/channell/Hiperspace/blob/master/src/Hiperspace/DurableType.cs) to allow the functions to be used for:
 
-The `IElement` interface of `Element&lt;TElement&gt;` has been updated to include an `ISetSpace` reference for the transformation of `ICubeFact` *facts* to the acyclic directed graph needed to render **Cubes** as a *Pivot-Table* with *drilldown* to futher details.
+|Type|┃|Notes|
+|-|-|-|
+|Elements |┃| Entities, Segments, Aspects |
+|Versioned|┃| Versioned Entities, Segments, Aspects|
+|MetaModel|┃| dictionary that ensures that Hiperspaces cannot be used by incompatible clients|
+| VectorSpace|┃| VectorSpace token lists for geospatial and nearest neighbor search|
+| Sequences|┃| Sequence numbers |
+| Transaction|┃| {start, end, reference} elements for MVCC |
+|**MetaMap**|┃| protobuf transformation structure for Meta-Model compliant serialisation of elements|
+|**Fingerprint**|┃| To avoid re-generation of meta-map when Hiperspace has been reopened by a pre-validated client|
 
-## HiLang enhancement
-Extent expressions do not *normally* need `#id` to be recorded because they are not stored (calculated when needed from an element), but this is not the case for cube measures.  Source editing has been added to carry forward the same `id`  as the model changes.
-
----
-
-Release also includes updates to referenced libraries
+Hiperspace `Find` will search for hiperspace using  the *key* or *index* values.  The new function extends the search parameters to include a collection of values that are not part of a *key/index* to reduce the number of elements returned from hiperspace to pre-filter elements close to source.
 </PackageReleaseNotes>
   </PropertyGroup>
-  <ItemGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0' Or '$(TargetFramework)' == 'net9.0' Or '$(TargetFramework)' == 'net10.0'">
+		<!-- Applies to net8.0, net9.x, net10.x+ -->
+		<DefineConstants>$(DefineConstants);NET8_OR_GREATER</DefineConstants>
+  </PropertyGroup>
+	<ItemGroup>
     <None Include="..\Hiper.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
@@ -85,11 +100,19 @@ Release also includes updates to referenced libraries
     <PackageReference Include="Nerdbank.GitVersioning">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="protobuf-net.Core" />
-    <PackageReference Include="System.Numerics.Tensors" />
-  </ItemGroup>
-  <ItemGroup>
+	</PackageReference>
+    <PackageReference Include="protobuf-net.Core" Condition="'$(TargetFramework)' != 'netstandard2.0'" />
+    <PackageReference Include="System.Numerics.Tensors" Condition="'$(TargetFramework)' != 'netstandard2.0'" />
+</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' ">
+		<!-- Remove all .cs files for netstandard2.0 and include only Meta sources -->
+		<Compile Remove="**\*.cs" />
+		<Compile Remove="Graph\**\*.cs" />
+		<Compile Include="Meta\**\*.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
     <None Include="readme.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>

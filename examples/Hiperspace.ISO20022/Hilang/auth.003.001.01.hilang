@@ -1,0 +1,46 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.003.001.01"), ValidationCheck
+type ISO20022.Auth003001.Document
+{
+}
+[
+    @XmlElement InfReqStsChngNtfctn : ISO20022.Auth003001.InformationRequestStatusChangeNotificationV01,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(InfReqStsChngNtfctn))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.003.001.01"), ValidationCheck
+aspect ISO20022.Auth003001.InformationRequestStatusChangeNotificationV01
+{
+    @XmlElement SplmtryData        : List<ISO20022.Auth003001.SupplementaryData1>,
+    @XmlElement CnfdtltySts        : String,
+    @XmlElement OrgnlBizQry        : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("SplmtryData", SplmtryData), 
+        validElement(SplmtryData))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.003.001.01"), ValidationCheck
+value ISO20022.Auth003001.SupplementaryData1
+{
+    @XmlElement Envlp              : ISO20022.Auth003001.SupplementaryDataEnvelope1,
+    @XmlElement PlcAndNm           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Envlp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.003.001.01"), ValidationCheck
+value ISO20022.Auth003001.SupplementaryDataEnvelope1
+{
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];

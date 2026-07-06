@@ -1,0 +1,102 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:tsmt.046.001.01")
+enum ISO20022.Tsmt046001.BaselineStatus3Code
+{
+    @XmlEnum ("DARQ") DARQ          #1,
+    @XmlEnum ("SERQ") SERQ          #2,
+    @XmlEnum ("SCRQ") SCRQ          #3,
+    @XmlEnum ("CLRQ") CLRQ          #4,
+    @XmlEnum ("RARQ") RARQ          #5,
+    @XmlEnum ("AMRQ") AMRQ          #6,
+    @XmlEnum ("COMP") COMP          #7,
+    @XmlEnum ("ACTV") ACTV          #8,
+    @XmlEnum ("ESTD") ESTD          #9,
+    @XmlEnum ("PMTC") PMTC          #10,
+    @XmlEnum ("CLSD") CLSD          #11,
+    @XmlEnum ("PROP") PROP          #12,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.046.001.01"), ValidationCheck
+value ISO20022.Tsmt046001.CurrencyAndAmount
+{
+    @XmlElement Value              : Decimal,
+    @XmlAttribute Ccy              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validRequired ("Value", Value), 
+        validRequired ("Ccy", Ccy), 
+        validPattern ("Ccy", Ccy, "[A-Z]{3,3}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.046.001.01"), ValidationCheck
+type ISO20022.Tsmt046001.Document
+{
+}
+[
+    @XmlElement InttToPayRpt       : ISO20022.Tsmt046001.IntentToPayReportV01,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(InttToPayRpt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.046.001.01"), ValidationCheck
+value ISO20022.Tsmt046001.DocumentIdentification7
+{
+    @XmlElement DtOfIsse           : DateTime,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.046.001.01"), ValidationCheck
+aspect ISO20022.Tsmt046001.IntentToPayReportV01
+{
+    @XmlElement RptdItms           : List<ISO20022.Tsmt046001.ReportLine1>,
+    @XmlElement RptId              : ISO20022.Tsmt046001.MessageIdentification1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("RptdItms", RptdItms), 
+        validElement(RptdItms), 
+        validElement(RptId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.046.001.01"), ValidationCheck
+value ISO20022.Tsmt046001.MessageIdentification1
+{
+    @XmlElement CreDtTm            : DateTime,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.046.001.01"), ValidationCheck
+value ISO20022.Tsmt046001.ReportLine1
+{
+    @XmlElement AcmltdNetAmt       : ISO20022.Tsmt046001.CurrencyAndAmount,
+    @XmlElement PurchsOrdrTtlNetAmt : ISO20022.Tsmt046001.CurrencyAndAmount,
+    @XmlElement PurchsOrdrRef      : ISO20022.Tsmt046001.DocumentIdentification7,
+    @XmlElement TxSts              : ISO20022.Tsmt046001.TransactionStatus4,
+    @XmlElement TxId               : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(AcmltdNetAmt), 
+        validElement(PurchsOrdrTtlNetAmt), 
+        validElement(PurchsOrdrRef), 
+        validElement(TxSts))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.046.001.01"), ValidationCheck
+value ISO20022.Tsmt046001.TransactionStatus4
+{
+    @XmlElement Sts                : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];

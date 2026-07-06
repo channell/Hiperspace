@@ -2,29 +2,29 @@
 ```mermaid
 classDiagram
     class Cousins.Edge2 {
-        # From  : Node
-        # To  : Node
+        # From  : Hiperspace.Node
+        # To  : Hiperspace.Node
         # TypeName  : String
         + Name  : String
     }
     class Cousins.Edge3 {
-        # From  : Node
-        # To  : Node
+        # From  : Hiperspace.Node
+        # To  : Hiperspace.Node
         # TypeName  : String
         + Name  : String
     }
     class Cousins.Edge4 {
-        # From  : Node
-        # To  : Node
+        # From  : Hiperspace.Node
+        # To  : Hiperspace.Node
         # TypeName  : String
         + Name  : String
     }
     class Cousins.Path {
-        # From  : Node
-        # To  : Node
+        # From  : Hiperspace.Node
+        # To  : Hiperspace.Node
         # TypeName  : String
         + Name  : String
-        + Edge  : Edge
+        + Edge  : Hiperspace.Edge
         + Source  : Cousins.Path
     }
     class Cousins.Person {
@@ -34,12 +34,12 @@ classDiagram
         + Mother  : Cousins.Person
         + Father  : Cousins.Person
         + Email  : String
-        + TypeName () = "Person"
-        + FatherChild (Father = this) : Cousins.Person
-        + MotherChild (Mother = this) : Cousins.Person
-        + Relatives () = relation(this)
+        + TypeName () = """Person"""
+        + FatherChild (Father = ) : Cousins.Person
+        + MotherChild (Mother = ) : Cousins.Person
+        + Relatives () = relation()
         + Stored () : Graph.TransitiveSegment
-        + AllRelatives () = allrelation(this)
+        + AllRelatives () = allrelation()
     }
     Cousins.Person ..|> Cousins.Edge2
     Cousins.Person ..|> Cousins.Edge3
@@ -59,8 +59,8 @@ classDiagram
 
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
+|#|From|Hiperspace.Node||||
+|#|To|Hiperspace.Node||||
 |#|TypeName|String||||
 |+|Name|String||||
 
@@ -71,8 +71,8 @@ classDiagram
 
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
+|#|From|Hiperspace.Node||||
+|#|To|Hiperspace.Node||||
 |#|TypeName|String||||
 |+|Name|String||||
 
@@ -83,8 +83,8 @@ classDiagram
 
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
+|#|From|Hiperspace.Node||||
+|#|To|Hiperspace.Node||||
 |#|TypeName|String||||
 |+|Name|String||||
 
@@ -95,11 +95,11 @@ classDiagram
 
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
+|#|From|Hiperspace.Node||||
+|#|To|Hiperspace.Node||||
 |#|TypeName|String||||
 |+|Name|String||||
-|+|Edge|Edge||||
+|+|Edge|Hiperspace.Edge||||
 |+|Source|Cousins.Path||||
 
 ---
@@ -115,10 +115,10 @@ classDiagram
 |+|Mother|Cousins.Person||||
 |+|Father|Cousins.Person||||
 |+|Email|String||||
-||TypeName|Some(String)|||"Person"|
-||FatherChild|Cousins.Person|||Father = this|
-||MotherChild|Cousins.Person|||Mother = this|
-||Relatives|Some(List<Path>)||Once()|relation(this)|
+||TypeName|Some(String)|||"""Person"""|
+||FatherChild|Cousins.Person|||Father = |
+||MotherChild|Cousins.Person|||Mother = |
+||Relatives|Some(global::System.Collections.Generic.List<Path>)||Once()|relation()|
 |+|Stored|Graph.TransitiveSegment||||
-||AllRelatives|Some(HashSet<Graph.HiperEdge>)||Once()|allrelation(this)|
+||AllRelatives|Some(global::System.Collections.Generic.HashSet<Graph.HiperEdge>)||Once()|allrelation()|
 

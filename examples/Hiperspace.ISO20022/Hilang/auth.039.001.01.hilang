@@ -1,0 +1,153 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.039.001.01"), ValidationCheck
+type ISO20022.Auth039001.Document
+{
+}
+[
+    @XmlElement FinInstrmRptgNonWorkgDayRpt : ISO20022.Auth039001.FinancialInstrumentReportingNonWorkingDayReportV01,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(FinInstrmRptgNonWorkgDayRpt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.039.001.01"), ValidationCheck
+aspect ISO20022.Auth039001.FinancialInstrumentReportingNonWorkingDayReportV01
+{
+    @XmlElement SplmtryData        : List<ISO20022.Auth039001.SupplementaryData1>,
+    @XmlElement NonWorkgDay        : List<ISO20022.Auth039001.SecuritiesNonTradingDayReport1>,
+    @XmlElement RptHdr             : ISO20022.Auth039001.SecuritiesMarketReportHeader1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("SplmtryData", SplmtryData), 
+        validElement(SplmtryData), 
+        validRequired ("NonWorkgDay", NonWorkgDay), 
+        validList ("NonWorkgDay", NonWorkgDay), 
+        validElement(NonWorkgDay), 
+        validElement(RptHdr))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:auth.039.001.01")
+enum ISO20022.Auth039001.NonTradingDayReason1Code
+{
+    @XmlEnum ("WKND") WKND          #1,
+    @XmlEnum ("BHOL") BHOL          #2,
+    @XmlEnum ("PHOL") PHOL          #3,
+    @XmlEnum ("HALF") HALF          #4,
+    @XmlEnum ("OTHR") OTHR          #5,
+    @XmlEnum ("THOL") THOL          #6,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.039.001.01"), ValidationCheck
+value ISO20022.Auth039001.Period2
+{
+    @XmlElement ToDt               : DateTime,
+    @XmlElement FrDt               : DateTime,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.039.001.01"), ValidationCheck, AnyKey
+value ISO20022.Auth039001.Period4Choice
+{
+    @XmlElement FrDtToDt           : ISO20022.Auth039001.Period2,
+    @XmlElement ToDt               : DateTime,
+    @XmlElement FrDt               : DateTime,
+    @XmlElement Dt                 : DateTime,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(FrDtToDt), 
+        validChoice (FrDtToDt, ToDt, FrDt, Dt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.039.001.01"), ValidationCheck
+value ISO20022.Auth039001.SecuritiesMarketReportHeader1
+{
+    @XmlElement SubmissnDtTm       : DateTime,
+    @XmlElement RptgPrd            : ISO20022.Auth039001.Period4Choice,
+    @XmlElement RptgNtty           : ISO20022.Auth039001.TradingVenueIdentification1Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(RptgPrd), 
+        validElement(RptgNtty))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.039.001.01"), ValidationCheck
+value ISO20022.Auth039001.SecuritiesNonTradingDay1
+{
+    @XmlElement Rsn                : String,
+    @XmlElement Dt                 : DateTime,
+    @XmlElement TechRcrdId         : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.039.001.01"), ValidationCheck
+value ISO20022.Auth039001.SecuritiesNonTradingDayReport1
+{
+    @XmlElement NonWorkgDay        : List<ISO20022.Auth039001.SecuritiesNonTradingDay1>,
+    @XmlElement Id                 : ISO20022.Auth039001.TradingVenueIdentification1Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validRequired ("NonWorkgDay", NonWorkgDay), 
+        validList ("NonWorkgDay", NonWorkgDay), 
+        validElement(NonWorkgDay), 
+        validElement(Id))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.039.001.01"), ValidationCheck
+value ISO20022.Auth039001.SupplementaryData1
+{
+    @XmlElement Envlp              : ISO20022.Auth039001.SupplementaryDataEnvelope1,
+    @XmlElement PlcAndNm           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Envlp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.039.001.01"), ValidationCheck
+value ISO20022.Auth039001.SupplementaryDataEnvelope1
+{
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:auth.039.001.01")
+enum ISO20022.Auth039001.TradingVenue2Code
+{
+    @XmlEnum ("CTPS") CTPS          #1,
+    @XmlEnum ("APPA") APPA          #2,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.039.001.01"), ValidationCheck, AnyKey
+value ISO20022.Auth039001.TradingVenueIdentification1Choice
+{
+    @XmlElement Othr               : ISO20022.Auth039001.TradingVenueIdentification2,
+    @XmlElement NtlCmptntAuthrty   : String,
+    @XmlElement MktIdCd            : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Othr), 
+        validPattern ("NtlCmptntAuthrty", NtlCmptntAuthrty, "[A-Z]{2,2}"), 
+        validPattern ("MktIdCd", MktIdCd, "[A-Z0-9]{4,4}"), 
+        validChoice (Othr, NtlCmptntAuthrty, MktIdCd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.039.001.01"), ValidationCheck
+value ISO20022.Auth039001.TradingVenueIdentification2
+{
+    @XmlElement Tp                 : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];

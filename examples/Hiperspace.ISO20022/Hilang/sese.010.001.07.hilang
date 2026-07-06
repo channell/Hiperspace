@@ -1,0 +1,304 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:sese.010.001.07"), ValidationCheck
+value ISO20022.Sese010001.AdditionalReference10
+{
+    @XmlElement MsgNm              : String,
+    @XmlElement RefIssr            : ISO20022.Sese010001.PartyIdentification139,
+    @XmlElement Ref                : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(RefIssr))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:sese.010.001.07")
+enum ISO20022.Sese010001.AddressType2Code
+{
+    @XmlEnum ("DLVY") DLVY          #1,
+    @XmlEnum ("MLTO") MLTO          #2,
+    @XmlEnum ("BIZZ") BIZZ          #3,
+    @XmlEnum ("HOME") HOME          #4,
+    @XmlEnum ("PBOX") PBOX          #5,
+    @XmlEnum ("ADDR") ADDR          #6,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:sese.010.001.07"), ValidationCheck, AnyKey
+value ISO20022.Sese010001.CancellationCompleteReason1Choice
+{
+    @XmlElement Prtry              : ISO20022.Sese010001.GenericIdentification36,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Prtry), 
+        validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:sese.010.001.07")
+enum ISO20022.Sese010001.CancellationRejectedReason1Code
+{
+    @XmlEnum ("COSE") COSE          #1,
+    @XmlEnum ("CUTO") CUTO          #2,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:sese.010.001.07")
+enum ISO20022.Sese010001.CancellationStatus5Code
+{
+    @XmlEnum ("STNP") STNP          #1,
+    @XmlEnum ("PACK") PACK          #2,
+    @XmlEnum ("RECE") RECE          #3,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:sese.010.001.07"), ValidationCheck
+value ISO20022.Sese010001.CancellationStatusAndReason5
+{
+    @XmlElement StsInitr           : ISO20022.Sese010001.PartyIdentification139,
+    @XmlElement Sts                : ISO20022.Sese010001.Status31Choice,
+    @XmlElement CxlRef             : String,
+    @XmlElement ClntRef            : ISO20022.Sese010001.AdditionalReference10,
+    @XmlElement TrfRef             : String,
+    @XmlElement MstrRef            : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(StsInitr), 
+        validElement(Sts), 
+        validElement(ClntRef))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:sese.010.001.07"), ValidationCheck
+value ISO20022.Sese010001.CancelledCompleteReason1
+{
+    @XmlElement AddtlRsnInf        : String,
+    @XmlElement Rsn                : ISO20022.Sese010001.CancellationCompleteReason1Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Rsn))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:sese.010.001.07")
+enum ISO20022.Sese010001.CancelledStatusReason1Code
+{
+    @XmlEnum ("CSUB") CSUB          #1,
+    @XmlEnum ("CANS") CANS          #2,
+    @XmlEnum ("CANI") CANI          #3,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:sese.010.001.07"), ValidationCheck
+type ISO20022.Sese010001.Document
+{
+}
+[
+    @XmlElement TrfCxlStsRpt       : ISO20022.Sese010001.TransferCancellationStatusReportV07,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(TrfCxlStsRpt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:sese.010.001.07"), ValidationCheck
+value ISO20022.Sese010001.Extension1
+{
+    @XmlElement Txt                : String,
+    @XmlElement PlcAndNm           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:sese.010.001.07"), ValidationCheck
+value ISO20022.Sese010001.GenericIdentification1
+{
+    @XmlElement Issr               : String,
+    @XmlElement SchmeNm            : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:sese.010.001.07"), ValidationCheck
+value ISO20022.Sese010001.GenericIdentification36
+{
+    @XmlElement SchmeNm            : String,
+    @XmlElement Issr               : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:sese.010.001.07"), ValidationCheck
+value ISO20022.Sese010001.MarketPracticeVersion1
+{
+    @XmlElement Nb                 : String,
+    @XmlElement Dt                 : String,
+    @XmlElement Nm                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:sese.010.001.07"), ValidationCheck
+value ISO20022.Sese010001.MessageIdentification1
+{
+    @XmlElement CreDtTm            : DateTime,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:sese.010.001.07"), ValidationCheck
+value ISO20022.Sese010001.NameAndAddress5
+{
+    @XmlElement Adr                : ISO20022.Sese010001.PostalAddress1,
+    @XmlElement Nm                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Adr))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:sese.010.001.07"), ValidationCheck, AnyKey
+value ISO20022.Sese010001.PartyIdentification125Choice
+{
+    @XmlElement NmAndAdr           : ISO20022.Sese010001.NameAndAddress5,
+    @XmlElement PrtryId            : ISO20022.Sese010001.GenericIdentification1,
+    @XmlElement AnyBIC             : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(NmAndAdr), 
+        validElement(PrtryId), 
+        validPattern ("AnyBIC", AnyBIC, "[A-Z0-9]{4,4}[A-Z]{2,2}[A-Z0-9]{2,2}([A-Z0-9]{3,3}){0,1}"), 
+        validChoice (NmAndAdr, PrtryId, AnyBIC))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:sese.010.001.07"), ValidationCheck
+value ISO20022.Sese010001.PartyIdentification139
+{
+    @XmlElement LEI                : String,
+    @XmlElement Pty                : ISO20022.Sese010001.PartyIdentification125Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("LEI", LEI, "[A-Z0-9]{18,18}[0-9]{2,2}"), 
+        validElement(Pty))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:sese.010.001.07"), ValidationCheck
+value ISO20022.Sese010001.PostalAddress1
+{
+    @XmlElement Ctry               : String,
+    @XmlElement CtrySubDvsn        : String,
+    @XmlElement TwnNm              : String,
+    @XmlElement PstCd              : String,
+    @XmlElement BldgNb             : String,
+    @XmlElement StrtNm             : String,
+    @XmlElement AdrLine            : List<String>,
+    @XmlElement AdrTp              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("Ctry", Ctry, "[A-Z]{2,2}"), 
+        validListMax ("AdrLine", AdrLine, 5))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:sese.010.001.07"), ValidationCheck, AnyKey
+value ISO20022.Sese010001.References64Choice
+{
+    @XmlElement OthrRef            : List<ISO20022.Sese010001.AdditionalReference10>,
+    @XmlElement RltdRef            : List<ISO20022.Sese010001.AdditionalReference10>,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validRequired ("OthrRef", OthrRef), 
+        validList ("OthrRef", OthrRef), 
+        validListMax ("OthrRef", OthrRef, 2), 
+        validElement(OthrRef), 
+        validRequired ("RltdRef", RltdRef), 
+        validList ("RltdRef", RltdRef), 
+        validListMax ("RltdRef", RltdRef, 2), 
+        validElement(RltdRef), 
+        validChoice (OthrRef, RltdRef))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:sese.010.001.07"), ValidationCheck, AnyKey
+value ISO20022.Sese010001.RejectedReason17Choice
+{
+    @XmlElement Prtry              : ISO20022.Sese010001.GenericIdentification36,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Prtry), 
+        validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:sese.010.001.07"), ValidationCheck
+value ISO20022.Sese010001.RejectionReason33
+{
+    @XmlElement AddtlRsnInf        : String,
+    @XmlElement Rsn                : ISO20022.Sese010001.RejectedReason17Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Rsn))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:sese.010.001.07"), ValidationCheck, AnyKey
+value ISO20022.Sese010001.Status31Choice
+{
+    @XmlElement Pdg                : ISO20022.Sese010001.TransferCancellationPendingStatus1,
+    @XmlElement Cmplt              : ISO20022.Sese010001.CancelledCompleteReason1,
+    @XmlElement Rjctd              : ISO20022.Sese010001.RejectionReason33,
+    @XmlElement Sts                : ISO20022.Sese010001.TransferCancellationStatus3,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Pdg), 
+        validElement(Cmplt), 
+        validElement(Rjctd), 
+        validElement(Sts), 
+        validChoice (Pdg, Cmplt, Rjctd, Sts))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:sese.010.001.07"), ValidationCheck
+value ISO20022.Sese010001.TransferCancellationPendingStatus1
+{
+    @XmlElement Rsn                : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:sese.010.001.07"), ValidationCheck
+value ISO20022.Sese010001.TransferCancellationStatus3
+{
+    @XmlElement Rsn                : String,
+    @XmlElement Sts                : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:sese.010.001.07"), ValidationCheck
+aspect ISO20022.Sese010001.TransferCancellationStatusReportV07
+{
+    @XmlElement Xtnsn              : List<ISO20022.Sese010001.Extension1>,
+    @XmlElement MktPrctcVrsn       : ISO20022.Sese010001.MarketPracticeVersion1,
+    @XmlElement StsRpt             : ISO20022.Sese010001.CancellationStatusAndReason5,
+    @XmlElement Ref                : ISO20022.Sese010001.References64Choice,
+    @XmlElement CtrPtyRef          : ISO20022.Sese010001.AdditionalReference10,
+    @XmlElement MsgId              : ISO20022.Sese010001.MessageIdentification1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("Xtnsn", Xtnsn), 
+        validElement(Xtnsn), 
+        validElement(MktPrctcVrsn), 
+        validElement(StsRpt), 
+        validElement(Ref), 
+        validElement(CtrPtyRef), 
+        validElement(MsgId))
+];

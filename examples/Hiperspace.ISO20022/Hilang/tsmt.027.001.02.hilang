@@ -1,0 +1,65 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:tsmt.027.001.02")
+enum ISO20022.Tsmt027001.BaselineStatus2Code
+{
+    @XmlEnum ("ACTV") ACTV          #1,
+    @XmlEnum ("CLSD") CLSD          #2,
+    @XmlEnum ("COMP") COMP          #3,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.027.001.02"), ValidationCheck
+type ISO20022.Tsmt027001.Document
+{
+}
+[
+    @XmlElement StsChngReqAccptnc  : ISO20022.Tsmt027001.StatusChangeRequestAcceptanceV02,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(StsChngReqAccptnc))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.027.001.02"), ValidationCheck
+value ISO20022.Tsmt027001.MessageIdentification1
+{
+    @XmlElement CreDtTm            : DateTime,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.027.001.02"), ValidationCheck
+value ISO20022.Tsmt027001.SimpleIdentificationInformation
+{
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.027.001.02"), ValidationCheck
+aspect ISO20022.Tsmt027001.StatusChangeRequestAcceptanceV02
+{
+    @XmlElement AccptdSts          : ISO20022.Tsmt027001.TransactionStatus3,
+    @XmlElement SubmitrTxRef       : ISO20022.Tsmt027001.SimpleIdentificationInformation,
+    @XmlElement TxId               : ISO20022.Tsmt027001.SimpleIdentificationInformation,
+    @XmlElement AccptncId          : ISO20022.Tsmt027001.MessageIdentification1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(AccptdSts), 
+        validElement(SubmitrTxRef), 
+        validElement(TxId), 
+        validElement(AccptncId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.027.001.02"), ValidationCheck
+value ISO20022.Tsmt027001.TransactionStatus3
+{
+    @XmlElement Sts                : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];

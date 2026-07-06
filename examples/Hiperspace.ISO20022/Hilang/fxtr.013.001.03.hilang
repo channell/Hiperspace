@@ -1,0 +1,68 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:fxtr.013.001.03"), ValidationCheck
+type ISO20022.Fxtr013001.Document
+{
+}
+[
+    @XmlElement FXTradWdrwlNtfctn  : ISO20022.Fxtr013001.ForeignExchangeTradeWithdrawalNotificationV03,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(FXTradWdrwlNtfctn))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:fxtr.013.001.03"), ValidationCheck
+aspect ISO20022.Fxtr013001.ForeignExchangeTradeWithdrawalNotificationV03
+{
+    @XmlElement SplmtryData        : List<ISO20022.Fxtr013001.SupplementaryData1>,
+    @XmlElement SttlmSsnIdr        : String,
+    @XmlElement WdrwlRsn           : ISO20022.Fxtr013001.WithdrawalReason1,
+    @XmlElement MtchgSysUnqRef     : String,
+    @XmlElement MsgId              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("SplmtryData", SplmtryData), 
+        validElement(SplmtryData), 
+        validPattern ("SttlmSsnIdr", SttlmSsnIdr, "[a-zA-Z0-9]{4}"), 
+        validElement(WdrwlRsn))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:fxtr.013.001.03"), ValidationCheck
+value ISO20022.Fxtr013001.SupplementaryData1
+{
+    @XmlElement Envlp              : ISO20022.Fxtr013001.SupplementaryDataEnvelope1,
+    @XmlElement PlcAndNm           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Envlp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:fxtr.013.001.03"), ValidationCheck
+value ISO20022.Fxtr013001.SupplementaryDataEnvelope1
+{
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:fxtr.013.001.03"), ValidationCheck
+value ISO20022.Fxtr013001.WithdrawalReason1
+{
+    @XmlElement WdrwlRsnSubCd      : String,
+    @XmlElement WdrwlRsnCd         : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:fxtr.013.001.03")
+enum ISO20022.Fxtr013001.WithdrawalReason1Code
+{
+    @XmlEnum ("WTDN") WTDN          #1,
+    @XmlEnum ("RSCD") RSCD          #2,
+    @XmlEnum ("RJCT") RJCT          #3,
+};

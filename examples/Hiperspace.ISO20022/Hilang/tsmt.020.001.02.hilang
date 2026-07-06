@@ -1,0 +1,49 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.020.001.02"), ValidationCheck
+type ISO20022.Tsmt020001.Document
+{
+}
+[
+    @XmlElement MisMtchAccptnc     : ISO20022.Tsmt020001.MisMatchAcceptanceV02,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(MisMtchAccptnc))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.020.001.02"), ValidationCheck
+value ISO20022.Tsmt020001.MessageIdentification1
+{
+    @XmlElement CreDtTm            : DateTime,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.020.001.02"), ValidationCheck
+aspect ISO20022.Tsmt020001.MisMatchAcceptanceV02
+{
+    @XmlElement DataSetMtchRptRef  : ISO20022.Tsmt020001.MessageIdentification1,
+    @XmlElement SubmitrTxRef       : ISO20022.Tsmt020001.SimpleIdentificationInformation,
+    @XmlElement TxId               : ISO20022.Tsmt020001.SimpleIdentificationInformation,
+    @XmlElement AccptncId          : ISO20022.Tsmt020001.MessageIdentification1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(DataSetMtchRptRef), 
+        validElement(SubmitrTxRef), 
+        validElement(TxId), 
+        validElement(AccptncId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.020.001.02"), ValidationCheck
+value ISO20022.Tsmt020001.SimpleIdentificationInformation
+{
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];

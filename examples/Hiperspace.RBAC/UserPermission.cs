@@ -1,6 +1,6 @@
 ﻿using Hiperspace;
 
-namespace Access.RBAC
+namespace RBAC
 {
     public partial class UserPermission
     {
@@ -20,7 +20,7 @@ namespace Access.RBAC
             DateTime time = AsAt;
             if (user.Realm == null || user.Realm == null || SetSpace?.Space == null)
                 return false;
-            using (var scope = new AccessSpace(SetSpace.Space, AccessSpace.Mode.Write, user.Realm))
+            using (var scope = new RBACSpace(SetSpace.Space, RBACSpace.Mode.Write, user.Realm))
             {
                 var perm = scope.UserPermissions.Get(this);
                 var usr = scope.Users.Get(user);    // might have been updated
@@ -39,7 +39,7 @@ namespace Access.RBAC
                 scope.UserPermissions.Bind(perm);
                 time = perm.AsAt;
             }
-            using (var scope = new AccessSpace(SetSpace.Space, AccessSpace.Mode.Write, user.Realm))
+            using (var scope = new RBACSpace(SetSpace.Space, RBACSpace.Mode.Write, user.Realm))
             {
                 var perm = scope.UserPermissions.Get(this);
                 if (perm != null && perm.AsAt > time)

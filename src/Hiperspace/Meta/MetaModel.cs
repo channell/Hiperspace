@@ -5,14 +5,23 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+#if NET8_0_OR_GREATER
 using ProtoBuf;
+#endif
 using System.Diagnostics;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace Hiperspace.Meta
 {
+#if NET8_0_OR_GREATER
     [ProtoContract]
+#endif
     public class MetaModel : IEquatable<MetaModel>
     {
+#if NET8_0_OR_GREATER
         internal static readonly BaseTypeModel MetaTypeModel = new BaseTypeModel();
+#endif
         public MetaModel()
         {
             Elements = new Element[0];
@@ -22,6 +31,7 @@ namespace Hiperspace.Meta
             Elements = elements;
         }
 
+#if NET8_0_OR_GREATER
         public Byte[] Bytes
         {
             get
@@ -31,9 +41,12 @@ namespace Hiperspace.Meta
                 return Space.ValueBytes(MetaTypeModel, cp);
             }
         }
+#endif
 
+#if NET8_0_OR_GREATER
         [ProtoMember(1)]
-        public Element[]? Elements { get; set; }
+#endif
+        public Element[] Elements { get; set; }
 
         public override bool Equals(object? other)
         {
@@ -50,7 +63,7 @@ namespace Hiperspace.Meta
             var map = other.Elements?.ToDictionary(p => p.Id);
             if (map is null) return false;
             for (int c = 0; c < Elements.Length; c++)
-                if (map.TryGetValue(Elements[c].Id, out Element value))
+                if (map.TryGetValue(Elements[c].Id, out Element? value))
                     if (!Elements[c].Equals(value)) return false;
             return true;
         }
@@ -87,10 +100,11 @@ namespace Hiperspace.Meta
             }
             else if (Elements is null)
             {
-                Elements = other.Elements;
+                Elements = other?.Elements ?? new Element[] { } ;
             }
         }
 
+#if NET8_0_OR_GREATER
         public (int key, (int member, int key)[] values)[] MetaMap()
         {
             var any = new Meta.Element[]
@@ -200,6 +214,7 @@ namespace Hiperspace.Meta
 
             return result.ToArray();
         }
+#endif
 
         public IEnumerable<(int id, string reason)> Difference(MetaModel other)
         {
@@ -209,7 +224,7 @@ namespace Hiperspace.Meta
             {
                 for (int c = 0; c < Elements.Length; c++)
                 {
-                    if (map.TryGetValue(Elements[c].Id, out Element value))
+                    if (map.TryGetValue(Elements[c].Id, out Element? value))
                     {
                         foreach (var diff in Elements[c].Difference(value))
                             yield return diff;

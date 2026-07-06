@@ -9,6 +9,7 @@ using System.Collections;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Xml.XPath;
 
 namespace Hiperspace
 {
@@ -17,13 +18,15 @@ namespace Hiperspace
     {
         public readonly ConcurrentHashSet<TEntity> Cached = new ConcurrentHashSet<TEntity>();
 
+        public delegate void BeforeBind(TEntity entity);
         public delegate void Bound(TEntity entity);
         public delegate void Dependency((TEntity target, Meta.DependencyPath sender) value);
         public delegate void Missing (TEntity entity);
         /// <summary>
         /// Event to capture Bind Events
         /// </summary>
-        public event Bound? OnBind;
+        public event BeforeBind? OnBind;
+        public event Bound? OnBound;
         public event Dependency? OnDependency;
         /// <summary>
         /// Occurs when a required item is missing in Hiperspace, trigger alternate source
@@ -31,9 +34,14 @@ namespace Hiperspace
         public event Missing? OnMissing;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        protected void RaiseOnbind(TEntity entity)
+        protected void RaiseOnBind(TEntity entity)
         {
             OnBind?.Invoke(entity);
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected void RaiseOnBound(TEntity entity)
+        {
+            OnBound?.Invoke(entity);
             OnDependency?.Invoke((entity, new Meta.DependencyPath(entity)));
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -49,7 +57,7 @@ namespace Hiperspace
 
         public void ForwardEventsFrom(SetSpace<TEntity> source)
         {
-            if (OnBind is not null) source.OnBind += RaiseOnbind;
+            if (OnBind is not null) source.OnBind += RaiseOnBound;
             if (OnDependency is not null) source.OnDependency += RaiseOnDependency;
         }
 
@@ -69,6 +77,13 @@ namespace Hiperspace
             }
         }
         public SubSpace Space { get; set; }
+
+
+        [Obsolete("Provided for XML serialisation: should not be used in application code")]
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. 
+        public SetSpace() { }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. 
+
         public SetSpace(SubSpace space, IQueryProvider provider)
         {
             Space = space;
@@ -76,6 +91,25 @@ namespace Hiperspace
         }
         protected SpinLock _lock = new SpinLock();
 
+        /// <summary>
+        /// Bind the element and all contents referenced by it to HiperSpace
+        /// </summary>
+        /// <param name="item">the item being added to HiperSpace</param>
+        /// <param name="cache">should the result be cached for reuse, false if bulk data mloading</param>
+        /// <param name="path">the path of serialization to support recursuve structures</param>
+        /// <returns>the Result value of the underlying Bind</returns>
+        public abstract Result<TEntity> BindAll(TEntity item, bool cache = true, HashSet<IElement>? path = null);
+
+        /// <summary>
+        /// Bind the element to HiperSpace
+        /// </summary>
+        /// <remarks>
+        /// Will not recursively add the contents, that need to be added seperately
+        /// </remarks>
+        /// <param name="item">the item being added to HiperSpace</param>
+        /// <param name="cache">should the result be cached for reuse, false if bulk data mloading</param>
+        /// <param name="path">the path of serialization to support recursuve structures</param>
+        /// <returns>the Result value of the underlying Bind</returns>
         public virtual Result<TEntity> Bind(TEntity item, bool cache = true, bool read = false)
         {
             var filtered = Filter(item, read);
@@ -104,7 +138,7 @@ namespace Hiperspace
                 {
                     Cached.Replace(item);
                 }
-                RaiseOnbind(item);
+                RaiseOnBound(item);
                 return Result.Ok(item);
             }
         }
@@ -517,6 +551,22 @@ namespace Hiperspace
         public virtual Task<ulong> UseSequenceAsync<T>(T item) { throw new NotImplementedException("Update the HiLang compiler and/or drivers"); }
 
         #endregion
+        /// <summary>
+        /// Get the an item using a string encoded key
+        /// </summary>
+        /// <remarks>
+        /// only needed for setspaces included by %reference("assembly-name.dll")
+        /// </remarks>
+        /// <param name="sid">string representation of key</param>
+        /// <returns>Result value with status</returns>
+        public async virtual Task<Result<TEntity>> GetSidAsync(string sid)
+        {
+            var result = await Space.GetAsync<TEntity>(sid);
+            if (result is not null)
+                return Result.Ok(result);
+            else
+                return Result.NotFound<TEntity>();
+        }
     }
 
     public abstract class SetSpaceVersion<TEntity> : SetSpace<TEntity>
@@ -558,22 +608,6 @@ namespace Hiperspace
             }
             return Result.Ok(item);
         }
-        [Obsolete("use BatchBind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
-        public Result<TEntity> BatchBind(TEntity item, bool cache, (byte[] key, byte[] value, DateTime version, object? source)[] batch)
-        {
-            var result = Space.BatchBind(batch);
-            if (result.Any(b => b.Fail))
-                return Result.Fail(item);
-            if (cache)
-            {
-                Cached.Remove(item);
-                Cached.Add(item);
-                RaiseOnbind(item);
-                return Result.Ok(item);
-            }
-            RaiseOnbind(item);
-            return Result.Ok(item);
-        }
         public Result<TEntity> BatchBind(TEntity item, bool cache, (byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)
         {
             var result = Space.BatchBind(batch);
@@ -583,10 +617,10 @@ namespace Hiperspace
             {
                 Cached.Remove(item);
                 Cached.Add(item);
-                RaiseOnbind(item);
+                RaiseOnBound(item);
                 return Result.Ok(item);
             }
-            RaiseOnbind(item);
+            RaiseOnBound(item);
             return Result.Ok(item);
         }
         public new bool Add(TEntity item)

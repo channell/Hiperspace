@@ -6,12 +6,14 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 #nullable enable
+using Graph.Cube;
 using Hiperspace;
 using ProtoBuf;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
+using System.Xml.Serialization;
 using static Hiperspace.ComparableExtension;
 
 namespace Graph
@@ -188,23 +190,72 @@ namespace Graph
             }
         }
 
-        [ProtoMember(15)]
+        /// <summary>
+        /// Provide the hiperedge metrics {Length, Width} like a Node Metrics, 
+        /// and include the most detailed cube drilldown if the path is though edges
+        /// </summary>
         public List<Cube.Measure>? Measures
         {
             get
             {
-                return _value.Measures;
+                var result = new List<Measure>
+                {
+                    new Measure
+                    {
+                        Name = "Length",
+                        Value = new MeasureValue
+                        {
+                            Integer = Length
+                        }
+                    },
+                    new Measure
+                    {
+                        Name = "Width",
+                        Value = new MeasureValue
+                        {
+                            Integer = Width
+                        },
+                    }
+                };
+                var drillNode = Drilldown();
+                if (drillNode is not null)
+                {
+                    result.AddRange(drillNode.Measures!);
+                }
+                return result;
             }
-            set
+        }
+        
+        /// <summary>
+        /// Drilldown to the most specific Node in the path
+        /// </summary>
+        /// <returns>deepest measure node in the path</returns>
+        private Node? Drilldown()
+        {
+            // Drilldown path
+            if (Source is not null)
             {
-                if (SetSpace is not null && _value.Measures != value) throw new Hiperspace.ValueMutationException($"Measure");
-                _value.Measures = value;
+                var result = Source.Drilldown();
+                if (result != null)
+                    return result;
             }
+            if (Edge?.TypeName == "Cube:Drilldown" && Source is not null)
+            {
+                if (Edge?.To?.Measures is not null)
+                {
+                    return Edge?.To;
+                }
+                if (Edge?.From?.Measures is not null)
+                {
+                    return Edge?.From;
+                }
+            }
+            return null;
         }
 
         #region state
 
-        [ProtoContract]
+        [ProtoContract, XmlType("HiperEdge_KeyType")]
         public struct KeyType : IEquatable<KeyType>, IComparable<KeyType>
         {
 
@@ -339,7 +390,7 @@ namespace Graph
         }
         public static explicit operator KeyType(HiperEdge item) => item._key;
 
-        [ProtoContract]
+        [ProtoContract, XmlType("HiperEdge_ValueType")]
         public struct ValueType
         {
             internal ValueType(HiperEdge item)
@@ -350,7 +401,6 @@ namespace Graph
                 Source = item.Source;
                 Width = item.Width;
                 Length = item.Length;
-                Measures = item.Measures;
             }
 
             [ProtoMember(5)] public String? Name;
@@ -358,7 +408,6 @@ namespace Graph
             [ProtoMember(11)] public KeyRef<Graph.HiperEdge.KeyType, Graph.HiperEdge>? Source;
             [ProtoMember(13)] public Int32? Width;
             [ProtoMember(14)] public Int32? Length;
-            [ProtoMember(15)] public List<Cube.Measure>? Measures;
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public void Bind(SubSpace space)
             {
@@ -527,6 +576,33 @@ namespace Graph
 
 
 
+                }
+                return Result.Ok(this);
+            }
+            return Result.Fail(this);
+        }
+        public override Result<HiperEdge> BindAll(SubSpace subspace, HashSet<IElement> path, bool cache = true)
+        {
+            if (path.Contains(this)) return Result.Skip(this);
+            if (SetSpace != subspace.HiperEdges)
+            {
+                if (From is not null)
+                {
+                    var value = From;
+                    value.BindAll(subspace, path, cache);
+                    From = value;
+                }
+                if (To is not null)
+                {
+                    var value = To;
+                    value.BindAll(subspace, path, cache);
+                    To = value;
+                }
+                if (Source is not null)
+                {
+                    var value = Source;
+                    value.BindAll(subspace, path, cache);
+                    Source = value;
                 }
                 return Result.Ok(this);
             }

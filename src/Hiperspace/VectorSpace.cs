@@ -198,6 +198,10 @@ namespace Hiperspace
             }
             return Result.Skip(this);
         }
+        public override Result<VectorSpace> BindAll(SubSpace subSpace, HashSet<IElement> path, bool cache = true)
+        {
+            return Result.Ok(this);
+        }
         public override void Unbind(SubSpace subSpace)
         {
             if (subSpace is SubSpace space)

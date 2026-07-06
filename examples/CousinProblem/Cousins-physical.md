@@ -2,21 +2,13 @@
 ```mermaid
 classDiagram
     class Cousins.Path {
-        # From  : Node
-        # To  : Node
+        # From  : Hiperspace.Node
+        # To  : Hiperspace.Node
         # TypeName  : String
         + Name  : String
-        + Edge  : Edge
+        + Edge  : Hiperspace.Edge
         + Source  : Cousins.Path
     }
-    class Graph.TransitiveSegment {
-        # owner  : Cousins.Person
-        # Route  : Graph.Route
-        + Length  : Int32
-        + Targets  : HashSet~String~
-        + Paths () = Paths(owner,Route,Length,Targets)
-    }
-    Graph.TransitiveSegment *-- Graph.Route
     class Cousins.Person {
         # Name  : String
         + Deleted  = false
@@ -24,13 +16,22 @@ classDiagram
         + Mother  : Cousins.Person
         + Father  : Cousins.Person
         + Email  : String
-        + TypeName () = "Person"
-        + FatherChild (Father = this) : Cousins.Person
-        + MotherChild (Mother = this) : Cousins.Person
-        + Relatives () = relation(this)
+        + TypeName () = """Person"""
+        + FatherChild (Father = ) : Cousins.Person
+        + MotherChild (Mother = ) : Cousins.Person
+        + Relatives () = relation()
         + Stored () : Graph.TransitiveSegment
-        + AllRelatives () = allrelation(this)
-    }
+        + AllRelatives () = allrelation()
+    }
+    Cousins.Person o-- Graph.TransitiveSegment
+    class Graph.TransitiveSegment {
+        # owner  : Cousins.Person
+        # Route  : Graph.Route
+        + Length  : Int32
+        + Targets  : global::System.Collections.Generic.HashSet~String~
+        + Paths () = Paths(owner,Route,Length,Targets)
+    }
+    Graph.TransitiveSegment *-- Graph.Route
 ```
 > The tables below contain descriptions of the members of each Element. 
 > The first column indicates the type of the member:
@@ -46,25 +47,12 @@ classDiagram
 
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
+|#|From|Hiperspace.Node||||
+|#|To|Hiperspace.Node||||
 |#|TypeName|String||||
 |+|Name|String||||
-|+|Edge|Edge||||
+|+|Edge|Hiperspace.Edge||||
 |+|Source|Cousins.Path||||
-
----
-
-## SegmentImpl Graph.TransitiveSegment
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|owner|Cousins.Person||||
-|#|Route|Graph.Route||||
-|+|Length|Int32||||
-|+|Targets|HashSet<String>||||
-||Paths|Some(HashSet<Graph.HiperEdge>)||Once()|Paths(owner,Route,Length,Targets)|
 
 ---
 
@@ -79,10 +67,23 @@ classDiagram
 |+|Mother|Cousins.Person||||
 |+|Father|Cousins.Person||||
 |+|Email|String||||
-||TypeName|Some(String)|||"Person"|
-||FatherChild|Cousins.Person|||Father = this|
-||MotherChild|Cousins.Person|||Mother = this|
-||Relatives|Some(List<Path>)||Once()|relation(this)|
+||TypeName|Some(String)|||"""Person"""|
+||FatherChild|Cousins.Person|||Father = |
+||MotherChild|Cousins.Person|||Mother = |
+||Relatives|Some(global::System.Collections.Generic.List<Path>)||Once()|relation()|
 |+|Stored|Graph.TransitiveSegment||||
-||AllRelatives|Some(HashSet<Graph.HiperEdge>)||Once()|allrelation(this)|
+||AllRelatives|Some(global::System.Collections.Generic.HashSet<Graph.HiperEdge>)||Once()|allrelation()|
+
+---
+
+## SegmentImpl Graph.TransitiveSegment
+
+
+| |Name|Type|*|@|=|
+|-|-|-|-|-|-|
+|#|owner|Cousins.Person||||
+|#|Route|Graph.Route||||
+|+|Length|Int32||||
+|+|Targets|global::System.Collections.Generic.HashSet<String>||||
+||Paths|Some(global::System.Collections.Generic.HashSet<Graph.HiperEdge>)||Once()|Paths(owner,Route,Length,Targets)|
 

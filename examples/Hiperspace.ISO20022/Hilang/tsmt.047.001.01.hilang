@@ -1,0 +1,65 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.047.001.01"), ValidationCheck
+type ISO20022.Tsmt047001.Document
+{
+}
+[
+    @XmlElement SpclReq            : ISO20022.Tsmt047001.SpecialRequestV01,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(SpclReq))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.047.001.01"), ValidationCheck
+value ISO20022.Tsmt047001.MessageIdentification1
+{
+    @XmlElement CreDtTm            : DateTime,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.047.001.01"), ValidationCheck
+value ISO20022.Tsmt047001.Notification1
+{
+    @XmlElement AddtlInf           : String,
+    @XmlElement Tp                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:tsmt.047.001.01")
+enum ISO20022.Tsmt047001.NotificationType1Code
+{
+    @XmlEnum ("CSDS") CSDS          #1,
+    @XmlEnum ("MWFT") MWFT          #2,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.047.001.01"), ValidationCheck
+value ISO20022.Tsmt047001.SimpleIdentificationInformation
+{
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.047.001.01"), ValidationCheck
+aspect ISO20022.Tsmt047001.SpecialRequestV01
+{
+    @XmlElement Ntfctn             : ISO20022.Tsmt047001.Notification1,
+    @XmlElement SubmitrTxRef       : ISO20022.Tsmt047001.SimpleIdentificationInformation,
+    @XmlElement TxId               : ISO20022.Tsmt047001.SimpleIdentificationInformation,
+    @XmlElement ReqId              : ISO20022.Tsmt047001.MessageIdentification1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Ntfctn), 
+        validElement(SubmitrTxRef), 
+        validElement(TxId), 
+        validElement(ReqId))
+];

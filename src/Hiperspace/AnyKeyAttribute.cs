@@ -15,7 +15,7 @@ namespace Hiperspace
     /// entity Sales_Fact (region, sector, product) {value}; is gettable when only one dimension is
     /// provided
     /// </remarks>
-    [AttributeUsage(AttributeTargets.Class)]
+    [AttributeUsage(AttributeTargets.Class| AttributeTargets.Struct)]
     public class AnyKeyAttribute : Attribute
     {
         public AnyKeyAttribute() { }

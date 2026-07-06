@@ -23,6 +23,21 @@ namespace Hiperspace
             Versioned = versioned;
             SetSpace = setSpace;
             Related = related;
+            Domain = string.Empty;
+        }
+        /// <summary>
+        /// Indicates that this element is a part of the Hiperspace system.
+        /// </summary>
+        /// <param name="versioned">is this Element versioned</param>
+        /// <param name="setSpace">the name of the setspace within the subspace that holds collections of this type</param>
+        /// <param name="domain">the name of the domain space</param>
+        /// <param name="related">when the type is a Cube, the typenane of the fact element</param>
+        public ElementAttribute(bool versioned, string setSpace, string domain, Type related) : base()
+        {
+            Versioned = versioned;
+            SetSpace = setSpace;
+            Related = related;
+            Domain = domain;
         }
         /// <summary>
         /// Indicates that this element is a part of the Hiperspace system.
@@ -33,6 +48,19 @@ namespace Hiperspace
         {
             Versioned = versioned;
             SetSpace = setSpace;
+            Domain = string.Empty;
+        }
+        /// <summary>
+        /// Indicates that this element is a part of the Hiperspace system.
+        /// </summary>
+        /// <param name="versioned">is this Element versioned</param>
+        /// <param name="domain">the name of the domain space</param>
+        /// <param name="setSpace">the name of the setspace within the subspace that holds collections of this type</param>
+        public ElementAttribute(bool versioned, string setSpace, string domain) : base()
+        {
+            Versioned = versioned;
+            SetSpace = setSpace;
+            Domain = domain;
         }
         /// <summary>
         /// The name of the set space for this element, which may have a prefix for uniquness
@@ -44,5 +72,7 @@ namespace Hiperspace
         public bool Versioned { get; set; }
 
         public Type? Related { get; set; } 
+
+        public string Domain { get; set; }
     }
 }

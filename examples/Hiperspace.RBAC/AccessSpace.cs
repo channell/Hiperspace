@@ -1,9 +1,9 @@
 ﻿using Hiperspace;
-using static Access.AccessSpace;
+using static RBAC.RBACSpace;
 
-namespace Access
+namespace RBAC
 {
-    public partial class AccessSpace : Hiperspace.SubSpace
+    public partial class RBACSpace : Hiperspace.SubSpace
     {
         public enum Mode
         {
@@ -63,7 +63,7 @@ namespace Access
         /// <param name="space">underlying HiperSpace that porovide store</param>
         /// <param name="mode">read or write</param>
         /// <param name="AsAt">snapshot date</param>
-        public AccessSpace(HiperSpace space, Mode mode, RBAC.Realm realm, DateTime? AsAt = null) 
+        public RBACSpace(HiperSpace space, Mode mode, RBAC.Realm realm, DateTime? AsAt = null) 
             : this(space, null, AsAt)
         {
             ContextLabel = mode.ToString();
@@ -82,7 +82,7 @@ namespace Access
             var result = new List<RBAC.UserPermission>();
             if (user.Group != null && _realm != null && AsAt == null) // can't approve history
             {
-                using (var scope = new AccessSpace(this, Write(_realm), AsAt))
+                using (var scope = new RBACSpace(this, Write(_realm), AsAt))
                 {
                     var tasks =
                         scope.UserPermissions
@@ -95,7 +95,7 @@ namespace Access
                         {
                             foreach (var approve in perm.Approval)
                             {
-                                if (approve.Value != null && groups.Contains(approve.Value?.Value))
+                                if (approve.Value != null && groups.Contains(approve.Value))
                                 {
                                     result.Add(perm);
                                     break;
@@ -118,7 +118,7 @@ namespace Access
             var result = new List<RBAC.GroupPermission>();
             if (user.Group != null && _realm != null && AsAt == null)     // can't approve history
             {
-                using (var scope = new AccessSpace(this, Write(_realm), AsAt))
+                using (var scope = new RBACSpace(this, Write(_realm), AsAt))
                 {
                     var tasks =
                         scope.GroupPermissions
@@ -131,7 +131,7 @@ namespace Access
                         {
                             foreach (var approve in perm.Approval)
                             {
-                                if (approve.Value != null && groups.Contains(approve.Value?.Value))
+                                if (approve.Value != null && groups.Contains(approve.Value))
                                 {
                                     result.Add(perm);
                                     break;

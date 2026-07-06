@@ -192,10 +192,10 @@ entity ERP.Sales.Order : Versioned
     Total           = sum (Lines.Price),
 
     "Shipping cost can only be calculated once we know if the order is international"
-    ShippingCost    = Shipping = null ? sum (Lines.Shipping) : sum (Lines.Shipping) + max (Shipping.Fee),
+    ShippingCost    = Shipping = null ? sum (Lines.Shipping) : sum (Lines.Shipping) + Shipping.Fee,
 
     SalesTax        = sum (Lines.Tax),
-    TariffTax       = Tariff = null ? 0.0 : max(Tariff.Tax.Rate) * Total,
+    TariffTax       = Tariff = null ? 0.0 : Tariff.Tax.Rate * Total,
 
     "Bill price sent to the customer"
     Bill            = Total + ShippingCost + SalesTax + TariffTax,

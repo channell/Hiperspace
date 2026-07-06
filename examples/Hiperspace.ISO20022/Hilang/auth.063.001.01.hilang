@@ -1,0 +1,195 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.063.001.01"), ValidationCheck
+value ISO20022.Auth063001.ActiveCurrencyAndAmount
+{
+    @XmlElement Value              : Decimal,
+    @XmlAttribute Ccy              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validRequired ("Value", Value), 
+        validRequired ("Ccy", Ccy), 
+        validPattern ("Ccy", Ccy, "[A-Z]{3,3}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.063.001.01"), ValidationCheck
+value ISO20022.Auth063001.AmountAndDirection102
+{
+    @XmlElement Sgn                : String,
+    @XmlElement Amt                : ISO20022.Auth063001.ActiveCurrencyAndAmount,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Amt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.063.001.01"), ValidationCheck
+aspect ISO20022.Auth063001.CCPLiquidityStressTestingResultReportV01
+{
+    @XmlElement SplmtryData        : List<ISO20022.Auth063001.SupplementaryData1>,
+    @XmlElement LqdtyStrssTstRslt  : List<ISO20022.Auth063001.LiquidityStressTestResult1>,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("SplmtryData", SplmtryData), 
+        validElement(SplmtryData), 
+        validRequired ("LqdtyStrssTstRslt", LqdtyStrssTstRslt), 
+        validList ("LqdtyStrssTstRslt", LqdtyStrssTstRslt), 
+        validElement(LqdtyStrssTstRslt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.063.001.01"), ValidationCheck
+value ISO20022.Auth063001.CoverTwoDefaulters1
+{
+    @XmlElement Cover2Id           : String,
+    @XmlElement Cover1Id           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("Cover2Id", Cover2Id, "[A-Z0-9]{18,18}[0-9]{2,2}"), 
+        validPattern ("Cover1Id", Cover1Id, "[A-Z0-9]{18,18}[0-9]{2,2}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.063.001.01"), ValidationCheck
+type ISO20022.Auth063001.Document
+{
+}
+[
+    @XmlElement CCPLqdtyStrssTstgRsltRpt : ISO20022.Auth063001.CCPLiquidityStressTestingResultReportV01,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(CCPLqdtyStrssTstgRsltRpt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.063.001.01"), ValidationCheck
+value ISO20022.Auth063001.LiquidResourceInformation1
+{
+    @XmlElement AgcyArrgmnts       : String,
+    @XmlElement QlfygRsrc          : String,
+    @XmlElement AsstNcmbrd         : String,
+    @XmlElement Scrd               : String,
+    @XmlElement MktVal             : ISO20022.Auth063001.AmountAndDirection102,
+    @XmlElement LqdRsrcVal         : ISO20022.Auth063001.AmountAndDirection102,
+    @XmlElement CntrPtyId          : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(MktVal), 
+        validElement(LqdRsrcVal))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.063.001.01"), ValidationCheck
+value ISO20022.Auth063001.LiquidResources1
+{
+    @XmlElement FinInstrmsDfltrsNonCshColl : List<ISO20022.Auth063001.LiquidResourceInformation1>,
+    @XmlElement FinInstrmsDfltrsSttlmColl : List<ISO20022.Auth063001.LiquidResourceInformation1>,
+    @XmlElement FinInstrmsTrsrInvstmts : List<ISO20022.Auth063001.LiquidResourceInformation1>,
+    @XmlElement FinInstrmsCCP      : List<ISO20022.Auth063001.LiquidResourceInformation1>,
+    @XmlElement FcltiesUcmmtd      : List<ISO20022.Auth063001.LiquidResourceInformation1>,
+    @XmlElement FcltiesOthrCmmtd   : List<ISO20022.Auth063001.LiquidResourceInformation1>,
+    @XmlElement FcltiesCmmtdFxSwps : List<ISO20022.Auth063001.LiquidResourceInformation1>,
+    @XmlElement FcltiesCmmtdRpAgrmts : List<ISO20022.Auth063001.LiquidResourceInformation1>,
+    @XmlElement FcltiesCmmtdLinesOfCdt : List<ISO20022.Auth063001.LiquidResourceInformation1>,
+    @XmlElement CshDue             : List<ISO20022.Auth063001.LiquidResourceInformation1>,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("FinInstrmsDfltrsNonCshColl", FinInstrmsDfltrsNonCshColl), 
+        validElement(FinInstrmsDfltrsNonCshColl), 
+        validList ("FinInstrmsDfltrsSttlmColl", FinInstrmsDfltrsSttlmColl), 
+        validElement(FinInstrmsDfltrsSttlmColl), 
+        validList ("FinInstrmsTrsrInvstmts", FinInstrmsTrsrInvstmts), 
+        validElement(FinInstrmsTrsrInvstmts), 
+        validList ("FinInstrmsCCP", FinInstrmsCCP), 
+        validElement(FinInstrmsCCP), 
+        validList ("FcltiesUcmmtd", FcltiesUcmmtd), 
+        validElement(FcltiesUcmmtd), 
+        validList ("FcltiesOthrCmmtd", FcltiesOthrCmmtd), 
+        validElement(FcltiesOthrCmmtd), 
+        validList ("FcltiesCmmtdFxSwps", FcltiesCmmtdFxSwps), 
+        validElement(FcltiesCmmtdFxSwps), 
+        validList ("FcltiesCmmtdRpAgrmts", FcltiesCmmtdRpAgrmts), 
+        validElement(FcltiesCmmtdRpAgrmts), 
+        validList ("FcltiesCmmtdLinesOfCdt", FcltiesCmmtdLinesOfCdt), 
+        validElement(FcltiesCmmtdLinesOfCdt), 
+        validRequired ("CshDue", CshDue), 
+        validList ("CshDue", CshDue), 
+        validElement(CshDue))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.063.001.01"), ValidationCheck
+value ISO20022.Auth063001.LiquidityRequiredAndAvailable1
+{
+    @XmlElement StrssLqdRsrcRqrmnt : ISO20022.Auth063001.StressLiquidResourceRequirement1,
+    @XmlElement LqdtyHrzn          : String,
+    @XmlElement LqdRsrcs           : ISO20022.Auth063001.LiquidResources1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(StrssLqdRsrcRqrmnt), 
+        validElement(LqdRsrcs))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.063.001.01"), ValidationCheck
+value ISO20022.Auth063001.LiquidityStressTestResult1
+{
+    @XmlElement LqdtyReqrdAndAvlbl : List<ISO20022.Auth063001.LiquidityRequiredAndAvailable1>,
+    @XmlElement ScnroDfltrs        : ISO20022.Auth063001.CoverTwoDefaulters1,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("LqdtyReqrdAndAvlbl", LqdtyReqrdAndAvlbl), 
+        validListMin ("LqdtyReqrdAndAvlbl", LqdtyReqrdAndAvlbl, 6), 
+        validListMax ("LqdtyReqrdAndAvlbl", LqdtyReqrdAndAvlbl, 6), 
+        validElement(LqdtyReqrdAndAvlbl), 
+        validElement(ScnroDfltrs))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:auth.063.001.01")
+enum ISO20022.Auth063001.SettlementDate6Code
+{
+    @XmlEnum ("SAMD") SAMD          #1,
+    @XmlEnum ("TTWO") TTWO          #2,
+    @XmlEnum ("TTRE") TTRE          #3,
+    @XmlEnum ("TONE") TONE          #4,
+    @XmlEnum ("TFOR") TFOR          #5,
+    @XmlEnum ("TFIV") TFIV          #6,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.063.001.01"), ValidationCheck
+value ISO20022.Auth063001.StressLiquidResourceRequirement1
+{
+    @XmlElement Othr               : ISO20022.Auth063001.AmountAndDirection102,
+    @XmlElement SttlmOrDlvry       : ISO20022.Auth063001.AmountAndDirection102,
+    @XmlElement VartnMrgnPmtOblgtn : ISO20022.Auth063001.AmountAndDirection102,
+    @XmlElement OprlOutflw         : ISO20022.Auth063001.AmountAndDirection102,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Othr), 
+        validElement(SttlmOrDlvry), 
+        validElement(VartnMrgnPmtOblgtn), 
+        validElement(OprlOutflw))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.063.001.01"), ValidationCheck
+value ISO20022.Auth063001.SupplementaryData1
+{
+    @XmlElement Envlp              : ISO20022.Auth063001.SupplementaryDataEnvelope1,
+    @XmlElement PlcAndNm           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Envlp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.063.001.01"), ValidationCheck
+value ISO20022.Auth063001.SupplementaryDataEnvelope1
+{
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];

@@ -1,0 +1,235 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.065.001.02"), ValidationCheck
+value ISO20022.Reda065001.CalendarData1
+{
+    @XmlElement SysSts             : ISO20022.Reda065001.SystemStatus3Choice,
+    @XmlElement SysDt              : DateTime,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(SysSts))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.065.001.02"), ValidationCheck, AnyKey
+value ISO20022.Reda065001.CalendarOrBusinessError1Choice
+{
+    @XmlElement BizErr             : List<ISO20022.Reda065001.ErrorHandling4>,
+    @XmlElement CalData            : List<ISO20022.Reda065001.CalendarData1>,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validRequired ("BizErr", BizErr), 
+        validList ("BizErr", BizErr), 
+        validElement(BizErr), 
+        validRequired ("CalData", CalData), 
+        validList ("CalData", CalData), 
+        validElement(CalData), 
+        validChoice (BizErr, CalData))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.065.001.02"), ValidationCheck
+value ISO20022.Reda065001.CalendarReport1
+{
+    @XmlElement CalOrErr           : ISO20022.Reda065001.CalendarOrBusinessError1Choice,
+    @XmlElement Svc                : ISO20022.Reda065001.SystemAndCurrency1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(CalOrErr), 
+        validElement(Svc))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.065.001.02"), ValidationCheck, AnyKey
+value ISO20022.Reda065001.CalendarReportOrError1Choice
+{
+    @XmlElement OprlErr            : List<ISO20022.Reda065001.ErrorHandling4>,
+    @XmlElement CalRpt             : ISO20022.Reda065001.CalendarReport1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validRequired ("OprlErr", OprlErr), 
+        validList ("OprlErr", OprlErr), 
+        validElement(OprlErr), 
+        validElement(CalRpt), 
+        validChoice (OprlErr, CalRpt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.065.001.02"), ValidationCheck
+aspect ISO20022.Reda065001.CalendarReportV02
+{
+    @XmlElement SplmtryData        : List<ISO20022.Reda065001.SupplementaryData1>,
+    @XmlElement RptOrErr           : ISO20022.Reda065001.CalendarReportOrError1Choice,
+    @XmlElement MsgHdr             : ISO20022.Reda065001.MessageHeader11,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("SplmtryData", SplmtryData), 
+        validElement(SplmtryData), 
+        validElement(RptOrErr), 
+        validElement(MsgHdr))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.065.001.02"), ValidationCheck
+type ISO20022.Reda065001.Document
+{
+}
+[
+    @XmlElement CalRpt             : ISO20022.Reda065001.CalendarReportV02,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(CalRpt))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:reda.065.001.02")
+enum ISO20022.Reda065001.ErrorHandling1Code
+{
+    @XmlEnum ("X050") X050          #1,
+    @XmlEnum ("X030") X030          #2,
+    @XmlEnum ("X020") X020          #3,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.065.001.02"), ValidationCheck, AnyKey
+value ISO20022.Reda065001.ErrorHandling2Choice
+{
+    @XmlElement Prtry              : String,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.065.001.02"), ValidationCheck
+value ISO20022.Reda065001.ErrorHandling4
+{
+    @XmlElement Desc               : String,
+    @XmlElement Err                : ISO20022.Reda065001.ErrorHandling2Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Err))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.065.001.02"), ValidationCheck
+value ISO20022.Reda065001.GenericIdentification1
+{
+    @XmlElement Issr               : String,
+    @XmlElement SchmeNm            : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.065.001.02"), ValidationCheck, AnyKey
+value ISO20022.Reda065001.MarketInfrastructureIdentification1Choice
+{
+    @XmlElement Prtry              : String,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.065.001.02"), ValidationCheck
+value ISO20022.Reda065001.MessageHeader11
+{
+    @XmlElement OrgnlBizQry        : ISO20022.Reda065001.OriginalBusinessQuery1,
+    @XmlElement ReqTp              : ISO20022.Reda065001.RequestType4Choice,
+    @XmlElement CreDtTm            : DateTime,
+    @XmlElement MsgId              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(OrgnlBizQry), 
+        validElement(ReqTp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.065.001.02"), ValidationCheck
+value ISO20022.Reda065001.OriginalBusinessQuery1
+{
+    @XmlElement CreDtTm            : DateTime,
+    @XmlElement MsgNmId            : String,
+    @XmlElement MsgId              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.065.001.02"), ValidationCheck, AnyKey
+value ISO20022.Reda065001.RequestType4Choice
+{
+    @XmlElement Prtry              : ISO20022.Reda065001.GenericIdentification1,
+    @XmlElement Enqry              : String,
+    @XmlElement PmtCtrl            : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Prtry), 
+        validChoice (Prtry, Enqry, PmtCtrl))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.065.001.02"), ValidationCheck
+value ISO20022.Reda065001.SupplementaryData1
+{
+    @XmlElement Envlp              : ISO20022.Reda065001.SupplementaryDataEnvelope1,
+    @XmlElement PlcAndNm           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Envlp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.065.001.02"), ValidationCheck
+value ISO20022.Reda065001.SupplementaryDataEnvelope1
+{
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.065.001.02"), ValidationCheck
+value ISO20022.Reda065001.SystemAndCurrency1
+{
+    @XmlElement SysCcy             : String,
+    @XmlElement SysId              : ISO20022.Reda065001.SystemIdentification2Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("SysCcy", SysCcy, "[A-Z]{3,3}"), 
+        validElement(SysId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.065.001.02"), ValidationCheck, AnyKey
+value ISO20022.Reda065001.SystemIdentification2Choice
+{
+    @XmlElement Ctry               : String,
+    @XmlElement MktInfrstrctrId    : ISO20022.Reda065001.MarketInfrastructureIdentification1Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("Ctry", Ctry, "[A-Z]{2,2}"), 
+        validElement(MktInfrstrctrId), 
+        validChoice (Ctry, MktInfrstrctrId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.065.001.02"), ValidationCheck, AnyKey
+value ISO20022.Reda065001.SystemStatus3Choice
+{
+    @XmlElement Prtry              : ISO20022.Reda065001.GenericIdentification1,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Prtry), 
+        validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:reda.065.001.02")
+enum ISO20022.Reda065001.SystemStatus3Code
+{
+    @XmlEnum ("RMPS") RMPS          #1,
+    @XmlEnum ("CLSD") CLSD          #2,
+    @XmlEnum ("ACTV") ACTV          #3,
+};

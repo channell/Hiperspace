@@ -1,0 +1,148 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:semt.001.001.03"), ValidationCheck
+value ISO20022.Semt001001.AdditionalReference3
+{
+    @XmlElement MsgNm              : String,
+    @XmlElement RefIssr            : ISO20022.Semt001001.PartyIdentification2Choice,
+    @XmlElement Ref                : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(RefIssr))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:semt.001.001.03")
+enum ISO20022.Semt001001.AddressType2Code
+{
+    @XmlEnum ("DLVY") DLVY          #1,
+    @XmlEnum ("MLTO") MLTO          #2,
+    @XmlEnum ("BIZZ") BIZZ          #3,
+    @XmlEnum ("HOME") HOME          #4,
+    @XmlEnum ("PBOX") PBOX          #5,
+    @XmlEnum ("ADDR") ADDR          #6,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:semt.001.001.03"), ValidationCheck
+type ISO20022.Semt001001.Document
+{
+}
+[
+    @XmlElement SctiesMsgRjctn     : ISO20022.Semt001001.SecuritiesMessageRejectionV03,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(SctiesMsgRjctn))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:semt.001.001.03"), ValidationCheck
+value ISO20022.Semt001001.GenericIdentification1
+{
+    @XmlElement Issr               : String,
+    @XmlElement SchmeNm            : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:semt.001.001.03"), ValidationCheck, AnyKey
+value ISO20022.Semt001001.LinkedMessage1Choice
+{
+    @XmlElement RltdRef            : ISO20022.Semt001001.AdditionalReference3,
+    @XmlElement OthrRef            : ISO20022.Semt001001.AdditionalReference3,
+    @XmlElement PrvsRef            : ISO20022.Semt001001.AdditionalReference3,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(RltdRef), 
+        validElement(OthrRef), 
+        validElement(PrvsRef), 
+        validChoice (RltdRef, OthrRef, PrvsRef))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:semt.001.001.03"), ValidationCheck
+value ISO20022.Semt001001.MessageIdentification1
+{
+    @XmlElement CreDtTm            : DateTime,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:semt.001.001.03")
+enum ISO20022.Semt001001.MessageRejectedReason1Code
+{
+    @XmlEnum ("NALO") NALO          #1,
+    @XmlEnum ("REFE") REFE          #2,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:semt.001.001.03"), ValidationCheck
+value ISO20022.Semt001001.NameAndAddress5
+{
+    @XmlElement Adr                : ISO20022.Semt001001.PostalAddress1,
+    @XmlElement Nm                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Adr))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:semt.001.001.03"), ValidationCheck, AnyKey
+value ISO20022.Semt001001.PartyIdentification2Choice
+{
+    @XmlElement NmAndAdr           : ISO20022.Semt001001.NameAndAddress5,
+    @XmlElement PrtryId            : ISO20022.Semt001001.GenericIdentification1,
+    @XmlElement BICOrBEI           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(NmAndAdr), 
+        validElement(PrtryId), 
+        validPattern ("BICOrBEI", BICOrBEI, "[A-Z]{6,6}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3,3}){0,1}"), 
+        validChoice (NmAndAdr, PrtryId, BICOrBEI))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:semt.001.001.03"), ValidationCheck
+value ISO20022.Semt001001.PostalAddress1
+{
+    @XmlElement Ctry               : String,
+    @XmlElement CtrySubDvsn        : String,
+    @XmlElement TwnNm              : String,
+    @XmlElement PstCd              : String,
+    @XmlElement BldgNb             : String,
+    @XmlElement StrtNm             : String,
+    @XmlElement AdrLine            : List<String>,
+    @XmlElement AdrTp              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("Ctry", Ctry, "[A-Z]{2,2}"), 
+        validListMax ("AdrLine", AdrLine, 5))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:semt.001.001.03"), ValidationCheck
+value ISO20022.Semt001001.RejectionReason23
+{
+    @XmlElement LkdMsg             : ISO20022.Semt001001.LinkedMessage1Choice,
+    @XmlElement AddtlInf           : String,
+    @XmlElement Rsn                : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(LkdMsg))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:semt.001.001.03"), ValidationCheck
+aspect ISO20022.Semt001001.SecuritiesMessageRejectionV03
+{
+    @XmlElement Rsn                : ISO20022.Semt001001.RejectionReason23,
+    @XmlElement RltdRef            : ISO20022.Semt001001.AdditionalReference3,
+    @XmlElement MsgId              : ISO20022.Semt001001.MessageIdentification1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Rsn), 
+        validElement(RltdRef), 
+        validElement(MsgId))
+];

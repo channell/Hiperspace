@@ -3,19 +3,39 @@
 classDiagram
     class API.CustomerActivity {
         # Customer  : Acc.Customer
-        + CustomerTree  : List~Acc.Customer~
-        + Sector  : List~Acc.Sector~
-        + Accounts  : List~Acc.Account~
-        + Cube  : List~Acc.Transaction_Cube~
-        + Facts  : List~Acc.Transaction_Fact~
+        + CustomerTree  : global::System.Collections.Generic.List~Acc.Customer~
+        + Sector  : global::System.Collections.Generic.List~Acc.Sector~
+        + Accounts  : global::System.Collections.Generic.List~Acc.Account~
+        + Cube  : global::System.Collections.Generic.List~Acc.Transaction_Cube~
+        + Facts  : global::System.Collections.Generic.List~Acc.Transaction_Fact~
     }
     API.CustomerActivity --> Acc.Customer
-    class Acc.Sector {
-        # Name  : String
+    API.CustomerActivity *-- Acc.Customer
+    API.CustomerActivity *-- Acc.Sector
+    API.CustomerActivity *-- Acc.Account
+    API.CustomerActivity *-- Acc.Transaction_Cube
+    API.CustomerActivity *-- Acc.Transaction_Fact
+    class Acc.Account {
+        # owner  : Acc.Customer
+        # Title  : String
         + Deleted  = false
-        + Description  : String
-        + Transaction_Cube (CubeSlice = "30", Sector = this, ContextLabel = contextlabel(this)) : Acc.Transaction_Cube
-        + Customers (Sector = this) : Acc.Customer
+        + Opened  : DateTime
+        + Closed  : DateTime
+        + Transaction_Cube (CubeSlice = """20""", Account = this, ContextLabel = contextlabel()) : Acc.Transaction_Cube
+        + Transactions () : Acc.Transaction
+        + Balance () : Acc.Balance
+        + CurrentBalance () = deltasum(Transactions?.Amount)
+        + Debit () = sum(Transactions?.Debit)
+        + Credit () = sum(Transactions?.Credit)
+    }
+    Acc.Account ..> Acc.Transaction_Cube
+    Acc.Account o-- Acc.Transaction
+    Acc.Account o-- Acc.Balance
+    class Acc.Balance {
+        # owner  : Acc.Account
+        + Deleted  = false
+        + When  : DateTime
+        + Current  : Decimal
     }
     class Acc.Customer {
         # Name  : String
@@ -25,22 +45,18 @@ classDiagram
         + Parent  : Acc.Customer
         + Sector  : Acc.Sector
         + Tier  : Int32
-        + Transaction_Cube (CubeSlice = "3", Customer = this, ContextLabel = contextlabel(this)) : Acc.Transaction_Cube
+        + Transaction_Cube (CubeSlice = """3""", Customer = this, ContextLabel = contextlabel()) : Acc.Transaction_Cube
         + Accounts () : Acc.Account
-        + Children (Parent = this) : Acc.Customer
+        + Children (Parent = ) : Acc.Customer
     }
-    class Acc.Account {
-        # owner  : Acc.Customer
-        # Title  : String
+    Acc.Customer --> Acc.Sector
+    Acc.Customer o-- Acc.Account
+    class Acc.Sector {
+        # Name  : String
         + Deleted  = false
-        + Opened  : DateTime
-        + Closed  : DateTime
-        + Transaction_Cube (CubeSlice = "20", Account = this, ContextLabel = contextlabel(this)) : Acc.Transaction_Cube
-        + Transactions () : Acc.Transaction
-        + Balance () : Acc.Balance
-        + CurrentBalance () = deltasum(Transactions.Amount)
-        + Debit () = sum(Transactions.Debit)
-        + Credit () = sum(Transactions.Credit)
+        + Description  : String
+        + Transaction_Cube (CubeSlice = """30""", Sector = this, ContextLabel = contextlabel()) : Acc.Transaction_Cube
+        + Customers (Sector = ) : Acc.Customer
     }
     class Acc.Transaction {
         # owner  : Acc.Account
@@ -56,25 +72,7 @@ classDiagram
         + Account_Dimension () = owner
         + Customer_Dimension () = owner?.owner
     }
-    class Acc.Transaction_Fact {
-        # ContextLabel  : String
-        # Sector  : Acc.Sector
-        # Account  : Acc.Account
-        # Customer  : Acc.Customer
-        + Amount  : Decimal
-        + Amount2_Sum  : Decimal
-        + Deleted  = false
-        + Facts  : Int64
-        + CubeName () = cubename(Sector,Account,Customer)
-        + CubeDimensions () = cubedimensions(Sector,Account,Customer)
-        + DrillDowns() () = drilldownEdges(this)
-        + Amount2 () = (Amount2_Sum / Facts)
-        + Debit () = debit(Amount)
-        + Credit () = credit(Amount)
-    }
-    Acc.Transaction_Fact --> Acc.Sector
-    Acc.Transaction_Fact o-- Acc.Account
-    Acc.Transaction_Fact --> Acc.Customer
+    Acc.Transaction --> Acc.Customer
     class Acc.Transaction_Cube {
         # CubeSlice  : String
         # ContextLabel  : String
@@ -87,7 +85,7 @@ classDiagram
         + Facts  : Int64
         + CubeName () = cubename(Sector,Account,Customer)
         + CubeDimensions () = cubedimensions(Sector,Account,Customer)
-        + DrillDowns() () = drilldownEdges(this)
+        + DrillDowns() () = drilldownEdges()
         + Amount2 () = (Amount2_Sum / Facts)
         + Debit () = debit(Amount)
         + Credit () = credit(Amount)
@@ -95,12 +93,25 @@ classDiagram
     Acc.Transaction_Cube --> Acc.Sector
     Acc.Transaction_Cube o-- Acc.Account
     Acc.Transaction_Cube --> Acc.Customer
-    class Acc.Balance {
-        # owner  : Acc.Account
+    class Acc.Transaction_Fact {
+        # ContextLabel  : String
+        # Sector  : Acc.Sector
+        # Account  : Acc.Account
+        # Customer  : Acc.Customer
+        + Amount  : Decimal
+        + Amount2_Sum  : Decimal
         + Deleted  = false
-        + When  : DateTime
-        + Current  : Decimal
-    }
+        + Facts  : Int64
+        + CubeName () = cubename(Sector,Account,Customer)
+        + CubeDimensions () = cubedimensions(Sector,Account,Customer)
+        + DrillDowns() () = drilldownEdges()
+        + Amount2 () = (Amount2_Sum / Facts)
+        + Debit () = debit(Amount)
+        + Credit () = credit(Amount)
+    }
+    Acc.Transaction_Fact --> Acc.Sector
+    Acc.Transaction_Fact o-- Acc.Account
+    Acc.Transaction_Fact --> Acc.Customer
 ```
 > The tables below contain descriptions of the members of each Element. 
 > The first column indicates the type of the member:
@@ -117,24 +128,42 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Customer|Acc.Customer||||
-|+|CustomerTree|List<Acc.Customer>||||
-|+|Sector|List<Acc.Sector>||||
-|+|Accounts|List<Acc.Account>||||
-|+|Cube|List<Acc.Transaction_Cube>||||
-|+|Facts|List<Acc.Transaction_Fact>||||
+|+|CustomerTree|global::System.Collections.Generic.List<Acc.Customer>||||
+|+|Sector|global::System.Collections.Generic.List<Acc.Sector>||||
+|+|Accounts|global::System.Collections.Generic.List<Acc.Account>||||
+|+|Cube|global::System.Collections.Generic.List<Acc.Transaction_Cube>||||
+|+|Facts|global::System.Collections.Generic.List<Acc.Transaction_Fact>||||
 
 ---
 
-## EntityImpl Acc.Sector
-
+## SegmentImpl Acc.Account
+A Customer
 
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
-|#|Name|String|name of the sector|||
+|#|owner|Acc.Customer||||
+|#|Title|String||Key()||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
-|+|Description|String|description of the sector|||
-||Transaction_Cube|Acc.Transaction_Cube|Reference to the dimension|CubeFactReference()|CubeSlice = "30", Sector = this, ContextLabel = contextlabel(this)|
-||Customers|Acc.Customer|customers in this sector||Sector = this|
+|+|Opened|DateTime||||
+|+|Closed|DateTime||||
+||Transaction_Cube|Acc.Transaction_Cube|Reference to the dimension|CubeFactReference()|CubeSlice = """20""", Account = this, ContextLabel = contextlabel()|
+|+|Transactions|Acc.Transaction|transactions against the account|||
+|+|Balance|Acc.Balance|the last closing balance|||
+||CurrentBalance|Some(Decimal)||CubeMeasure(Aggregate?.Sum)|deltasum(Transactions?.Amount)|
+||Debit|Some(Decimal)|||sum(Transactions?.Debit)|
+||Credit|Some(Decimal)|||sum(Transactions?.Credit)|
+
+---
+
+## AspectImpl Acc.Balance
+A Customer
+
+| |Name|Type|*|@|=|
+|-|-|-|-|-|-|
+|#|owner|Acc.Account||||
+||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
+|+|When|DateTime|DateTime of the max balance|||
+|+|Current|Decimal|Current closing balance at time When|||
 
 ---
 
@@ -150,28 +179,22 @@ A Customer
 |+|Parent|Acc.Customer||||
 |+|Sector|Acc.Sector||||
 |+|Tier|Int32||||
-||Transaction_Cube|Acc.Transaction_Cube|Reference to the dimension|CubeFactReference()|CubeSlice = "3", Customer = this, ContextLabel = contextlabel(this)|
+||Transaction_Cube|Acc.Transaction_Cube|Reference to the dimension|CubeFactReference()|CubeSlice = """3""", Customer = this, ContextLabel = contextlabel()|
 |+|Accounts|Acc.Account|Account that the customer owns|||
-||Children|Acc.Customer|||Parent = this|
+||Children|Acc.Customer|||Parent = |
 
 ---
 
-## SegmentImpl Acc.Account
-A Customer
+## EntityImpl Acc.Sector
+
 
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
-|#|owner|Acc.Customer||||
-|#|Title|String||||
+|#|Name|String|name of the sector|||
 ||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
-|+|Opened|DateTime||||
-|+|Closed|DateTime||||
-||Transaction_Cube|Acc.Transaction_Cube|Reference to the dimension|CubeFactReference()|CubeSlice = "20", Account = this, ContextLabel = contextlabel(this)|
-|+|Transactions|Acc.Transaction|transactions against the account|||
-|+|Balance|Acc.Balance|the last closing balance|||
-||CurrentBalance|Some(Decimal)||CubeMeasure(Aggregate?.Sum)|deltasum(Transactions.Amount)|
-||Debit|Some(Decimal)|||sum(Transactions.Debit)|
-||Credit|Some(Decimal)|||sum(Transactions.Credit)|
+|+|Description|String|description of the sector|||
+||Transaction_Cube|Acc.Transaction_Cube|Reference to the dimension|CubeFactReference()|CubeSlice = """30""", Sector = this, ContextLabel = contextlabel()|
+||Customers|Acc.Customer|customers in this sector||Sector = |
 
 ---
 
@@ -195,28 +218,6 @@ A Customer
 
 ---
 
-## EntityImpl Acc.Transaction_Fact
-A Customer
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|ContextLabel|String||||
-|#|Sector|Acc.Sector||CubeDimensionReference()||
-|#|Account|Acc.Account|A Customer|CubeDimensionReference()||
-|#|Customer|Acc.Customer|A Customer|CubeDimensionReference()||
-|+|Amount|Decimal|debt or credit to account, with respect to the customer position|CubeMeasure(Aggregate?.Sum)||
-|+|Amount2_Sum|Decimal||CubeMeasure(Aggregate?.AverageTotal)||
-||Deleted|Some(Boolean)|The cube fact has been deleted||false|
-|+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
-||CubeName|Some(String)|||cubename(Sector,Account,Customer)|
-||CubeDimensions|Some(Int32)|||cubedimensions(Sector,Account,Customer)|
-||DrillDowns()|Some(HashSet<Edge>)|Drilldown to Edges||drilldownEdges(this)|
-||Amount2|Some(Decimal)||CubeMeasure(Aggregate?.Average)|(Amount2_Sum / Facts)|
-||Debit|Some(Decimal)||CubeExtent()|debit(Amount)|
-||Credit|Some(Decimal)||CubeExtent()|credit(Amount)|
-
----
-
 ## EntityImpl Acc.Transaction_Cube
 A Customer
 
@@ -233,20 +234,30 @@ A Customer
 |+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
 ||CubeName|Some(String)|||cubename(Sector,Account,Customer)|
 ||CubeDimensions|Some(Int32)|||cubedimensions(Sector,Account,Customer)|
-||DrillDowns()|Some(HashSet<Edge>)|Drilldown to Edges||drilldownEdges(this)|
+||DrillDowns()|Some(global::System.Collections.Generic.HashSet<Hiperspace.Edge>)|Drilldown to Edges||drilldownEdges()|
 ||Amount2|Some(Decimal)||CubeMeasure(Aggregate?.Average)|(Amount2_Sum / Facts)|
 ||Debit|Some(Decimal)||CubeExtent()|debit(Amount)|
 ||Credit|Some(Decimal)||CubeExtent()|credit(Amount)|
 
 ---
 
-## AspectImpl Acc.Balance
+## EntityImpl Acc.Transaction_Fact
 A Customer
 
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
-|#|owner|Acc.Account||||
-||Deleted|Some(Boolean)|Flag for read horizon filter to hide when true||false|
-|+|When|DateTime|DateTime of the max balance|||
-|+|Current|Decimal|Current closing balance at time When|||
+|#|ContextLabel|String||||
+|#|Sector|Acc.Sector||CubeDimensionReference()||
+|#|Account|Acc.Account|A Customer|CubeDimensionReference()||
+|#|Customer|Acc.Customer|A Customer|CubeDimensionReference()||
+|+|Amount|Decimal|debt or credit to account, with respect to the customer position|CubeMeasure(Aggregate?.Sum)||
+|+|Amount2_Sum|Decimal||CubeMeasure(Aggregate?.AverageTotal)||
+||Deleted|Some(Boolean)|The cube fact has been deleted||false|
+|+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
+||CubeName|Some(String)|||cubename(Sector,Account,Customer)|
+||CubeDimensions|Some(Int32)|||cubedimensions(Sector,Account,Customer)|
+||DrillDowns()|Some(global::System.Collections.Generic.HashSet<Hiperspace.Edge>)|Drilldown to Edges||drilldownEdges()|
+||Amount2|Some(Decimal)||CubeMeasure(Aggregate?.Average)|(Amount2_Sum / Facts)|
+||Debit|Some(Decimal)||CubeExtent()|debit(Amount)|
+||Credit|Some(Decimal)||CubeExtent()|credit(Amount)|
 

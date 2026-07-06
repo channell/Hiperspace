@@ -38,25 +38,6 @@ namespace Hiperspace.Rocks
             RaiseOnBind(key, value, source);
             return Result.Ok(value);
         }
-        [Obsolete("use Bind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
-        public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, object? source = null)
-        {
-            var fullkey = new byte[key.Length + 1];
-            key.CopyTo(fullkey, 1);
-            var current = _db.Get(fullkey);
-            if (current is not null && Compare(current, value) == 0)
-            {
-                return Result.Skip(current);
-            }
-            _db.Put(fullkey, value);
-            RaiseOnBind(key, value, source);
-            return Result.Ok(value);
-        }
-        [Obsolete("use BindAsync((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
-        public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, object? source)
-        {
-            return Task.Run(() => Bind(key, value, version, source));
-        }
         public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)
         {
             return Task.Run(() => Bind(key, value, version, priorVersion, source));

@@ -64,7 +64,8 @@ type  PlanTest (output : ITestOutputHelper) =
     do if Directory.Exists("./rockstest") then Directory.Delete("./rockstest", true) |> ignore
 //    let rocks = new Hiperspace.Rocks.RockSpace ("./rockstest")
     let rocks = new Hiperspace.Heap.HeapSpace()
-    let planSpace = new Plan.PlanSpace ( space = rocks, write = true)
+    let planSpace = new Plan.PlanSpace ( rocks)
+    //let planSpace = new Plan.PlanSpace ( space = rocks, write = true)
 
     let nvl (v : 'v) = Nullable<'v> (v)
 
@@ -204,7 +205,7 @@ type  PlanTest (output : ITestOutputHelper) =
         output.WriteLine($"\nBase planspace costs")
         bireport planSpace
 
-        use snapbeforeTime = new Plan.PlanSpace(planSpace, true, DateTime.Now)
+        use snapbeforeTime = new Plan.PlanSpace(planSpace, null, DateTime.Now)
 
         let updateTasks =
             query {for t in planSpace.Tasks do
@@ -255,7 +256,7 @@ type  PlanTest (output : ITestOutputHelper) =
         |> List.map addTimeSheet
         |> ignore
 
-        use snapbeforeupdate = new Plan.PlanSpace(planSpace, true, DateTime.Now)
+        use snapbeforeupdate = new Plan.PlanSpace(planSpace, null, DateTime.Now)
 
         updateTasks
         |> List.map addActual

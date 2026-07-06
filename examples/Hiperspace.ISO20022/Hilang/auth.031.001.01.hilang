@@ -1,0 +1,168 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.031.001.01"), ValidationCheck
+type ISO20022.Auth031001.Document
+{
+}
+[
+    @XmlElement FinInstrmRptgStsAdvc : ISO20022.Auth031001.FinancialInstrumentReportingStatusAdviceV01,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(FinInstrmRptgStsAdvc))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.031.001.01"), ValidationCheck
+aspect ISO20022.Auth031001.FinancialInstrumentReportingStatusAdviceV01
+{
+    @XmlElement SplmtryData        : List<ISO20022.Auth031001.SupplementaryData1>,
+    @XmlElement StsAdvc            : List<ISO20022.Auth031001.MessageReportHeader4>,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("SplmtryData", SplmtryData), 
+        validElement(SplmtryData), 
+        validRequired ("StsAdvc", StsAdvc), 
+        validList ("StsAdvc", StsAdvc), 
+        validElement(StsAdvc))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.031.001.01"), ValidationCheck
+value ISO20022.Auth031001.GenericValidationRuleIdentification1
+{
+    @XmlElement Issr               : String,
+    @XmlElement SchmeNm            : ISO20022.Auth031001.ValidationRuleSchemeName1Choice,
+    @XmlElement Desc               : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(SchmeNm))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.031.001.01"), ValidationCheck
+value ISO20022.Auth031001.MessageReportHeader4
+{
+    @XmlElement SplmtryData        : List<ISO20022.Auth031001.SupplementaryData1>,
+    @XmlElement RcrdSts            : List<ISO20022.Auth031001.StatusReportRecord3>,
+    @XmlElement MsgSts             : ISO20022.Auth031001.StatusAdviceReport3,
+    @XmlElement MsgRptIdr          : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("SplmtryData", SplmtryData), 
+        validElement(SplmtryData), 
+        validList ("RcrdSts", RcrdSts), 
+        validElement(RcrdSts), 
+        validElement(MsgSts))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.031.001.01"), ValidationCheck
+value ISO20022.Auth031001.NumberOfRecordsPerStatus1
+{
+    @XmlElement DtldSts            : String,
+    @XmlElement DtldNbOfRcrds      : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("DtldNbOfRcrds", DtldNbOfRcrds, "[0-9]{1,15}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.031.001.01"), ValidationCheck
+value ISO20022.Auth031001.OriginalReportStatistics3
+{
+    @XmlElement NbOfRcrdsPerSts    : List<ISO20022.Auth031001.NumberOfRecordsPerStatus1>,
+    @XmlElement TtlNbOfRcrds       : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validRequired ("NbOfRcrdsPerSts", NbOfRcrdsPerSts), 
+        validList ("NbOfRcrdsPerSts", NbOfRcrdsPerSts), 
+        validElement(NbOfRcrdsPerSts), 
+        validPattern ("TtlNbOfRcrds", TtlNbOfRcrds, "[0-9]{1,15}"))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:auth.031.001.01")
+enum ISO20022.Auth031001.ReportingMessageStatus1Code
+{
+    @XmlEnum ("CRPT") CRPT          #1,
+    @XmlEnum ("INCF") INCF          #2,
+    @XmlEnum ("WARN") WARN          #3,
+    @XmlEnum ("RMDR") RMDR          #4,
+    @XmlEnum ("RJCT") RJCT          #5,
+    @XmlEnum ("RCVD") RCVD          #6,
+    @XmlEnum ("PART") PART          #7,
+    @XmlEnum ("ACTC") ACTC          #8,
+    @XmlEnum ("ACPT") ACPT          #9,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:auth.031.001.01")
+enum ISO20022.Auth031001.ReportingRecordStatus1Code
+{
+    @XmlEnum ("WARN") WARN          #1,
+    @XmlEnum ("RJPD") RJPD          #2,
+    @XmlEnum ("RJCT") RJCT          #3,
+    @XmlEnum ("RCVD") RCVD          #4,
+    @XmlEnum ("PDNG") PDNG          #5,
+    @XmlEnum ("ACPD") ACPD          #6,
+    @XmlEnum ("ACPT") ACPT          #7,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.031.001.01"), ValidationCheck
+value ISO20022.Auth031001.StatusAdviceReport3
+{
+    @XmlElement Sttstcs            : ISO20022.Auth031001.OriginalReportStatistics3,
+    @XmlElement MsgDt              : DateTime,
+    @XmlElement VldtnRule          : List<ISO20022.Auth031001.GenericValidationRuleIdentification1>,
+    @XmlElement Sts                : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Sttstcs), 
+        validList ("VldtnRule", VldtnRule), 
+        validElement(VldtnRule))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.031.001.01"), ValidationCheck
+value ISO20022.Auth031001.StatusReportRecord3
+{
+    @XmlElement SplmtryData        : List<ISO20022.Auth031001.SupplementaryData1>,
+    @XmlElement VldtnRule          : List<ISO20022.Auth031001.GenericValidationRuleIdentification1>,
+    @XmlElement Sts                : String,
+    @XmlElement OrgnlRcrdId        : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("SplmtryData", SplmtryData), 
+        validElement(SplmtryData), 
+        validList ("VldtnRule", VldtnRule), 
+        validElement(VldtnRule))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.031.001.01"), ValidationCheck
+value ISO20022.Auth031001.SupplementaryData1
+{
+    @XmlElement Envlp              : ISO20022.Auth031001.SupplementaryDataEnvelope1,
+    @XmlElement PlcAndNm           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Envlp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.031.001.01"), ValidationCheck
+value ISO20022.Auth031001.SupplementaryDataEnvelope1
+{
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.031.001.01"), ValidationCheck, AnyKey
+value ISO20022.Auth031001.ValidationRuleSchemeName1Choice
+{
+    @XmlElement Prtry              : String,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (validChoice (Prtry, Cd))
+];

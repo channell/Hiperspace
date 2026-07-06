@@ -6,6 +6,7 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using ProtoBuf;
+using ProtoBuf.WellKnownTypes;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using TP = System.Numerics.Tensors.TensorPrimitives;
@@ -272,6 +273,11 @@ namespace Hiperspace
         {
 
         }
+        public void BindAll(SubSpace subSpace, HashSet<IElement> path, bool cache = true)
+        {
+
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Unbind(SubSpace space)
         {

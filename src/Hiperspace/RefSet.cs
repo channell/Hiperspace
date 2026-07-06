@@ -6,7 +6,7 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using System.Collections;
-using System.Runtime.CompilerServices;
+using System.Diagnostics;
 
 namespace Hiperspace
 {
@@ -177,6 +177,14 @@ namespace Hiperspace
             else
                 throw new LockRecursionException();
         }
+        public void BindAll(SubSpace subSpace, HashSet<IElement> path, bool cache = true)
+        {
+            foreach (var en in Cached)
+            {
+                _binder(en);
+                en.BindAll(subSpace, path, cache);
+            }
+        }
         public void Unbind(SubSpace subSpace)
         {
             bool taken = false;
@@ -207,6 +215,8 @@ namespace Hiperspace
         {
             if (SetSpace is not null)
             {
+                _binder(item);
+                SetSpace.Bind(item, true, true);
                 _lock.Scoped(() =>
                 {
                     if (!Cached.Add(item))
@@ -534,5 +544,31 @@ namespace Hiperspace
         public bool IsSynchronized => true;
 
         public object SyncRoot => Cached;
+
+        /// <summary>
+        /// Fake an indexer access for XML Serialization
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        [Obsolete("This property is only provided for XML Serilaization compatability, and should not be used by application code")]
+        [DebuggerBrowsable(DebuggerBrowsableState.Never)]
+        public TEntity this[int index]
+        {
+            get
+            {
+                var end = index < Count ? index : Count;
+                int c = 0;
+                foreach (var item in this)
+                {
+                    if (index == c)
+                        return item;
+                }
+                return null!;
+            }
+            set
+            {
+                Add(value);
+            }
+        }
     }
 }

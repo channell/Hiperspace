@@ -16,7 +16,7 @@ namespace Hiperspace
         /// Specifies that the element is the meta-model definition. <see cref="Meta.MetaModel"/>
         /// </summary>
         /// <remarks>
-        /// {1}, {1|model}
+        /// {1}, {model}
         /// </remarks>
         MetaModel = 1,
 
@@ -24,7 +24,7 @@ namespace Hiperspace
         /// Specifies that the element is the  meta-map used for conversion of keys between TLV and TVL for scan <see cref="Meta.MetaMap"/>
         /// </summary>
         /// <remarks>
-        /// {2}, {2|MetaMap}
+        /// {2}, {MetaMap}
         /// </remarks>
         MetaMap = 2,
 
@@ -40,42 +40,58 @@ namespace Hiperspace
         /// Specifies that the element is immutable and cannot be modified after creation. the value contains the timestamp
         /// </summary>
         /// <remarks>
-        /// {4|key}, {4|value|AsAt|transaction}
+        /// {4|key}, {AsAt|value}
         /// </remarks>
         Immutable = 4,
+
+        /// <summary>
+        /// Specifies that the element is immutable and cannot be modified after creation. the value contains the timestamp
+        /// </summary>
+        /// <remarks>
+        /// {5|key}, {AsAt|transaction|value}
+        /// </remarks>
+        ImmutableTransaction = 5,
 
         /// <summary>
         /// Specifies that the element is versioned and key contains the timestamp of the change
         /// </summary>
         /// <remarks>
-        /// {5|key|AsAt}, {5|value|transaction}
+        /// {6|key|AsAt}, {value}
         /// </remarks>
-        Versioned = 5,
+        Versioned = 6,
+
+        /// <summary>
+        /// Specifies that the element is versioned and key contains the timestamp of the change
+        /// </summary>
+        /// <remarks>
+        /// {7|key|AsAt}, {transaction|value}
+        /// </remarks>
+        VersionedTransaction = 7,
 
         /// <summary>
         /// Specifies that the element is value contains a vector space for coordinate, common in RAG search for in AI integrations 
         /// multi-dimensional space.
         /// </summary>
         /// <remarks>
-        /// {5|key|AsAt}, {5|Vector|transaction}
+        /// {8|key|AsAt}, {transaction|Vector}
         /// </remarks>
-        VectorSpace = 6,
+        VectorSpace = 8,
 
         /// <summary>
         /// Specifies that the element value is a mutable sequence number for a key
         /// </summary>
         /// <remarks>
-        /// {7|key}, {7|number}
+        /// {9|key}, {number}
         /// </remarks>
-        Sequence = 7,
+        Sequence = 9,
 
         /// <summary>
         /// Specifies that the key is compose of a transaction identifier (+keypart) and value contains the key of the element within the transaction
         /// </summary>
         /// <remarks>
-        /// {8|transaction|key}, {8|key}
+        /// {10|transaction|key}, {key}
         /// </remarks>
-        Transaction = 8,
+        Transaction = 10,
 
         /// <summary>
         /// Logs the end (commit/rollback) of a transaction 
@@ -83,24 +99,25 @@ namespace Hiperspace
         /// <remarks>
         /// used in recovery to backout any transactions (since checkpoint) that were not committed and 
         /// for calculation change content
-        /// {9|transaction}, {9|commit (true/false}
+        /// {11|transaction}, {timestamp, commit (true/false}
         /// </remarks>
-        TransactionEnd = 9,
+        TransactionEnd = 11,
 
         /// <summary>
-        /// Optionally Logs the start of a transaction with audit information 
+        /// Optionally Logs the start of a transaction with audit information, and parent transaction
         /// </summary>
         /// <remarks>
-        /// {10|transaction}, {10|audit message}
+        /// NB Transactions are implicitly started when new to the lock manager
+        /// {12|transaction}, {timestamp, parent-transaction, audit-message}
         /// </remarks>
-        Audit = 10,
+        TransactionStart = 12,
 
         /// <summary>
         /// Specifies the highest transaction that completed for transaction recovery after a restart
         /// </summary>
         /// <remarks>
-        /// {10}, {10|transaction}
+        /// {13}, {transaction}
         /// </remarks>
-        Checkpoint = 11,
+        Checkpoint = 13,
     }
 }

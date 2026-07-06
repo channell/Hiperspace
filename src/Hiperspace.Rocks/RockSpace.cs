@@ -99,26 +99,6 @@ namespace Hiperspace.Rocks
         /// <param name="version"></param>
         /// <param name="source"></param>
         /// <returns></returns>
-        [Obsolete("use Bind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
-        public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, object? source = null)
-        {
-            var fullkey = new byte[key.Length + sizeof(long) + 1];
-            key.CopyTo(fullkey, 1);
-            var toend = ulong.MaxValue - (ulong)version.Ticks;
-            BinaryPrimitives.WriteUInt64BigEndian(new Span<byte>(fullkey, fullkey.Length - sizeof(long), sizeof(long)), toend);
-
-            var (cur, v) = Get(key, version);
-            if (cur is not null)
-            {
-                if (v == version)
-                    return Result.Skip(cur);
-                if (cur.Length > 0 && Compare(cur,value) == 0)
-                    return Result.Skip(cur);    // no change to value
-            }
-            _db.Put(fullkey, value);
-            RaiseOnBind(key, value, source);
-            return Result.Ok(value);
-        }
         public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
         {
             var fullkey = new byte[key.Length + sizeof(long) + 1];
@@ -148,11 +128,6 @@ namespace Hiperspace.Rocks
             return Task.Run(() => Bind(key, value, source));
         }
 
-        [Obsolete("use Bind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
-        public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, object? source)
-        {
-            return Task.Run(() => Bind(key, value, version, source));
-        }
         public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)
         {
             return Task.Run(() => Bind(key, value, version, priorVersion, source));

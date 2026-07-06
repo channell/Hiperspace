@@ -80,6 +80,66 @@ namespace Hiperspace
                 }
             return returner;
         }
+        public static T? First<T>(RefSet<T>? source) where T : Element<T>, new()
+        {
+            if (source is null) return default(T?);
+            foreach (var item in source)
+                return item;
+            return default(T?);
+        }
+        public static T? First<T>(List<T>? source)
+        {
+            if (source is null) return default(T?);
+            foreach (var item in source)
+                return item;
+            return default(T?);
+        }
+        public static T? First<T>(List<List<T>>? source)
+        {
+            if (source is null) return default(T?);
+            foreach (var item in source)
+                return First(item);
+            return default(T?);
+        }
+        public static T? First<T>(List<List<List<T>>>? source)
+        {
+            if (source is null) return default(T?);
+            foreach (var item in source)
+                return First(item);
+            return default(T?);
+        }
+        public static T? Last<T>(RefSet<T>? source) where T: Element<T>, new()
+        {
+            T? last = default(T?);
+            if (source is null) return default(T?);
+            foreach (var item in source)
+                last = item;
+            return last;
+        }
+        public static T? Last<T>(List<T>? source)
+        {
+            T? last = default(T?);
+            if (source is null) return default(T?);
+            foreach (var item in source)
+                last = item;
+            return last;
+        }
+        public static T? Last<T>(List<List<T>>? source)
+        {
+            T? last = default(T?);
+            if (source is null) return default(T?);
+            foreach (var item in source)
+                last = Last(item);
+            return last;
+        }
+        public static T? Last<T>(List<List<List<T>>>? source)
+        {
+            T? last = default(T?);
+            if (source is null) return default(T?);
+            foreach (var item in source)
+                last = Last(item);
+            return last;
+        }
         public static T Count<T, S>(IEnumerable<S>? source, Func<S, T> func)
             where T : INumber<T>, new()
         {
@@ -412,18 +472,122 @@ namespace Hiperspace
             return doubles[position];
         }
 
-        public static IEnumerable<Edge> DrilldownEdges<T>(T subject)
+        public static HashSet<Edge> DrilldownEdges<T>(T subject)
             where T : Element<T>, new()
         {
             if (subject is ICubeFact fact)
             {
-                return fact.DrillDownEdges();
+                return fact.DrillDownEdges().ToHashSet();
             }
             else if (subject is ICubeFactBase factBase)
             {
-                return factBase.DrillDownEdges();
+                return factBase.DrillDownEdges().ToHashSet();
             }
-            return Enumerable.Empty<Edge>();
+            return new HashSet<Edge>();
+        }
+
+        public static string? Validation(params string?[] args)
+        {
+            if (args is null) return string.Empty;
+            var sb = new StringBuilder ();
+            for (int c = 0; c < args.Length; c++)
+            {
+                if (!String.IsNullOrWhiteSpace(args[c]))
+                {
+                    if (args[c]?.EndsWith('\n') ?? false)
+                        sb.AppendFormat("{0}", args[c]);
+                    else
+                        sb.AppendFormat("{0}\n", args[c]);
+                }
+            }
+            return sb.ToString();
+        }
+        public static string ValidChoice(params object?[] args)
+        {
+            for (int c = 0; c < args.Length; c++)
+            {
+                if (args[c] is not null) return string.Empty;
+            }
+            return "At least one value must be provided";
+        }
+        public static string ValidPattern<T>(string name, T? source, string regex)
+        {
+
+            if (source is null) return string.Empty;
+            var str = source.ToString();
+            if (str is not null && !System.Text.RegularExpressions.Regex.IsMatch(str, regex))
+            {
+                return $"{name} does not match {regex}";
+            }
+            return string.Empty;
+        }
+        public static string ValidPattern<T>(string name, List<T>? source, string regex)
+        {
+
+            if (source is null) return string.Empty;
+
+            foreach (var s in source)
+            {
+                var str = s?.ToString();
+                if (str is not null &&!System.Text.RegularExpressions.Regex.IsMatch(str, regex))
+                {
+                    return $"{name} does not match {regex} with value \"{s}\"";
+                }
+            }
+            return string.Empty;
+        }
+        public static string ValidLength(string name, string source, int min, int max)
+        {
+            if (source is null) return string.Empty;
+            if (source.Length < min) return $"{name} is too short";
+            if (source.Length > max) return $"{name} is too long";
+            return string.Empty;
+        }
+        public static string ValidMin<T>(string name, T source, T min) where T : INumber<T>
+        {
+            if (source is null) return string.Empty;
+            if (source < min) return $"{name} is too short";
+            return string.Empty;
+        }
+        public static string ValidMax<T>(string name, T source, T max) where T : INumber<T>
+        {
+            if (source is null) return string.Empty;
+            if (source > max) return $"{name} is too long";
+            return string.Empty;
+        }
+        public static string ValidListMin<T>(string name, IEnumerable<T>? source, int min)
+        {
+            if (source is null) return string.Empty;
+            if (source.Count() < min) return $"{name} is too short";
+            return string.Empty;
+        }
+        public static string ValidListMax<T>(string name, IEnumerable<T>? source, int max)
+        {
+            if (source is null) return string.Empty;
+            if (source.Count() > max) return $"{name} is too long";
+            return string.Empty;
+        }
+        public static string ValidList<T>(string name, IEnumerable<T>? source) where T : IValidationCheck
+        {
+            if (source is null || source.Count() == 0) return string.Empty;
+            var sb = new StringBuilder();
+            foreach (var i in source)
+                sb.Append(i.Validation);
+            return sb.ToString();
+        }
+        public static string ValidRequired<T>(string name, T? source)
+        {
+            if (source is null) return $"{name} is required";
+            return string.Empty;
+        }
+        public static string? ValidElement<T>(T? source) 
+        {
+            if (source is null) return string.Empty;
+            if (source is IValidationCheck vc)
+            {
+                return vc.Validation;
+            }
+            return string.Empty;
         }
     }
 }

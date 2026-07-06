@@ -1,0 +1,120 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.048.001.01"), ValidationCheck
+value ISO20022.Auth048001.CountryCodeAndName3
+{
+    @XmlElement Nm                 : String,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("Cd", Cd, "[A-Z]{2,2}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.048.001.01"), ValidationCheck
+value ISO20022.Auth048001.CurrencyCodeAndName1
+{
+    @XmlElement Nm                 : String,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("Cd", Cd, "[A-Z]{3,3}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.048.001.01"), ValidationCheck
+type ISO20022.Auth048001.Document
+{
+}
+[
+    @XmlElement FinInstrmRptgCcyCdRpt : ISO20022.Auth048001.FinancialInstrumentReportingCurrencyCodeReportV01,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(FinInstrmRptgCcyCdRpt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.048.001.01"), ValidationCheck
+aspect ISO20022.Auth048001.FinancialInstrumentReportingCurrencyCodeReportV01
+{
+    @XmlElement SplmtryData        : List<ISO20022.Auth048001.SupplementaryData1>,
+    @XmlElement CcyData            : List<ISO20022.Auth048001.SecuritiesCurrencyIdentification2>,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("SplmtryData", SplmtryData), 
+        validElement(SplmtryData), 
+        validRequired ("CcyData", CcyData), 
+        validList ("CcyData", CcyData), 
+        validElement(CcyData))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:auth.048.001.01")
+enum ISO20022.Auth048001.Modification1Code
+{
+    @XmlEnum ("ADDD") ADDD          #1,
+    @XmlEnum ("DELE") DELE          #2,
+    @XmlEnum ("MODI") MODI          #3,
+    @XmlEnum ("NOCH") NOCH          #4,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.048.001.01"), ValidationCheck
+value ISO20022.Auth048001.Period2
+{
+    @XmlElement ToDt               : DateTime,
+    @XmlElement FrDt               : DateTime,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.048.001.01"), ValidationCheck, AnyKey
+value ISO20022.Auth048001.Period4Choice
+{
+    @XmlElement FrDtToDt           : ISO20022.Auth048001.Period2,
+    @XmlElement ToDt               : DateTime,
+    @XmlElement FrDt               : DateTime,
+    @XmlElement Dt                 : DateTime,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(FrDtToDt), 
+        validChoice (FrDtToDt, ToDt, FrDt, Dt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.048.001.01"), ValidationCheck
+value ISO20022.Auth048001.SecuritiesCurrencyIdentification2
+{
+    @XmlElement LastUpdtd          : DateTime,
+    @XmlElement VldtyPrd           : ISO20022.Auth048001.Period4Choice,
+    @XmlElement Mod                : String,
+    @XmlElement PreEuro            : String,
+    @XmlElement CtryDtls           : ISO20022.Auth048001.CountryCodeAndName3,
+    @XmlElement FrctnlDgt          : Decimal,
+    @XmlElement Ccy                : ISO20022.Auth048001.CurrencyCodeAndName1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(VldtyPrd), 
+        validElement(CtryDtls), 
+        validElement(Ccy))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.048.001.01"), ValidationCheck
+value ISO20022.Auth048001.SupplementaryData1
+{
+    @XmlElement Envlp              : ISO20022.Auth048001.SupplementaryDataEnvelope1,
+    @XmlElement PlcAndNm           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Envlp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.048.001.01"), ValidationCheck
+value ISO20022.Auth048001.SupplementaryDataEnvelope1
+{
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];

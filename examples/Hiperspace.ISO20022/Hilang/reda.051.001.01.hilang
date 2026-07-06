@@ -1,0 +1,258 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.051.001.01"), ValidationCheck, AnyKey
+value ISO20022.Reda051001.AccountIdentification4Choice
+{
+    @XmlElement Othr               : ISO20022.Reda051001.GenericAccountIdentification1,
+    @XmlElement IBAN               : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Othr), 
+        validPattern ("IBAN", IBAN, "[A-Z]{2,2}[0-9]{2,2}[a-zA-Z0-9]{1,30}"), 
+        validChoice (Othr, IBAN))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.051.001.01"), ValidationCheck
+value ISO20022.Reda051001.AccountLink8
+{
+    @XmlElement VldFr              : ISO20022.Reda051001.DateAndDateTime2Choice,
+    @XmlElement CshAcct            : ISO20022.Reda051001.CashAccount38,
+    @XmlElement BlckChainAdrOrWllt : ISO20022.Reda051001.BlockChainAddressWallet3,
+    @XmlElement SctiesAcct         : ISO20022.Reda051001.SecuritiesAccount19,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(VldFr), 
+        validElement(CshAcct), 
+        validElement(BlckChainAdrOrWllt), 
+        validElement(SctiesAcct))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.051.001.01"), ValidationCheck
+value ISO20022.Reda051001.AccountLinkStatus1
+{
+    @XmlElement StsRsn             : List<ISO20022.Reda051001.StatusReasonInformation10>,
+    @XmlElement Sts                : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("StsRsn", StsRsn), 
+        validElement(StsRsn))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.051.001.01"), ValidationCheck
+aspect ISO20022.Reda051001.AccountLinkStatusAdviceV01
+{
+    @XmlElement SplmtryData        : List<ISO20022.Reda051001.SupplementaryData1>,
+    @XmlElement AcctLkId           : ISO20022.Reda051001.AccountLink8,
+    @XmlElement AcctLkSts          : ISO20022.Reda051001.AccountLinkStatus1,
+    @XmlElement MsgHdr             : ISO20022.Reda051001.MessageHeader12,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("SplmtryData", SplmtryData), 
+        validElement(SplmtryData), 
+        validElement(AcctLkId), 
+        validElement(AcctLkSts), 
+        validElement(MsgHdr))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.051.001.01"), ValidationCheck, AnyKey
+value ISO20022.Reda051001.AccountSchemeName1Choice
+{
+    @XmlElement Prtry              : String,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.051.001.01"), ValidationCheck
+value ISO20022.Reda051001.BlockChainAddressWallet3
+{
+    @XmlElement Nm                 : String,
+    @XmlElement Tp                 : ISO20022.Reda051001.GenericIdentification30,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Tp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.051.001.01"), ValidationCheck
+value ISO20022.Reda051001.CashAccount38
+{
+    @XmlElement Prxy               : ISO20022.Reda051001.ProxyAccountIdentification1,
+    @XmlElement Nm                 : String,
+    @XmlElement Ccy                : String,
+    @XmlElement Tp                 : ISO20022.Reda051001.CashAccountType2Choice,
+    @XmlElement Id                 : ISO20022.Reda051001.AccountIdentification4Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Prxy), 
+        validPattern ("Ccy", Ccy, "[A-Z]{3,3}"), 
+        validElement(Tp), 
+        validElement(Id))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.051.001.01"), ValidationCheck, AnyKey
+value ISO20022.Reda051001.CashAccountType2Choice
+{
+    @XmlElement Prtry              : String,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.051.001.01"), ValidationCheck, AnyKey
+value ISO20022.Reda051001.DateAndDateTime2Choice
+{
+    @XmlElement DtTm               : DateTime,
+    @XmlElement Dt                 : DateTime,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (validChoice (DtTm, Dt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.051.001.01"), ValidationCheck
+type ISO20022.Reda051001.Document
+{
+}
+[
+    @XmlElement AcctLkStsAdvc      : ISO20022.Reda051001.AccountLinkStatusAdviceV01,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(AcctLkStsAdvc))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.051.001.01"), ValidationCheck
+value ISO20022.Reda051001.GenericAccountIdentification1
+{
+    @XmlElement Issr               : String,
+    @XmlElement SchmeNm            : ISO20022.Reda051001.AccountSchemeName1Choice,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(SchmeNm))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.051.001.01"), ValidationCheck
+value ISO20022.Reda051001.GenericIdentification30
+{
+    @XmlElement SchmeNm            : String,
+    @XmlElement Issr               : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("Id", Id, "[a-zA-Z0-9]{4}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.051.001.01"), ValidationCheck
+value ISO20022.Reda051001.MessageHeader12
+{
+    @XmlElement OrgnlBizInstr      : ISO20022.Reda051001.OriginalBusinessInstruction1,
+    @XmlElement CreDtTm            : DateTime,
+    @XmlElement MsgId              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(OrgnlBizInstr))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.051.001.01"), ValidationCheck
+value ISO20022.Reda051001.OriginalBusinessInstruction1
+{
+    @XmlElement CreDtTm            : DateTime,
+    @XmlElement MsgNmId            : String,
+    @XmlElement MsgId              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.051.001.01"), ValidationCheck
+value ISO20022.Reda051001.ProxyAccountIdentification1
+{
+    @XmlElement Id                 : String,
+    @XmlElement Tp                 : ISO20022.Reda051001.ProxyAccountType1Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Tp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.051.001.01"), ValidationCheck, AnyKey
+value ISO20022.Reda051001.ProxyAccountType1Choice
+{
+    @XmlElement Prtry              : String,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.051.001.01"), ValidationCheck
+value ISO20022.Reda051001.SecuritiesAccount19
+{
+    @XmlElement Nm                 : String,
+    @XmlElement Tp                 : ISO20022.Reda051001.GenericIdentification30,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Tp))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:reda.051.001.01")
+enum ISO20022.Reda051001.Status6Code
+{
+    @XmlEnum ("QUED") QUED          #1,
+    @XmlEnum ("COMP") COMP          #2,
+    @XmlEnum ("REJT") REJT          #3,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.051.001.01"), ValidationCheck, AnyKey
+value ISO20022.Reda051001.StatusReason6Choice
+{
+    @XmlElement Prtry              : String,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.051.001.01"), ValidationCheck
+value ISO20022.Reda051001.StatusReasonInformation10
+{
+    @XmlElement AddtlInf           : String,
+    @XmlElement Rsn                : ISO20022.Reda051001.StatusReason6Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Rsn))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.051.001.01"), ValidationCheck
+value ISO20022.Reda051001.SupplementaryData1
+{
+    @XmlElement Envlp              : ISO20022.Reda051001.SupplementaryDataEnvelope1,
+    @XmlElement PlcAndNm           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Envlp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:reda.051.001.01"), ValidationCheck
+value ISO20022.Reda051001.SupplementaryDataEnvelope1
+{
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];

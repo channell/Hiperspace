@@ -188,17 +188,18 @@ namespace Hiperspace
                         while ((source[p] & icont) == icont)  // copy varint
                         {
                             bytes[s++] = source[p++];
-                            id += (source[p] & ival) << shift;
-                            shift += 4;
+                            id |= (source[p] & ival) << shift;
+                            shift += 7;
                         }
                         bytes[s++] = source[p++];
                         // copy LEN field to the end of the buffer
+                        shift = 7;
                         len = source[p] & ival;
                         while ((source[p] & icont) == icont)
                         {
                             bytes[e--] = source[p++];
-                            len += (source[p] & ival) << shift;
-                            shift += 4;
+                            len |= (source[p] & ival) << shift;
+                            shift += 7;
                             totlen--;
                         }
                         totlen += len;
@@ -289,17 +290,17 @@ namespace Hiperspace
                         {
                             bytes[s++] = source[p++];
                             id += (source[p] & ival) << shift;
-                            shift += 4;
+                            shift += 7;
                         }
                         bytes[s++] = source[p++];
                         len = source[e] & ival;
-                        shift = 4;
+                        shift = 7;
                         // copy LEN field from the end of the buffer
                         while ((source[e] & icont) == icont)
                         {
                             bytes[s++] = source[e--];
                             len += (source[e] & ival) << shift;
-                            shift += 4;
+                            shift += 7;
                             totlen--;
                         }
                         totlen += len;
@@ -382,17 +383,17 @@ namespace Hiperspace
                         {
                             bytes[s++] = source[p++];
                             id += (source[p] & ival) << shift;
-                            shift += 4;
+                            shift += 7;
                         }
                         bytes[s++] = source[p++];
                         len = source[e] & ival;
-                        shift = 4;
+                        shift = 7;
                         // copy LEN field from the end of the buffer
                         while ((source[e] & icont) == icont)
                         {
                             bytes[e--] = 0x00;
                             len += (source[e] & ival) << shift;
-                            shift += 4;
+                            shift += 7;
                             totlen--;
                         }
                         totlen += len;
@@ -482,17 +483,17 @@ namespace Hiperspace
                         {
                             bytes[s++] = source[p++];
                             id += (source[p] & ival) << shift;
-                            shift += 4;
+                            shift += 7;
                         }
                         bytes[s++] = source[p++];
                         len = source[e] & ival;
-                        shift = 4;
+                        shift = 7;
                         // copy LEN field from the end of the buffer
                         while ((source[e] & icont) == icont)
                         {
                             bytes[e--] = 0x00;
                             len += (source[e] & ival) << shift;
-                            shift += 4;
+                            shift += 7;
                             totlen--;
                         }
                         totlen += len;
@@ -579,7 +580,7 @@ namespace Hiperspace
                         {
                             bytes[s++] = source[p++];
                             id += (source[p] & ival) << shift;
-                            shift += 4;
+                            shift += 7;
                         }
                         bytes[s++] = source[p++];
                         searchkey = false;
@@ -632,7 +633,7 @@ namespace Hiperspace
                         {
                             p++;
                             id += (source[p] & ival) << shift;
-                            shift += 4;
+                            shift += 7;
                         }
                         return id;
                     default:

@@ -1,0 +1,599 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck
+value ISO20022.Tsrv004001.ActiveCurrencyAndAmount
+{
+    @XmlElement Value              : Decimal,
+    @XmlAttribute Ccy              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validRequired ("Value", Value), 
+        validRequired ("Ccy", Ccy), 
+        validPattern ("Ccy", Ccy, "[A-Z]{3,3}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck, AnyKey
+value ISO20022.Tsrv004001.AddressOrParty1Choice
+{
+    @XmlElement NewBnfcry          : ISO20022.Tsrv004001.NameAndAddress10,
+    @XmlElement NewAdr             : ISO20022.Tsrv004001.PostalAddress6,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(NewBnfcry), 
+        validElement(NewAdr), 
+        validChoice (NewBnfcry, NewAdr))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01")
+enum ISO20022.Tsrv004001.AddressType2Code
+{
+    @XmlEnum ("DLVY") DLVY          #1,
+    @XmlEnum ("MLTO") MLTO          #2,
+    @XmlEnum ("BIZZ") BIZZ          #3,
+    @XmlEnum ("HOME") HOME          #4,
+    @XmlEnum ("PBOX") PBOX          #5,
+    @XmlEnum ("ADDR") ADDR          #6,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck
+value ISO20022.Tsrv004001.Amendment3
+{
+    @XmlElement AddtlInf           : List<String>,
+    @XmlElement NclsdFile          : List<ISO20022.Tsrv004001.Document9>,
+    @XmlElement DlvryChanl         : ISO20022.Tsrv004001.CommunicationChannel1,
+    @XmlElement CntrUdrtkg         : ISO20022.Tsrv004001.Undertaking10,
+    @XmlElement NewUdrtkgTermsAndConds : List<ISO20022.Tsrv004001.Narrative1>,
+    @XmlElement NewBnfcry          : ISO20022.Tsrv004001.Beneficiary1,
+    @XmlElement NewXpryDtls        : ISO20022.Tsrv004001.ExpiryDetails2,
+    @XmlElement IncrDcrAmt         : ISO20022.Tsrv004001.UndertakingAmount2,
+    @XmlElement TermntnDtls        : ISO20022.Tsrv004001.UndertakingTermination3,
+    @XmlElement Applcnt            : ISO20022.Tsrv004001.PartyIdentification43,
+    @XmlElement UdrtkgId           : ISO20022.Tsrv004001.Undertaking9,
+    @XmlElement ApplcntReqNb       : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validListMax ("AddtlInf", AddtlInf, 5), 
+        validList ("NclsdFile", NclsdFile), 
+        validElement(NclsdFile), 
+        validElement(DlvryChanl), 
+        validElement(CntrUdrtkg), 
+        validList ("NewUdrtkgTermsAndConds", NewUdrtkgTermsAndConds), 
+        validElement(NewUdrtkgTermsAndConds), 
+        validElement(NewBnfcry), 
+        validElement(NewXpryDtls), 
+        validElement(IncrDcrAmt), 
+        validElement(TermntnDtls), 
+        validElement(Applcnt), 
+        validElement(UdrtkgId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck, AnyKey
+value ISO20022.Tsrv004001.Amount1Choice
+{
+    @XmlElement DcrAmt             : ISO20022.Tsrv004001.ActiveCurrencyAndAmount,
+    @XmlElement IncrAmt            : ISO20022.Tsrv004001.ActiveCurrencyAndAmount,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(DcrAmt), 
+        validElement(IncrAmt), 
+        validChoice (DcrAmt, IncrAmt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck, AnyKey
+value ISO20022.Tsrv004001.AutoExtend1Choice
+{
+    @XmlElement Dt                 : DateTime,
+    @XmlElement Yrs                : Decimal,
+    @XmlElement Mnths              : Decimal,
+    @XmlElement Days               : Decimal,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (validChoice (Dt, Yrs, Mnths, Days))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck
+value ISO20022.Tsrv004001.AutoExtension1
+{
+    @XmlElement NonXtnsnNtfctn     : List<ISO20022.Tsrv004001.NonExtension1>,
+    @XmlElement FnlXpryDt          : DateTime,
+    @XmlElement Prd                : ISO20022.Tsrv004001.AutoExtend1Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("NonXtnsnNtfctn", NonXtnsnNtfctn), 
+        validElement(NonXtnsnNtfctn), 
+        validElement(Prd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck
+value ISO20022.Tsrv004001.Beneficiary1
+{
+    @XmlElement AddtlInf           : List<String>,
+    @XmlElement NewAdrOrNewBnfcry  : ISO20022.Tsrv004001.AddressOrParty1Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validListMax ("AddtlInf", AddtlInf, 5), 
+        validElement(NewAdrOrNewBnfcry))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck
+value ISO20022.Tsrv004001.CommunicationChannel1
+{
+    @XmlElement DlvrToAdr          : ISO20022.Tsrv004001.PostalAddress6,
+    @XmlElement DlvrToNm           : String,
+    @XmlElement DlvrToPtyTp        : ISO20022.Tsrv004001.PartyType1Choice,
+    @XmlElement Mtd                : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(DlvrToAdr), 
+        validElement(DlvrToPtyTp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck, AnyKey
+value ISO20022.Tsrv004001.CommunicationMethod1Choice
+{
+    @XmlElement Prtry              : ISO20022.Tsrv004001.GenericIdentification1,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Prtry), 
+        validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck
+value ISO20022.Tsrv004001.ContactDetails2
+{
+    @XmlElement Othr               : String,
+    @XmlElement EmailAdr           : String,
+    @XmlElement FaxNb              : String,
+    @XmlElement MobNb              : String,
+    @XmlElement PhneNb             : String,
+    @XmlElement Nm                 : String,
+    @XmlElement NmPrfx             : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("FaxNb", FaxNb, "\+[0-9]{1,3}-[0-9()+\-]{1,30}"), 
+        validPattern ("MobNb", MobNb, "\+[0-9]{1,3}-[0-9()+\-]{1,30}"), 
+        validPattern ("PhneNb", PhneNb, "\+[0-9]{1,3}-[0-9()+\-]{1,30}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck, AnyKey
+value ISO20022.Tsrv004001.DateAndDateTimeChoice
+{
+    @XmlElement DtTm               : DateTime,
+    @XmlElement Dt                 : DateTime,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (validChoice (DtTm, Dt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck
+value ISO20022.Tsrv004001.DateAndPlaceOfBirth
+{
+    @XmlElement CtryOfBirth        : String,
+    @XmlElement CityOfBirth        : String,
+    @XmlElement PrvcOfBirth        : String,
+    @XmlElement BirthDt            : DateTime,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("CtryOfBirth", CtryOfBirth, "[A-Z]{2,2}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck
+type ISO20022.Tsrv004001.Document
+{
+}
+[
+    @XmlElement UdrtkgAmdmntReq    : ISO20022.Tsrv004001.UndertakingAmendmentRequestV01,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(UdrtkgAmdmntReq))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck
+value ISO20022.Tsrv004001.Document9
+{
+    @XmlElement DgtlSgntr          : ISO20022.Tsrv004001.PartyAndSignature2,
+    @XmlElement Nclsr              : String,
+    @XmlElement Frmt               : ISO20022.Tsrv004001.DocumentFormat1Choice,
+    @XmlElement Id                 : String,
+    @XmlElement Tp                 : ISO20022.Tsrv004001.UndertakingDocumentType1Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(DgtlSgntr), 
+        validElement(Frmt), 
+        validElement(Tp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck, AnyKey
+value ISO20022.Tsrv004001.DocumentFormat1Choice
+{
+    @XmlElement Prtry              : ISO20022.Tsrv004001.GenericIdentification1,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Prtry), 
+        validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck
+value ISO20022.Tsrv004001.ExpiryDetails1
+{
+    @XmlElement AddtlXpryInf       : List<String>,
+    @XmlElement XpryTerms          : ISO20022.Tsrv004001.ExpiryTerms1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validListMax ("AddtlXpryInf", AddtlXpryInf, 5), 
+        validElement(XpryTerms))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck
+value ISO20022.Tsrv004001.ExpiryDetails2
+{
+    @XmlElement AddtlXpryInf       : List<String>,
+    @XmlElement XpryTerms          : ISO20022.Tsrv004001.ExpiryTerms2,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validListMax ("AddtlXpryInf", AddtlXpryInf, 5), 
+        validElement(XpryTerms))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck
+value ISO20022.Tsrv004001.ExpiryTerms1
+{
+    @XmlElement OpnEnddInd         : String,
+    @XmlElement Cond               : String,
+    @XmlElement AutoXtnsn          : ISO20022.Tsrv004001.AutoExtension1,
+    @XmlElement DtTm               : ISO20022.Tsrv004001.DateAndDateTimeChoice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(AutoXtnsn), 
+        validElement(DtTm))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck
+value ISO20022.Tsrv004001.ExpiryTerms2
+{
+    @XmlElement OpnEnddInd         : String,
+    @XmlElement Cond               : String,
+    @XmlElement AutoXtnsn          : ISO20022.Tsrv004001.AutoExtension1,
+    @XmlElement DtTm               : ISO20022.Tsrv004001.DateAndDateTimeChoice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(AutoXtnsn), 
+        validElement(DtTm))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck
+value ISO20022.Tsrv004001.GenericIdentification1
+{
+    @XmlElement Issr               : String,
+    @XmlElement SchmeNm            : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck
+value ISO20022.Tsrv004001.GenericOrganisationIdentification1
+{
+    @XmlElement Issr               : String,
+    @XmlElement SchmeNm            : ISO20022.Tsrv004001.OrganisationIdentificationSchemeName1Choice,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(SchmeNm))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck
+value ISO20022.Tsrv004001.GenericPersonIdentification1
+{
+    @XmlElement Issr               : String,
+    @XmlElement SchmeNm            : ISO20022.Tsrv004001.PersonIdentificationSchemeName1Choice,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(SchmeNm))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck
+value ISO20022.Tsrv004001.NameAndAddress10
+{
+    @XmlElement Adr                : ISO20022.Tsrv004001.PostalAddress6,
+    @XmlElement Nm                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Adr))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01")
+enum ISO20022.Tsrv004001.NamePrefix1Code
+{
+    @XmlEnum ("MADM") MADM          #1,
+    @XmlEnum ("MISS") MISS          #2,
+    @XmlEnum ("MIST") MIST          #3,
+    @XmlEnum ("DOCT") DOCT          #4,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck
+value ISO20022.Tsrv004001.Narrative1
+{
+    @XmlElement Txt                : List<String>,
+    @XmlElement Tp                 : ISO20022.Tsrv004001.NarrativeType1Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validRequired ("Txt", Txt), 
+        validListMax ("Txt", Txt, 5), 
+        validElement(Tp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck, AnyKey
+value ISO20022.Tsrv004001.NarrativeType1Choice
+{
+    @XmlElement Prtry              : ISO20022.Tsrv004001.GenericIdentification1,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Prtry), 
+        validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck
+value ISO20022.Tsrv004001.NonExtension1
+{
+    @XmlElement NtfctnRcptAdr      : ISO20022.Tsrv004001.PostalAddress6,
+    @XmlElement NtfctnRcptNm       : String,
+    @XmlElement NtfctnRcptTp       : ISO20022.Tsrv004001.PartyType1Choice,
+    @XmlElement NtfctnMtd          : ISO20022.Tsrv004001.CommunicationMethod1Choice,
+    @XmlElement NtfctnPrd          : Decimal,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(NtfctnRcptAdr), 
+        validElement(NtfctnRcptTp), 
+        validElement(NtfctnMtd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck
+value ISO20022.Tsrv004001.OrganisationIdentification8
+{
+    @XmlElement Othr               : List<ISO20022.Tsrv004001.GenericOrganisationIdentification1>,
+    @XmlElement AnyBIC             : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("Othr", Othr), 
+        validElement(Othr), 
+        validPattern ("AnyBIC", AnyBIC, "[A-Z]{6,6}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3,3}){0,1}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck, AnyKey
+value ISO20022.Tsrv004001.OrganisationIdentificationSchemeName1Choice
+{
+    @XmlElement Prtry              : String,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck, AnyKey
+value ISO20022.Tsrv004001.Party11Choice
+{
+    @XmlElement PrvtId             : ISO20022.Tsrv004001.PersonIdentification5,
+    @XmlElement OrgId              : ISO20022.Tsrv004001.OrganisationIdentification8,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(PrvtId), 
+        validElement(OrgId), 
+        validChoice (PrvtId, OrgId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck
+value ISO20022.Tsrv004001.PartyAndSignature2
+{
+    @XmlElement Sgntr              : ISO20022.Tsrv004001.ProprietaryData3,
+    @XmlElement Pty                : ISO20022.Tsrv004001.PartyIdentification43,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Sgntr), 
+        validElement(Pty))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck
+value ISO20022.Tsrv004001.PartyIdentification43
+{
+    @XmlElement CtctDtls           : ISO20022.Tsrv004001.ContactDetails2,
+    @XmlElement CtryOfRes          : String,
+    @XmlElement Id                 : ISO20022.Tsrv004001.Party11Choice,
+    @XmlElement PstlAdr            : ISO20022.Tsrv004001.PostalAddress6,
+    @XmlElement Nm                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(CtctDtls), 
+        validPattern ("CtryOfRes", CtryOfRes, "[A-Z]{2,2}"), 
+        validElement(Id), 
+        validElement(PstlAdr))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck, AnyKey
+value ISO20022.Tsrv004001.PartyType1Choice
+{
+    @XmlElement Prtry              : ISO20022.Tsrv004001.GenericIdentification1,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Prtry), 
+        validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck
+value ISO20022.Tsrv004001.PersonIdentification5
+{
+    @XmlElement Othr               : List<ISO20022.Tsrv004001.GenericPersonIdentification1>,
+    @XmlElement DtAndPlcOfBirth    : ISO20022.Tsrv004001.DateAndPlaceOfBirth,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("Othr", Othr), 
+        validElement(Othr), 
+        validElement(DtAndPlcOfBirth))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck, AnyKey
+value ISO20022.Tsrv004001.PersonIdentificationSchemeName1Choice
+{
+    @XmlElement Prtry              : String,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck
+value ISO20022.Tsrv004001.PostalAddress6
+{
+    @XmlElement AdrLine            : List<String>,
+    @XmlElement Ctry               : String,
+    @XmlElement CtrySubDvsn        : String,
+    @XmlElement TwnNm              : String,
+    @XmlElement PstCd              : String,
+    @XmlElement BldgNb             : String,
+    @XmlElement StrtNm             : String,
+    @XmlElement SubDept            : String,
+    @XmlElement Dept               : String,
+    @XmlElement AdrTp              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validListMax ("AdrLine", AdrLine, 7), 
+        validPattern ("Ctry", Ctry, "[A-Z]{2,2}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck
+value ISO20022.Tsrv004001.ProprietaryData3
+{
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck, AnyKey
+value ISO20022.Tsrv004001.TerminationReason1Choice
+{
+    @XmlElement Prtry              : ISO20022.Tsrv004001.GenericIdentification1,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Prtry), 
+        validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01")
+enum ISO20022.Tsrv004001.TerminationReason1Code
+{
+    @XmlEnum ("WOEX") WOEX          #1,
+    @XmlEnum ("BUFI") BUFI          #2,
+    @XmlEnum ("NOAC") NOAC          #3,
+    @XmlEnum ("REFU") REFU          #4,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck
+value ISO20022.Tsrv004001.Undertaking10
+{
+    @XmlElement NewXpryDtls        : ISO20022.Tsrv004001.ExpiryDetails1,
+    @XmlElement NewUdrtkgAmt       : ISO20022.Tsrv004001.UndertakingAmount2,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(NewXpryDtls), 
+        validElement(NewUdrtkgAmt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck
+value ISO20022.Tsrv004001.Undertaking9
+{
+    @XmlElement ApplcntRefNb       : String,
+    @XmlElement Issr               : ISO20022.Tsrv004001.PartyIdentification43,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Issr))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck
+aspect ISO20022.Tsrv004001.UndertakingAmendmentRequestV01
+{
+    @XmlElement DgtlSgntr          : ISO20022.Tsrv004001.PartyAndSignature2,
+    @XmlElement InstrsToBk         : List<String>,
+    @XmlElement UdrtkgAmdmntReqDtls : ISO20022.Tsrv004001.Amendment3,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(DgtlSgntr), 
+        validListMax ("InstrsToBk", InstrsToBk, 5), 
+        validElement(UdrtkgAmdmntReqDtls))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck
+value ISO20022.Tsrv004001.UndertakingAmount2
+{
+    @XmlElement AddtlInf           : List<String>,
+    @XmlElement AmtChc             : ISO20022.Tsrv004001.Amount1Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validListMax ("AddtlInf", AddtlInf, 5), 
+        validElement(AmtChc))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck, AnyKey
+value ISO20022.Tsrv004001.UndertakingDocumentType1Choice
+{
+    @XmlElement Prtry              : ISO20022.Tsrv004001.GenericIdentification1,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Prtry), 
+        validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsrv.004.001.01"), ValidationCheck
+value ISO20022.Tsrv004001.UndertakingTermination3
+{
+    @XmlElement AddtlInf           : List<String>,
+    @XmlElement Rsn                : ISO20022.Tsrv004001.TerminationReason1Choice,
+    @XmlElement FctvDt             : DateTime,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validListMax ("AddtlInf", AddtlInf, 5), 
+        validElement(Rsn))
+];

@@ -5,7 +5,10 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
+using System.Xml.Serialization;
 
 namespace Hiperspace
 {
@@ -18,9 +21,15 @@ namespace Hiperspace
         IComparable<TEntity>,
         IComparable, IElement where TEntity : Element<TEntity>, new()
     {
+        public readonly DurableType DurableType = DurableType.Immutable;
+        public Element(DurableType durableType) { DurableType = durableType; }
+        public Element() { }
+
         public abstract Result<TEntity> Bind(SubSpace subSpace);
+        public abstract Result<TEntity> BindAll(SubSpace subSpace, HashSet<IElement> path, bool cache = true);
         public abstract void Unbind(SubSpace subSpace);
-        public SetSpace<TEntity>? SetSpace { get; protected set; }
+        [XmlIgnore, JsonIgnore, NotMapped]
+        public SetSpace<TEntity>? SetSpace { get; set; } // changed for xml serialisation
         ISetSpace? IElement.SetSpace => SetSpace;
 
         public abstract int CompareTo(TEntity? other);

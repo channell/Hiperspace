@@ -361,36 +361,45 @@ namespace Hiperspace
         {
             return _space.GetLastAsync(begin, end, version);
         }
+        [Obsolete("Use messages instead")]
         public override IEnumerable<(byte[] key, byte[] value)> GetMany(IEnumerable<byte[]> keys)
         {
             return _space.GetMany(keys);
         }
+        [Obsolete("Use messages instead")]
         public override IEnumerable<(byte[] key, byte[] Value, DateTime version)> GetMany(IEnumerable<byte[]> keys, DateTime? version)
         {
             return _space.GetMany(keys, version);
         }
+        [Obsolete("Use messages instead")]
         public override async IAsyncEnumerable<(byte[] key, byte[] value)> GetManyAsync(IAsyncEnumerable<byte[]> keys, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             await foreach (var item in _space.GetManyAsync(keys, cancellationToken))
                 yield return item;
         }
+        [Obsolete("Use messages instead")]
         public override async IAsyncEnumerable<(byte[] key, byte[] Value, DateTime version)> GetManyAsync(IAsyncEnumerable<byte[]> keys, DateTime? version, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             await foreach (var item in _space.GetManyAsync(keys, version, cancellationToken))
                 yield return item;
         }
+
+        [Obsolete("use transactional Find instead")]
         public override IEnumerable<(byte[] Key, byte[] Value)> Scan(byte[] begin, byte[] end, byte[][] values)
         {
             return _space.Scan(begin, end, values);
         }
+        [Obsolete("use transactional Find instead")]
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Scan(byte[] begin, byte[] end, byte[][] values, DateTime? version)
         {
             return _space.Scan(begin, end, values, version);
         }
+        [Obsolete("use transactional Find instead")]
         public override IAsyncEnumerable<(byte[] Key, byte[] Value)> ScanAsync(byte[] begin, byte[] end, byte[][] values, CancellationToken cancellationToken = default)
         {
             return _space.ScanAsync(begin, end, values, cancellationToken);
         }
+        [Obsolete("use transactional Find instead")]
         public override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> ScanAsync(byte[] begin, byte[] end, byte[][] values, DateTime? version, CancellationToken cancellationToken = default)
         {
             return _space.ScanAsync(begin, end, values, version, cancellationToken);
@@ -452,17 +461,6 @@ namespace Hiperspace
             return (TResult)result!;
         }
 
-        [Obsolete("use Bind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
-        public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, object? source = null)
-        {
-            return _space.Bind(key, value, version, source);
-        }
-
-        [Obsolete("use BindAsync((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
-        public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, object? source = null)
-        {
-            return _space.BindAsync(key, value, version, source);
-        }
         public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
         {
             return _space.Bind(key, value, version, priorVersion, source);
@@ -564,24 +562,6 @@ namespace Hiperspace
         {
             return await global::Graph.PathFunctions.PathsAsync(root, route, length, targets, cancellationToken);
         }
-
-        /// <summary>
-        /// Export contents of the cache 
-        /// </summary>
-        /// <remarks>
-        /// is usefull for web-assembly/phone clients need to transfer the full set for a use-case
-        /// </remarks>
-        [Obsolete("Use messages instead")]
-        public abstract IAsyncEnumerable<(byte[] Key, byte[] Value, DateTime? AsAt)> ExportCacheAsync(CancellationToken cancellationToken = default);
-        /// <summary>
-        /// Import into SubSpace cache if avialable 
-        /// </summary>
-        /// <param name="cacheOnly">true if the import is only to the cache
-        /// <remarks>
-        /// cachedOnly is usefull for web-assembly/phone clients need to transfer the full set for a use-case
-        /// </remarks>
-        [Obsolete("Use messages instead")]
-        public abstract void ImportCacheAsync(IAsyncEnumerable<(byte[] Key, byte[] Value, DateTime? AsAt)> values, CancellationToken cancellationToken = default);
 
         public override MetaModel? GetMetaModel()
         {

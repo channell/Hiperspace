@@ -1,0 +1,113 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.064.001.02"), ValidationCheck
+value ISO20022.Auth064001.ActiveCurrencyAndAmount
+{
+    @XmlElement Value              : Decimal,
+    @XmlAttribute Ccy              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validRequired ("Value", Value), 
+        validRequired ("Ccy", Ccy), 
+        validPattern ("Ccy", Ccy, "[A-Z]{3,3}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.064.001.02"), ValidationCheck
+value ISO20022.Auth064001.AvailableFinancialResourcesAmount2
+{
+    @XmlElement UfnddThrdPtyCmmtmnt : ISO20022.Auth064001.ActiveCurrencyAndAmount,
+    @XmlElement UfnddMmbCmmtmnt    : ISO20022.Auth064001.ActiveCurrencyAndAmount,
+    @XmlElement OthrDfltFndCntrbtn : ISO20022.Auth064001.ActiveCurrencyAndAmount,
+    @XmlElement CCPSkinInTheGame   : List<ISO20022.Auth064001.ReportingAssetBreakdown2>,
+    @XmlElement TtlPrfnddDfltFnd   : ISO20022.Auth064001.ActiveCurrencyAndAmount,
+    @XmlElement TtlInitlMrgn       : ISO20022.Auth064001.ActiveCurrencyAndAmount,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(UfnddThrdPtyCmmtmnt), 
+        validElement(UfnddMmbCmmtmnt), 
+        validElement(OthrDfltFndCntrbtn), 
+        validRequired ("CCPSkinInTheGame", CCPSkinInTheGame), 
+        validList ("CCPSkinInTheGame", CCPSkinInTheGame), 
+        validElement(CCPSkinInTheGame), 
+        validElement(TtlPrfnddDfltFnd), 
+        validElement(TtlInitlMrgn))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.064.001.02"), ValidationCheck
+aspect ISO20022.Auth064001.CCPAvailableFinancialResourcesReportV02
+{
+    @XmlElement SplmtryData        : List<ISO20022.Auth064001.SupplementaryData1>,
+    @XmlElement OthrPrfnddRsrcs    : ISO20022.Auth064001.ReportingAssetBreakdown2,
+    @XmlElement AvlblFinRsrcsAmt   : ISO20022.Auth064001.AvailableFinancialResourcesAmount2,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("SplmtryData", SplmtryData), 
+        validElement(SplmtryData), 
+        validElement(OthrPrfnddRsrcs), 
+        validElement(AvlblFinRsrcsAmt))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:auth.064.001.02")
+enum ISO20022.Auth064001.DebtIssuerType1Code
+{
+    @XmlEnum ("SVGN") SVGN          #1,
+    @XmlEnum ("SUPR") SUPR          #2,
+    @XmlEnum ("SPVS") SPVS          #3,
+    @XmlEnum ("MUNI") MUNI          #4,
+    @XmlEnum ("CORP") CORP          #5,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.064.001.02"), ValidationCheck
+type ISO20022.Auth064001.Document
+{
+}
+[
+    @XmlElement CCPAvlblFinRsrcsRpt : ISO20022.Auth064001.CCPAvailableFinancialResourcesReportV02,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(CCPAvlblFinRsrcsRpt))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:auth.064.001.02")
+enum ISO20022.Auth064001.ProductType6Code
+{
+    @XmlEnum ("EQUI") EQUI          #1,
+    @XmlEnum ("OTHR") OTHR          #2,
+    @XmlEnum ("CASH") CASH          #3,
+    @XmlEnum ("BOND") BOND          #4,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.064.001.02"), ValidationCheck
+value ISO20022.Auth064001.ReportingAssetBreakdown2
+{
+    @XmlElement Amt                : ISO20022.Auth064001.ActiveCurrencyAndAmount,
+    @XmlElement Id                 : String,
+    @XmlElement DebtIssrTp         : String,
+    @XmlElement RptgAsstTp         : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Amt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.064.001.02"), ValidationCheck
+value ISO20022.Auth064001.SupplementaryData1
+{
+    @XmlElement Envlp              : ISO20022.Auth064001.SupplementaryDataEnvelope1,
+    @XmlElement PlcAndNm           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Envlp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.064.001.02"), ValidationCheck
+value ISO20022.Auth064001.SupplementaryDataEnvelope1
+{
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];

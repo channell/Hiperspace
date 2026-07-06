@@ -1,0 +1,79 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:fxtr.033.001.02"), ValidationCheck
+value ISO20022.Fxtr033001.AdditionalReferences2
+{
+    @XmlElement RefIssr            : String,
+    @XmlElement MsgNm              : String,
+    @XmlElement Ref                : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:fxtr.033.001.02"), ValidationCheck
+type ISO20022.Fxtr033001.Document
+{
+}
+[
+    @XmlElement FXTradCaptrRptAck  : ISO20022.Fxtr033001.ForeignExchangeTradeCaptureReportAcknowledgementV02,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(FXTradCaptrRptAck))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:fxtr.033.001.02"), ValidationCheck
+aspect ISO20022.Fxtr033001.ForeignExchangeTradeCaptureReportAcknowledgementV02
+{
+    @XmlElement SplmtryData        : List<ISO20022.Fxtr033001.SupplementaryData1>,
+    @XmlElement Ref                : ISO20022.Fxtr033001.AdditionalReferences2,
+    @XmlElement Sts                : String,
+    @XmlElement DealTcktId         : String,
+    @XmlElement TradId             : String,
+    @XmlElement AckId              : ISO20022.Fxtr033001.MessageIdentification1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("SplmtryData", SplmtryData), 
+        validElement(SplmtryData), 
+        validElement(Ref), 
+        validElement(AckId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:fxtr.033.001.02"), ValidationCheck
+value ISO20022.Fxtr033001.MessageIdentification1
+{
+    @XmlElement CreDtTm            : DateTime,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:fxtr.033.001.02")
+enum ISO20022.Fxtr033001.Status5Code
+{
+    @XmlEnum ("PDNG") PDNG          #1,
+    @XmlEnum ("PACK") PACK          #2,
+    @XmlEnum ("REJT") REJT          #3,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:fxtr.033.001.02"), ValidationCheck
+value ISO20022.Fxtr033001.SupplementaryData1
+{
+    @XmlElement Envlp              : ISO20022.Fxtr033001.SupplementaryDataEnvelope1,
+    @XmlElement PlcAndNm           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Envlp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:fxtr.033.001.02"), ValidationCheck
+value ISO20022.Fxtr033001.SupplementaryDataEnvelope1
+{
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];

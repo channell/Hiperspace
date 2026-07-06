@@ -1,0 +1,246 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.018.001.05"), ValidationCheck
+value ISO20022.Camt018001.BusinessDayCriteria2
+{
+    @XmlElement RtrCrit            : ISO20022.Camt018001.BusinessDayReturnCriteria2,
+    @XmlElement SchCrit            : List<ISO20022.Camt018001.BusinessDaySearchCriteria2>,
+    @XmlElement NewQryNm           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(RtrCrit), 
+        validList ("SchCrit", SchCrit), 
+        validElement(SchCrit))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.018.001.05"), ValidationCheck, AnyKey
+value ISO20022.Camt018001.BusinessDayCriteria3Choice
+{
+    @XmlElement NewCrit            : ISO20022.Camt018001.BusinessDayCriteria2,
+    @XmlElement QryNm              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(NewCrit), 
+        validChoice (NewCrit, QryNm))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.018.001.05"), ValidationCheck
+value ISO20022.Camt018001.BusinessDayQuery2
+{
+    @XmlElement Crit               : ISO20022.Camt018001.BusinessDayCriteria3Choice,
+    @XmlElement QryTp              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Crit))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.018.001.05"), ValidationCheck
+value ISO20022.Camt018001.BusinessDayReturnCriteria2
+{
+    @XmlElement EvtTpInd           : String,
+    @XmlElement SsnPrdInd          : String,
+    @XmlElement EvtInd             : String,
+    @XmlElement ClsrPrdInd         : String,
+    @XmlElement SysCcyInd          : String,
+    @XmlElement SysStsInd          : String,
+    @XmlElement SysDtInd           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.018.001.05"), ValidationCheck
+value ISO20022.Camt018001.BusinessDaySearchCriteria2
+{
+    @XmlElement ClsrPrd            : ISO20022.Camt018001.DateTimePeriod1Choice,
+    @XmlElement EvtTp              : ISO20022.Camt018001.SystemEventType2Choice,
+    @XmlElement SysCcy             : List<String>,
+    @XmlElement SysId              : List<ISO20022.Camt018001.SystemIdentification2Choice>,
+    @XmlElement SysDt              : DateTime,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(ClsrPrd), 
+        validElement(EvtTp), 
+        validPattern ("SysCcy", SysCcy, "[A-Z]{3,3}"), 
+        validList ("SysId", SysId), 
+        validElement(SysId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.018.001.05"), ValidationCheck
+value ISO20022.Camt018001.DateTimePeriod1
+{
+    @XmlElement ToDtTm             : DateTime,
+    @XmlElement FrDtTm             : DateTime,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.018.001.05"), ValidationCheck, AnyKey
+value ISO20022.Camt018001.DateTimePeriod1Choice
+{
+    @XmlElement DtTmRg             : ISO20022.Camt018001.DateTimePeriod1,
+    @XmlElement ToDtTm             : DateTime,
+    @XmlElement FrDtTm             : DateTime,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(DtTmRg), 
+        validChoice (DtTmRg, ToDtTm, FrDtTm))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.018.001.05"), ValidationCheck
+type ISO20022.Camt018001.Document
+{
+}
+[
+    @XmlElement GetBizDayInf       : ISO20022.Camt018001.GetBusinessDayInformationV05,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(GetBizDayInf))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.018.001.05"), ValidationCheck
+value ISO20022.Camt018001.GenericIdentification1
+{
+    @XmlElement Issr               : String,
+    @XmlElement SchmeNm            : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.018.001.05"), ValidationCheck
+aspect ISO20022.Camt018001.GetBusinessDayInformationV05
+{
+    @XmlElement SplmtryData        : List<ISO20022.Camt018001.SupplementaryData1>,
+    @XmlElement BizDayInfQryDef    : ISO20022.Camt018001.BusinessDayQuery2,
+    @XmlElement MsgHdr             : ISO20022.Camt018001.MessageHeader9,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("SplmtryData", SplmtryData), 
+        validElement(SplmtryData), 
+        validElement(BizDayInfQryDef), 
+        validElement(MsgHdr))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.018.001.05"), ValidationCheck, AnyKey
+value ISO20022.Camt018001.MarketInfrastructureIdentification1Choice
+{
+    @XmlElement Prtry              : String,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.018.001.05"), ValidationCheck
+value ISO20022.Camt018001.MessageHeader9
+{
+    @XmlElement ReqTp              : ISO20022.Camt018001.RequestType4Choice,
+    @XmlElement CreDtTm            : DateTime,
+    @XmlElement MsgId              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(ReqTp))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:camt.018.001.05")
+enum ISO20022.Camt018001.QueryType2Code
+{
+    @XmlEnum ("DELD") DELD          #1,
+    @XmlEnum ("MODF") MODF          #2,
+    @XmlEnum ("CHNG") CHNG          #3,
+    @XmlEnum ("ALLL") ALLL          #4,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.018.001.05"), ValidationCheck, AnyKey
+value ISO20022.Camt018001.RequestType4Choice
+{
+    @XmlElement Prtry              : ISO20022.Camt018001.GenericIdentification1,
+    @XmlElement Enqry              : String,
+    @XmlElement PmtCtrl            : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Prtry), 
+        validChoice (Prtry, Enqry, PmtCtrl))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.018.001.05"), ValidationCheck
+value ISO20022.Camt018001.SupplementaryData1
+{
+    @XmlElement Envlp              : ISO20022.Camt018001.SupplementaryDataEnvelope1,
+    @XmlElement PlcAndNm           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Envlp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.018.001.05"), ValidationCheck
+value ISO20022.Camt018001.SupplementaryDataEnvelope1
+{
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.018.001.05"), ValidationCheck, AnyKey
+value ISO20022.Camt018001.SystemEventType2Choice
+{
+    @XmlElement Prtry              : ISO20022.Camt018001.GenericIdentification1,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Prtry), 
+        validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:camt.018.001.05")
+enum ISO20022.Camt018001.SystemEventType2Code
+{
+    @XmlEnum ("ESTF") ESTF          #1,
+    @XmlEnum ("NPCT") NPCT          #2,
+    @XmlEnum ("PCOT") PCOT          #3,
+    @XmlEnum ("REOP") REOP          #4,
+    @XmlEnum ("SSSC") SSSC          #5,
+    @XmlEnum ("SYSC") SYSC          #6,
+    @XmlEnum ("IBKC") IBKC          #7,
+    @XmlEnum ("CUSC") CUSC          #8,
+    @XmlEnum ("LTDC") LTDC          #9,
+    @XmlEnum ("LTGC") LTGC          #10,
+    @XmlEnum ("RECC") RECC          #11,
+    @XmlEnum ("CRCO") CRCO          #12,
+    @XmlEnum ("LTNC") LTNC          #13,
+    @XmlEnum ("STDY") STDY          #14,
+    @XmlEnum ("FIRE") FIRE          #15,
+    @XmlEnum ("EUCO") EUCO          #16,
+    @XmlEnum ("LWSU") LWSU          #17,
+    @XmlEnum ("STSU") STSU          #18,
+    @XmlEnum ("EUSU") EUSU          #19,
+    @XmlEnum ("LVRT") LVRT          #20,
+    @XmlEnum ("LVCC") LVCC          #21,
+    @XmlEnum ("LVCO") LVCO          #22,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.018.001.05"), ValidationCheck, AnyKey
+value ISO20022.Camt018001.SystemIdentification2Choice
+{
+    @XmlElement Ctry               : String,
+    @XmlElement MktInfrstrctrId    : ISO20022.Camt018001.MarketInfrastructureIdentification1Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("Ctry", Ctry, "[A-Z]{2,2}"), 
+        validElement(MktInfrstrctrId), 
+        validChoice (Ctry, MktInfrstrctrId))
+];

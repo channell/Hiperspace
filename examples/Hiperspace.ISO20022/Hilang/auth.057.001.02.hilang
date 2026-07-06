@@ -1,0 +1,193 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.057.001.02"), ValidationCheck
+value ISO20022.Auth057001.Absolute1
+{
+    @XmlElement Qty                : Decimal,
+    @XmlElement Unit               : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.057.001.02"), ValidationCheck
+aspect ISO20022.Auth057001.CCPPortfolioStressTestingDefinitionReportV02
+{
+    @XmlElement SplmtryData        : List<ISO20022.Auth057001.SupplementaryData1>,
+    @XmlElement ScnroDef           : List<ISO20022.Auth057001.ScenarioDefinition2>,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("SplmtryData", SplmtryData), 
+        validElement(SplmtryData), 
+        validRequired ("ScnroDef", ScnroDef), 
+        validList ("ScnroDef", ScnroDef), 
+        validElement(ScnroDef))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.057.001.02"), ValidationCheck
+type ISO20022.Auth057001.Document
+{
+}
+[
+    @XmlElement CCPPrtflStrssTstgDefRpt : ISO20022.Auth057001.CCPPortfolioStressTestingDefinitionReportV02,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(CCPPrtflStrssTstgDefRpt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.057.001.02"), ValidationCheck
+value ISO20022.Auth057001.GenericIdentification165
+{
+    @XmlElement SchmeNm            : String,
+    @XmlElement Issr               : String,
+    @XmlElement Desc               : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.057.001.02"), ValidationCheck
+value ISO20022.Auth057001.GenericIdentification168
+{
+    @XmlElement SchmeNm            : String,
+    @XmlElement Issr               : String,
+    @XmlElement Desc               : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.057.001.02"), ValidationCheck
+value ISO20022.Auth057001.RiskFactor1
+{
+    @XmlElement StrssSz            : ISO20022.Auth057001.StressSize1Choice,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(StrssSz))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.057.001.02"), ValidationCheck
+value ISO20022.Auth057001.ScenarioDefinition2
+{
+    @XmlElement Desc               : String,
+    @XmlElement StrssItm           : List<ISO20022.Auth057001.StressItem1>,
+    @XmlElement StrtgyStrssTp      : String,
+    @XmlElement ScnroTp            : String,
+    @XmlElement Id                 : ISO20022.Auth057001.GenericIdentification165,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validRequired ("StrssItm", StrssItm), 
+        validList ("StrssItm", StrssItm), 
+        validElement(StrssItm), 
+        validElement(Id))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:auth.057.001.02")
+enum ISO20022.Auth057001.ScenarioType1Code
+{
+    @XmlEnum ("HYPT") HYPT          #1,
+    @XmlEnum ("HIST") HIST          #2,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:auth.057.001.02")
+enum ISO20022.Auth057001.SchemeIdentificationType1Code
+{
+    @XmlEnum ("CLIM") CLIM          #1,
+    @XmlEnum ("POSI") POSI          #2,
+    @XmlEnum ("COLL") COLL          #3,
+    @XmlEnum ("MARG") MARG          #4,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.057.001.02"), ValidationCheck
+value ISO20022.Auth057001.Strategy1
+{
+    @XmlElement StrssSz            : ISO20022.Auth057001.StressSize1Choice,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(StrssSz))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:auth.057.001.02")
+enum ISO20022.Auth057001.StrategyStressType1Code
+{
+    @XmlEnum ("SPRD") SPRD          #1,
+    @XmlEnum ("PRLL") PRLL          #2,
+    @XmlEnum ("FLEX") FLEX          #3,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.057.001.02"), ValidationCheck
+value ISO20022.Auth057001.StressItem1
+{
+    @XmlElement StrssPdct          : ISO20022.Auth057001.StressItem1Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(StrssPdct))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.057.001.02"), ValidationCheck, AnyKey
+value ISO20022.Auth057001.StressItem1Choice
+{
+    @XmlElement RskFctr            : ISO20022.Auth057001.RiskFactor1,
+    @XmlElement Strtgy             : ISO20022.Auth057001.Strategy1,
+    @XmlElement Pdct               : ISO20022.Auth057001.StressedProduct1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(RskFctr), 
+        validElement(Strtgy), 
+        validElement(Pdct), 
+        validChoice (RskFctr, Strtgy, Pdct))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.057.001.02"), ValidationCheck, AnyKey
+value ISO20022.Auth057001.StressSize1Choice
+{
+    @XmlElement Abs                : ISO20022.Auth057001.Absolute1,
+    @XmlElement Rltv               : Decimal,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Abs), 
+        validChoice (Abs, Rltv))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.057.001.02"), ValidationCheck
+value ISO20022.Auth057001.StressedProduct1
+{
+    @XmlElement MinStrssSz         : ISO20022.Auth057001.StressSize1Choice,
+    @XmlElement MaxStrssSz         : ISO20022.Auth057001.StressSize1Choice,
+    @XmlElement Id                 : ISO20022.Auth057001.GenericIdentification168,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(MinStrssSz), 
+        validElement(MaxStrssSz), 
+        validElement(Id))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.057.001.02"), ValidationCheck
+value ISO20022.Auth057001.SupplementaryData1
+{
+    @XmlElement Envlp              : ISO20022.Auth057001.SupplementaryDataEnvelope1,
+    @XmlElement PlcAndNm           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Envlp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.057.001.02"), ValidationCheck
+value ISO20022.Auth057001.SupplementaryDataEnvelope1
+{
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];

@@ -1,0 +1,133 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:tsmt.002.001.04")
+enum ISO20022.Tsmt002001.Action2Code
+{
+    @XmlEnum ("CINR") CINR          #1,
+    @XmlEnum ("ARRO") ARRO          #2,
+    @XmlEnum ("ARBA") ARBA          #3,
+    @XmlEnum ("SBDS") SBDS          #4,
+    @XmlEnum ("UPDT") UPDT          #5,
+    @XmlEnum ("WAIT") WAIT          #6,
+    @XmlEnum ("ARES") ARES          #7,
+    @XmlEnum ("ARCS") ARCS          #8,
+    @XmlEnum ("ARDM") ARDM          #9,
+    @XmlEnum ("RSBS") RSBS          #10,
+    @XmlEnum ("RSTW") RSTW          #11,
+    @XmlEnum ("SBTW") SBTW          #12,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.002.001.04"), ValidationCheck
+value ISO20022.Tsmt002001.Activity1
+{
+    @XmlElement Desc               : String,
+    @XmlElement MsgNm              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.002.001.04"), ValidationCheck
+value ISO20022.Tsmt002001.ActivityDetails1
+{
+    @XmlElement Initr              : ISO20022.Tsmt002001.BICIdentification1,
+    @XmlElement Actvty             : ISO20022.Tsmt002001.Activity1,
+    @XmlElement DtTm               : DateTime,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Initr), 
+        validElement(Actvty))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.002.001.04"), ValidationCheck
+value ISO20022.Tsmt002001.ActivityReportItems3
+{
+    @XmlElement PdgReqForActn      : List<ISO20022.Tsmt002001.PendingActivity2>,
+    @XmlElement RptdItm            : List<ISO20022.Tsmt002001.ActivityDetails1>,
+    @XmlElement RptdNtty           : List<ISO20022.Tsmt002001.BICIdentification1>,
+    @XmlElement UsrTxRef           : List<ISO20022.Tsmt002001.DocumentIdentification5>,
+    @XmlElement TxId               : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("PdgReqForActn", PdgReqForActn), 
+        validElement(PdgReqForActn), 
+        validRequired ("RptdItm", RptdItm), 
+        validList ("RptdItm", RptdItm), 
+        validElement(RptdItm), 
+        validRequired ("RptdNtty", RptdNtty), 
+        validList ("RptdNtty", RptdNtty), 
+        validElement(RptdNtty), 
+        validList ("UsrTxRef", UsrTxRef), 
+        validListMax ("UsrTxRef", UsrTxRef, 2), 
+        validElement(UsrTxRef))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.002.001.04"), ValidationCheck
+aspect ISO20022.Tsmt002001.ActivityReportV04
+{
+    @XmlElement Rpt                : List<ISO20022.Tsmt002001.ActivityReportItems3>,
+    @XmlElement RltdMsgRef         : ISO20022.Tsmt002001.MessageIdentification1,
+    @XmlElement RptId              : ISO20022.Tsmt002001.MessageIdentification1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("Rpt", Rpt), 
+        validElement(Rpt), 
+        validElement(RltdMsgRef), 
+        validElement(RptId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.002.001.04"), ValidationCheck
+value ISO20022.Tsmt002001.BICIdentification1
+{
+    @XmlElement BIC                : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("BIC", BIC, "[A-Z]{6,6}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3,3}){0,1}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.002.001.04"), ValidationCheck
+type ISO20022.Tsmt002001.Document
+{
+}
+[
+    @XmlElement ActvtyRpt          : ISO20022.Tsmt002001.ActivityReportV04,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(ActvtyRpt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.002.001.04"), ValidationCheck
+value ISO20022.Tsmt002001.DocumentIdentification5
+{
+    @XmlElement IdIssr             : ISO20022.Tsmt002001.BICIdentification1,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(IdIssr))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.002.001.04"), ValidationCheck
+value ISO20022.Tsmt002001.MessageIdentification1
+{
+    @XmlElement CreDtTm            : DateTime,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.002.001.04"), ValidationCheck
+value ISO20022.Tsmt002001.PendingActivity2
+{
+    @XmlElement Desc               : String,
+    @XmlElement Tp                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];

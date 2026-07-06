@@ -1,0 +1,244 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.055.001.01"), ValidationCheck
+value ISO20022.Auth055001.ActiveCurrencyAndAmount
+{
+    @XmlElement Value              : Decimal,
+    @XmlAttribute Ccy              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validRequired ("Value", Value), 
+        validRequired ("Ccy", Ccy), 
+        validPattern ("Ccy", Ccy, "[A-Z]{3,3}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.055.001.01"), ValidationCheck
+value ISO20022.Auth055001.Amount3
+{
+    @XmlElement RptgAmt            : ISO20022.Auth055001.ActiveCurrencyAndAmount,
+    @XmlElement OrgnlAmt           : ISO20022.Auth055001.ActiveCurrencyAndAmount,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(RptgAmt), 
+        validElement(OrgnlAmt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.055.001.01"), ValidationCheck
+value ISO20022.Auth055001.AmountAndDirection102
+{
+    @XmlElement Sgn                : String,
+    @XmlElement Amt                : ISO20022.Auth055001.ActiveCurrencyAndAmount,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Amt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.055.001.01"), ValidationCheck
+aspect ISO20022.Auth055001.CCPMemberRequirementsReportV01
+{
+    @XmlElement SplmtryData        : List<ISO20022.Auth055001.SupplementaryData1>,
+    @XmlElement DfltFndRqrmnt      : List<ISO20022.Auth055001.DefaultFundRequirement1>,
+    @XmlElement EndOfDayRqrmnt     : List<ISO20022.Auth055001.EndOfDayRequirement2>,
+    @XmlElement IntraDayMrgnCall   : List<ISO20022.Auth055001.IntraDayMarginCall1>,
+    @XmlElement IntraDayRqrmntAmt  : List<ISO20022.Auth055001.IntraDayRequirement1>,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("SplmtryData", SplmtryData), 
+        validElement(SplmtryData), 
+        validRequired ("DfltFndRqrmnt", DfltFndRqrmnt), 
+        validList ("DfltFndRqrmnt", DfltFndRqrmnt), 
+        validElement(DfltFndRqrmnt), 
+        validRequired ("EndOfDayRqrmnt", EndOfDayRqrmnt), 
+        validList ("EndOfDayRqrmnt", EndOfDayRqrmnt), 
+        validElement(EndOfDayRqrmnt), 
+        validList ("IntraDayMrgnCall", IntraDayMrgnCall), 
+        validElement(IntraDayMrgnCall), 
+        validRequired ("IntraDayRqrmntAmt", IntraDayRqrmntAmt), 
+        validList ("IntraDayRqrmntAmt", IntraDayRqrmntAmt), 
+        validElement(IntraDayRqrmntAmt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.055.001.01"), ValidationCheck
+value ISO20022.Auth055001.DefaultFundRequirement1
+{
+    @XmlElement Amt                : ISO20022.Auth055001.ActiveCurrencyAndAmount,
+    @XmlElement SvcId              : String,
+    @XmlElement ClrMmbId           : ISO20022.Auth055001.GenericIdentification165,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Amt), 
+        validElement(ClrMmbId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.055.001.01"), ValidationCheck
+type ISO20022.Auth055001.Document
+{
+}
+[
+    @XmlElement CCPMmbRqrmntsRpt   : ISO20022.Auth055001.CCPMemberRequirementsReportV01,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(CCPMmbRqrmntsRpt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.055.001.01"), ValidationCheck
+value ISO20022.Auth055001.EndOfDayRequirement2
+{
+    @XmlElement MrgnAcctId         : ISO20022.Auth055001.GenericIdentification165,
+    @XmlElement VartnMrgnRqrmnts   : ISO20022.Auth055001.AmountAndDirection102,
+    @XmlElement InitlMrgnRqrmnts   : ISO20022.Auth055001.InitialMarginRequirement1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(MrgnAcctId), 
+        validElement(VartnMrgnRqrmnts), 
+        validElement(InitlMrgnRqrmnts))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.055.001.01"), ValidationCheck
+value ISO20022.Auth055001.GenericIdentification165
+{
+    @XmlElement SchmeNm            : String,
+    @XmlElement Issr               : String,
+    @XmlElement Desc               : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.055.001.01"), ValidationCheck
+value ISO20022.Auth055001.GenericIdentification36
+{
+    @XmlElement SchmeNm            : String,
+    @XmlElement Issr               : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.055.001.01"), ValidationCheck
+value ISO20022.Auth055001.InitialMarginExposure1
+{
+    @XmlElement CoreInd            : String,
+    @XmlElement Tp                 : ISO20022.Auth055001.MarginType2Choice,
+    @XmlElement Amt                : ISO20022.Auth055001.Amount3,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Tp), 
+        validElement(Amt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.055.001.01"), ValidationCheck
+value ISO20022.Auth055001.InitialMarginRequirement1
+{
+    @XmlElement Cdt                : ISO20022.Auth055001.ActiveCurrencyAndAmount,
+    @XmlElement InitlMrgnXpsr      : List<ISO20022.Auth055001.InitialMarginExposure1>,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Cdt), 
+        validRequired ("InitlMrgnXpsr", InitlMrgnXpsr), 
+        validList ("InitlMrgnXpsr", InitlMrgnXpsr), 
+        validElement(InitlMrgnXpsr))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.055.001.01"), ValidationCheck
+value ISO20022.Auth055001.IntraDayMarginCall1
+{
+    @XmlElement TmStmp             : DateTime,
+    @XmlElement IntraDayCall       : ISO20022.Auth055001.ActiveCurrencyAndAmount,
+    @XmlElement MrgnAcctId         : ISO20022.Auth055001.GenericIdentification165,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(IntraDayCall), 
+        validElement(MrgnAcctId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.055.001.01"), ValidationCheck
+value ISO20022.Auth055001.IntraDayRequirement1
+{
+    @XmlElement MrgnAcctId         : ISO20022.Auth055001.GenericIdentification165,
+    @XmlElement AggtPeakLblty      : ISO20022.Auth055001.ActiveCurrencyAndAmount,
+    @XmlElement PeakVartnMrgnLblty : ISO20022.Auth055001.ActiveCurrencyAndAmount,
+    @XmlElement PeakInitlMrgnLblty : ISO20022.Auth055001.ActiveCurrencyAndAmount,
+    @XmlElement IntraDayMrgnCall   : ISO20022.Auth055001.ActiveCurrencyAndAmount,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(MrgnAcctId), 
+        validElement(AggtPeakLblty), 
+        validElement(PeakVartnMrgnLblty), 
+        validElement(PeakInitlMrgnLblty), 
+        validElement(IntraDayMrgnCall))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.055.001.01"), ValidationCheck, AnyKey
+value ISO20022.Auth055001.MarginType2Choice
+{
+    @XmlElement Prtry              : ISO20022.Auth055001.GenericIdentification36,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Prtry), 
+        validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:auth.055.001.01")
+enum ISO20022.Auth055001.MarginType2Code
+{
+    @XmlEnum ("OTHR") OTHR          #1,
+    @XmlEnum ("DRAO") DRAO          #2,
+    @XmlEnum ("JTDR") JTDR          #3,
+    @XmlEnum ("SPMA") SPMA          #4,
+    @XmlEnum ("CVMA") CVMA          #5,
+    @XmlEnum ("CRAM") CRAM          #6,
+    @XmlEnum ("LIRM") LIRM          #7,
+    @XmlEnum ("BARM") BARM          #8,
+    @XmlEnum ("WWRM") WWRM          #9,
+    @XmlEnum ("SORM") SORM          #10,
+    @XmlEnum ("MARM") MARM          #11,
+    @XmlEnum ("UFMA") UFMA          #12,
+    @XmlEnum ("SCMA") SCMA          #13,
+    @XmlEnum ("SEMA") SEMA          #14,
+    @XmlEnum ("CEMA") CEMA          #15,
+    @XmlEnum ("COMA") COMA          #16,
+    @XmlEnum ("ADFM") ADFM          #17,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:auth.055.001.01")
+enum ISO20022.Auth055001.SchemeIdentificationType1Code
+{
+    @XmlEnum ("CLIM") CLIM          #1,
+    @XmlEnum ("POSI") POSI          #2,
+    @XmlEnum ("COLL") COLL          #3,
+    @XmlEnum ("MARG") MARG          #4,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.055.001.01"), ValidationCheck
+value ISO20022.Auth055001.SupplementaryData1
+{
+    @XmlElement Envlp              : ISO20022.Auth055001.SupplementaryDataEnvelope1,
+    @XmlElement PlcAndNm           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Envlp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.055.001.01"), ValidationCheck
+value ISO20022.Auth055001.SupplementaryDataEnvelope1
+{
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];

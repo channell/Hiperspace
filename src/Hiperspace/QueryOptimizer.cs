@@ -138,6 +138,7 @@ namespace Hiperspace
                     _PropertyInfo = value;
                 }
             }
+
             public IEnumerable<(string alias, PropertyInfo property)> GetProperties()
             {
                 if (_PropertyInfo is not null)
@@ -306,6 +307,14 @@ namespace Hiperspace
                     default:
                         return ValueGetter.Value(_Value);
                 }
+            }
+            public ValueSetter? Setter()
+            {
+                var property = PropertyInfo;
+                if (property is not null && Node is MemberExpression me)
+                    return new ValueSetter(property, me);
+                else
+                    return default;
             }
 
             protected Type? _ClosureType;
@@ -921,13 +930,14 @@ namespace Hiperspace
                         var left = path.Children[0];
                         var right = path.Children[1];
 
-                        var property = left.PropertyInfo;
+                        var setter = left.Setter();
                         var getter = right.Getter();
                         var value = getter.GetValue();
 
-                        if (left.Target is not null && property is not null && value is not null)
+                        if (left.Target is not null && setter is not null && value is not null)
                         {
-                            property.SetValue(left.Target, value);
+                            setter.SetValue(left.Target, value);
+                            return setter.Visit(node);
                         }
                         return result;
 

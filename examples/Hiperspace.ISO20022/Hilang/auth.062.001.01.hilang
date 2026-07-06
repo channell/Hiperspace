@@ -1,0 +1,74 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.062.001.01"), ValidationCheck
+aspect ISO20022.Auth062001.CCPLiquidityStressTestingDefinitionReportV01
+{
+    @XmlElement SplmtryData        : List<ISO20022.Auth062001.SupplementaryData1>,
+    @XmlElement LqdtyStrssScnroDef : List<ISO20022.Auth062001.LiquidityStressScenarioDefinition1>,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("SplmtryData", SplmtryData), 
+        validElement(SplmtryData), 
+        validRequired ("LqdtyStrssScnroDef", LqdtyStrssScnroDef), 
+        validList ("LqdtyStrssScnroDef", LqdtyStrssScnroDef), 
+        validElement(LqdtyStrssScnroDef))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.062.001.01"), ValidationCheck
+type ISO20022.Auth062001.Document
+{
+}
+[
+    @XmlElement CCPLqdtyStrssTstgDefRpt : ISO20022.Auth062001.CCPLiquidityStressTestingDefinitionReportV01,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(CCPLqdtyStrssTstgDefRpt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.062.001.01"), ValidationCheck
+value ISO20022.Auth062001.GenericIdentification168
+{
+    @XmlElement SchmeNm            : String,
+    @XmlElement Issr               : String,
+    @XmlElement Desc               : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.062.001.01"), ValidationCheck
+value ISO20022.Auth062001.LiquidityStressScenarioDefinition1
+{
+    @XmlElement StrssCcy           : String,
+    @XmlElement Tp                 : String,
+    @XmlElement Desc               : String,
+    @XmlElement Id                 : ISO20022.Auth062001.GenericIdentification168,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("StrssCcy", StrssCcy, "[A-Z]{3,3}"), 
+        validElement(Id))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.062.001.01"), ValidationCheck
+value ISO20022.Auth062001.SupplementaryData1
+{
+    @XmlElement Envlp              : ISO20022.Auth062001.SupplementaryDataEnvelope1,
+    @XmlElement PlcAndNm           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Envlp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.062.001.01"), ValidationCheck
+value ISO20022.Auth062001.SupplementaryDataEnvelope1
+{
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];

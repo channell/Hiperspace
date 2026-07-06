@@ -1,0 +1,251 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.088.001.03"), ValidationCheck
+value ISO20022.Camt088001.ActiveCurrencyAndAmount
+{
+    @XmlElement Value              : Decimal,
+    @XmlAttribute Ccy              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validRequired ("Value", Value), 
+        validRequired ("Ccy", Ccy), 
+        validPattern ("Ccy", Ccy, "[A-Z]{3,3}"))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:camt.088.001.03")
+enum ISO20022.Camt088001.AddressType2Code
+{
+    @XmlEnum ("DLVY") DLVY          #1,
+    @XmlEnum ("MLTO") MLTO          #2,
+    @XmlEnum ("BIZZ") BIZZ          #3,
+    @XmlEnum ("HOME") HOME          #4,
+    @XmlEnum ("PBOX") PBOX          #5,
+    @XmlEnum ("ADDR") ADDR          #6,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.088.001.03"), ValidationCheck, AnyKey
+value ISO20022.Camt088001.ClearingSystemIdentification2Choice
+{
+    @XmlElement Prtry              : String,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.088.001.03"), ValidationCheck
+type ISO20022.Camt088001.Document
+{
+}
+[
+    @XmlElement NetRpt             : ISO20022.Camt088001.NetReportV03,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(NetRpt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.088.001.03"), ValidationCheck
+value ISO20022.Camt088001.NameAndAddress8
+{
+    @XmlElement AltrntvIdr         : List<String>,
+    @XmlElement Adr                : ISO20022.Camt088001.PostalAddress1,
+    @XmlElement Nm                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validListMax ("AltrntvIdr", AltrntvIdr, 10), 
+        validElement(Adr))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.088.001.03"), ValidationCheck
+value ISO20022.Camt088001.NetObligation3
+{
+    @XmlElement TxsNb              : String,
+    @XmlElement PmtClrCentr        : String,
+    @XmlElement CtrPtySttlmInstrs  : ISO20022.Camt088001.SettlementParties120,
+    @XmlElement NetSvcCtrPtyId     : ISO20022.Camt088001.PartyIdentification242Choice,
+    @XmlElement CtrPtyNetgId       : ISO20022.Camt088001.NettingIdentification2Choice,
+    @XmlElement OblgtnDrctn        : String,
+    @XmlElement PtcptNetgId        : ISO20022.Camt088001.NettingIdentification2Choice,
+    @XmlElement Amt                : ISO20022.Camt088001.ActiveCurrencyAndAmount,
+    @XmlElement OblgtnId           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("TxsNb", TxsNb, "[0-9]{1,10}"), 
+        validPattern ("PmtClrCentr", PmtClrCentr, "[A-Z]{2,2}"), 
+        validElement(CtrPtySttlmInstrs), 
+        validElement(NetSvcCtrPtyId), 
+        validElement(CtrPtyNetgId), 
+        validElement(PtcptNetgId), 
+        validElement(Amt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.088.001.03"), ValidationCheck
+value ISO20022.Camt088001.NetReportData2
+{
+    @XmlElement MsgPgntn           : ISO20022.Camt088001.Pagination1,
+    @XmlElement NetSvcTp           : String,
+    @XmlElement NetRptSvcr         : ISO20022.Camt088001.PartyIdentification242Choice,
+    @XmlElement RptTp              : String,
+    @XmlElement ValDt              : DateTime,
+    @XmlElement RptDt              : DateTime,
+    @XmlElement NetgCutOffTm       : DateTime,
+    @XmlElement CreDtTm            : DateTime,
+    @XmlElement MsgId              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(MsgPgntn), 
+        validElement(NetRptSvcr))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.088.001.03"), ValidationCheck
+aspect ISO20022.Camt088001.NetReportV03
+{
+    @XmlElement SplmtryData        : List<ISO20022.Camt088001.SupplementaryData1>,
+    @XmlElement NetOblgtn          : List<ISO20022.Camt088001.NetObligation3>,
+    @XmlElement NetSvcCtrPtyId     : ISO20022.Camt088001.PartyIdentification242Choice,
+    @XmlElement NetSvcPtcptId      : ISO20022.Camt088001.PartyIdentification242Choice,
+    @XmlElement NetRptData         : ISO20022.Camt088001.NetReportData2,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("SplmtryData", SplmtryData), 
+        validElement(SplmtryData), 
+        validRequired ("NetOblgtn", NetOblgtn), 
+        validList ("NetOblgtn", NetOblgtn), 
+        validElement(NetOblgtn), 
+        validElement(NetSvcCtrPtyId), 
+        validElement(NetSvcPtcptId), 
+        validElement(NetRptData))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.088.001.03"), ValidationCheck, AnyKey
+value ISO20022.Camt088001.NettingIdentification2Choice
+{
+    @XmlElement NetgGrpId          : String,
+    @XmlElement TradPty            : ISO20022.Camt088001.PartyIdentification242Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(TradPty), 
+        validChoice (NetgGrpId, TradPty))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.088.001.03"), ValidationCheck
+value ISO20022.Camt088001.Pagination1
+{
+    @XmlElement LastPgInd          : String,
+    @XmlElement PgNb               : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("PgNb", PgNb, "[0-9]{1,5}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.088.001.03"), ValidationCheck, AnyKey
+value ISO20022.Camt088001.PartyIdentification242Choice
+{
+    @XmlElement PtyId              : ISO20022.Camt088001.PartyIdentification266,
+    @XmlElement AnyBIC             : ISO20022.Camt088001.PartyIdentification265,
+    @XmlElement NmAndAdr           : ISO20022.Camt088001.NameAndAddress8,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(PtyId), 
+        validElement(AnyBIC), 
+        validElement(NmAndAdr), 
+        validChoice (PtyId, AnyBIC, NmAndAdr))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.088.001.03"), ValidationCheck
+value ISO20022.Camt088001.PartyIdentification265
+{
+    @XmlElement AltrntvIdr         : List<String>,
+    @XmlElement AnyBIC             : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validListMax ("AltrntvIdr", AltrntvIdr, 10), 
+        validPattern ("AnyBIC", AnyBIC, "[A-Z0-9]{4,4}[A-Z]{2,2}[A-Z0-9]{2,2}([A-Z0-9]{3,3}){0,1}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.088.001.03"), ValidationCheck
+value ISO20022.Camt088001.PartyIdentification266
+{
+    @XmlElement LglNttyIdr         : String,
+    @XmlElement ClrSysId           : ISO20022.Camt088001.ClearingSystemIdentification2Choice,
+    @XmlElement Adr                : String,
+    @XmlElement AcctNb             : String,
+    @XmlElement AnyBIC             : ISO20022.Camt088001.PartyIdentification265,
+    @XmlElement PtyNm              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("LglNttyIdr", LglNttyIdr, "[A-Z0-9]{18,18}[0-9]{2,2}"), 
+        validElement(ClrSysId), 
+        validElement(AnyBIC))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:camt.088.001.03")
+enum ISO20022.Camt088001.PaymentReceipt1Code
+{
+    @XmlEnum ("NONE") NONE          #1,
+    @XmlEnum ("RECE") RECE          #2,
+    @XmlEnum ("PAYM") PAYM          #3,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.088.001.03"), ValidationCheck
+value ISO20022.Camt088001.PostalAddress1
+{
+    @XmlElement Ctry               : String,
+    @XmlElement CtrySubDvsn        : String,
+    @XmlElement TwnNm              : String,
+    @XmlElement PstCd              : String,
+    @XmlElement BldgNb             : String,
+    @XmlElement StrtNm             : String,
+    @XmlElement AdrLine            : List<String>,
+    @XmlElement AdrTp              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("Ctry", Ctry, "[A-Z]{2,2}"), 
+        validListMax ("AdrLine", AdrLine, 5))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.088.001.03"), ValidationCheck
+value ISO20022.Camt088001.SettlementParties120
+{
+    @XmlElement BnfcryInstn        : ISO20022.Camt088001.PartyIdentification242Choice,
+    @XmlElement RcvgAgt            : ISO20022.Camt088001.PartyIdentification242Choice,
+    @XmlElement Intrmy             : ISO20022.Camt088001.PartyIdentification242Choice,
+    @XmlElement DlvryAgt           : ISO20022.Camt088001.PartyIdentification242Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(BnfcryInstn), 
+        validElement(RcvgAgt), 
+        validElement(Intrmy), 
+        validElement(DlvryAgt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.088.001.03"), ValidationCheck
+value ISO20022.Camt088001.SupplementaryData1
+{
+    @XmlElement Envlp              : ISO20022.Camt088001.SupplementaryDataEnvelope1,
+    @XmlElement PlcAndNm           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Envlp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.088.001.03"), ValidationCheck
+value ISO20022.Camt088001.SupplementaryDataEnvelope1
+{
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];

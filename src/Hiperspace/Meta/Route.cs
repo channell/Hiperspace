@@ -5,9 +5,10 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using System;
 using System.Collections;
-using System.ComponentModel.Design;
-using System.Net.Http.Headers;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Hiperspace.Meta
 {
@@ -112,12 +113,12 @@ namespace Hiperspace.Meta
     {
         protected bool disposedValue;
 
-        public Type SourceType { get; init; }
-        public Type TargeType { get; init; }
-        public string[]? SourceProperties { get; init; }
-        public string[]? TargetProperties { get; init; }
+        public Type SourceType { get; set; }
+        public Type TargeType { get; set; }
+        public string[]? SourceProperties { get; set; }
+        public string[]? TargetProperties { get; set; }
 
-        public string? FieldName { get; init; }
+        public string? FieldName { get; set; }
 
         public Route(Type targeType, Type sourceType)
         {
@@ -146,6 +147,7 @@ namespace Hiperspace.Meta
         public abstract IEnumerable<object>? ManyValue (object source);
         public abstract IEnumerable DeltaObject(DateTime deltaFrom);
 
+#if NET8_0_OR_GREATER
         public static Route<TSource, TTarget> Combine<TSource, TTransitive, TTarget>(Route<TSource, TTransitive> source, Route<TTransitive, TTarget> dest)
             where TSource : Element<TSource>, new()
             where TTarget : Element<TTarget>, new()
@@ -199,8 +201,10 @@ namespace Hiperspace.Meta
             }
             throw new NotImplementedException($"Cannot combine routes from {source.SourceType.Name} through {source.TargeType.Name} to {dest.TargeType.Name}");
         }
+#endif
     }
 
+#if NET8_0_OR_GREATER
     public class Route<TSource, TTarget> : Route
         where TSource : Element<TSource>, new()
         where TTarget : Element<TTarget>, new()
@@ -336,4 +340,5 @@ namespace Hiperspace.Meta
             }
         }
     }
+#endif
 }

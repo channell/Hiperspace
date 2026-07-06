@@ -3,63 +3,32 @@
 classDiagram
     class Banking.Book {
         # Id  : String
-        + Trades (Book = this) : Banking.Trade
+        + Trades (Book = ) : Banking.Trade
     }
+    class Banking.EQ.Trade {
+        # Id  : String
+        + Book  : Banking.Book
+        + Value  : Decimal
+    }
+    Banking.EQ.Trade --> Banking.Book
+    class Banking.FI.Trade {
+        # Id  : String
+        + Book  : Banking.Book
+        + Value  : Decimal
+    }
+    Banking.FI.Trade --> Banking.Book
+    class Banking.FX.Trade {
+        # Id  : String
+        + Book  : Banking.Book
+        + Value  : Decimal
+    }
+    Banking.FX.Trade --> Banking.Book
     class Cube.Account {
         # Id  : String
         + Customer  : Cube.Customer
-        + FirstAccount (Account = this) : First.Acc
+        + FirstAccount (Account = ) : First.Acc
     }
-    class Cube.Customer {
-        # Id  : String
-        + Sector  : Cube.Sector
-        + Accounts (Customer = this) : Cube.Account
-        + FirstAccount () : Cube.CustomerFirstAccount
-    }
-    class Cube.Instrument {
-        # ISIN  : String
-        + Country  : Cube.Country
-        + Product  : Cube.Product
-        + Price () : Cube.Price
-        + Market () = Price?.Market
-    }
-    class Cube.CustomerFirstAccount {
-        # owner  : Cube.Customer
-        + Account  : Cube.Account
-    }
-    class Cube.Country {
-        # ISO  : String
-        + Contract_Cube (CubeSlice = "13", Country = this, ContextLabel = contextlabel(this)) : Cube.Contract_Cube
-        + Instruments (Country = this) : Cube.Instrument
-    }
-    class Cube.Portfolio {
-        # Id  : String
-        + Parent  : Cube.Portfolio
-        + Tier  : Int32
-        + Contract_Cube (CubeSlice = "11", Portfolio = this, ContextLabel = contextlabel(this)) : Cube.Contract_Cube
-        + Children (Parent = this) : Cube.Portfolio
-    }
-    class Cube.Sector {
-        # Id  : Int32
-        + Name  : String
-        + Parent  : Cube.Sector
-        + Tier  : Int32
-        + Contract_Cube (CubeSlice = "19", Sector = this, ContextLabel = contextlabel(this)) : Cube.Contract_Cube
-        + Children (Parent = this) : Cube.Sector
-        + Customers (Sector = this) : Cube.Customer
-    }
-    class Cube.Product {
-        # Id  : String
-        + Parent  : Cube.Product
-        + Tier  : Int32
-        + Contract_Cube (CubeSlice = "25", Product = this, ContextLabel = contextlabel(this)) : Cube.Contract_Cube
-        + Children (Parent = this) : Cube.Product
-        + ProductInstruments (Product = this) : Cube.Instrument
-    }
-    class Cube.Price {
-        # owner  : Cube.Instrument
-        + Market  : Decimal
-    }
+    Cube.Account --> Cube.Customer
     class Cube.Contract {
         # Id  : Int64
         + Deleted  = false
@@ -77,6 +46,9 @@ classDiagram
         + Product_Dimension () = Instrument?.Product
         + Portfolio_Dimension () = Portfolio
     }
+    Cube.Contract --> Cube.Instrument
+    Cube.Contract --> Cube.Portfolio
+    Cube.Contract --> Cube.Account
     class Cube.Contract_Cube {
         # CubeSlice  : String
         # ContextLabel  : String
@@ -92,7 +64,7 @@ classDiagram
         + Facts  : Int64
         + CubeName () = cubename(Sector,Country,Product,Portfolio)
         + CubeDimensions () = cubedimensions(Sector,Country,Product,Portfolio)
-        + DrillDowns() () = drilldownEdges(this)
+        + DrillDowns() () = drilldownEdges()
         + Avg () = (Avg_Sum / Facts)
     }
     Cube.Contract_Cube --> Cube.Sector
@@ -106,14 +78,14 @@ classDiagram
         # Product  : Cube.Product
         # Portfolio  : Cube.Portfolio
         + Value  : Decimal
-        + StdDev_Vector  : Vector
-        + Percentile_Vector  : Vector
+        + StdDev_Vector  : Hiperspace.Vector
+        + Percentile_Vector  : Hiperspace.Vector
         + Avg_Sum  : Decimal
         + Deleted  = false
         + Facts  : Int64
         + CubeName () = cubename(Sector,Country,Product,Portfolio)
         + CubeDimensions () = cubedimensions(Sector,Country,Product,Portfolio)
-        + DrillDowns() () = drilldownEdges(this)
+        + DrillDowns() () = drilldownEdges()
         + Avg () = (Avg_Sum / Facts)
         + StdDev () = stddev(StdDev_Vector)
         + Percentile () = percentile(Percentile_Vector,95)
@@ -122,20 +94,61 @@ classDiagram
     Cube.Contract_Fact --> Cube.Country
     Cube.Contract_Fact --> Cube.Product
     Cube.Contract_Fact --> Cube.Portfolio
-    class Banking.EQ.Trade {
-        # Id  : String
-        + Book  : Banking.Book
-        + Value  : Decimal
+    class Cube.Country {
+        # ISO  : String
+        + Contract_Cube (CubeSlice = """13""", Country = this, ContextLabel = contextlabel()) : Cube.Contract_Cube
+        + Instruments (Country = ) : Cube.Instrument
     }
-    class Banking.FI.Trade {
+    class Cube.Customer {
         # Id  : String
-        + Book  : Banking.Book
-        + Value  : Decimal
+        + Sector  : Cube.Sector
+        + Accounts (Customer = ) : Cube.Account
+        + FirstAccount () : Cube.CustomerFirstAccount
     }
-    class Banking.FX.Trade {
+    Cube.Customer --> Cube.Sector
+    Cube.Customer o-- Cube.CustomerFirstAccount
+    class Cube.CustomerFirstAccount {
+        # owner  : Cube.Customer
+        + Account  : Cube.Account
+    }
+    Cube.CustomerFirstAccount --> Cube.Account
+    class Cube.Instrument {
+        # ISIN  : String
+        + Country  : Cube.Country
+        + Product  : Cube.Product
+        + Price () : Cube.Price
+        + Market () = Price?.Market
+    }
+    Cube.Instrument --> Cube.Country
+    Cube.Instrument --> Cube.Product
+    Cube.Instrument o-- Cube.Price
+    class Cube.Portfolio {
         # Id  : String
-        + Book  : Banking.Book
-        + Value  : Decimal
+        + Parent  : Cube.Portfolio
+        + Tier  : Int32
+        + Contract_Cube (CubeSlice = """11""", Portfolio = this, ContextLabel = contextlabel()) : Cube.Contract_Cube
+        + Children (Parent = ) : Cube.Portfolio
+    }
+    class Cube.Price {
+        # owner  : Cube.Instrument
+        + Market  : Decimal
+    }
+    class Cube.Product {
+        # Id  : String
+        + Parent  : Cube.Product
+        + Tier  : Int32
+        + Contract_Cube (CubeSlice = """25""", Product = this, ContextLabel = contextlabel()) : Cube.Contract_Cube
+        + Children (Parent = ) : Cube.Product
+        + ProductInstruments (Product = ) : Cube.Instrument
+    }
+    class Cube.Sector {
+        # Id  : Int32
+        + Name  : String
+        + Parent  : Cube.Sector
+        + Tier  : Int32
+        + Contract_Cube (CubeSlice = """19""", Sector = this, ContextLabel = contextlabel()) : Cube.Contract_Cube
+        + Children (Parent = ) : Cube.Sector
+        + Customers (Sector = ) : Cube.Customer
     }
 ```
 > The tables below contain descriptions of the members of each Element. 
@@ -153,7 +166,40 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|String||||
-||Trades|Banking.Trade|||Book = this|
+||Trades|Banking.Trade|||Book = |
+
+---
+
+## EntityImpl Banking.EQ.Trade
+
+
+| |Name|Type|*|@|=|
+|-|-|-|-|-|-|
+|#|Id|String||||
+|+|Book|Banking.Book||AlternateIndex("""Banking.EQ.Trade""", 145), AlternateIndex("""Banking.FI.Trade""", 143), AlternateIndex("""Banking.FX.Trade""", 144), AlternateIndex("""Banking.Trade""", 58)||
+|+|Value|Decimal||CubeMeasure(Aggregate?.Sum)||
+
+---
+
+## EntityImpl Banking.FI.Trade
+
+
+| |Name|Type|*|@|=|
+|-|-|-|-|-|-|
+|#|Id|String||||
+|+|Book|Banking.Book||AlternateIndex("""Banking.EQ.Trade""", 145), AlternateIndex("""Banking.FI.Trade""", 143), AlternateIndex("""Banking.FX.Trade""", 144), AlternateIndex("""Banking.Trade""", 58)||
+|+|Value|Decimal||CubeMeasure(Aggregate?.Sum)||
+
+---
+
+## EntityImpl Banking.FX.Trade
+
+
+| |Name|Type|*|@|=|
+|-|-|-|-|-|-|
+|#|Id|String||||
+|+|Book|Banking.Book||AlternateIndex("""Banking.EQ.Trade""", 145), AlternateIndex("""Banking.FI.Trade""", 143), AlternateIndex("""Banking.FX.Trade""", 144), AlternateIndex("""Banking.Trade""", 58)||
+|+|Value|Decimal||CubeMeasure(Aggregate?.Sum)||
 
 ---
 
@@ -164,105 +210,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|Id|String||||
 |+|Customer|Cube.Customer||||
-||FirstAccount|First.Acc|||Account = this|
-
----
-
-## EntityImpl Cube.Customer
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|Id|String||||
-|+|Sector|Cube.Sector||||
-||Accounts|Cube.Account|||Customer = this|
-|+|FirstAccount|Cube.CustomerFirstAccount||||
-
----
-
-## EntityImpl Cube.Instrument
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|ISIN|String||||
-|+|Country|Cube.Country||||
-|+|Product|Cube.Product||||
-|+|Price|Cube.Price||||
-||Market|Some(Decimal)|||Price?.Market|
-
----
-
-## AspectImpl Cube.CustomerFirstAccount
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|owner|Cube.Customer||||
-|+|Account|Cube.Account||AlternateIndex("Cube.CustomerFirstAccount", 78)||
-
----
-
-## EntityImpl Cube.Country
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|ISO|String||||
-||Contract_Cube|Cube.Contract_Cube|Reference to the dimension|CubeFactReference()|CubeSlice = "13", Country = this, ContextLabel = contextlabel(this)|
-||Instruments|Cube.Instrument|||Country = this|
-
----
-
-## EntityImpl Cube.Portfolio
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|Id|String||||
-|+|Parent|Cube.Portfolio||||
-|+|Tier|Int32||||
-||Contract_Cube|Cube.Contract_Cube|Reference to the dimension|CubeFactReference()|CubeSlice = "11", Portfolio = this, ContextLabel = contextlabel(this)|
-||Children|Cube.Portfolio|||Parent = this|
-
----
-
-## EntityImpl Cube.Sector
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|Id|Int32||||
-|+|Name|String||||
-|+|Parent|Cube.Sector||||
-|+|Tier|Int32||||
-||Contract_Cube|Cube.Contract_Cube|Reference to the dimension|CubeFactReference()|CubeSlice = "19", Sector = this, ContextLabel = contextlabel(this)|
-||Children|Cube.Sector|||Parent = this|
-||Customers|Cube.Customer|||Sector = this|
-
----
-
-## EntityImpl Cube.Product
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|Id|String||||
-|+|Parent|Cube.Product||||
-|+|Tier|Int32||||
-||Contract_Cube|Cube.Contract_Cube|Reference to the dimension|CubeFactReference()|CubeSlice = "25", Product = this, ContextLabel = contextlabel(this)|
-||Children|Cube.Product|||Parent = this|
-||ProductInstruments|Cube.Instrument|||Product = this|
-
----
-
-## AspectImpl Cube.Price
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|owner|Cube.Instrument||||
-|+|Market|Decimal||||
+||FirstAccount|First.Acc|||Account = |
 
 ---
 
@@ -308,7 +256,7 @@ classDiagram
 |+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
 ||CubeName|Some(String)|||cubename(Sector,Country,Product,Portfolio)|
 ||CubeDimensions|Some(Int32)|||cubedimensions(Sector,Country,Product,Portfolio)|
-||DrillDowns()|Some(HashSet<Edge>)|Drilldown to Edges||drilldownEdges(this)|
+||DrillDowns()|Some(global::System.Collections.Generic.HashSet<Hiperspace.Edge>)|Drilldown to Edges||drilldownEdges()|
 ||Avg|Some(Decimal)||CubeMeasure(Aggregate?.Average)|(Avg_Sum / Facts)|
 
 ---
@@ -324,48 +272,113 @@ classDiagram
 |#|Product|Cube.Product||CubeDimensionReference()||
 |#|Portfolio|Cube.Portfolio||CubeDimensionReference()||
 |+|Value|Decimal||CubeMeasure(Aggregate?.Sum)||
-|+|StdDev_Vector|Vector||CubeMeasure(Aggregate?.StdVector)||
-|+|Percentile_Vector|Vector||CubeMeasure(Aggregate?.PerVector, 95)||
+|+|StdDev_Vector|Hiperspace.Vector||CubeMeasure(Aggregate?.StdVector)||
+|+|Percentile_Vector|Hiperspace.Vector||CubeMeasure(Aggregate?.PerVector, 95)||
 |+|Avg_Sum|Decimal||CubeMeasure(Aggregate?.AverageTotal)||
 ||Deleted|Some(Boolean)|The cube fact has been deleted||false|
 |+|Facts|Int64|Number of Facts this Cube/Fact is calculated from|||
 ||CubeName|Some(String)|||cubename(Sector,Country,Product,Portfolio)|
 ||CubeDimensions|Some(Int32)|||cubedimensions(Sector,Country,Product,Portfolio)|
-||DrillDowns()|Some(HashSet<Edge>)|Drilldown to Edges||drilldownEdges(this)|
+||DrillDowns()|Some(global::System.Collections.Generic.HashSet<Hiperspace.Edge>)|Drilldown to Edges||drilldownEdges()|
 ||Avg|Some(Decimal)||CubeMeasure(Aggregate?.Average)|(Avg_Sum / Facts)|
 ||StdDev|Some(Double)||CubeMeasure(Aggregate?.StdDev)|stddev(StdDev_Vector)|
 ||Percentile|Some(Double)||CubeMeasure(Aggregate?.Percentile)|percentile(Percentile_Vector,95)|
 
 ---
 
-## EntityImpl Banking.EQ.Trade
+## EntityImpl Cube.Country
 
 
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
-|#|Id|String||||
-|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 145), AlternateIndex("Banking.FI.Trade", 143), AlternateIndex("Banking.FX.Trade", 144), AlternateIndex("Banking.Trade", 58)||
-|+|Value|Decimal||CubeMeasure(Aggregate?.Sum)||
+|#|ISO|String||||
+||Contract_Cube|Cube.Contract_Cube|Reference to the dimension|CubeFactReference()|CubeSlice = """13""", Country = this, ContextLabel = contextlabel()|
+||Instruments|Cube.Instrument|||Country = |
 
 ---
 
-## EntityImpl Banking.FI.Trade
+## EntityImpl Cube.Customer
 
 
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|String||||
-|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 145), AlternateIndex("Banking.FI.Trade", 143), AlternateIndex("Banking.FX.Trade", 144), AlternateIndex("Banking.Trade", 58)||
-|+|Value|Decimal||CubeMeasure(Aggregate?.Sum)||
+|+|Sector|Cube.Sector||||
+||Accounts|Cube.Account|||Customer = |
+|+|FirstAccount|Cube.CustomerFirstAccount||||
 
 ---
 
-## EntityImpl Banking.FX.Trade
+## AspectImpl Cube.CustomerFirstAccount
+
+
+| |Name|Type|*|@|=|
+|-|-|-|-|-|-|
+|#|owner|Cube.Customer||||
+|+|Account|Cube.Account||AlternateIndex("""Cube.CustomerFirstAccount""", 78)||
+
+---
+
+## EntityImpl Cube.Instrument
+
+
+| |Name|Type|*|@|=|
+|-|-|-|-|-|-|
+|#|ISIN|String||||
+|+|Country|Cube.Country||||
+|+|Product|Cube.Product||||
+|+|Price|Cube.Price||||
+||Market|Some(Decimal)|||Price?.Market|
+
+---
+
+## EntityImpl Cube.Portfolio
 
 
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|String||||
-|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 145), AlternateIndex("Banking.FI.Trade", 143), AlternateIndex("Banking.FX.Trade", 144), AlternateIndex("Banking.Trade", 58)||
-|+|Value|Decimal||CubeMeasure(Aggregate?.Sum)||
+|+|Parent|Cube.Portfolio||||
+|+|Tier|Int32||||
+||Contract_Cube|Cube.Contract_Cube|Reference to the dimension|CubeFactReference()|CubeSlice = """11""", Portfolio = this, ContextLabel = contextlabel()|
+||Children|Cube.Portfolio|||Parent = |
+
+---
+
+## AspectImpl Cube.Price
+
+
+| |Name|Type|*|@|=|
+|-|-|-|-|-|-|
+|#|owner|Cube.Instrument||||
+|+|Market|Decimal||||
+
+---
+
+## EntityImpl Cube.Product
+
+
+| |Name|Type|*|@|=|
+|-|-|-|-|-|-|
+|#|Id|String||||
+|+|Parent|Cube.Product||||
+|+|Tier|Int32||||
+||Contract_Cube|Cube.Contract_Cube|Reference to the dimension|CubeFactReference()|CubeSlice = """25""", Product = this, ContextLabel = contextlabel()|
+||Children|Cube.Product|||Parent = |
+||ProductInstruments|Cube.Instrument|||Product = |
+
+---
+
+## EntityImpl Cube.Sector
+
+
+| |Name|Type|*|@|=|
+|-|-|-|-|-|-|
+|#|Id|Int32||||
+|+|Name|String||||
+|+|Parent|Cube.Sector||||
+|+|Tier|Int32||||
+||Contract_Cube|Cube.Contract_Cube|Reference to the dimension|CubeFactReference()|CubeSlice = """19""", Sector = this, ContextLabel = contextlabel()|
+||Children|Cube.Sector|||Parent = |
+||Customers|Cube.Customer|||Sector = |
 

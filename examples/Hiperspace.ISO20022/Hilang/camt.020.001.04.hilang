@@ -1,0 +1,158 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.020.001.04"), ValidationCheck
+value ISO20022.Camt020001.BusinessInformationCriteria1
+{
+    @XmlElement RtrCrit            : ISO20022.Camt020001.GeneralBusinessInformationReturnCriteria1,
+    @XmlElement SchCrit            : List<ISO20022.Camt020001.GeneralBusinessInformationSearchCriteria1>,
+    @XmlElement NewQryNm           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(RtrCrit), 
+        validList ("SchCrit", SchCrit), 
+        validElement(SchCrit))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.020.001.04"), ValidationCheck
+value ISO20022.Camt020001.BusinessInformationQueryDefinition3
+{
+    @XmlElement GnlBizInfCrit      : ISO20022.Camt020001.GeneralBusinessInformationCriteriaDefinition1Choice,
+    @XmlElement QryTp              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(GnlBizInfCrit))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.020.001.04"), ValidationCheck, AnyKey
+value ISO20022.Camt020001.CharacterSearch1Choice
+{
+    @XmlElement NCT                : String,
+    @XmlElement CT                 : String,
+    @XmlElement NEQ                : String,
+    @XmlElement EQ                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (validChoice (NCT, CT, NEQ, EQ))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.020.001.04"), ValidationCheck
+type ISO20022.Camt020001.Document
+{
+}
+[
+    @XmlElement GetGnlBizInf       : ISO20022.Camt020001.GetGeneralBusinessInformationV04,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(GetGnlBizInf))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.020.001.04"), ValidationCheck, AnyKey
+value ISO20022.Camt020001.GeneralBusinessInformationCriteriaDefinition1Choice
+{
+    @XmlElement NewCrit            : ISO20022.Camt020001.BusinessInformationCriteria1,
+    @XmlElement QryNm              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(NewCrit), 
+        validChoice (NewCrit, QryNm))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.020.001.04"), ValidationCheck
+value ISO20022.Camt020001.GeneralBusinessInformationReturnCriteria1
+{
+    @XmlElement SbjtDtlsInd        : String,
+    @XmlElement SbjtInd            : String,
+    @XmlElement QlfrInd            : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.020.001.04"), ValidationCheck
+value ISO20022.Camt020001.GeneralBusinessInformationSearchCriteria1
+{
+    @XmlElement Qlfr               : List<ISO20022.Camt020001.InformationQualifierType1>,
+    @XmlElement Sbjt               : List<ISO20022.Camt020001.CharacterSearch1Choice>,
+    @XmlElement Ref                : List<String>,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("Qlfr", Qlfr), 
+        validElement(Qlfr), 
+        validList ("Sbjt", Sbjt), 
+        validElement(Sbjt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.020.001.04"), ValidationCheck
+aspect ISO20022.Camt020001.GetGeneralBusinessInformationV04
+{
+    @XmlElement SplmtryData        : List<ISO20022.Camt020001.SupplementaryData1>,
+    @XmlElement GnlBizInfQryDef    : ISO20022.Camt020001.BusinessInformationQueryDefinition3,
+    @XmlElement MsgHdr             : ISO20022.Camt020001.MessageHeader1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("SplmtryData", SplmtryData), 
+        validElement(SplmtryData), 
+        validElement(GnlBizInfQryDef), 
+        validElement(MsgHdr))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.020.001.04"), ValidationCheck
+value ISO20022.Camt020001.InformationQualifierType1
+{
+    @XmlElement Prty               : String,
+    @XmlElement IsFrmtd            : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.020.001.04"), ValidationCheck
+value ISO20022.Camt020001.MessageHeader1
+{
+    @XmlElement CreDtTm            : DateTime,
+    @XmlElement MsgId              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:camt.020.001.04")
+enum ISO20022.Camt020001.Priority1Code
+{
+    @XmlEnum ("LOWW") LOWW          #1,
+    @XmlEnum ("NORM") NORM          #2,
+    @XmlEnum ("HIGH") HIGH          #3,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:camt.020.001.04")
+enum ISO20022.Camt020001.QueryType2Code
+{
+    @XmlEnum ("DELD") DELD          #1,
+    @XmlEnum ("MODF") MODF          #2,
+    @XmlEnum ("CHNG") CHNG          #3,
+    @XmlEnum ("ALLL") ALLL          #4,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.020.001.04"), ValidationCheck
+value ISO20022.Camt020001.SupplementaryData1
+{
+    @XmlElement Envlp              : ISO20022.Camt020001.SupplementaryDataEnvelope1,
+    @XmlElement PlcAndNm           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Envlp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.020.001.04"), ValidationCheck
+value ISO20022.Camt020001.SupplementaryDataEnvelope1
+{
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];

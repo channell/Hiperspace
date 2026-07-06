@@ -6,7 +6,10 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using Hiperspace.Meta;
+using System.Buffers.Binary;
+using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
+using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 
 namespace Hiperspace
@@ -80,16 +83,78 @@ namespace Hiperspace
         /// <param name="value">serialized value</param>
         /// <param name="source">original object</param>
         /// <returns>a result struct that indicates success, ignore, or fail </returns>
-        [Obsolete("use BatchBind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
-        public abstract Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, object? source = null);
+        public abstract Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null);
+
         /// <summary>
         /// Bind a key/value pair to the space, passing in the source object, if the driver can use additional metadata (e.g. EFCore)
         /// </summary>
         /// <param name="key">serialized key</param>
         /// <param name="value">serialized value</param>
         /// <param name="source">original object</param>
+        /// <param name="version">optional timestamp of creation</param>
+        /// <param name="priorVersion">when an element is copied, this value prevents concurent update</param>
+        /// <param name="durableType">indicates they durable layout when stored <see cref="DurableType"/> </param>
+        /// <param name="transaction">transaction scope</param>
         /// <returns>a result struct that indicates success, ignore, or fail </returns>
-        public abstract Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null);
+        [Obsolete("Transitional implementation currently maps to legacy")]
+        public virtual Result<byte[]> Bind(byte[] key, byte[] value, DateTime? version, DateTime? priorVersion, DurableType durableType, Transaction transaction, object? source = null)
+        {
+            switch (durableType)
+            {
+                case DurableType.MetaModel:
+                    var model = Space.FromValue<MetaModel>(new BaseTypeModel(), value);
+                    ApplyMetaModel(model);
+                    return Result.Skip(Array.Empty<Byte>());
+
+                case DurableType.Immutable:
+                case DurableType.ImmutableTransaction:
+                    return Bind(key, value, source);
+
+                case DurableType.Versioned when version.HasValue:
+                case DurableType.VersionedTransaction when version.HasValue:
+                case DurableType.VectorSpace when version.HasValue:   // the vector space will prefix the values
+                    return Bind(key, value, version.Value, priorVersion, source);
+
+                default:
+                    break;
+            }
+            return Result.Fail(Array.Empty<Byte>());
+        }
+        /// <summary>
+        /// Bind a key/value pair to the space, passing in the source object, if the driver can use additional metadata (e.g. EFCore)
+        /// </summary>
+        /// <param name="key">serialized key</param>
+        /// <param name="value">serialized value</param>
+        /// <param name="source">original object</param>
+        /// <param name="version">optional timestamp of creation</param>
+        /// <param name="priorVersion">when an element is copied, this value prevents concurent update</param>
+        /// <param name="durableType">indicates they durable layout when stored <see cref="DurableType"/> </param>
+        /// <param name="transaction"> transaction scope</param>
+        /// <returns>a result struct that indicates success, ignore, or fail </returns>
+        [Obsolete("Transitional implementation currently maps to legacy")]
+        public virtual async Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime? version, DateTime? priorVersion, DurableType durableType, Transaction transaction, object? source = null)
+        {
+            switch (durableType)
+            {
+                case DurableType.MetaModel:
+                    var model = Space.FromValue<MetaModel>(new BaseTypeModel(), value);
+                    await ApplyMetaModelAsync(model);
+                    return Result.Skip(Array.Empty<Byte>());
+
+                case DurableType.Immutable:
+                case DurableType.ImmutableTransaction:
+                    return await BindAsync(key, value, source);
+
+                case DurableType.Versioned when version.HasValue:
+                case DurableType.VersionedTransaction when version.HasValue:
+                case DurableType.VectorSpace when version.HasValue:   // the vector space will prefix the values
+                    return await BindAsync(key, value, version.Value, priorVersion, source);
+
+                default:
+                    break;
+            }
+            return Result.Fail(Array.Empty<Byte>());
+        }
 
         /// <summary>
         /// Bind a key/value pair to the space asynchronously, passing in the source object, if the driver can use additional metadata (e.g. EFCore)
@@ -100,15 +165,6 @@ namespace Hiperspace
         /// <param name="source">original object</param>
         /// <returns>a result struct that indicates success, ignore, or fail </returns>
         public abstract Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, object? source = null);
-        /// <summary>
-        /// Bind a key/value pair to the space asynchronously, passing in the source object, if the driver can use additional metadata (e.g. EFCore)
-        /// </summary>
-        /// <param name="key">serialized key</param>
-        /// <param name="value">serialized value</param>
-        /// <param name="source">original object</param>
-        /// <returns>a result struct that indicates success, ignore, or fail </returns>
-        [Obsolete("use BindAsync(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null) instead")]
-        public abstract Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, object? source = null);
 
         /// <summary>
         /// Bind a key/value pair to the space asynchronously, passing in the source object, if the driver can use additional metadata (e.g. EFCore)
@@ -118,12 +174,7 @@ namespace Hiperspace
         /// <param name="value">serialized value</param>
         /// <param name="source">original object</param>
         /// <returns>a result struct that indicates success, ignore, or fail </returns>
-        public virtual Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
-        {
-#pragma warning disable CS0618 // Type or member is obsolete
-            return BindAsync(key, value, version, source);
-#pragma warning restore CS0618 // Type or member is obsolete
-        }
+        public abstract Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null);
 
         /// <summary>
         /// Bind a batch of values for server single trip
@@ -155,28 +206,6 @@ namespace Hiperspace
         /// </summary>
         /// <param name="batch">array of request</param>
         /// <returns>array of results</returns>
-        [Obsolete("use BatchBind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
-        public virtual Result<(byte[] Key, byte[] Value)>[] BatchBind((byte[] key, byte[] value, DateTime version, object? source)[] batch)
-        {
-            var result = new Result<(byte[] Key, byte[] Value)>[batch.Length];
-
-            for (int c = 0; c < batch.Length; c++)
-            {
-                var value = Bind(batch[c].key, batch[c].value, batch[c].version, batch[c].source);
-                result[c] = value.Status switch
-                {
-                    Result.Status.Ok => Result.Ok((batch[c].key, value.Value)),
-                    Result.Status.Skip => Result.Skip((batch[c].key, value.Value)),
-                    _ => Result.Fail((batch[c].key, value.Value), value.Reason)
-                };
-            }
-            return result;
-        }
-        /// <summary>
-        /// Bind a batch of values for server single trip
-        /// </summary>
-        /// <param name="batch">array of request</param>
-        /// <returns>array of results</returns>
         public virtual Result<(byte[] Key, byte[] Value)>[] BatchBind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)
         {
             var result = new Result<(byte[] Key, byte[] Value)>[batch.Length];
@@ -193,6 +222,7 @@ namespace Hiperspace
             }
             return result;
         }
+
         /// <summary>
         /// Binds a batch of key-value pairs within the specified transaction and returns the results for each pair.
         /// </summary>
@@ -203,6 +233,7 @@ namespace Hiperspace
         /// <remarks>the default implementation does not use transactions</remarks>
         /// <returns>An array of results, each containing the bound key and value for the corresponding input pair. The result
         /// indicates success or failure for each item.</returns>
+        [Obsolete("Transitional implementation currently maps to legacy")]
         public virtual Result<(byte[] Key, byte[] Value)>[] BatchBind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch, Transaction transaction)
         {
             return BatchBind(batch);
@@ -233,42 +264,6 @@ namespace Hiperspace
             return result;
         }
 
-        /// <summary>
-        /// Binds a batch of key-value pairs asynchronously within the specified transaction context.
-        /// </summary>
-        /// <param name="batch">An array of tuples containing the key, value, and optional source object for each item to bind. Each tuple
-        /// represents a single binding operation.</param>
-        /// <param name="transaction">The transaction context in which the batch binding operations are performed.</param>
-        /// <remarks>the default implementation does not use transactions</remarks>
-        /// <returns>A task that represents the asynchronous operation. The task result contains an array of Result objects, each
-        /// holding the bound key and value for the corresponding batch item.</returns>
-        public virtual Task<Result<(byte[] Key, byte[] Value)>[]> BatchBindAsync((byte[] key, byte[] value, object? source)[] batch, Transaction transaction)
-        {
-            return BatchBindAsync(batch);
-        }
-
-        /// <summary>
-        /// Bind a batch of values for server single trip async
-        /// </summary>
-        /// <param name="batch">array of request</param>
-        /// <returns>array of results</returns>
-        [Obsolete("use BindAsync(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null) instead")]
-        public virtual async Task<Result<(byte[] Key, byte[] Value)>[]> BatchBindAsync((byte[] key, byte[] value, DateTime version, object? source)[] batch)
-        {
-            var result = new Result<(byte[] Key, byte[] Value)>[batch.Length];
-
-            for (int c = 0; c < batch.Length; c++)
-            {
-                var value = await BindAsync(batch[c].key, batch[c].value, batch[c].version, batch[c].source);
-                result[c] = value.Status switch
-                {
-                    Result.Status.Ok => Result.Ok((batch[c].key, value.Value)),
-                    Result.Status.Skip => Result.Skip((batch[c].key, value.Value)),
-                    _ => Result.Fail((batch[c].key, value.Value), value.Reason)
-                };
-            }
-            return result;
-        }
         public virtual async Task<Result<(byte[] Key, byte[] Value)>[]> BatchBindAsync((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)
         {
             var result = new Result<(byte[] Key, byte[] Value)>[batch.Length];
@@ -286,6 +281,13 @@ namespace Hiperspace
             return result;
         }
 
+        [Obsolete("Transitional implementation currently maps to legacy")]
+        public virtual Task<Result<(byte[] Key, byte[] Value)>[]> BatchBindAsync((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch, DurableType durableType, Transaction transaction)
+        {
+            return BatchBindAsync(batch);
+        }
+
+
         /// <summary>
         /// Find all values of space between the key values
         /// </summary>
@@ -299,8 +301,27 @@ namespace Hiperspace
         /// <param name="begin"></param>
         /// <param name="end"></param>
         /// <param name="version">version stamp or null for latest</param>
+        /// <param name="Values">an array of residual conditions that are AND'd together</param>
         /// <returns></returns>
         public abstract IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Find(byte[] begin, byte[] end, DateTime? version);
+
+        [Obsolete("Transitional implementation currently maps to legacy")]
+        public virtual IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Find(byte[] begin, byte[] end, DateTime? version, byte[][] values, DurableType durableType, Transaction transaction)
+        {
+            switch (durableType)
+            {
+                case DurableType.Immutable:
+                case DurableType.ImmutableTransaction:
+                    return Find(begin, end).Select(kv => (kv.Key, new DateTime(), kv.Value));
+
+                case DurableType.Versioned when version.HasValue:
+                case DurableType.VersionedTransaction when version.HasValue:
+                    return Find(begin, end, version);
+
+                default:
+                    throw new NotImplementedException();
+            }
+        }
         /// <summary>
         /// Find all values of space between the key values asynchronously
         /// </summary>
@@ -314,8 +335,36 @@ namespace Hiperspace
         /// <param name="begin"></param>
         /// <param name="end"></param>
         /// <param name="version">version stamp or null for latest</param>
+        /// <param name="values">an array of residual conditions</param>
         /// <returns></returns>
         public abstract IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindAsync(byte[] begin, byte[] end, DateTime? version, CancellationToken cancellationToken = default);
+
+        [Obsolete("Transitional implementation currently maps to legacy")]
+        public virtual async IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindAsync(byte[] begin, byte[] end, DateTime? version, byte[][] values, DurableType durableType, Transaction transaction, [EnumeratorCancellation]CancellationToken cancellationToken = default)
+        {
+            switch (durableType)
+            {
+                case DurableType.Immutable:
+                case DurableType.ImmutableTransaction:
+                    await foreach (var kv in FindAsync(begin, end))
+                    {
+                        yield return (kv.Key, new DateTime(), kv.Value);
+                    }
+                    break;
+
+                case DurableType.Versioned when version.HasValue:
+                case DurableType.VersionedTransaction when version.HasValue:
+                    await foreach (var kv in FindAsync(begin, end, version))
+                    {
+                        yield return (kv.Key, new DateTime(), kv.Value);
+                    }
+                    break;
+
+                default:
+                    throw new NotImplementedException();
+            }
+
+        }
         /// <summary>
         /// Find keys in a delta index that are greater than the value provided
         /// </summary>
@@ -325,6 +374,18 @@ namespace Hiperspace
         public abstract IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Delta(byte[] key, DateTime? version);
 
         /// <summary>
+        /// Find keys in a delta index that are greater than the value provided within a transaction
+        /// </summary>
+        /// <param name="key">the start value for delta search </param>
+        /// <param name="version">version stamp or null for latest</param>
+        /// <returns></returns>
+        [Obsolete("Transitional implementation currently maps to legacy")]
+        public virtual IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Delta(byte[] key, DateTime? version, DurableType durableType, Transaction transaction)
+        {
+            return Delta(key, version);
+        }
+
+        /// <summary>
         /// Find keys in a delta index that are greater than the value provided asynchronously
         /// </summary>
         /// <param name="key">the start value for delta search </param>
@@ -332,7 +393,18 @@ namespace Hiperspace
         /// <returns></returns>
         public virtual IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> DeltaAsync(byte[] begin, DateTime? version, CancellationToken cancellationToken = default)
         {
-            return Delta(begin, version).ToAsyncEnumerable(cancellationToken);  
+            return Delta(begin, version).ToAsyncEnumerable(cancellationToken);
+        }
+        /// <summary>
+        /// Find keys in a delta index that are greater than the value provided asynchronously
+        /// </summary>
+        /// <param name="key">the start value for delta search </param>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        [Obsolete("Transitional implementation currently maps to legacy")]
+        public virtual IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> DeltaAsync(byte[] begin, DateTime? version, DurableType durableType, Transaction transaction, CancellationToken cancellationToken = default)
+        {
+            return DeltaAsync(begin, version);
         }
         /// <summary>
         /// Find all values of space for index values between the index values
@@ -372,6 +444,30 @@ namespace Hiperspace
         /// <param name="end"></param>
         /// <param name="version">version stamp or null for latest</param>
         /// <returns></returns>
+        [Obsolete("Transitional implementation currently maps to legacy")]
+        public virtual IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindIndex(byte[] begin, byte[] end, DateTime? version, DurableType durableType, Transaction transaction)
+        {
+            switch (durableType)
+            {
+                case DurableType.Immutable:
+                case DurableType.ImmutableTransaction:
+                    return FindIndex(begin, end).Select(kv => (kv.Key, new DateTime(), kv.Value));
+
+                case DurableType.Versioned when version.HasValue:
+                case DurableType.VersionedTransaction when version.HasValue:
+                    return FindIndex(begin, end, version);
+
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+        /// <summary>
+        /// Find all values of space for index values between the index values
+        /// </summary>
+        /// <param name="begin"></param>
+        /// <param name="end"></param>
+        /// <param name="version">version stamp or null for latest</param>
+        /// <returns></returns>
         public virtual IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindDelta(byte[] begin, DateTime? version, DateTime? DeltaFrom)
         {
             foreach (var inx in Delta(begin, DeltaFrom))
@@ -387,9 +483,33 @@ namespace Hiperspace
         /// <param name="end"></param>
         /// <param name="version">version stamp or null for latest</param>
         /// <returns></returns>
+        [Obsolete("Transitional implementation currently maps to legacy")]
+        public virtual IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindDelta(byte[] begin, DateTime? version, DateTime? DeltaFrom, DurableType durableType, Transaction transaction)
+        {
+            return FindDelta(begin, version, DeltaFrom);
+        }
+        /// <summary>
+        /// Find all values of space for index values between the index values
+        /// </summary>
+        /// <param name="begin"></param>
+        /// <param name="end"></param>
+        /// <param name="version">version stamp or null for latest</param>
+        /// <returns></returns>
         public virtual IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindDeltaAsync(byte[] begin, DateTime? version, DateTime? DeltaFrom, CancellationToken cancellationToken = default)
         {
             return FindDelta(begin, version, DeltaFrom).ToAsyncEnumerable();
+        }
+        /// <summary>
+        /// Find all values of space for index values between the index values in a transaction
+        /// </summary>
+        /// <param name="begin"></param>
+        /// <param name="end"></param>
+        /// <param name="version">version stamp or null for latest</param>
+        /// <returns></returns>
+        [Obsolete("Transitional implementation currently maps to legacy")]
+        public virtual IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindDeltaAsync(byte[] begin, DateTime? version, DateTime? DeltaFrom, DurableType durableType, Transaction transaction, CancellationToken cancellationToken = default)
+        {
+            return FindDeltaAsync(begin, version, DeltaFrom);
         }
         /// <summary>
         /// Find all values of space for index values between the index values asynchronously
@@ -399,7 +519,7 @@ namespace Hiperspace
         /// <returns></returns>
         public virtual IAsyncEnumerable<(byte[] Key, byte[] Value)> FindIndexAsync(byte[] begin, byte[] end, CancellationToken cancellationToken = default)
         {
-            return FindIndex (begin, end).ToAsyncEnumerable(cancellationToken);
+            return FindIndex(begin, end).ToAsyncEnumerable(cancellationToken);
         }
         /// <summary>
         /// Find all values of space for index values between the index values asynchronously
@@ -411,6 +531,18 @@ namespace Hiperspace
         public virtual IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindIndexAsync(byte[] begin, byte[] end, DateTime? version, CancellationToken cancellationToken = default)
         {
             return FindIndex(begin, end, version).ToAsyncEnumerable(cancellationToken);
+        }
+        /// <summary>
+        /// Find all values of space for index values between the index values asynchronously in a transaction
+        /// </summary>
+        /// <param name="begin"></param>
+        /// <param name="end"></param>
+        /// <param name="version">version stamp or null for latest</param>
+        /// <returns></returns>
+        [Obsolete("Transitional implementation currently maps to legacy")]
+        public virtual IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> FindIndexAsync(byte[] begin, byte[] end, DateTime? version, DurableType durableType, Transaction transaction, CancellationToken cancellationToken = default)
+        {
+            return FindIndexAsync(begin, end, version);
         }
         /// <summary>
         /// Find all values of space for similarity match for AI queries
@@ -426,6 +558,20 @@ namespace Hiperspace
             throw new NotImplementedException("This HiperSpace does not support Vector Search");
         }
         /// <summary>
+        /// Find all values of space for similarity match for AI queries in a transaction
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="vector"></param>
+        /// <param name="version">datestamp of key</param>
+        /// <param name="limit">limit to the top results, or zero for all</param>
+        /// <param name="distance">exclude any distances greater than this optional value</param>
+        /// <returns></returns>
+        [Obsolete("Transitional implementation currently maps to legacy")]
+        public virtual IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> Nearest(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, DurableType durableType, Transaction transaction, int limit = 0, double? distanceLimit = null)
+        {
+            throw new NotImplementedException("This HiperSpace does not support Vector Search");
+        }
+        /// <summary>
         /// Find all values of space for index values between the index values asynchronously
         /// </summary>
         /// <param name="key"></param>
@@ -436,6 +582,19 @@ namespace Hiperspace
         public virtual IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> NearestAsync(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, int limit = 0, double? distanceLimit = null, CancellationToken cancellationToken = default)
         {
             return Nearest(begin, end, version, space, method, limit, distanceLimit).ToAsyncEnumerable(cancellationToken);
+        }
+        /// <summary>
+        /// Find all values of space for index values between the index values asynchronously in a transaction
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="vector"></param>
+        /// <param name="limit">limit to the top results, or zero for all</param>
+        /// <param name="version">datestamp of key</param>
+        /// <returns></returns>
+        [Obsolete("Transitional implementation currently maps to legacy")]
+        public virtual IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value, double Distance)> NearestAsync(byte[] begin, byte[] end, DateTime? version, Vector space, Vector.Method method, DurableType durableType, Transaction transaction, int limit = 0, double? distanceLimit = null, CancellationToken cancellationToken = default)
+        {
+            return NearestAsync(begin, end, version, space, method, limit, distanceLimit);
         }
         /// <summary>
         /// Get a single unique value from space
@@ -455,6 +614,39 @@ namespace Hiperspace
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
+        [Obsolete("Transitional implementation currently maps to legacy")]
+        public virtual Result<(byte[] Value, DateTime version)> Get(byte[] key, DateTime? version, DurableType durableType, Transaction transaction)
+        {
+            try
+            {
+                switch (durableType)
+                {
+                    case DurableType.Immutable:
+                    case DurableType.ImmutableTransaction:
+                        return Result.Ok((Get(key), new DateTime()));
+
+                    case DurableType.Versioned:
+                    case DurableType.VersionedTransaction:
+                        return Result.Ok(Get(key, version));
+
+                    default:
+                        return Result.Error<(byte[] Value, DateTime version)>(new NotImplementedException());
+                }
+            }
+            catch (NotFoundException)
+            {
+                return Result.NotFound<(byte[] Value, DateTime version)>();
+            }
+            catch (Exception e)
+            {
+                return Result.Error<(byte[] Value, DateTime version)>(e);
+            }
+        }
+        /// <summary>
+        /// Get a single unique value from space
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public abstract Task<byte[]> GetAsync(byte[] key);
         /// <summary>
         /// Get a single unique value from space
@@ -463,6 +655,39 @@ namespace Hiperspace
         /// <returns></returns>
         public abstract Task<(byte[] Value, DateTime version)> GetAsync(byte[] key, DateTime? version);
         /// <summary>
+        /// Get a single unique value from space in a transaction
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        [Obsolete("Transitional implementation currently maps to legacy")]
+        public virtual async Task<Result<(byte[] Value, DateTime version)>> GetAsync(byte[] key, DateTime? version, DurableType durableType, Transaction transaction)
+        {
+            try
+            {
+                switch (durableType)
+                {
+                    case DurableType.Immutable:
+                    case DurableType.ImmutableTransaction:
+                        return Result.Ok((await GetAsync(key), new DateTime()));
+
+                    case DurableType.Versioned:
+                    case DurableType.VersionedTransaction:
+                        return Result.Ok(await GetAsync(key, version));
+
+                    default:
+                        return Result.Error<(byte[] Value, DateTime version)>(new NotImplementedException());
+                }
+            }
+            catch (NotFoundException)
+            {
+                return Result.NotFound<(byte[] Value, DateTime version)>();
+            }
+            catch (Exception e)
+            {
+                return Result.Error<(byte[] Value, DateTime version)>(e);
+            }
+        }
+        /// <summary>
         /// Get the version history for a key item
         /// </summary>
         /// <param name="key"></param>
@@ -470,11 +695,32 @@ namespace Hiperspace
         /// <returns></returns>
         public abstract IEnumerable<(byte[] value, DateTime version)> GetVersions(byte[] key);
         /// <summary>
+        /// Get the version history for a key item in a transaction
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="version">version stamp or null for latest</param>
+        /// <returns></returns>
+        [Obsolete("Transitional implementation currently maps to legacy")]
+        public virtual IEnumerable<(byte[] value, DateTime version)> GetVersions(byte[] key, DurableType durableType, Transaction transaction)
+        {
+            return GetVersions(key);
+        }
+        /// <summary>
         /// Get the version history for a key item async
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
         public abstract IAsyncEnumerable<(byte[] value, DateTime version)> GetVersionsAsync(byte[] key, CancellationToken cancellationToken = default);
+        /// <summary>
+        /// Get the version history for a key item async in a transaction
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        [Obsolete("Transitional implementation currently maps to legacy")]
+        public virtual IAsyncEnumerable<(byte[] value, DateTime version)> GetVersionsAsync(byte[] key, DurableType durableType, Transaction transaction, CancellationToken cancellationToken = default)
+        {
+            return GetVersionsAsync(key, cancellationToken);
+        }
         /// <summary>
         /// Default implementation to get the first item from a setspace
         /// </summary>
@@ -527,6 +773,48 @@ namespace Hiperspace
             return Find(begin, end, version).FirstOrDefault();
         }
         /// <summary>
+        /// Get the first item that is before the specified version date in a transaction
+        /// </summary>
+        /// <param name="begin"></param>
+        /// <param name="end"></param>
+        /// <param name="version"></param>
+        /// <returns></returns>
+        [Obsolete("Transitional implementation currently maps to legacy")]
+        public virtual Result<(byte[] Key, DateTime AsAt, byte[] Value)> GetFirst(byte[] begin, byte[] end, DateTime? version, DurableType durableType, Transaction transaction)
+        {
+            try
+            {
+                switch (durableType)
+                {
+                    case DurableType.Immutable:
+                    case DurableType.ImmutableTransaction:
+                        {
+                            var result = GetFirst(begin, end);
+                            if (result is null)
+                                return Result.NotFound<(byte[] Key, DateTime AsAt, byte[] Value)>();
+                            else
+                                return Result.Ok((result.Value.Key, new DateTime(), result.Value.Value));
+                        }
+
+                    case DurableType.Versioned:
+                    case DurableType.VersionedTransaction:
+                        {
+                            var result = GetFirst(begin, end, version);
+                            if (result is null)
+                                return Result.NotFound<(byte[] Key, DateTime AsAt, byte[] Value)>();
+                            else
+                                return Result.Ok(result.Value);
+                        }
+                    default:
+                        return Result.Error<(byte[] Key, DateTime AsAt, byte[] Value)>(new NotImplementedException());
+                }
+            }
+            catch (Exception e)
+            {
+                return Result.Error<(byte[] Key, DateTime AsAt, byte[] Value)>(e);
+            }
+        }
+        /// <summary>
         /// Get the first version item asynchronously. 
         /// </summary>
         /// <param name="begin"></param>
@@ -538,6 +826,18 @@ namespace Hiperspace
             return Task.Run(() => GetFirst(begin, end, version));
         }
         /// <summary>
+        /// Get the first version item asynchronously in a transaction
+        /// </summary>
+        /// <param name="begin"></param>
+        /// <param name="end"></param>
+        /// <param name="version"></param>
+        /// <returns></returns>
+        [Obsolete("Transitional implementation currently maps to legacy")]
+        public virtual Task<Result<(byte[] Key, DateTime AsAt, byte[] Value)>> GetFirstAsync(byte[] begin, byte[] end, DateTime? version, DurableType durableType, Transaction transaction)
+        {
+            return Task.Run(() => GetFirst(begin, end, version, durableType, transaction));
+        }
+        /// <summary>
         /// Get the last item that matches that's on or before the specified version date.
         /// </summary>
         /// <param name="begin"></param>
@@ -547,6 +847,48 @@ namespace Hiperspace
         public virtual (byte[] Key, DateTime AsAt, byte[] Value)? GetLast(byte[] begin, byte[] end, DateTime? version)
         {
             return Find(begin, end, version).LastOrDefault();
+        }
+        /// <summary>
+        /// Get the last item that matches that's on or before the specified version date in a transaction
+        /// </summary>
+        /// <param name="begin"></param>
+        /// <param name="end"></param>
+        /// <param name="version"></param>
+        /// <returns></returns>
+        [Obsolete("Transitional implementation currently maps to legacy")]
+        public virtual Result<(byte[] Key, DateTime AsAt, byte[] Value)> GetLast(byte[] begin, byte[] end, DateTime? version, DurableType durableType, Transaction transaction)
+        {
+            try
+            {
+                switch (durableType)
+                {
+                    case DurableType.Immutable:
+                    case DurableType.ImmutableTransaction:
+                        {
+                            var result = GetLast(begin, end);
+                            if (result is null)
+                                return Result.NotFound<(byte[] Key, DateTime AsAt, byte[] Value)>();
+                            else
+                                return Result.Ok((result.Value.Key, new DateTime(), result.Value.Value));
+                        }
+
+                    case DurableType.Versioned:
+                    case DurableType.VersionedTransaction:
+                        {
+                            var result = GetLast(begin, end, version);
+                            if (result is null)
+                                return Result.NotFound<(byte[] Key, DateTime AsAt, byte[] Value)>();
+                            else
+                                return Result.Ok(result.Value);
+                        }
+                    default:
+                        return Result.Error<(byte[] Key, DateTime AsAt, byte[] Value)>(new NotImplementedException());
+                }
+            }
+            catch (Exception e)
+            {
+                return Result.Error<(byte[] Key, DateTime AsAt, byte[] Value)>(e);
+            }
         }
         /// <summary>
         /// Get the last version asynchronously. 
@@ -561,10 +903,24 @@ namespace Hiperspace
         }
 
         /// <summary>
+        /// Get the last version asynchronously in a transaction
+        /// </summary>
+        /// <param name="begin"></param>
+        /// <param name="end"></param>
+        /// <param name="version"></param>
+        /// <returns></returns>
+        [Obsolete("Transitional implementation currently maps to legacy")]
+        public virtual Task<Result<(byte[] Key, DateTime AsAt, byte[] Value)>> GetLastAsync(byte[] begin, byte[] end, DateTime? version, DurableType durableType, Transaction transaction, CancellationToken token = default)
+        {
+            return Task.Run(() => GetLast(begin, end, version, durableType, transaction));
+        }
+
+        /// <summary>
         /// GPU Accelerated Get a set of value from space for the collection of keys
         /// </summary>
         /// <param name="keys"></param>
         /// <returns></returns>
+        [Obsolete("Use messages instead")]
         public virtual IEnumerable<(byte[] key, byte[] value)> GetMany(IEnumerable<byte[]> keys)
         {
             foreach (var key in keys)
@@ -578,6 +934,7 @@ namespace Hiperspace
         /// <param name="keys"></param>
         /// <param name="version">version stamp or null for latest</param>
         /// <returns></returns>
+        [Obsolete("Use messages instead")]
         public virtual IEnumerable<(byte[] key, byte[] Value, DateTime version)> GetMany(IEnumerable<byte[]> keys, DateTime? version)
         {
             foreach (var key in keys)
@@ -591,6 +948,7 @@ namespace Hiperspace
         /// </summary>
         /// <param name="keys"></param>
         /// <returns></returns>
+        [Obsolete("Use messages instead")]
         public virtual async IAsyncEnumerable<(byte[] key, byte[] value)> GetManyAsync(IAsyncEnumerable<byte[]> keys, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             await foreach (var key in keys)
@@ -605,6 +963,7 @@ namespace Hiperspace
         /// </summary>
         /// <param name="keys"></param>
         /// <returns></returns>
+        [Obsolete("Use messages instead")]
         public virtual async IAsyncEnumerable<(byte[] key, byte[] Value, DateTime version)> GetManyAsync(IAsyncEnumerable<byte[]> keys, DateTime? version, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             await foreach (var key in keys)
@@ -623,6 +982,7 @@ namespace Hiperspace
         /// <param name="end"></param>
         /// <param name="values">an array of values (that are byte[] values) </param>
         /// <returns></returns>
+        [Obsolete("use transactional Find instead")]
         public virtual IEnumerable<(byte[] Key, byte[] Value)> Scan(byte[] begin, byte[] end, byte[][] values)
         {
             return Find(begin, end);
@@ -634,6 +994,7 @@ namespace Hiperspace
         /// <param name="end"></param>
         /// <param name="values">an array of values (that are byte[] values) </param>
         /// <returns></returns>
+        [Obsolete("use transactional Find instead")]
         public virtual IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Scan(byte[] begin, byte[] end, byte[][] values, DateTime? version)
         {
             return Find(begin, end, version);
@@ -645,6 +1006,7 @@ namespace Hiperspace
         /// <param name="end"></param>
         /// <param name="values">an array of values (that are byte[] values) </param>
         /// <returns></returns>
+        [Obsolete("use transactional Find instead")]
         public virtual IAsyncEnumerable<(byte[] Key, byte[] Value)> ScanAsync(byte[] begin, byte[] end, byte[][] values, CancellationToken cancellationToken = default)
         {
             return FindAsync(begin, end, cancellationToken);
@@ -656,6 +1018,7 @@ namespace Hiperspace
         /// <param name="end"></param>
         /// <param name="values">an array of values (that are byte[] values) </param>
         /// <returns></returns>
+        [Obsolete("use transactional Find instead")]
         public virtual IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> ScanAsync(byte[] begin, byte[] end, byte[][] values, DateTime? version, CancellationToken cancellationToken = default)
         {
             return FindAsync(begin, end, version, cancellationToken);

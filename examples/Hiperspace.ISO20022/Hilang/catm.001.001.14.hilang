@@ -1,0 +1,2899 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck, AnyKey
+value ISO20022.Catm001001.AccountIdentification4Choice
+{
+    @XmlElement Othr               : ISO20022.Catm001001.GenericAccountIdentification1,
+    @XmlElement IBAN               : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Othr), 
+        validPattern ("IBAN", IBAN, "[A-Z]{2,2}[0-9]{2,2}[a-zA-Z0-9]{1,30}"), 
+        validChoice (Othr, IBAN))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck, AnyKey
+value ISO20022.Catm001001.AccountSchemeName1Choice
+{
+    @XmlElement Prtry              : String,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.Acquirer10
+{
+    @XmlElement ParamsVrsn         : String,
+    @XmlElement Id                 : ISO20022.Catm001001.GenericIdentification177,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Id))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.AddressType2Code
+{
+    @XmlEnum ("DLVY") DLVY          #1,
+    @XmlEnum ("MLTO") MLTO          #2,
+    @XmlEnum ("BIZZ") BIZZ          #3,
+    @XmlEnum ("HOME") HOME          #4,
+    @XmlEnum ("PBOX") PBOX          #5,
+    @XmlEnum ("ADDR") ADDR          #6,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck, AnyKey
+value ISO20022.Catm001001.AddressType3Choice
+{
+    @XmlElement Prtry              : ISO20022.Catm001001.GenericIdentification30,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Prtry), 
+        validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.AddressVerification1
+{
+    @XmlElement PstlCdDgts         : String,
+    @XmlElement AdrDgts            : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("PstlCdDgts", PstlCdDgts, "[0-9]{1,5}"), 
+        validPattern ("AdrDgts", AdrDgts, "[0-9]{1,5}"))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.Algorithm26Code
+{
+    @XmlEnum ("SMS3") SMS3          #1,
+    @XmlEnum ("SHK2") SHK2          #2,
+    @XmlEnum ("SHK1") SHK1          #3,
+    @XmlEnum ("SH35") SH35          #4,
+    @XmlEnum ("SH33") SH33          #5,
+    @XmlEnum ("SH32") SH32          #6,
+    @XmlEnum ("SH31") SH31          #7,
+    @XmlEnum ("HS01") HS01          #8,
+    @XmlEnum ("HS51") HS51          #9,
+    @XmlEnum ("HS38") HS38          #10,
+    @XmlEnum ("HS25") HS25          #11,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.Algorithm27Code
+{
+    @XmlEnum ("S34R") S34R          #1,
+    @XmlEnum ("S34C") S34C          #2,
+    @XmlEnum ("CCA3") CCA3          #3,
+    @XmlEnum ("CCA2") CCA2          #4,
+    @XmlEnum ("CCA1") CCA1          #5,
+    @XmlEnum ("MCS3") MCS3          #6,
+    @XmlEnum ("CM33") CM33          #7,
+    @XmlEnum ("CM32") CM32          #8,
+    @XmlEnum ("CM31") CM31          #9,
+    @XmlEnum ("CMA2") CMA2          #10,
+    @XmlEnum ("CMA5") CMA5          #11,
+    @XmlEnum ("CMA9") CMA9          #12,
+    @XmlEnum ("MCC1") MCC1          #13,
+    @XmlEnum ("CMA1") CMA1          #14,
+    @XmlEnum ("MCCS") MCCS          #15,
+    @XmlEnum ("MACC") MACC          #16,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.Algorithm28Code
+{
+    @XmlEnum ("SM4R") SM4R          #1,
+    @XmlEnum ("SM4C") SM4C          #2,
+    @XmlEnum ("UKA3") UKA3          #3,
+    @XmlEnum ("UKA1") UKA1          #4,
+    @XmlEnum ("SD5C") SD5C          #5,
+    @XmlEnum ("E36R") E36R          #6,
+    @XmlEnum ("E36C") E36C          #7,
+    @XmlEnum ("E3DR") E3DR          #8,
+    @XmlEnum ("EA2R") EA2R          #9,
+    @XmlEnum ("EA9R") EA9R          #10,
+    @XmlEnum ("EA5R") EA5R          #11,
+    @XmlEnum ("N108") N108          #12,
+    @XmlEnum ("DA25") DA25          #13,
+    @XmlEnum ("DA19") DA19          #14,
+    @XmlEnum ("DA12") DA12          #15,
+    @XmlEnum ("EA5C") EA5C          #16,
+    @XmlEnum ("EA9C") EA9C          #17,
+    @XmlEnum ("UKA2") UKA2          #18,
+    @XmlEnum ("UKPT") UKPT          #19,
+    @XmlEnum ("DKP9") DKP9          #20,
+    @XmlEnum ("E3DC") E3DC          #21,
+    @XmlEnum ("EA2C") EA2C          #22,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.Algorithm29Code
+{
+    @XmlEnum ("S2S3") S2S3          #1,
+    @XmlEnum ("SM25") SM25          #2,
+    @XmlEnum ("SM23") SM23          #3,
+    @XmlEnum ("SM35") SM35          #4,
+    @XmlEnum ("SM32") SM32          #5,
+    @XmlEnum ("SM33") SM33          #6,
+    @XmlEnum ("SM22") SM22          #7,
+    @XmlEnum ("DD25") DD25          #8,
+    @XmlEnum ("DD23") DD23          #9,
+    @XmlEnum ("DD35") DD35          #10,
+    @XmlEnum ("DD33") DD33          #11,
+    @XmlEnum ("DD32") DD32          #12,
+    @XmlEnum ("DD22") DD22          #13,
+    @XmlEnum ("EO25") EO25          #14,
+    @XmlEnum ("EO23") EO23          #15,
+    @XmlEnum ("EO35") EO35          #16,
+    @XmlEnum ("EO22") EO22          #17,
+    @XmlEnum ("EO32") EO32          #18,
+    @XmlEnum ("EF25") EF25          #19,
+    @XmlEnum ("EO33") EO33          #20,
+    @XmlEnum ("EF23") EF23          #21,
+    @XmlEnum ("EF35") EF35          #22,
+    @XmlEnum ("EF33") EF33          #23,
+    @XmlEnum ("EF22") EF22          #24,
+    @XmlEnum ("EF32") EF32          #25,
+    @XmlEnum ("ED22") ED22          #26,
+    @XmlEnum ("ES25") ES25          #27,
+    @XmlEnum ("ES23") ES23          #28,
+    @XmlEnum ("ES35") ES35          #29,
+    @XmlEnum ("ES33") ES33          #30,
+    @XmlEnum ("ES32") ES32          #31,
+    @XmlEnum ("ES22") ES22          #32,
+    @XmlEnum ("ED25") ED25          #33,
+    @XmlEnum ("ED23") ED23          #34,
+    @XmlEnum ("ED35") ED35          #35,
+    @XmlEnum ("ED33") ED33          #36,
+    @XmlEnum ("ED32") ED32          #37,
+    @XmlEnum ("ERS3") ERS3          #38,
+    @XmlEnum ("RPSS") RPSS          #39,
+    @XmlEnum ("ERS1") ERS1          #40,
+    @XmlEnum ("ERS2") ERS2          #41,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.Algorithm7Code
+{
+    @XmlEnum ("RSAO") RSAO          #1,
+    @XmlEnum ("ERSA") ERSA          #2,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.Algorithm8Code
+{
+    @XmlEnum ("MGF1") MGF1          #1,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.AlgorithmIdentification31
+{
+    @XmlElement Param              : ISO20022.Catm001001.Parameter7,
+    @XmlElement Algo               : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Param))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.AlgorithmIdentification32
+{
+    @XmlElement Param              : ISO20022.Catm001001.Parameter12,
+    @XmlElement Algo               : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Param))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.AlgorithmIdentification33
+{
+    @XmlElement Param              : ISO20022.Catm001001.Parameter16,
+    @XmlElement Algo               : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Param))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.AlgorithmIdentification34
+{
+    @XmlElement Param              : ISO20022.Catm001001.Parameter18,
+    @XmlElement Algo               : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Param))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.AlgorithmIdentification35
+{
+    @XmlElement Param              : ISO20022.Catm001001.Parameter17,
+    @XmlElement Algo               : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Param))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.AlgorithmIdentification36
+{
+    @XmlElement Algo               : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.AmountUnit1Code
+{
+    @XmlEnum ("POIN") POIN          #1,
+    @XmlEnum ("MONE") MONE          #2,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.AttendanceContext1Code
+{
+    @XmlEnum ("UATT") UATT          #1,
+    @XmlEnum ("SATT") SATT          #2,
+    @XmlEnum ("ATTD") ATTD          #3,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.AttributeType1Code
+{
+    @XmlEnum ("CATT") CATT          #1,
+    @XmlEnum ("OUAT") OUAT          #2,
+    @XmlEnum ("OATT") OATT          #3,
+    @XmlEnum ("LATT") LATT          #4,
+    @XmlEnum ("CNAT") CNAT          #5,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.AuthenticatedData10
+{
+    @XmlElement MAC                : String,
+    @XmlElement NcpsltdCntt        : ISO20022.Catm001001.EncapsulatedContent3,
+    @XmlElement MACAlgo            : ISO20022.Catm001001.AlgorithmIdentification31,
+    @XmlElement Rcpt               : List<ISO20022.Catm001001.Recipient15Choice>,
+    @XmlElement Vrsn               : Decimal,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(NcpsltdCntt), 
+        validElement(MACAlgo), 
+        validRequired ("Rcpt", Rcpt), 
+        validList ("Rcpt", Rcpt), 
+        validElement(Rcpt))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.AuthenticationEntity2Code
+{
+    @XmlEnum ("TRML") TRML          #1,
+    @XmlEnum ("ISSR") ISSR          #2,
+    @XmlEnum ("ACQR") ACQR          #3,
+    @XmlEnum ("MERC") MERC          #4,
+    @XmlEnum ("AGNT") AGNT          #5,
+    @XmlEnum ("ICCD") ICCD          #6,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.AuthenticationMethod6Code
+{
+    @XmlEnum ("TOKP") TOKP          #1,
+    @XmlEnum ("FPIN") FPIN          #2,
+    @XmlEnum ("MANU") MANU          #3,
+    @XmlEnum ("ADDS") ADDS          #4,
+    @XmlEnum ("CSEC") CSEC          #5,
+    @XmlEnum ("PSVE") PSVE          #6,
+    @XmlEnum ("CSCV") CSCV          #7,
+    @XmlEnum ("CRYP") CRYP          #8,
+    @XmlEnum ("CDHI") CDHI          #9,
+    @XmlEnum ("BIOM") BIOM          #10,
+    @XmlEnum ("ADDB") ADDB          #11,
+    @XmlEnum ("CPSG") CPSG          #12,
+    @XmlEnum ("SNCT") SNCT          #13,
+    @XmlEnum ("SCNL") SCNL          #14,
+    @XmlEnum ("SCRT") SCRT          #15,
+    @XmlEnum ("PSWD") PSWD          #16,
+    @XmlEnum ("PPSG") PPSG          #17,
+    @XmlEnum ("NPIN") NPIN          #18,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.AuthenticationMethod8Code
+{
+    @XmlEnum ("UKNW") UKNW          #1,
+    @XmlEnum ("TOKN") TOKN          #2,
+    @XmlEnum ("CPSG") CPSG          #3,
+    @XmlEnum ("ADDS") ADDS          #4,
+    @XmlEnum ("SNCT") SNCT          #5,
+    @XmlEnum ("CSEC") CSEC          #6,
+    @XmlEnum ("SCNL") SCNL          #7,
+    @XmlEnum ("SCRT") SCRT          #8,
+    @XmlEnum ("TOKP") TOKP          #9,
+    @XmlEnum ("PSWD") PSWD          #10,
+    @XmlEnum ("PSVE") PSVE          #11,
+    @XmlEnum ("PPSG") PPSG          #12,
+    @XmlEnum ("OTHR") OTHR          #13,
+    @XmlEnum ("NPIN") NPIN          #14,
+    @XmlEnum ("FPIN") FPIN          #15,
+    @XmlEnum ("MOBL") MOBL          #16,
+    @XmlEnum ("MERC") MERC          #17,
+    @XmlEnum ("MANU") MANU          #18,
+    @XmlEnum ("CSCV") CSCV          #19,
+    @XmlEnum ("CRYP") CRYP          #20,
+    @XmlEnum ("CDHI") CDHI          #21,
+    @XmlEnum ("BIOM") BIOM          #22,
+    @XmlEnum ("BYPS") BYPS          #23,
+    @XmlEnum ("ADDB") ADDB          #24,
+    @XmlEnum ("TOKA") TOKA          #25,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.AuthenticationResult1Code
+{
+    @XmlEnum ("UCRP") UCRP          #1,
+    @XmlEnum ("CRPT") CRPT          #2,
+    @XmlEnum ("AUTH") AUTH          #3,
+    @XmlEnum ("CARD") CARD          #4,
+    @XmlEnum ("MRCH") MRCH          #5,
+    @XmlEnum ("DENY") DENY          #6,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.BusinessArea2Code
+{
+    @XmlEnum ("TOPT") TOPT          #1,
+    @XmlEnum ("EOPT") EOPT          #2,
+    @XmlEnum ("TKNF") TKNF          #3,
+    @XmlEnum ("PPAY") PPAY          #4,
+    @XmlEnum ("AIBD") AIBD          #5,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.BytePadding1Code
+{
+    @XmlEnum ("RAND") RAND          #1,
+    @XmlEnum ("NULL") NULL          #2,
+    @XmlEnum ("NULG") NULG          #3,
+    @XmlEnum ("NUL8") NUL8          #4,
+    @XmlEnum ("LNGT") LNGT          #5,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.CapturedSignature1
+{
+    @XmlElement AddtlInf           : String,
+    @XmlElement ImgRef             : String,
+    @XmlElement ImgData            : String,
+    @XmlElement ImgFrmt            : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.CardDataReading5Code
+{
+    @XmlEnum ("CDFL") CDFL          #1,
+    @XmlEnum ("ECTL") ECTL          #2,
+    @XmlEnum ("CTLS") CTLS          #3,
+    @XmlEnum ("DFLE") DFLE          #4,
+    @XmlEnum ("CICC") CICC          #5,
+    @XmlEnum ("MGST") MGST          #6,
+    @XmlEnum ("BRCD") BRCD          #7,
+    @XmlEnum ("PHYS") PHYS          #8,
+    @XmlEnum ("TAGC") TAGC          #9,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.CardDataReading8Code
+{
+    @XmlEnum ("OPTC") OPTC          #1,
+    @XmlEnum ("QRCD") QRCD          #2,
+    @XmlEnum ("UNKW") UNKW          #3,
+    @XmlEnum ("SICC") SICC          #4,
+    @XmlEnum ("CDFL") CDFL          #5,
+    @XmlEnum ("ECTL") ECTL          #6,
+    @XmlEnum ("CTLS") CTLS          #7,
+    @XmlEnum ("DFLE") DFLE          #8,
+    @XmlEnum ("CICC") CICC          #9,
+    @XmlEnum ("MGST") MGST          #10,
+    @XmlEnum ("BRCD") BRCD          #11,
+    @XmlEnum ("PHYS") PHYS          #12,
+    @XmlEnum ("TAGC") TAGC          #13,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.CardFallback1Code
+{
+    @XmlEnum ("NFLB") NFLB          #1,
+    @XmlEnum ("SFLB") SFLB          #2,
+    @XmlEnum ("FFLB") FFLB          #3,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.CardIdentificationType1Code
+{
+    @XmlEnum ("UUID") UUID          #1,
+    @XmlEnum ("PRIV") PRIV          #2,
+    @XmlEnum ("CPAN") CPAN          #3,
+    @XmlEnum ("PHON") PHON          #4,
+    @XmlEnum ("ISO2") ISO2          #5,
+    @XmlEnum ("BARC") BARC          #6,
+    @XmlEnum ("ACCT") ACCT          #7,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.CardPaymentEnvironment81
+{
+    @XmlElement SaleEnvt           : ISO20022.Catm001001.RetailerSaleEnvironment2,
+    @XmlElement PrtctdCrdhldrData  : ISO20022.Catm001001.ContentInformationType40,
+    @XmlElement Crdhldr            : ISO20022.Catm001001.Cardholder21,
+    @XmlElement MrchntTkn          : ISO20022.Catm001001.MerchantToken2,
+    @XmlElement PmtTkn             : ISO20022.Catm001001.Token1,
+    @XmlElement Wllt               : ISO20022.Catm001001.CustomerDevice3,
+    @XmlElement CstmrDvc           : ISO20022.Catm001001.CustomerDevice3,
+    @XmlElement LltyAcct           : List<ISO20022.Catm001001.LoyaltyAccount3>,
+    @XmlElement StordValAcct       : List<ISO20022.Catm001001.StoredValueAccount2>,
+    @XmlElement Chck               : ISO20022.Catm001001.Check1,
+    @XmlElement Card               : ISO20022.Catm001001.PaymentCard35,
+    @XmlElement POI                : ISO20022.Catm001001.PointOfInteraction15,
+    @XmlElement Mrchnt             : ISO20022.Catm001001.Organisation41,
+    @XmlElement SvcPrvdr           : ISO20022.Catm001001.Acquirer10,
+    @XmlElement Acqrr              : ISO20022.Catm001001.Acquirer10,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(SaleEnvt), 
+        validElement(PrtctdCrdhldrData), 
+        validElement(Crdhldr), 
+        validElement(MrchntTkn), 
+        validElement(PmtTkn), 
+        validElement(Wllt), 
+        validElement(CstmrDvc), 
+        validList ("LltyAcct", LltyAcct), 
+        validElement(LltyAcct), 
+        validList ("StordValAcct", StordValAcct), 
+        validElement(StordValAcct), 
+        validElement(Chck), 
+        validElement(Card), 
+        validElement(POI), 
+        validElement(Mrchnt), 
+        validElement(SvcPrvdr), 
+        validElement(Acqrr))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.CardProductType1Code
+{
+    @XmlEnum ("CONS") CONS          #1,
+    @XmlEnum ("COMM") COMM          #2,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.Cardholder21
+{
+    @XmlElement MobData            : List<ISO20022.Catm001001.MobileData6>,
+    @XmlElement PrsnlData          : String,
+    @XmlElement TxVrfctnRslt       : List<ISO20022.Catm001001.TransactionVerificationResult4>,
+    @XmlElement Authntcn           : List<ISO20022.Catm001001.CardholderAuthentication17>,
+    @XmlElement Vhcl               : ISO20022.Catm001001.Vehicle1,
+    @XmlElement TripNb             : String,
+    @XmlElement ShppgAdr           : ISO20022.Catm001001.PostalAddress22,
+    @XmlElement BllgAdr            : ISO20022.Catm001001.PostalAddress22,
+    @XmlElement Lang               : String,
+    @XmlElement Nm                 : String,
+    @XmlElement Id                 : ISO20022.Catm001001.PersonIdentification15,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("MobData", MobData), 
+        validElement(MobData), 
+        validList ("TxVrfctnRslt", TxVrfctnRslt), 
+        validElement(TxVrfctnRslt), 
+        validList ("Authntcn", Authntcn), 
+        validElement(Authntcn), 
+        validElement(Vhcl), 
+        validElement(ShppgAdr), 
+        validElement(BllgAdr), 
+        validElement(Id))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.CardholderAuthentication17
+{
+    @XmlElement AuthntcnAddtlInf   : ISO20022.Catm001001.ExternallyDefinedData5,
+    @XmlElement AuthntcnRslt       : String,
+    @XmlElement AuthntcnLvl        : String,
+    @XmlElement AuthntcnTp         : String,
+    @XmlElement AdrVrfctn          : ISO20022.Catm001001.AddressVerification1,
+    @XmlElement CrdhldrId          : ISO20022.Catm001001.PersonIdentification15,
+    @XmlElement CrdhldrOnLinePIN   : ISO20022.Catm001001.OnLinePIN11,
+    @XmlElement PrtctdAuthntcnVal  : ISO20022.Catm001001.ContentInformationType40,
+    @XmlElement AuthntcnVal        : String,
+    @XmlElement AuthntcnXmptn      : String,
+    @XmlElement AuthntcnMtd        : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(AuthntcnAddtlInf), 
+        validElement(AdrVrfctn), 
+        validElement(CrdhldrId), 
+        validElement(CrdhldrOnLinePIN), 
+        validElement(PrtctdAuthntcnVal))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.CardholderVerificationCapability4Code
+{
+    @XmlEnum ("OTHR") OTHR          #1,
+    @XmlEnum ("NOVF") NOVF          #2,
+    @XmlEnum ("NBIO") NBIO          #3,
+    @XmlEnum ("SCEC") SCEC          #4,
+    @XmlEnum ("PKIS") PKIS          #5,
+    @XmlEnum ("NPIN") NPIN          #6,
+    @XmlEnum ("FEPN") FEPN          #7,
+    @XmlEnum ("FCPN") FCPN          #8,
+    @XmlEnum ("FDSG") FDSG          #9,
+    @XmlEnum ("FBIO") FBIO          #10,
+    @XmlEnum ("FBIG") FBIG          #11,
+    @XmlEnum ("MNVR") MNVR          #12,
+    @XmlEnum ("MNSG") MNSG          #13,
+    @XmlEnum ("CHDT") CHDT          #14,
+    @XmlEnum ("APKI") APKI          #15,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.CashAccount40
+{
+    @XmlElement Prxy               : ISO20022.Catm001001.ProxyAccountIdentification1,
+    @XmlElement Nm                 : String,
+    @XmlElement Ccy                : String,
+    @XmlElement Tp                 : ISO20022.Catm001001.CashAccountType2Choice,
+    @XmlElement Id                 : ISO20022.Catm001001.AccountIdentification4Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Prxy), 
+        validPattern ("Ccy", Ccy, "[A-Z]{3,3}"), 
+        validElement(Tp), 
+        validElement(Id))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck, AnyKey
+value ISO20022.Catm001001.CashAccountType2Choice
+{
+    @XmlElement Prtry              : String,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.CertificateIssuer1
+{
+    @XmlElement RltvDstngshdNm     : List<ISO20022.Catm001001.RelativeDistinguishedName1>,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validRequired ("RltvDstngshdNm", RltvDstngshdNm), 
+        validList ("RltvDstngshdNm", RltvDstngshdNm), 
+        validElement(RltvDstngshdNm))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.Check1
+{
+    @XmlElement Ctry               : String,
+    @XmlElement ChckTp             : String,
+    @XmlElement ChckTrckData2      : ISO20022.Catm001001.TrackData2,
+    @XmlElement ChckCardNb         : String,
+    @XmlElement ChckNb             : String,
+    @XmlElement AcctNb             : String,
+    @XmlElement BkId               : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(ChckTrckData2))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.CheckType1Code
+{
+    @XmlEnum ("PERS") PERS          #1,
+    @XmlEnum ("PAYR") PAYR          #2,
+    @XmlEnum ("GOVC") GOVC          #3,
+    @XmlEnum ("BUSI") BUSI          #4,
+    @XmlEnum ("BANK") BANK          #5,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.CommunicationAddress9
+{
+    @XmlElement AddtlCtctInf       : String,
+    @XmlElement CstmrSvc           : String,
+    @XmlElement Phne               : String,
+    @XmlElement URLAdr             : String,
+    @XmlElement Email              : String,
+    @XmlElement PstlAdr            : ISO20022.Catm001001.PostalAddress22,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("CstmrSvc", CstmrSvc, "\+[0-9]{1,3}-[0-9()+\-]{1,30}"), 
+        validPattern ("Phne", Phne, "\+[0-9]{1,3}-[0-9()+\-]{1,30}"), 
+        validElement(PstlAdr))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.CommunicationCharacteristics5
+{
+    @XmlElement PhysIntrfc         : ISO20022.Catm001001.PhysicalInterfaceParameter1,
+    @XmlElement Params             : ISO20022.Catm001001.NetworkParameters7,
+    @XmlElement Actv               : String,
+    @XmlElement RmotPty            : List<String>,
+    @XmlElement ComTp              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(PhysIntrfc), 
+        validElement(Params), 
+        validRequired ("RmotPty", RmotPty))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.Contact13
+{
+    @XmlElement PrefrdMtd          : String,
+    @XmlElement Othr               : List<ISO20022.Catm001001.OtherContact1>,
+    @XmlElement Dept               : String,
+    @XmlElement Rspnsblty          : String,
+    @XmlElement JobTitl            : String,
+    @XmlElement EmailPurp          : String,
+    @XmlElement EmailAdr           : String,
+    @XmlElement URLAdr             : String,
+    @XmlElement FaxNb              : String,
+    @XmlElement MobNb              : String,
+    @XmlElement PhneNb             : String,
+    @XmlElement Nm                 : String,
+    @XmlElement NmPrfx             : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("Othr", Othr), 
+        validElement(Othr), 
+        validPattern ("FaxNb", FaxNb, "\+[0-9]{1,3}-[0-9()+\-]{1,30}"), 
+        validPattern ("MobNb", MobNb, "\+[0-9]{1,3}-[0-9()+\-]{1,30}"), 
+        validPattern ("PhneNb", PhneNb, "\+[0-9]{1,3}-[0-9()+\-]{1,30}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.ContentInformationType38
+{
+    @XmlElement SgndData           : ISO20022.Catm001001.SignedData9,
+    @XmlElement AuthntcdData       : ISO20022.Catm001001.AuthenticatedData10,
+    @XmlElement CnttTp             : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(SgndData), 
+        validElement(AuthntcdData))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.ContentInformationType39
+{
+    @XmlElement DgstdData          : ISO20022.Catm001001.DigestedData6,
+    @XmlElement SgndData           : ISO20022.Catm001001.SignedData9,
+    @XmlElement AuthntcdData       : ISO20022.Catm001001.AuthenticatedData10,
+    @XmlElement EnvlpdData         : ISO20022.Catm001001.EnvelopedData11,
+    @XmlElement CnttTp             : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(DgstdData), 
+        validElement(SgndData), 
+        validElement(AuthntcdData), 
+        validElement(EnvlpdData))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.ContentInformationType40
+{
+    @XmlElement EnvlpdData         : ISO20022.Catm001001.EnvelopedData11,
+    @XmlElement CnttTp             : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(EnvlpdData))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.ContentType2Code
+{
+    @XmlEnum ("AUTH") AUTH          #1,
+    @XmlEnum ("DGST") DGST          #2,
+    @XmlEnum ("EVLP") EVLP          #3,
+    @XmlEnum ("SIGN") SIGN          #4,
+    @XmlEnum ("DATA") DATA          #5,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.CreditTransferContext1
+{
+    @XmlElement PrtctdCdtrAcct     : ISO20022.Catm001001.ContentInformationType39,
+    @XmlElement CdtrAcct           : ISO20022.Catm001001.CashAccount40,
+    @XmlElement Cdtr               : ISO20022.Catm001001.PartyIdentification272,
+    @XmlElement PrtctdDbtrAcct     : ISO20022.Catm001001.ContentInformationType39,
+    @XmlElement DbtrAcct           : ISO20022.Catm001001.CashAccount40,
+    @XmlElement Dbtr               : ISO20022.Catm001001.PartyIdentification272,
+    @XmlElement SysToNtfy          : String,
+    @XmlElement WaitForNtfctnBfrEndg : String,
+    @XmlElement AutomtcNtfctnOfCshMvmnt : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(PrtctdCdtrAcct), 
+        validElement(CdtrAcct), 
+        validElement(Cdtr), 
+        validElement(PrtctdDbtrAcct), 
+        validElement(DbtrAcct), 
+        validElement(Dbtr))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.CryptographicKey18
+{
+    @XmlElement AddtlMgmtInf       : List<ISO20022.Catm001001.GenericInformation1>,
+    @XmlElement KeyChckVal         : String,
+    @XmlElement PrtctdCmpntWthAuthrsdAccs : List<ISO20022.Catm001001.ContentInformationType39>,
+    @XmlElement CmpntWthAuthrsdAccs : List<ISO20022.Catm001001.GenericIdentification186>,
+    @XmlElement KeyVal             : ISO20022.Catm001001.ContentInformationType39,
+    @XmlElement DeactvtnDt         : DateTime,
+    @XmlElement ActvtnDt           : DateTime,
+    @XmlElement Fctn               : List<String>,
+    @XmlElement Tp                 : String,
+    @XmlElement Vrsn               : String,
+    @XmlElement ItmNb              : String,
+    @XmlElement SctyPrfl           : String,
+    @XmlElement Nm                 : String,
+    @XmlElement AddtlId            : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("AddtlMgmtInf", AddtlMgmtInf), 
+        validElement(AddtlMgmtInf), 
+        validList ("PrtctdCmpntWthAuthrsdAccs", PrtctdCmpntWthAuthrsdAccs), 
+        validElement(PrtctdCmpntWthAuthrsdAccs), 
+        validList ("CmpntWthAuthrsdAccs", CmpntWthAuthrsdAccs), 
+        validElement(CmpntWthAuthrsdAccs), 
+        validElement(KeyVal))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.CryptographicKeyType3Code
+{
+    @XmlEnum ("EDE4") EDE4          #1,
+    @XmlEnum ("AES5") AES5          #2,
+    @XmlEnum ("AES9") AES9          #3,
+    @XmlEnum ("DKP9") DKP9          #4,
+    @XmlEnum ("EDE3") EDE3          #5,
+    @XmlEnum ("AES2") AES2          #6,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.CustomerDevice3
+{
+    @XmlElement Prvdr              : String,
+    @XmlElement Tp                 : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.DataSetCategory20Code
+{
+    @XmlEnum ("PROB") PROB          #1,
+    @XmlEnum ("SPRP") SPRP          #2,
+    @XmlEnum ("SAPR") SAPR          #3,
+    @XmlEnum ("RPFL") RPFL          #4,
+    @XmlEnum ("CONF") CONF          #5,
+    @XmlEnum ("MDFL") MDFL          #6,
+    @XmlEnum ("CMRQ") CMRQ          #7,
+    @XmlEnum ("LOGF") LOGF          #8,
+    @XmlEnum ("CRTF") CRTF          #9,
+    @XmlEnum ("TMSP") TMSP          #10,
+    @XmlEnum ("PARA") PARA          #11,
+    @XmlEnum ("VDPR") VDPR          #12,
+    @XmlEnum ("TRPR") TRPR          #13,
+    @XmlEnum ("STRP") STRP          #14,
+    @XmlEnum ("SWPK") SWPK          #15,
+    @XmlEnum ("SCPR") SCPR          #16,
+    @XmlEnum ("MRPR") MRPR          #17,
+    @XmlEnum ("MGTP") MGTP          #18,
+    @XmlEnum ("DLGT") DLGT          #19,
+    @XmlEnum ("AKCP") AKCP          #20,
+    @XmlEnum ("TXCP") TXCP          #21,
+    @XmlEnum ("APPR") APPR          #22,
+    @XmlEnum ("AQPR") AQPR          #23,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.DataSetIdentification11
+{
+    @XmlElement CreDtTm            : DateTime,
+    @XmlElement Vrsn               : String,
+    @XmlElement Tp                 : String,
+    @XmlElement Nm                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.DataSetRequest6
+{
+    @XmlElement PrtctdDlgtnProof   : ISO20022.Catm001001.ContentInformationType39,
+    @XmlElement DlgtnProof         : String,
+    @XmlElement SsnKey             : ISO20022.Catm001001.CryptographicKey18,
+    @XmlElement TMChllng           : String,
+    @XmlElement POIChllng          : String,
+    @XmlElement Id                 : ISO20022.Catm001001.DataSetIdentification11,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(PrtctdDlgtnProof), 
+        validElement(SsnKey), 
+        validElement(Id))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.DateAndPlaceOfBirth1
+{
+    @XmlElement CtryOfBirth        : String,
+    @XmlElement CityOfBirth        : String,
+    @XmlElement PrvcOfBirth        : String,
+    @XmlElement BirthDt            : DateTime,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("CtryOfBirth", CtryOfBirth, "[A-Z]{2,2}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.DeviceDisplayResponse2
+{
+    @XmlElement OutptRslt          : List<ISO20022.Catm001001.OutputResult2>,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validRequired ("OutptRslt", OutptRslt), 
+        validList ("OutptRslt", OutptRslt), 
+        validElement(OutptRslt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.DeviceInitialisationCardReaderResponse2
+{
+    @XmlElement AddtlInf           : String,
+    @XmlElement ICCRstData         : ISO20022.Catm001001.ICCResetData1,
+    @XmlElement CardNtryMd         : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(ICCRstData))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.DeviceInputResponse6
+{
+    @XmlElement InptRslt           : ISO20022.Catm001001.InputResult6,
+    @XmlElement OutptRslt          : ISO20022.Catm001001.OutputResult2,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(InptRslt), 
+        validElement(OutptRslt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.DevicePrintResponse1
+{
+    @XmlElement DocQlfr            : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.DeviceResponse8
+{
+    @XmlElement SplmtryData        : List<ISO20022.Catm001001.SupplementaryData1>,
+    @XmlElement Rspn               : ISO20022.Catm001001.ResponseType11,
+    @XmlElement TrnsmssnRspn       : ISO20022.Catm001001.DeviceTransmitMessageResponse1,
+    @XmlElement CardRdrApplPrtcolDataUnitRspn : ISO20022.Catm001001.DeviceSendApplicationProtocolDataUnitCardReaderResponse1,
+    @XmlElement InitlstnCardRdrRspn : ISO20022.Catm001001.DeviceInitialisationCardReaderResponse2,
+    @XmlElement ScrInptRspn        : ISO20022.Catm001001.DeviceSecureInputResponse6,
+    @XmlElement PrtRspn            : ISO20022.Catm001001.DevicePrintResponse1,
+    @XmlElement InptRspn           : ISO20022.Catm001001.DeviceInputResponse6,
+    @XmlElement DispRspn           : ISO20022.Catm001001.DeviceDisplayResponse2,
+    @XmlElement SvcCntt            : String,
+    @XmlElement Cntxt              : ISO20022.Catm001001.PaymentContext30,
+    @XmlElement Envt               : ISO20022.Catm001001.CardPaymentEnvironment81,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("SplmtryData", SplmtryData), 
+        validElement(SplmtryData), 
+        validElement(Rspn), 
+        validElement(TrnsmssnRspn), 
+        validElement(CardRdrApplPrtcolDataUnitRspn), 
+        validElement(InitlstnCardRdrRspn), 
+        validElement(ScrInptRspn), 
+        validElement(PrtRspn), 
+        validElement(InptRspn), 
+        validElement(DispRspn), 
+        validElement(Cntxt), 
+        validElement(Envt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.DeviceSecureInputResponse6
+{
+    @XmlElement CrdhldrPIN         : ISO20022.Catm001001.OnLinePIN11,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(CrdhldrPIN))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.DeviceSendApplicationProtocolDataUnitCardReaderResponse1
+{
+    @XmlElement CardSts            : String,
+    @XmlElement Data               : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.DeviceTransmitMessageResponse1
+{
+    @XmlElement RcvdMsg            : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.DigestedData6
+{
+    @XmlElement Dgst               : String,
+    @XmlElement NcpsltdCntt        : ISO20022.Catm001001.EncapsulatedContent3,
+    @XmlElement DgstAlgo           : ISO20022.Catm001001.AlgorithmIdentification36,
+    @XmlElement Vrsn               : Decimal,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(NcpsltdCntt), 
+        validElement(DgstAlgo))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.DirectDebitContext1
+{
+    @XmlElement MndtRltdInf        : ISO20022.Catm001001.MandateRelatedInformation17,
+    @XmlElement PrtctdCdtrAcct     : ISO20022.Catm001001.ContentInformationType39,
+    @XmlElement CdtrAcct           : ISO20022.Catm001001.CashAccount40,
+    @XmlElement Cdtr               : ISO20022.Catm001001.PartyIdentification272,
+    @XmlElement PrtctdDbtrAcct     : ISO20022.Catm001001.ContentInformationType39,
+    @XmlElement DbtrAcct           : ISO20022.Catm001001.CashAccount40,
+    @XmlElement Dbtr               : ISO20022.Catm001001.PartyIdentification272,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(MndtRltdInf), 
+        validElement(PrtctdCdtrAcct), 
+        validElement(CdtrAcct), 
+        validElement(Cdtr), 
+        validElement(PrtctdDbtrAcct), 
+        validElement(DbtrAcct), 
+        validElement(Dbtr))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.DisplayCapabilities4
+{
+    @XmlElement AvlblLang          : List<String>,
+    @XmlElement LineWidth          : Decimal,
+    @XmlElement NbOfLines          : Decimal,
+    @XmlElement AvlblFrmt          : List<String>,
+    @XmlElement Dstn               : List<String>,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validRequired ("Dstn", Dstn))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+type ISO20022.Catm001001.Document
+{
+}
+[
+    @XmlElement StsRpt             : ISO20022.Catm001001.StatusReportV14,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(StsRpt))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.DocumentType7Code
+{
+    @XmlEnum ("VCHR") VCHR          #1,
+    @XmlEnum ("RPIN") RPIN          #2,
+    @XmlEnum ("SRCP") SRCP          #3,
+    @XmlEnum ("HRCP") HRCP          #4,
+    @XmlEnum ("CRCP") CRCP          #5,
+    @XmlEnum ("JNRL") JNRL          #6,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.EncapsulatedContent3
+{
+    @XmlElement Cntt               : String,
+    @XmlElement CnttTp             : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.EncryptedContent7
+{
+    @XmlElement NcrptdData         : String,
+    @XmlElement CnttNcrptnAlgo     : ISO20022.Catm001001.AlgorithmIdentification32,
+    @XmlElement CnttTp             : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(CnttNcrptnAlgo))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.EncryptionFormat2Code
+{
+    @XmlEnum ("I238") I238          #1,
+    @XmlEnum ("TR34") TR34          #2,
+    @XmlEnum ("TR31") TR31          #3,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.EnvelopedData11
+{
+    @XmlElement NcrptdCntt         : ISO20022.Catm001001.EncryptedContent7,
+    @XmlElement Rcpt               : List<ISO20022.Catm001001.Recipient15Choice>,
+    @XmlElement OrgtrInf           : ISO20022.Catm001001.OriginatorInformation1,
+    @XmlElement Vrsn               : Decimal,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(NcrptdCntt), 
+        validRequired ("Rcpt", Rcpt), 
+        validList ("Rcpt", Rcpt), 
+        validElement(Rcpt), 
+        validElement(OrgtrInf))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.ExchangePolicy2Code
+{
+    @XmlEnum ("BLCK") BLCK          #1,
+    @XmlEnum ("NONE") NONE          #2,
+    @XmlEnum ("CYCL") CYCL          #3,
+    @XmlEnum ("TTLT") TTLT          #4,
+    @XmlEnum ("NBLT") NBLT          #5,
+    @XmlEnum ("AGRP") AGRP          #6,
+    @XmlEnum ("ASAP") ASAP          #7,
+    @XmlEnum ("IMMD") IMMD          #8,
+    @XmlEnum ("ONDM") ONDM          #9,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.Exemption1Code
+{
+    @XmlEnum ("TMBE") TMBE          #1,
+    @XmlEnum ("PKGE") PKGE          #2,
+    @XmlEnum ("TRAE") TRAE          #3,
+    @XmlEnum ("SCAD") SCAD          #4,
+    @XmlEnum ("SCPE") SCPE          #5,
+    @XmlEnum ("RECP") RECP          #6,
+    @XmlEnum ("MINT") MINT          #7,
+    @XmlEnum ("LOWA") LOWA          #8,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.ExternallyDefinedData5
+{
+    @XmlElement Tp                 : String,
+    @XmlElement PrtctdVal          : ISO20022.Catm001001.ContentInformationType39,
+    @XmlElement Val                : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(PrtctdVal))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.GenericAccountIdentification1
+{
+    @XmlElement Issr               : String,
+    @XmlElement SchmeNm            : ISO20022.Catm001001.AccountSchemeName1Choice,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(SchmeNm))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.GenericIdentification176
+{
+    @XmlElement ShrtNm             : String,
+    @XmlElement Ctry               : String,
+    @XmlElement Issr               : String,
+    @XmlElement Tp                 : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("Ctry", Ctry, "[a-zA-Z]{2,3}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.GenericIdentification177
+{
+    @XmlElement Glctn              : ISO20022.Catm001001.Geolocation1,
+    @XmlElement RmotAccs           : ISO20022.Catm001001.NetworkParameters7,
+    @XmlElement ShrtNm             : String,
+    @XmlElement Ctry               : String,
+    @XmlElement Issr               : String,
+    @XmlElement Tp                 : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Glctn), 
+        validElement(RmotAccs), 
+        validPattern ("Ctry", Ctry, "[a-zA-Z]{2,3}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.GenericIdentification186
+{
+    @XmlElement Tp                 : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.GenericIdentification30
+{
+    @XmlElement SchmeNm            : String,
+    @XmlElement Issr               : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("Id", Id, "[a-zA-Z0-9]{4}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.GenericIdentification32
+{
+    @XmlElement ShrtNm             : String,
+    @XmlElement Issr               : String,
+    @XmlElement Tp                 : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.GenericIdentification4
+{
+    @XmlElement IdTp               : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.GenericIdentification48
+{
+    @XmlElement Issr               : String,
+    @XmlElement Vrsn               : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.GenericInformation1
+{
+    @XmlElement Val                : String,
+    @XmlElement Nm                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.GenericOrganisationIdentification3
+{
+    @XmlElement Issr               : String,
+    @XmlElement SchmeNm            : ISO20022.Catm001001.OrganisationIdentificationSchemeName1Choice,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(SchmeNm))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.GenericPersonIdentification2
+{
+    @XmlElement Issr               : String,
+    @XmlElement SchmeNm            : ISO20022.Catm001001.PersonIdentificationSchemeName1Choice,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(SchmeNm))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.Geolocation1
+{
+    @XmlElement UTMCordints        : ISO20022.Catm001001.GeolocationUTMCoordinates1,
+    @XmlElement GeogcCordints      : ISO20022.Catm001001.GeolocationGeographicCoordinates1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(UTMCordints), 
+        validElement(GeogcCordints))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.GeolocationGeographicCoordinates1
+{
+    @XmlElement Long               : String,
+    @XmlElement Lat                : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.GeolocationUTMCoordinates1
+{
+    @XmlElement UTMNrthwrd         : String,
+    @XmlElement UTMEstwrd          : String,
+    @XmlElement UTMZone            : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.ICCResetData1
+{
+    @XmlElement CardSts            : String,
+    @XmlElement ATRVal             : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.InformationQualify1Code
+{
+    @XmlEnum ("VCHR") VCHR          #1,
+    @XmlEnum ("STAT") STAT          #2,
+    @XmlEnum ("SOND") SOND          #3,
+    @XmlEnum ("RCPT") RCPT          #4,
+    @XmlEnum ("POIR") POIR          #5,
+    @XmlEnum ("INPT") INPT          #6,
+    @XmlEnum ("ERRO") ERRO          #7,
+    @XmlEnum ("DOCT") DOCT          #8,
+    @XmlEnum ("DISP") DISP          #9,
+    @XmlEnum ("CUSA") CUSA          #10,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.InputCommand1Code
+{
+    @XmlEnum ("SIGN") SIGN          #1,
+    @XmlEnum ("HTML") HTML          #2,
+    @XmlEnum ("TXSG") TXSG          #3,
+    @XmlEnum ("SITE") SITE          #4,
+    @XmlEnum ("PSWD") PSWD          #5,
+    @XmlEnum ("GMNE") GMNE          #6,
+    @XmlEnum ("GFKY") GFKY          #7,
+    @XmlEnum ("GCNF") GCNF          #8,
+    @XmlEnum ("GAKY") GAKY          #9,
+    @XmlEnum ("DGSG") DGSG          #10,
+    @XmlEnum ("DCSG") DCSG          #11,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.InputResult6
+{
+    @XmlElement InptRsltData       : ISO20022.Catm001001.InputResultData6,
+    @XmlElement InfQlfr            : String,
+    @XmlElement DvcTp              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(InptRsltData))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.InputResultData6
+{
+    @XmlElement ImgCaptrdSgntr     : ISO20022.Catm001001.CapturedSignature1,
+    @XmlElement Pwd                : ISO20022.Catm001001.ContentInformationType39,
+    @XmlElement InptMsg            : String,
+    @XmlElement FctnKey            : Decimal,
+    @XmlElement ConfdFlg           : String,
+    @XmlElement InptCmd            : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(ImgCaptrdSgntr), 
+        validElement(Pwd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.IssuerAndSerialNumber2
+{
+    @XmlElement SrlNb              : String,
+    @XmlElement Issr               : ISO20022.Catm001001.CertificateIssuer1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Issr))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.KEK9
+{
+    @XmlElement NcrptdKey          : String,
+    @XmlElement KeyNcrptnAlgo      : ISO20022.Catm001001.AlgorithmIdentification32,
+    @XmlElement KEKId              : ISO20022.Catm001001.KEKIdentifier7,
+    @XmlElement Vrsn               : Decimal,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(KeyNcrptnAlgo), 
+        validElement(KEKId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.KEKIdentifier7
+{
+    @XmlElement DerivtnId          : String,
+    @XmlElement SeqNb              : Decimal,
+    @XmlElement KeyVrsn            : String,
+    @XmlElement KeyId              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.KeyTransport10
+{
+    @XmlElement NcrptdKey          : String,
+    @XmlElement KeyNcrptnAlgo      : ISO20022.Catm001001.AlgorithmIdentification35,
+    @XmlElement RcptId             : ISO20022.Catm001001.Recipient13Choice,
+    @XmlElement Vrsn               : Decimal,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(KeyNcrptnAlgo), 
+        validElement(RcptId))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.KeyUsage1Code
+{
+    @XmlEnum ("KEYD") KEYD          #1,
+    @XmlEnum ("KEYX") KEYX          #2,
+    @XmlEnum ("KEYI") KEYI          #3,
+    @XmlEnum ("KEYG") KEYG          #4,
+    @XmlEnum ("PINV") PINV          #5,
+    @XmlEnum ("PIND") PIND          #6,
+    @XmlEnum ("PINE") PINE          #7,
+    @XmlEnum ("SUGV") SUGV          #8,
+    @XmlEnum ("SIGG") SIGG          #9,
+    @XmlEnum ("MACV") MACV          #10,
+    @XmlEnum ("MACG") MACG          #11,
+    @XmlEnum ("TRNX") TRNX          #12,
+    @XmlEnum ("TRNI") TRNI          #13,
+    @XmlEnum ("DDEC") DDEC          #14,
+    @XmlEnum ("DENC") DENC          #15,
+    @XmlEnum ("DCPT") DCPT          #16,
+    @XmlEnum ("ENCR") ENCR          #17,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.LocationCategory3Code
+{
+    @XmlEnum ("VNDG") VNDG          #1,
+    @XmlEnum ("SSLE") SSLE          #2,
+    @XmlEnum ("MSLE") MSLE          #3,
+    @XmlEnum ("MPMP") MPMP          #4,
+    @XmlEnum ("MPOI") MPOI          #5,
+    @XmlEnum ("IPMP") IPMP          #6,
+    @XmlEnum ("INDR") INDR          #7,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.LocationCategory4Code
+{
+    @XmlEnum ("VIRT") VIRT          #1,
+    @XmlEnum ("FIXD") FIXD          #2,
+    @XmlEnum ("NMDC") NMDC          #3,
+    @XmlEnum ("ABRD") ABRD          #4,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.LoyaltyAccount3
+{
+    @XmlElement Bal                : Decimal,
+    @XmlElement Ccy                : String,
+    @XmlElement Unit               : String,
+    @XmlElement OwnrNm             : String,
+    @XmlElement Prvdr              : String,
+    @XmlElement Brnd               : String,
+    @XmlElement IdTp               : String,
+    @XmlElement NtryMd             : String,
+    @XmlElement LltyId             : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("Ccy", Ccy, "[A-Z]{3,3}"))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.LoyaltyHandling1Code
+{
+    @XmlEnum ("REQU") REQU          #1,
+    @XmlEnum ("PROP") PROP          #2,
+    @XmlEnum ("PRCS") PRCS          #3,
+    @XmlEnum ("DENY") DENY          #4,
+    @XmlEnum ("ALLO") ALLO          #5,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.MandateRelatedInformation17
+{
+    @XmlElement PrtctdMndtImg      : ISO20022.Catm001001.ContentInformationType39,
+    @XmlElement MndtImg            : String,
+    @XmlElement DtOfSgntr          : DateTime,
+    @XmlElement MndtId             : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(PrtctdMndtImg))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.MemoryCharacteristics1
+{
+    @XmlElement Unit               : String,
+    @XmlElement FreeSz             : Decimal,
+    @XmlElement TtlSz              : Decimal,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.MemoryUnit1Code
+{
+    @XmlEnum ("TERA") TERA          #1,
+    @XmlEnum ("PETA") PETA          #2,
+    @XmlEnum ("MEGA") MEGA          #3,
+    @XmlEnum ("KILO") KILO          #4,
+    @XmlEnum ("GIGA") GIGA          #5,
+    @XmlEnum ("EXAB") EXAB          #6,
+    @XmlEnum ("BYTE") BYTE          #7,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.MerchantToken2
+{
+    @XmlElement TknInittdInd       : String,
+    @XmlElement TknAssrncMtd       : String,
+    @XmlElement TknAssrncData      : String,
+    @XmlElement TknAssrncLvl       : Decimal,
+    @XmlElement TknRqstr           : ISO20022.Catm001001.PaymentTokenIdentifiers1,
+    @XmlElement TknChrtc           : List<String>,
+    @XmlElement TknXpryDt          : String,
+    @XmlElement Tkn                : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("TknAssrncMtd", TknAssrncMtd, "[0-9]{1,2}"), 
+        validElement(TknRqstr))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.MobileData6
+{
+    @XmlElement PrtctdMobData      : ISO20022.Catm001001.ContentInformationType40,
+    @XmlElement SnstvMobData       : ISO20022.Catm001001.SensitiveMobileData1,
+    @XmlElement Glctn              : ISO20022.Catm001001.Geolocation1,
+    @XmlElement MobMskdMSISDN      : String,
+    @XmlElement MobNtwkCd          : String,
+    @XmlElement MobCtryCd          : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(PrtctdMobData), 
+        validElement(SnstvMobData), 
+        validElement(Glctn), 
+        validPattern ("MobNtwkCd", MobNtwkCd, "[0-9]{2,3}"), 
+        validPattern ("MobCtryCd", MobCtryCd, "[a-zA-Z]{2,3}"))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.NamePrefix2Code
+{
+    @XmlEnum ("MIKS") MIKS          #1,
+    @XmlEnum ("MIST") MIST          #2,
+    @XmlEnum ("MISS") MISS          #3,
+    @XmlEnum ("MADM") MADM          #4,
+    @XmlEnum ("DOCT") DOCT          #5,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.NetworkParameters7
+{
+    @XmlElement SctyPrfl           : String,
+    @XmlElement ClntCert           : List<String>,
+    @XmlElement SvrCertIdr         : List<String>,
+    @XmlElement SvrCert            : List<String>,
+    @XmlElement AccsCd             : String,
+    @XmlElement UsrNm              : String,
+    @XmlElement Adr                : List<ISO20022.Catm001001.NetworkParameters9>,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validRequired ("Adr", Adr), 
+        validList ("Adr", Adr), 
+        validElement(Adr))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.NetworkParameters9
+{
+    @XmlElement AdrVal             : String,
+    @XmlElement NtwkTp             : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.NetworkType1Code
+{
+    @XmlEnum ("PSTN") PSTN          #1,
+    @XmlEnum ("IPNW") IPNW          #2,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.OnLineCapability1Code
+{
+    @XmlEnum ("SMON") SMON          #1,
+    @XmlEnum ("ONLN") ONLN          #2,
+    @XmlEnum ("OFLN") OFLN          #3,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.OnLinePIN11
+{
+    @XmlElement AddtlInpt          : String,
+    @XmlElement PINFrmt            : String,
+    @XmlElement NcrptdPINBlck      : ISO20022.Catm001001.ContentInformationType40,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(NcrptdPINBlck))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.Organisation26
+{
+    @XmlElement RegdIdr            : String,
+    @XmlElement MrchntCtgyCd       : String,
+    @XmlElement CtryCd             : String,
+    @XmlElement Adr                : String,
+    @XmlElement CmonNm             : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("CtryCd", CtryCd, "[0-9]{3,3}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.Organisation41
+{
+    @XmlElement SchmeData          : String,
+    @XmlElement LctnAndCtct        : ISO20022.Catm001001.CommunicationAddress9,
+    @XmlElement LctnCtgy           : String,
+    @XmlElement CmonNm             : String,
+    @XmlElement Id                 : ISO20022.Catm001001.GenericIdentification32,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(LctnAndCtct), 
+        validElement(Id))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.OrganisationIdentification39
+{
+    @XmlElement Othr               : List<ISO20022.Catm001001.GenericOrganisationIdentification3>,
+    @XmlElement LEI                : String,
+    @XmlElement AnyBIC             : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("Othr", Othr), 
+        validElement(Othr), 
+        validPattern ("LEI", LEI, "[A-Z0-9]{18,18}[0-9]{2,2}"), 
+        validPattern ("AnyBIC", AnyBIC, "[A-Z0-9]{4,4}[A-Z]{2,2}[A-Z0-9]{2,2}([A-Z0-9]{3,3}){0,1}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck, AnyKey
+value ISO20022.Catm001001.OrganisationIdentificationSchemeName1Choice
+{
+    @XmlElement Prtry              : String,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.OriginatorInformation1
+{
+    @XmlElement Cert               : List<String>,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.OtherContact1
+{
+    @XmlElement Id                 : String,
+    @XmlElement ChanlTp            : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.OutputFormat1Code
+{
+    @XmlEnum ("HTML") HTML          #1,
+    @XmlEnum ("TEXT") TEXT          #2,
+    @XmlEnum ("MREF") MREF          #3,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.OutputResult2
+{
+    @XmlElement Rspn               : ISO20022.Catm001001.ResponseType11,
+    @XmlElement InfQlfr            : String,
+    @XmlElement DvcTp              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Rspn))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.PINFormat3Code
+{
+    @XmlEnum ("ISO5") ISO5          #1,
+    @XmlEnum ("ISO4") ISO4          #2,
+    @XmlEnum ("ISO3") ISO3          #3,
+    @XmlEnum ("ISO2") ISO2          #4,
+    @XmlEnum ("ISO1") ISO1          #5,
+    @XmlEnum ("ISO0") ISO0          #6,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.POICommunicationType2Code
+{
+    @XmlEnum ("WT5G") WT5G          #1,
+    @XmlEnum ("WT4G") WT4G          #2,
+    @XmlEnum ("WT3G") WT3G          #3,
+    @XmlEnum ("WT2G") WT2G          #4,
+    @XmlEnum ("WIFI") WIFI          #5,
+    @XmlEnum ("USBH") USBH          #6,
+    @XmlEnum ("USBD") USBD          #7,
+    @XmlEnum ("RS23") RS23          #8,
+    @XmlEnum ("PSTN") PSTN          #9,
+    @XmlEnum ("GSMF") GSMF          #10,
+    @XmlEnum ("GPRS") GPRS          #11,
+    @XmlEnum ("ETHR") ETHR          #12,
+    @XmlEnum ("BLTH") BLTH          #13,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.POIComponentAssessment1Code
+{
+    @XmlEnum ("EVAL") EVAL          #1,
+    @XmlEnum ("CERT") CERT          #2,
+    @XmlEnum ("APPL") APPL          #3,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.POIComponentStatus1Code
+{
+    @XmlEnum ("DACT") DACT          #1,
+    @XmlEnum ("OPER") OPER          #2,
+    @XmlEnum ("OUTD") OUTD          #3,
+    @XmlEnum ("WAIT") WAIT          #4,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.POIComponentType7Code
+{
+    @XmlEnum ("PROB") PROB          #1,
+    @XmlEnum ("RPFL") RPFL          #2,
+    @XmlEnum ("CONF") CONF          #3,
+    @XmlEnum ("SOFT") SOFT          #4,
+    @XmlEnum ("MDFL") MDFL          #5,
+    @XmlEnum ("LOGF") LOGF          #6,
+    @XmlEnum ("SAPR") SAPR          #7,
+    @XmlEnum ("SACP") SACP          #8,
+    @XmlEnum ("TMSP") TMSP          #9,
+    @XmlEnum ("CRTF") CRTF          #10,
+    @XmlEnum ("MRPR") MRPR          #11,
+    @XmlEnum ("OPST") OPST          #12,
+    @XmlEnum ("DRVR") DRVR          #13,
+    @XmlEnum ("MDWR") MDWR          #14,
+    @XmlEnum ("EMVO") EMVO          #15,
+    @XmlEnum ("EMVK") EMVK          #16,
+    @XmlEnum ("APLI") APLI          #17,
+    @XmlEnum ("SECM") SECM          #18,
+    @XmlEnum ("DVCE") DVCE          #19,
+    @XmlEnum ("TERM") TERM          #20,
+    @XmlEnum ("SERV") SERV          #21,
+    @XmlEnum ("SCPR") SCPR          #22,
+    @XmlEnum ("TLPR") TLPR          #23,
+    @XmlEnum ("APPR") APPR          #24,
+    @XmlEnum ("AQPP") AQPP          #25,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.PackageType5
+{
+    @XmlElement PackgBlck          : List<ISO20022.Catm001001.ExternallyDefinedData5>,
+    @XmlElement OffsetEnd          : Decimal,
+    @XmlElement OffsetStart        : Decimal,
+    @XmlElement PackgLngth         : Decimal,
+    @XmlElement PackgId            : ISO20022.Catm001001.GenericIdentification176,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("PackgBlck", PackgBlck), 
+        validElement(PackgBlck), 
+        validElement(PackgId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.Parameter12
+{
+    @XmlElement BPddg              : String,
+    @XmlElement InitlstnVctr       : String,
+    @XmlElement NcrptnFrmt         : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.Parameter16
+{
+    @XmlElement OIDCrvNm           : String,
+    @XmlElement TrlrFld            : Decimal,
+    @XmlElement SaltLngth          : Decimal,
+    @XmlElement MskGnrtrAlgo       : ISO20022.Catm001001.AlgorithmIdentification34,
+    @XmlElement DgstAlgo           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(MskGnrtrAlgo))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.Parameter17
+{
+    @XmlElement MskGnrtrAlgo       : ISO20022.Catm001001.AlgorithmIdentification34,
+    @XmlElement DgstAlgo           : String,
+    @XmlElement NcrptnFrmt         : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(MskGnrtrAlgo))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.Parameter18
+{
+    @XmlElement DgstAlgo           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.Parameter7
+{
+    @XmlElement BPddg              : String,
+    @XmlElement InitlstnVctr       : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck, AnyKey
+value ISO20022.Catm001001.Party52Choice
+{
+    @XmlElement PrvtId             : ISO20022.Catm001001.PersonIdentification18,
+    @XmlElement OrgId              : ISO20022.Catm001001.OrganisationIdentification39,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(PrvtId), 
+        validElement(OrgId), 
+        validChoice (PrvtId, OrgId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.PartyIdentification272
+{
+    @XmlElement CtctDtls           : ISO20022.Catm001001.Contact13,
+    @XmlElement CtryOfRes          : String,
+    @XmlElement Id                 : ISO20022.Catm001001.Party52Choice,
+    @XmlElement PstlAdr            : ISO20022.Catm001001.PostalAddress27,
+    @XmlElement Nm                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(CtctDtls), 
+        validPattern ("CtryOfRes", CtryOfRes, "[A-Z]{2,2}"), 
+        validElement(Id), 
+        validElement(PstlAdr))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.PartyType33Code
+{
+    @XmlEnum ("TMGT") TMGT          #1,
+    @XmlEnum ("TAXH") TAXH          #2,
+    @XmlEnum ("MTMG") MTMG          #3,
+    @XmlEnum ("DLIS") DLIS          #4,
+    @XmlEnum ("CISS") CISS          #5,
+    @XmlEnum ("ACQR") ACQR          #6,
+    @XmlEnum ("ITAG") ITAG          #7,
+    @XmlEnum ("ACCP") ACCP          #8,
+    @XmlEnum ("MERC") MERC          #9,
+    @XmlEnum ("OPOI") OPOI          #10,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.PartyType3Code
+{
+    @XmlEnum ("DLIS") DLIS          #1,
+    @XmlEnum ("CISS") CISS          #2,
+    @XmlEnum ("ACQR") ACQR          #3,
+    @XmlEnum ("ITAG") ITAG          #4,
+    @XmlEnum ("ACCP") ACCP          #5,
+    @XmlEnum ("MERC") MERC          #6,
+    @XmlEnum ("OPOI") OPOI          #7,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.PartyType4Code
+{
+    @XmlEnum ("TAXH") TAXH          #1,
+    @XmlEnum ("CISS") CISS          #2,
+    @XmlEnum ("ACQR") ACQR          #3,
+    @XmlEnum ("ITAG") ITAG          #4,
+    @XmlEnum ("ACCP") ACCP          #5,
+    @XmlEnum ("MERC") MERC          #6,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.PartyType5Code
+{
+    @XmlEnum ("TMGT") TMGT          #1,
+    @XmlEnum ("MTMG") MTMG          #2,
+    @XmlEnum ("ITAG") ITAG          #3,
+    @XmlEnum ("ACQR") ACQR          #4,
+    @XmlEnum ("MERC") MERC          #5,
+    @XmlEnum ("ACCP") ACCP          #6,
+    @XmlEnum ("OPOI") OPOI          #7,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.PartyType7Code
+{
+    @XmlEnum ("SALE") SALE          #1,
+    @XmlEnum ("TMGT") TMGT          #2,
+    @XmlEnum ("PCPT") PCPT          #3,
+    @XmlEnum ("ITAG") ITAG          #4,
+    @XmlEnum ("ACQR") ACQR          #5,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.PaymentCard35
+{
+    @XmlElement AddtlCardData      : String,
+    @XmlElement SvcOptn            : String,
+    @XmlElement AllwdPdct          : List<String>,
+    @XmlElement IntrnlCard         : String,
+    @XmlElement CardPdctSubTp      : String,
+    @XmlElement CardPdctTp         : String,
+    @XmlElement CardBrnd           : String,
+    @XmlElement CardPdctPrfl       : String,
+    @XmlElement CardCcyCd          : String,
+    @XmlElement CardCtryCd         : String,
+    @XmlElement IssrBIN            : String,
+    @XmlElement MskdPAN            : String,
+    @XmlElement PmtAcctRef         : String,
+    @XmlElement PlainCardData      : ISO20022.Catm001001.PlainCardData22,
+    @XmlElement PrvtCardData       : String,
+    @XmlElement PrtctdCardData     : ISO20022.Catm001001.ContentInformationType40,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("CardCcyCd", CardCcyCd, "[a-zA-Z0-9]{3}"), 
+        validPattern ("IssrBIN", IssrBIN, "[0-9]{1,15}"), 
+        validElement(PlainCardData), 
+        validElement(PrtctdCardData))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.PaymentContext29
+{
+    @XmlElement SpprtdOptn         : List<String>,
+    @XmlElement FllbckInd          : String,
+    @XmlElement CardDataNtryMd     : String,
+    @XmlElement AttndntLang        : String,
+    @XmlElement AttndntMsgCpbl     : String,
+    @XmlElement BizArea            : String,
+    @XmlElement TxChanl            : String,
+    @XmlElement TxEnvt             : String,
+    @XmlElement AttndncCntxt       : String,
+    @XmlElement OnLineCntxt        : String,
+    @XmlElement CrdhldrPres        : String,
+    @XmlElement CardPres           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.PaymentContext30
+{
+    @XmlElement DrctDbtCntxt       : ISO20022.Catm001001.DirectDebitContext1,
+    @XmlElement CdtTrfCntxt        : ISO20022.Catm001001.CreditTransferContext1,
+    @XmlElement SaleCntxt          : ISO20022.Catm001001.SaleContext4,
+    @XmlElement PmtCntxt           : ISO20022.Catm001001.PaymentContext29,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(DrctDbtCntxt), 
+        validElement(CdtTrfCntxt), 
+        validElement(SaleCntxt), 
+        validElement(PmtCntxt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.PaymentTokenIdentifiers1
+{
+    @XmlElement RqstrId            : String,
+    @XmlElement PrvdrId            : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.PersonIdentification15
+{
+    @XmlElement Othr               : List<ISO20022.Catm001001.GenericIdentification4>,
+    @XmlElement DtAndPlcOfBirth    : ISO20022.Catm001001.DateAndPlaceOfBirth1,
+    @XmlElement EmailAdr           : String,
+    @XmlElement Dept               : String,
+    @XmlElement JobNb              : String,
+    @XmlElement MplyeeIdNb         : String,
+    @XmlElement MplyrIdNb          : String,
+    @XmlElement IdntyCardNb        : String,
+    @XmlElement TaxIdNb            : String,
+    @XmlElement PsptNb             : String,
+    @XmlElement AlnRegnNb          : String,
+    @XmlElement SclSctyNb          : String,
+    @XmlElement CstmrNb            : String,
+    @XmlElement DrvrId             : String,
+    @XmlElement DrvrLicNm          : String,
+    @XmlElement DrvrLicLctn        : String,
+    @XmlElement DrvrLicNb          : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("Othr", Othr), 
+        validElement(Othr), 
+        validElement(DtAndPlcOfBirth))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.PersonIdentification18
+{
+    @XmlElement Othr               : List<ISO20022.Catm001001.GenericPersonIdentification2>,
+    @XmlElement DtAndPlcOfBirth    : ISO20022.Catm001001.DateAndPlaceOfBirth1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("Othr", Othr), 
+        validElement(Othr), 
+        validElement(DtAndPlcOfBirth))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck, AnyKey
+value ISO20022.Catm001001.PersonIdentificationSchemeName1Choice
+{
+    @XmlElement Prtry              : String,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.PhysicalInterfaceParameter1
+{
+    @XmlElement AddtlParams        : String,
+    @XmlElement SctyPrfl           : String,
+    @XmlElement AccsCd             : String,
+    @XmlElement UsrNm              : String,
+    @XmlElement IntrfcTp           : String,
+    @XmlElement IntrfcNm           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.PlainCardData17
+{
+    @XmlElement NtryMd             : String,
+    @XmlElement AddtlCardData      : List<String>,
+    @XmlElement Trck3              : String,
+    @XmlElement Trck2              : String,
+    @XmlElement Trck1              : String,
+    @XmlElement PAN                : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("PAN", PAN, "[0-9]{8,28}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.PlainCardData22
+{
+    @XmlElement CrdhldrNm          : String,
+    @XmlElement Trck3              : String,
+    @XmlElement Trck2              : String,
+    @XmlElement Trck1              : String,
+    @XmlElement SvcCd              : String,
+    @XmlElement XpryDt             : String,
+    @XmlElement FctvDt             : String,
+    @XmlElement CardSeqNb          : String,
+    @XmlElement PAN                : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("SvcCd", SvcCd, "[0-9]{3}"), 
+        validPattern ("CardSeqNb", CardSeqNb, "[0-9]{2,3}"), 
+        validPattern ("PAN", PAN, "[0-9]{8,28}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.PointOfInteraction15
+{
+    @XmlElement Cmpnt              : List<ISO20022.Catm001001.PointOfInteractionComponent17>,
+    @XmlElement TermnlIntgtn       : String,
+    @XmlElement TmZone             : String,
+    @XmlElement Cpblties           : ISO20022.Catm001001.PointOfInteractionCapabilities9,
+    @XmlElement GrpId              : String,
+    @XmlElement SysNm              : String,
+    @XmlElement Id                 : ISO20022.Catm001001.GenericIdentification177,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("Cmpnt", Cmpnt), 
+        validElement(Cmpnt), 
+        validElement(Cpblties), 
+        validElement(Id))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.PointOfInteractionCapabilities9
+{
+    @XmlElement MsgCpblties        : List<ISO20022.Catm001001.DisplayCapabilities4>,
+    @XmlElement OnLineCpblties     : String,
+    @XmlElement CardCaptrCpbl      : String,
+    @XmlElement MxScrptLngth       : Decimal,
+    @XmlElement ApprvlCdLngth      : Decimal,
+    @XmlElement PINLngthCpblties   : Decimal,
+    @XmlElement CrdhldrVrfctnCpblties : List<String>,
+    @XmlElement CardRdngCpblties   : List<String>,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("MsgCpblties", MsgCpblties), 
+        validElement(MsgCpblties))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.PointOfInteractionComponent17
+{
+    @XmlElement PrbVal             : String,
+    @XmlElement Packg              : List<ISO20022.Catm001001.PackageType5>,
+    @XmlElement Assmnt             : List<ISO20022.Catm001001.PointOfInteractionComponentAssessment1>,
+    @XmlElement Chrtcs             : ISO20022.Catm001001.PointOfInteractionComponentCharacteristics10,
+    @XmlElement StdCmplc           : List<ISO20022.Catm001001.GenericIdentification48>,
+    @XmlElement Sts                : ISO20022.Catm001001.PointOfInteractionComponentStatus3,
+    @XmlElement Id                 : ISO20022.Catm001001.PointOfInteractionComponentIdentification2,
+    @XmlElement SubTpInf           : String,
+    @XmlElement Tp                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("Packg", Packg), 
+        validElement(Packg), 
+        validList ("Assmnt", Assmnt), 
+        validElement(Assmnt), 
+        validElement(Chrtcs), 
+        validList ("StdCmplc", StdCmplc), 
+        validElement(StdCmplc), 
+        validElement(Sts), 
+        validElement(Id))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.PointOfInteractionComponentAssessment1
+{
+    @XmlElement Nb                 : String,
+    @XmlElement XprtnDt            : DateTime,
+    @XmlElement DlvryDt            : DateTime,
+    @XmlElement Assgnr             : List<String>,
+    @XmlElement Tp                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validRequired ("Assgnr", Assgnr))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.PointOfInteractionComponentCharacteristics10
+{
+    @XmlElement SctyElmt           : List<ISO20022.Catm001001.CryptographicKey18>,
+    @XmlElement SbcbrIdntyMdls     : Decimal,
+    @XmlElement SctyAccsMdls       : Decimal,
+    @XmlElement Com                : List<ISO20022.Catm001001.CommunicationCharacteristics5>,
+    @XmlElement Mmry               : List<ISO20022.Catm001001.MemoryCharacteristics1>,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("SctyElmt", SctyElmt), 
+        validElement(SctyElmt), 
+        validList ("Com", Com), 
+        validElement(Com), 
+        validList ("Mmry", Mmry), 
+        validElement(Mmry))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.PointOfInteractionComponentIdentification2
+{
+    @XmlElement SrlNb              : String,
+    @XmlElement Id                 : String,
+    @XmlElement PrvdrId            : String,
+    @XmlElement ItmNb              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.PointOfInteractionComponentStatus3
+{
+    @XmlElement XpryDt             : DateTime,
+    @XmlElement Sts                : String,
+    @XmlElement VrsnNb             : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.PostalAddress22
+{
+    @XmlElement CtryCd             : String,
+    @XmlElement CtrySubDvsn        : List<String>,
+    @XmlElement TwnNm              : String,
+    @XmlElement PstCd              : String,
+    @XmlElement BldgNb             : String,
+    @XmlElement StrtNm             : String,
+    @XmlElement AdrLine            : List<String>,
+    @XmlElement SubDept            : String,
+    @XmlElement Dept               : String,
+    @XmlElement AdrTp              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("CtryCd", CtryCd, "[a-zA-Z]{2,3}"), 
+        validListMax ("CtrySubDvsn", CtrySubDvsn, 2), 
+        validListMax ("AdrLine", AdrLine, 2))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.PostalAddress27
+{
+    @XmlElement AdrLine            : List<String>,
+    @XmlElement Ctry               : String,
+    @XmlElement CtrySubDvsn        : String,
+    @XmlElement DstrctNm           : String,
+    @XmlElement TwnLctnNm          : String,
+    @XmlElement TwnNm              : String,
+    @XmlElement PstCd              : String,
+    @XmlElement Room               : String,
+    @XmlElement PstBx              : String,
+    @XmlElement UnitNb             : String,
+    @XmlElement Flr                : String,
+    @XmlElement BldgNm             : String,
+    @XmlElement BldgNb             : String,
+    @XmlElement StrtNm             : String,
+    @XmlElement SubDept            : String,
+    @XmlElement Dept               : String,
+    @XmlElement CareOf             : String,
+    @XmlElement AdrTp              : ISO20022.Catm001001.AddressType3Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validListMax ("AdrLine", AdrLine, 7), 
+        validPattern ("Ctry", Ctry, "[A-Z]{2,2}"), 
+        validElement(AdrTp))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.PreferredContactMethod2Code
+{
+    @XmlEnum ("PHON") PHON          #1,
+    @XmlEnum ("ONLI") ONLI          #2,
+    @XmlEnum ("CELL") CELL          #3,
+    @XmlEnum ("LETT") LETT          #4,
+    @XmlEnum ("FAXX") FAXX          #5,
+    @XmlEnum ("MAIL") MAIL          #6,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.ProxyAccountIdentification1
+{
+    @XmlElement Id                 : String,
+    @XmlElement Tp                 : ISO20022.Catm001001.ProxyAccountType1Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Tp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck, AnyKey
+value ISO20022.Catm001001.ProxyAccountType1Choice
+{
+    @XmlElement Prtry              : String,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck, AnyKey
+value ISO20022.Catm001001.Recipient13Choice
+{
+    @XmlElement SbjtKeyIdr         : String,
+    @XmlElement IssrAndSrlNb       : ISO20022.Catm001001.IssuerAndSerialNumber2,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(IssrAndSrlNb), 
+        validChoice (SbjtKeyIdr, IssrAndSrlNb))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck, AnyKey
+value ISO20022.Catm001001.Recipient15Choice
+{
+    @XmlElement KeyIdr             : ISO20022.Catm001001.KEKIdentifier7,
+    @XmlElement KEK                : ISO20022.Catm001001.KEK9,
+    @XmlElement KeyTrnsprt         : ISO20022.Catm001001.KeyTransport10,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(KeyIdr), 
+        validElement(KEK), 
+        validElement(KeyTrnsprt), 
+        validChoice (KeyIdr, KEK, KeyTrnsprt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.RelativeDistinguishedName1
+{
+    @XmlElement AttrVal            : String,
+    @XmlElement AttrTp             : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.Response11Code
+{
+    @XmlEnum ("SUCC") SUCC          #1,
+    @XmlEnum ("FAIL") FAIL          #2,
+    @XmlEnum ("WARN") WARN          #3,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.ResponseType11
+{
+    @XmlElement AddtlRspnInf       : String,
+    @XmlElement RspnRsn            : String,
+    @XmlElement Rspn               : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.RetailerResultDetail1Code
+{
+    @XmlEnum ("WIPG") WIPG          #1,
+    @XmlEnum ("ICAR") ICAR          #2,
+    @XmlEnum ("IVCA") IVCA          #3,
+    @XmlEnum ("LOUT") LOUT          #4,
+    @XmlEnum ("NALW") NALW          #5,
+    @XmlEnum ("TNFD") TNFD          #6,
+    @XmlEnum ("PAYR") PAYR          #7,
+    @XmlEnum ("REFU") REFU          #8,
+    @XmlEnum ("UNVD") UNVD          #9,
+    @XmlEnum ("UNVS") UNVS          #10,
+    @XmlEnum ("NHOS") NHOS          #11,
+    @XmlEnum ("WPIN") WPIN          #12,
+    @XmlEnum ("DEVO") DEVO          #13,
+    @XmlEnum ("CANC") CANC          #14,
+    @XmlEnum ("BUSY") BUSY          #15,
+    @XmlEnum ("ABRT") ABRT          #16,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.RetailerSaleEnvironment2
+{
+    @XmlElement LltyHdlg           : String,
+    @XmlElement DbtPrefrdFlg       : String,
+    @XmlElement MinSpltAmt         : Decimal,
+    @XmlElement MaxCshBckAmt       : Decimal,
+    @XmlElement MinAmtToDlvr       : Decimal,
+    @XmlElement Ccy                : String,
+    @XmlElement SaleCpblties       : List<String>,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("Ccy", Ccy, "[A-Z]{3,3}"))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.RetailerService9Code
+{
+    @XmlEnum ("DCOP") DCOP          #1,
+    @XmlEnum ("DCPP") DCPP          #2,
+    @XmlEnum ("DCAP") DCAP          #3,
+    @XmlEnum ("DCIP") DCIP          #4,
+    @XmlEnum ("DSIP") DSIP          #5,
+    @XmlEnum ("DSOP") DSOP          #6,
+    @XmlEnum ("DPRP") DPRP          #7,
+    @XmlEnum ("DINP") DINP          #8,
+    @XmlEnum ("DDYP") DDYP          #9,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.SaleCapabilities1Code
+{
+    @XmlEnum ("PRVC") PRVC          #1,
+    @XmlEnum ("PRRP") PRRP          #2,
+    @XmlEnum ("PRDC") PRDC          #3,
+    @XmlEnum ("POIR") POIR          #4,
+    @XmlEnum ("CUIN") CUIN          #5,
+    @XmlEnum ("CUER") CUER          #6,
+    @XmlEnum ("CUAS") CUAS          #7,
+    @XmlEnum ("CUDI") CUDI          #8,
+    @XmlEnum ("CHST") CHST          #9,
+    @XmlEnum ("CHIN") CHIN          #10,
+    @XmlEnum ("CHER") CHER          #11,
+    @XmlEnum ("CHDI") CHDI          #12,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.SaleCapabilities2Code
+{
+    @XmlEnum ("CUIN") CUIN          #1,
+    @XmlEnum ("CHIN") CHIN          #2,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.SaleContext4
+{
+    @XmlElement AddtlSaleData      : String,
+    @XmlElement SaleTknScp         : String,
+    @XmlElement AllwdNtryMd        : List<String>,
+    @XmlElement ReuseCardDataFlg   : String,
+    @XmlElement ForceOnlnFlg       : String,
+    @XmlElement RmngAmt            : Decimal,
+    @XmlElement SpltPmt            : String,
+    @XmlElement SpnsrdMrchnt       : List<ISO20022.Catm001001.Organisation26>,
+    @XmlElement DlvryNoteNb        : String,
+    @XmlElement InvcNb             : String,
+    @XmlElement PurchsOrdrNb       : String,
+    @XmlElement CstmrOrdrReqFlg    : String,
+    @XmlElement ShftNb             : String,
+    @XmlElement CshrLang           : List<String>,
+    @XmlElement CshrId             : String,
+    @XmlElement SaleRcncltnId      : String,
+    @XmlElement SaleRefNb          : String,
+    @XmlElement SaleId             : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("SpnsrdMrchnt", SpnsrdMrchnt), 
+        validElement(SpnsrdMrchnt), 
+        validPattern ("ShftNb", ShftNb, "[0-9]{1,2}"))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.SaleTokenScope1Code
+{
+    @XmlEnum ("SNGL") SNGL          #1,
+    @XmlEnum ("MULT") MULT          #2,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.SensitiveMobileData1
+{
+    @XmlElement IMEI               : String,
+    @XmlElement IMSI               : String,
+    @XmlElement MSISDN             : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("IMEI", IMEI, "[0-9]{1,35}"), 
+        validPattern ("IMSI", IMSI, "[0-9]{1,35}"), 
+        validPattern ("MSISDN", MSISDN, "[0-9]{1,35}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.SignedData9
+{
+    @XmlElement Sgnr               : List<ISO20022.Catm001001.Signer8>,
+    @XmlElement Cert               : List<String>,
+    @XmlElement NcpsltdCntt        : ISO20022.Catm001001.EncapsulatedContent3,
+    @XmlElement DgstAlgo           : List<ISO20022.Catm001001.AlgorithmIdentification36>,
+    @XmlElement Vrsn               : Decimal,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("Sgnr", Sgnr), 
+        validElement(Sgnr), 
+        validElement(NcpsltdCntt), 
+        validList ("DgstAlgo", DgstAlgo), 
+        validElement(DgstAlgo))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.Signer8
+{
+    @XmlElement Sgntr              : String,
+    @XmlElement SgntrAlgo          : ISO20022.Catm001001.AlgorithmIdentification33,
+    @XmlElement SgndAttrbts        : List<ISO20022.Catm001001.GenericInformation1>,
+    @XmlElement DgstAlgo           : ISO20022.Catm001001.AlgorithmIdentification36,
+    @XmlElement SgnrId             : ISO20022.Catm001001.Recipient13Choice,
+    @XmlElement Vrsn               : Decimal,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(SgntrAlgo), 
+        validList ("SgndAttrbts", SgndAttrbts), 
+        validElement(SgndAttrbts), 
+        validElement(DgstAlgo), 
+        validElement(SgnrId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.StatusReport14
+{
+    @XmlElement DataSet            : ISO20022.Catm001001.StatusReportDataSetRequest6,
+    @XmlElement TermnlMgrId        : ISO20022.Catm001001.GenericIdentification176,
+    @XmlElement InitgTrggr         : ISO20022.Catm001001.TriggerInformation2,
+    @XmlElement POIId              : ISO20022.Catm001001.GenericIdentification176,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(DataSet), 
+        validElement(TermnlMgrId), 
+        validElement(InitgTrggr), 
+        validElement(POIId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.StatusReportContent14
+{
+    @XmlElement Errs               : List<String>,
+    @XmlElement Evt                : List<ISO20022.Catm001001.TMSEvent12>,
+    @XmlElement DataSetReqrd       : List<ISO20022.Catm001001.DataSetRequest6>,
+    @XmlElement POIDtTm            : DateTime,
+    @XmlElement AttndncCntxt       : String,
+    @XmlElement POIGrpId           : List<String>,
+    @XmlElement POICmpnt           : List<ISO20022.Catm001001.PointOfInteractionComponent17>,
+    @XmlElement POICpblties        : ISO20022.Catm001001.PointOfInteractionCapabilities9,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("Evt", Evt), 
+        validElement(Evt), 
+        validList ("DataSetReqrd", DataSetReqrd), 
+        validElement(DataSetReqrd), 
+        validList ("POICmpnt", POICmpnt), 
+        validElement(POICmpnt), 
+        validElement(POICpblties))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.StatusReportDataSetRequest6
+{
+    @XmlElement Cntt               : ISO20022.Catm001001.StatusReportContent14,
+    @XmlElement LastSeq            : String,
+    @XmlElement SeqCntr            : String,
+    @XmlElement Id                 : ISO20022.Catm001001.DataSetIdentification11,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Cntt), 
+        validPattern ("SeqCntr", SeqCntr, "[0-9]{1,9}"), 
+        validElement(Id))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+aspect ISO20022.Catm001001.StatusReportV14
+{
+    @XmlElement SctyTrlr           : ISO20022.Catm001001.ContentInformationType38,
+    @XmlElement StsRpt             : ISO20022.Catm001001.StatusReport14,
+    @XmlElement Hdr                : ISO20022.Catm001001.TMSHeader1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(SctyTrlr), 
+        validElement(StsRpt), 
+        validElement(Hdr))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.StoredValueAccount2
+{
+    @XmlElement Bal                : Decimal,
+    @XmlElement Ccy                : String,
+    @XmlElement NtryMd             : String,
+    @XmlElement XpryDt             : String,
+    @XmlElement OwnrNm             : String,
+    @XmlElement Prvdr              : String,
+    @XmlElement Brnd               : String,
+    @XmlElement Id                 : String,
+    @XmlElement IdTp               : String,
+    @XmlElement AcctTp             : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("Ccy", Ccy, "[A-Z]{3,3}"))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.StoredValueAccountType1Code
+{
+    @XmlEnum ("TRVL") TRVL          #1,
+    @XmlEnum ("CARD") CARD          #2,
+    @XmlEnum ("PHON") PHON          #3,
+    @XmlEnum ("OTHR") OTHR          #4,
+    @XmlEnum ("MERC") MERC          #5,
+    @XmlEnum ("OLVC") OLVC          #6,
+    @XmlEnum ("MLVC") MLVC          #7,
+    @XmlEnum ("GCER") GCER          #8,
+    @XmlEnum ("GIFT") GIFT          #9,
+    @XmlEnum ("ELMY") ELMY          #10,
+    @XmlEnum ("CPYA") CPYA          #11,
+    @XmlEnum ("CWVC") CWVC          #12,
+    @XmlEnum ("BNKA") BNKA          #13,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.SupplementaryData1
+{
+    @XmlElement Envlp              : ISO20022.Catm001001.SupplementaryDataEnvelope1,
+    @XmlElement PlcAndNm           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Envlp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.SupplementaryDataEnvelope1
+{
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.SupportedPaymentOption2Code
+{
+    @XmlEnum ("PINQ") PINQ          #1,
+    @XmlEnum ("INSI") INSI          #2,
+    @XmlEnum ("MSRV") MSRV          #3,
+    @XmlEnum ("PART") PART          #4,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.TMSActionIdentification10
+{
+    @XmlElement DataSetId          : ISO20022.Catm001001.DataSetIdentification11,
+    @XmlElement ActnTp             : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(DataSetId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.TMSEvent12
+{
+    @XmlElement DvcRspn            : ISO20022.Catm001001.DeviceResponse8,
+    @XmlElement TermnlMgrId        : String,
+    @XmlElement AddtlErrInf        : String,
+    @XmlElement ActnId             : ISO20022.Catm001001.TMSActionIdentification10,
+    @XmlElement Rslt               : String,
+    @XmlElement TmStmp             : DateTime,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(DvcRspn), 
+        validElement(ActnId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.TMSHeader1
+{
+    @XmlElement Tracblt            : List<ISO20022.Catm001001.Traceability8>,
+    @XmlElement RcptPty            : ISO20022.Catm001001.GenericIdentification177,
+    @XmlElement InitgPty           : ISO20022.Catm001001.GenericIdentification176,
+    @XmlElement CreDtTm            : DateTime,
+    @XmlElement XchgId             : Decimal,
+    @XmlElement FrmtVrsn           : String,
+    @XmlElement DwnldTrf           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("Tracblt", Tracblt), 
+        validElement(Tracblt), 
+        validElement(RcptPty), 
+        validElement(InitgPty))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.TerminalManagementAction5Code
+{
+    @XmlEnum ("DEVR") DEVR          #1,
+    @XmlEnum ("ACTV") ACTV          #2,
+    @XmlEnum ("UBND") UBND          #3,
+    @XmlEnum ("RBND") RBND          #4,
+    @XmlEnum ("BIND") BIND          #5,
+    @XmlEnum ("UPDT") UPDT          #6,
+    @XmlEnum ("UPLD") UPLD          #7,
+    @XmlEnum ("RSTR") RSTR          #8,
+    @XmlEnum ("INST") INST          #9,
+    @XmlEnum ("DWNL") DWNL          #10,
+    @XmlEnum ("DELT") DELT          #11,
+    @XmlEnum ("DCTV") DCTV          #12,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.TerminalManagementActionResult5Code
+{
+    @XmlEnum ("SUCC") SUCC          #1,
+    @XmlEnum ("ULER") ULER          #2,
+    @XmlEnum ("CMER") CMER          #3,
+    @XmlEnum ("AERR") AERR          #4,
+    @XmlEnum ("DPRU") DPRU          #5,
+    @XmlEnum ("IDMP") IDMP          #6,
+    @XmlEnum ("INDP") INDP          #7,
+    @XmlEnum ("UKRF") UKRF          #8,
+    @XmlEnum ("UKDT") UKDT          #9,
+    @XmlEnum ("TIMO") TIMO          #10,
+    @XmlEnum ("SYNE") SYNE          #11,
+    @XmlEnum ("WARN") WARN          #12,
+    @XmlEnum ("SIGE") SIGE          #13,
+    @XmlEnum ("NSUP") NSUP          #14,
+    @XmlEnum ("MISS") MISS          #15,
+    @XmlEnum ("OVER") OVER          #16,
+    @XmlEnum ("LENE") LENE          #17,
+    @XmlEnum ("INVC") INVC          #18,
+    @XmlEnum ("FMTE") FMTE          #19,
+    @XmlEnum ("CNTE") CNTE          #20,
+    @XmlEnum ("ACCD") ACCD          #21,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.Token1
+{
+    @XmlElement TknInittdInd       : String,
+    @XmlElement TknAssrncMtd       : String,
+    @XmlElement TknAssrncData      : String,
+    @XmlElement TknRqstrId         : String,
+    @XmlElement TknXpryDt          : String,
+    @XmlElement PmtTkn             : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("TknAssrncMtd", TknAssrncMtd, "[0-9]{1,2}"), 
+        validPattern ("TknRqstrId", TknRqstrId, "[0-9]{1,11}"), 
+        validPattern ("TknXpryDt", TknXpryDt, "[0-9]{4}"), 
+        validPattern ("PmtTkn", PmtTkn, "[0-9]{1,19}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.Traceability8
+{
+    @XmlElement TracDtTmOut        : DateTime,
+    @XmlElement TracDtTmIn         : DateTime,
+    @XmlElement PrtcolVrsn         : String,
+    @XmlElement PrtcolNm           : String,
+    @XmlElement RlayId             : ISO20022.Catm001001.GenericIdentification177,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(RlayId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.TrackData2
+{
+    @XmlElement TrckVal            : String,
+    @XmlElement TrckFrmt           : String,
+    @XmlElement TrckNb             : Decimal,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.TrackFormat1Code
+{
+    @XmlEnum ("JIS2") JIS2          #1,
+    @XmlEnum ("JIS1") JIS1          #2,
+    @XmlEnum ("ISOF") ISOF          #3,
+    @XmlEnum ("E13B") E13B          #4,
+    @XmlEnum ("CMC7") CMC7          #5,
+    @XmlEnum ("AAMV") AAMV          #6,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.TransactionChannel5Code
+{
+    @XmlEnum ("MPOS") MPOS          #1,
+    @XmlEnum ("MOBL") MOBL          #2,
+    @XmlEnum ("SECM") SECM          #3,
+    @XmlEnum ("TVPY") TVPY          #4,
+    @XmlEnum ("ECOM") ECOM          #5,
+    @XmlEnum ("TLPH") TLPH          #6,
+    @XmlEnum ("MAIL") MAIL          #7,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.TransactionEnvironment1Code
+{
+    @XmlEnum ("PUBL") PUBL          #1,
+    @XmlEnum ("PRIV") PRIV          #2,
+    @XmlEnum ("MERC") MERC          #3,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.TransactionVerificationResult4
+{
+    @XmlElement AddtlRslt          : String,
+    @XmlElement Rslt               : String,
+    @XmlElement VrfctnNtty         : String,
+    @XmlElement Mtd                : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.TriggerInformation2
+{
+    @XmlElement AddtlInf           : String,
+    @XmlElement TrggrTp            : String,
+    @XmlElement SrcId              : String,
+    @XmlElement TrggrSrc           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.UserInterface4Code
+{
+    @XmlEnum ("CRDO") CRDO          #1,
+    @XmlEnum ("MRCP") MRCP          #2,
+    @XmlEnum ("MDSP") MDSP          #3,
+    @XmlEnum ("CRCP") CRCP          #4,
+    @XmlEnum ("CDSP") CDSP          #5,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.Vehicle1
+{
+    @XmlElement AddtlVhclData      : List<ISO20022.Catm001001.Vehicle2>,
+    @XmlElement DrvrOrVhclCard     : ISO20022.Catm001001.PlainCardData17,
+    @XmlElement MntncId            : String,
+    @XmlElement RefrHrs            : String,
+    @XmlElement TrlrHrs            : String,
+    @XmlElement Hbmtr              : Decimal,
+    @XmlElement Odmtr              : Decimal,
+    @XmlElement RplcmntCar         : String,
+    @XmlElement UnitNb             : String,
+    @XmlElement VhclTagNtryMd      : String,
+    @XmlElement VhclTag            : String,
+    @XmlElement TrlrNb             : String,
+    @XmlElement VhclNb             : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("AddtlVhclData", AddtlVhclData), 
+        validElement(AddtlVhclData), 
+        validElement(DrvrOrVhclCard), 
+        validPattern ("UnitNb", UnitNb, "[0-9]{1,35}"), 
+        validPattern ("TrlrNb", TrlrNb, "[0-9]{1,35}"), 
+        validPattern ("VhclNb", VhclNb, "[0-9]{1,35}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14"), ValidationCheck
+value ISO20022.Catm001001.Vehicle2
+{
+    @XmlElement Data               : String,
+    @XmlElement NtryMd             : String,
+    @XmlElement Tp                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:catm.001.001.14")
+enum ISO20022.Catm001001.Verification1Code
+{
+    @XmlEnum ("ERRR") ERRR          #1,
+    @XmlEnum ("SUCC") SUCC          #2,
+    @XmlEnum ("PART") PART          #3,
+    @XmlEnum ("NOVF") NOVF          #4,
+    @XmlEnum ("MISS") MISS          #5,
+    @XmlEnum ("FAIL") FAIL          #6,
+};

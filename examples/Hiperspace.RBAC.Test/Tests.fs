@@ -5,7 +5,7 @@ open Xunit
 open Hiperspace
 open AwesomeAssertions
 open Xunit.Abstractions
-open Access
+open RBAC
 
 type RBACTest (output : ITestOutputHelper) =
 
@@ -24,18 +24,18 @@ type RBACTest (output : ITestOutputHelper) =
 
     let IloadSpace () = 
         let heap = new Hiperspace.Heap.HeapSpace ()
-        let access = new Access.AccessSpace (heap)
-        //let access = new Access.AccessSpace (heap, ContextLabel = "Write")
+        let access = new RBAC.RBACSpace (heap)
+        //let access = new Access.RBACSpace (heap, ContextLabel = "Write")
 
         let realmseed =
-            Access.RBAC.Realm 
+            RBAC.Realm 
               (
                 Name = "Access", 
                 Valid = true
               )
 
         let seed = 
-            Access.RBAC.User 
+            RBAC.User 
               (
                 Realm = realmseed,
                 Id = Guid.NewGuid(),
@@ -47,7 +47,7 @@ type RBACTest (output : ITestOutputHelper) =
             |> result
 
         let realm =
-            Access.RBAC.Realm 
+            RBAC.Realm 
               (
                 Name = "Access", 
                 Valid = true,
@@ -57,7 +57,7 @@ type RBACTest (output : ITestOutputHelper) =
             |> result
 
         let admins = 
-            Access.RBAC.Group 
+            RBAC.Group 
               (
                 Id = Guid.NewGuid(),
                 Name = "Administrators", 
@@ -69,10 +69,10 @@ type RBACTest (output : ITestOutputHelper) =
             |> result
 
         let approval =
-            System.Collections.Generic.HashSet<RefGroup> ( seq { RefGroup ( Value = admins.self) })
+            System.Collections.Generic.HashSet<RefGroup> ( seq { RefGroup ( Value = admins) })
                
         let admin = 
-            Access.RBAC.User 
+            RBAC.User 
               ( 
                 seed,
                 Realm = realm,
@@ -88,19 +88,19 @@ type RBACTest (output : ITestOutputHelper) =
 
         let items =
           [
-            Access.RBAC.Resource ( Subject = "RBAC-Realm", Author = admin, Valid = true)
-            Access.RBAC.Resource ( Subject = "RBAC-Permission", Author = admin, Valid = true )
-            Access.RBAC.Resource ( Subject = "RBAC-User", Author = admin, Valid = true )
-            Access.RBAC.Resource ( Subject = "RBAC-Group", Author = admin, Valid = true )
+            RBAC.Resource ( Subject = "RBAC-Realm", Author = admin, Valid = true)
+            RBAC.Resource ( Subject = "RBAC-Permission", Author = admin, Valid = true )
+            RBAC.Resource ( Subject = "RBAC-User", Author = admin, Valid = true )
+            RBAC.Resource ( Subject = "RBAC-Group", Author = admin, Valid = true )
           ]
           |> List.map access.Resources.Bind
           |> List.map result
 
-        let permission (item : Access.RBAC.Resource) =
-            Access.RBAC.GroupPermission 
+        let permission (item : RBAC.Resource) =
+            RBAC.GroupPermission 
               ( 
                 Item = item,   
-                Right = Access.RBAC.PermissionType.All,
+                Right = RBAC.PermissionType.All,
                 owner = admins,
                 Approval = approval,
                 Required = approval,
@@ -131,9 +131,9 @@ type RBACTest (output : ITestOutputHelper) =
 
 
         let space = IloadSpace()
-        let realm = space.Realms.Get(Access.RBAC.Realm (Name = "Access"))
-        use read  = new AccessSpace(space, Access.AccessSpace.Mode.Read, realm)
-        use write = new AccessSpace(space, Access.AccessSpace.Mode.Write, realm)
+        let realm = space.Realms.Get(RBAC.Realm (Name = "Access"))
+        use read  = new RBACSpace(space, RBAC.RBACSpace.Mode.Read, realm)
+        use write = new RBACSpace(space, RBAC.RBACSpace.Mode.Write, realm)
 
         let admin =
             query {for u in read.Users do 
@@ -142,7 +142,7 @@ type RBACTest (output : ITestOutputHelper) =
             |> Seq.head
 
         let user =
-            Access.RBAC.User 
+            RBAC.User 
               (
                 Id = Guid.NewGuid(),
                 Name = "Steve",
@@ -151,12 +151,12 @@ type RBACTest (output : ITestOutputHelper) =
                 PublicKey = "something"
               )
             |> write.Users.Bind
-            |> (resultMsg (fun (u : Access.RBAC.User) -> u.ErrorMsg))
+            |> (resultMsg (fun (u : RBAC.User) -> u.ErrorMsg))
 
         read.Users.Get(user).Id.Should().Be(user.Id, "was created") |> ignore
 
         let tryAdd () = 
-            Access.RBAC.User 
+            RBAC.User 
               (
                 Id = Guid.NewGuid(),
                 Name = "Jane",

@@ -1,0 +1,162 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.060.001.02"), ValidationCheck
+value ISO20022.Auth060001.ActiveCurrencyAndAmount
+{
+    @XmlElement Value              : Decimal,
+    @XmlAttribute Ccy              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validRequired ("Value", Value), 
+        validRequired ("Ccy", Ccy), 
+        validPattern ("Ccy", Ccy, "[A-Z]{3,3}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.060.001.02"), ValidationCheck
+value ISO20022.Auth060001.AmountAndDirection102
+{
+    @XmlElement Sgn                : String,
+    @XmlElement Amt                : ISO20022.Auth060001.ActiveCurrencyAndAmount,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Amt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.060.001.02"), ValidationCheck
+value ISO20022.Auth060001.AmountAndDirection86
+{
+    @XmlElement Sgn                : String,
+    @XmlElement Amt                : Decimal,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.060.001.02"), ValidationCheck
+aspect ISO20022.Auth060001.CCPDailyCashFlowsReportV02
+{
+    @XmlElement SplmtryData        : List<ISO20022.Auth060001.SupplementaryData1>,
+    @XmlElement SttlmAgt           : List<ISO20022.Auth060001.SettlementAgent2>,
+    @XmlElement CncntrtnAgt        : List<ISO20022.Auth060001.ConcentrationAgent1>,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("SplmtryData", SplmtryData), 
+        validElement(SplmtryData), 
+        validRequired ("SttlmAgt", SttlmAgt), 
+        validList ("SttlmAgt", SttlmAgt), 
+        validElement(SttlmAgt), 
+        validRequired ("CncntrtnAgt", CncntrtnAgt), 
+        validList ("CncntrtnAgt", CncntrtnAgt), 
+        validElement(CncntrtnAgt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.060.001.02"), ValidationCheck
+value ISO20022.Auth060001.ConcentrationAccount1
+{
+    @XmlElement LatePmtConf        : String,
+    @XmlElement PeakDbt            : ISO20022.Auth060001.ActiveCurrencyAndAmount,
+    @XmlElement PeakCdt            : ISO20022.Auth060001.ActiveCurrencyAndAmount,
+    @XmlElement EndOfDay           : ISO20022.Auth060001.AmountAndDirection102,
+    @XmlElement OutFlow            : ISO20022.Auth060001.Flows1,
+    @XmlElement InFlow             : ISO20022.Auth060001.Flows1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("LatePmtConf", LatePmtConf, "[0-9]{1,10}"), 
+        validElement(PeakDbt), 
+        validElement(PeakCdt), 
+        validElement(EndOfDay), 
+        validElement(OutFlow), 
+        validElement(InFlow))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.060.001.02"), ValidationCheck
+value ISO20022.Auth060001.ConcentrationAgent1
+{
+    @XmlElement Acct               : List<ISO20022.Auth060001.ConcentrationAccount1>,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validRequired ("Acct", Acct), 
+        validList ("Acct", Acct), 
+        validElement(Acct), 
+        validPattern ("Id", Id, "[A-Z0-9]{18,18}[0-9]{2,2}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.060.001.02"), ValidationCheck
+type ISO20022.Auth060001.Document
+{
+}
+[
+    @XmlElement CCPDalyCshFlowsRpt : ISO20022.Auth060001.CCPDailyCashFlowsReportV02,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(CCPDalyCshFlowsRpt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.060.001.02"), ValidationCheck
+value ISO20022.Auth060001.Flows1
+{
+    @XmlElement InvstmtFlows       : ISO20022.Auth060001.AmountAndDirection102,
+    @XmlElement PmtBkFlows         : ISO20022.Auth060001.AmountAndDirection102,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(InvstmtFlows), 
+        validElement(PmtBkFlows))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.060.001.02"), ValidationCheck
+value ISO20022.Auth060001.PaymentAccount4
+{
+    @XmlElement LatePmtConf        : String,
+    @XmlElement GrssDbts           : Decimal,
+    @XmlElement GrssCdts           : Decimal,
+    @XmlElement NetPmt             : ISO20022.Auth060001.AmountAndDirection86,
+    @XmlElement Ccy                : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("LatePmtConf", LatePmtConf, "[0-9]{1,10}"), 
+        validElement(NetPmt), 
+        validPattern ("Ccy", Ccy, "[A-Z]{3,3}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.060.001.02"), ValidationCheck
+value ISO20022.Auth060001.SettlementAgent2
+{
+    @XmlElement Acct               : List<ISO20022.Auth060001.PaymentAccount4>,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validRequired ("Acct", Acct), 
+        validList ("Acct", Acct), 
+        validElement(Acct), 
+        validPattern ("Id", Id, "[A-Z0-9]{18,18}[0-9]{2,2}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.060.001.02"), ValidationCheck
+value ISO20022.Auth060001.SupplementaryData1
+{
+    @XmlElement Envlp              : ISO20022.Auth060001.SupplementaryDataEnvelope1,
+    @XmlElement PlcAndNm           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Envlp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.060.001.02"), ValidationCheck
+value ISO20022.Auth060001.SupplementaryDataEnvelope1
+{
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];

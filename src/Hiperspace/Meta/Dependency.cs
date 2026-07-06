@@ -5,6 +5,10 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using System;
+using System.Collections.Generic;
+
+#if NET8_0_OR_GREATER
 namespace Hiperspace.Meta
 {
     public class DependencyPath
@@ -278,3 +282,4 @@ namespace Hiperspace.Meta
         }
     }
 }
+#endif

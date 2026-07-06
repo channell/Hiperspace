@@ -140,12 +140,6 @@ namespace Hiperspace.Heap
             return BindAsync(key, value, source).GetAwaiter().GetResult();
         }
 
-        [Obsolete("use BindAsync(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null) instead")]
-        public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, object? source = null)
-        {
-            return BindAsync(key, value, version, source).GetAwaiter().GetResult();
-        }
-
         public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
         {
             return BindAsync(key, value, version, priorVersion, source).GetAwaiter().GetResult();
@@ -187,42 +181,6 @@ namespace Hiperspace.Heap
                 throw exception!;
         }
 
-        [Obsolete("use BindAsync(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null) instead")]
-        public override async Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, object? source = null)
-        {
-            var tasks = new Task<Result<byte[]>>[_spaces.Length];
-            Result<byte[]>? result = null;
-            Exception? exception = null;
-
-            for (int c = 0; c < _spaces.Length; c++)
-            {
-                tasks[c] = _spaces[c].space.BindAsync(key, value, source);
-            }
-            for (int c = 0; c < _spaces.Length; c++)
-            {
-                try
-                {
-                    var r = await tasks[c];
-                    if (!result.HasValue)
-                        result = r;
-                }
-                catch (Exception e)
-                {
-                    lock (_lock)
-                    {
-                        if (_sync is null)
-                            _sync = _createSync();
-                        _sync.Bind(key, value, version);
-                        Fault(c);
-                        exception = e;
-                    }
-                }
-            }
-            if (result.HasValue)
-                return result.Value;
-            else
-                throw exception!;
-        }
 
         public override async Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
         {
@@ -413,59 +371,11 @@ namespace Hiperspace.Heap
                 return _primary.BatchBind(batch);
             }
         }
-        [Obsolete("use BatchBind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
-        public override Result<(byte[] Key, byte[] Value)>[] BatchBind((byte[] key, byte[] value, DateTime version, object? source)[] batch)
-        {
-            try
-            {
-                return _primary.BatchBind(batch);
-            }
-            catch (Exception)
-            {
-                Recover();
-                return _primary.BatchBind(batch);
-            }
-        }
         public override Result<(byte[] Key, byte[] Value)>[] BatchBind((byte[] key, byte[] value, object? source)[] batch)
         {
             return base.BatchBind(batch);
         }
         public override async Task<Result<(byte[] Key, byte[] Value)>[]> BatchBindAsync((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)
-        {
-            var tasks = new Task<Result<(byte[] Key, byte[] Value)>[]>[_spaces.Length];
-            Result<(byte[] Key, byte[] Value)>[]? result = null;
-            Exception? exception = null;
-            for (int c = 0; c < _spaces.Length; c++)
-            {
-                tasks[c] = _spaces[c].space.BatchBindAsync(batch);
-            }
-            for (int c = 0; c < _spaces.Length; c++)
-            {
-                try
-                {
-                    var r = await tasks[c];
-                    if (result is null)
-                        result = r;
-                }
-                catch (Exception e)
-                {
-                    lock (_lock)
-                    {
-                        if (_sync is null)
-                            _sync = _createSync();
-                        _sync.BatchBind(batch);
-                        Fault(c);
-                        exception = e;
-                    }
-                }
-            }
-            if (result is not null)
-                return result;
-            else
-                throw exception!;
-        }
-        [Obsolete("use BatchBind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
-        public override async Task<Result<(byte[] Key, byte[] Value)>[]> BatchBindAsync((byte[] key, byte[] value, DateTime version, object? source)[] batch)
         {
             var tasks = new Task<Result<(byte[] Key, byte[] Value)>[]>[_spaces.Length];
             Result<(byte[] Key, byte[] Value)>[]? result = null;
@@ -701,6 +611,7 @@ namespace Hiperspace.Heap
                 return _primary.GetLastAsync(begin, end, version);
             }
         }
+        [Obsolete("Use messages instead")]
         public override IEnumerable<(byte[] key, byte[] value)> GetMany(IEnumerable<byte[]> keys)
         {
             try
@@ -713,6 +624,7 @@ namespace Hiperspace.Heap
                 return _primary.GetMany(keys);
             }
         }
+        [Obsolete("Use messages instead")]
         public override IEnumerable<(byte[] key, byte[] Value, DateTime version)> GetMany(IEnumerable<byte[]> keys, DateTime? version)
         {
             try
@@ -725,6 +637,7 @@ namespace Hiperspace.Heap
                 return _primary.GetMany(keys, version);
             }
         }
+        [Obsolete("Use messages instead")]
         public override async IAsyncEnumerable<(byte[] key, byte[] value)> GetManyAsync(IAsyncEnumerable<byte[]> keys, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             await foreach (var row in _primary.GetManyAsync(keys, cancellationToken))
@@ -732,6 +645,7 @@ namespace Hiperspace.Heap
                 yield return row;
             }
         }
+        [Obsolete("Use messages instead")]
         public override async IAsyncEnumerable<(byte[] key, byte[] Value, DateTime version)> GetManyAsync(IAsyncEnumerable<byte[]> keys, DateTime? version, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             await foreach (var row in _primary.GetManyAsync(keys, version, cancellationToken))
@@ -763,6 +677,7 @@ namespace Hiperspace.Heap
                 return _primary.NearestAsync(begin, end, version, space, method, limit, distanceLimit, cancellationToken);
             }
         }
+        [Obsolete("use transactional Find instead")]
         public override IEnumerable<(byte[] Key, byte[] Value)> Scan(byte[] begin, byte[] end, byte[][] values)
         {
             try
@@ -775,6 +690,7 @@ namespace Hiperspace.Heap
                 return _primary.Scan(begin, end, values);
             }
         }
+        [Obsolete("use transactional Find instead")]
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Scan(byte[] begin, byte[] end, byte[][] values, DateTime? version)
         {
             try
@@ -787,6 +703,7 @@ namespace Hiperspace.Heap
                 return _primary.Scan(begin, end, values, version);
             }
         }
+        [Obsolete("use transactional Find instead")]
         public override IAsyncEnumerable<(byte[] Key, byte[] Value)> ScanAsync(byte[] begin, byte[] end, byte[][] values, CancellationToken cancellationToken = default)
         {
             try
@@ -799,6 +716,7 @@ namespace Hiperspace.Heap
                 return _primary.ScanAsync(begin, end, values, cancellationToken);
             }
         }
+        [Obsolete("use transactional Find instead")]
         public override IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> ScanAsync(byte[] begin, byte[] end, byte[][] values, DateTime? version, CancellationToken cancellationToken = default)
         {
             try

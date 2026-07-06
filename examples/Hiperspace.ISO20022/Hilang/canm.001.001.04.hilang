@@ -1,0 +1,394 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:canm.001.001.04"), ValidationCheck
+value ISO20022.Canm001001.AdditionalData1
+{
+    @XmlElement Val                : String,
+    @XmlElement Tp                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:canm.001.001.04"), ValidationCheck
+value ISO20022.Canm001001.AdditionalData2
+{
+    @XmlElement Dtls               : List<ISO20022.Canm001001.AdditionalData1>,
+    @XmlElement Tp                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("Dtls", Dtls), 
+        validElement(Dtls))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:canm.001.001.04"), ValidationCheck
+value ISO20022.Canm001001.AdditionalFee3
+{
+    @XmlElement Desc               : String,
+    @XmlElement OthrAssgnr         : String,
+    @XmlElement Assgnr             : String,
+    @XmlElement RcncltnFctvXchgRate : Decimal,
+    @XmlElement RcncltnCcy         : String,
+    @XmlElement RcncltnAmt         : Decimal,
+    @XmlElement Ccy                : String,
+    @XmlElement Amt                : Decimal,
+    @XmlElement CdtDbt             : String,
+    @XmlElement Dscrptr            : String,
+    @XmlElement Prgm               : String,
+    @XmlElement OthrTp             : String,
+    @XmlElement Tp                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("RcncltnCcy", RcncltnCcy, "[0-9]{3,3}"), 
+        validPattern ("Ccy", Ccy, "[0-9]{3,3}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:canm.001.001.04"), ValidationCheck
+value ISO20022.Canm001001.BatchManagementInformation1
+{
+    @XmlElement MsgChcksmInptVal   : String,
+    @XmlElement MsgSeqNb           : String,
+    @XmlElement BtchId             : String,
+    @XmlElement ColltnId           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("MsgSeqNb", MsgSeqNb, "[0-9]{1,15}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:canm.001.001.04"), ValidationCheck
+value ISO20022.Canm001001.ContentInformationType41
+{
+    @XmlElement MAC                : String,
+    @XmlElement MACData            : ISO20022.Canm001001.MACData1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("MAC", MAC, "([0-9A-F][0-9A-F]){1,8}"), 
+        validElement(MACData))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:canm.001.001.04")
+enum ISO20022.Canm001001.CreditDebit3Code
+{
+    @XmlEnum ("DBIT") DBIT          #1,
+    @XmlEnum ("CRDT") CRDT          #2,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:canm.001.001.04"), ValidationCheck
+type ISO20022.Canm001001.Document
+{
+}
+[
+    @XmlElement NtwkMgmtInitn      : ISO20022.Canm001001.NetworkManagementInitiationV04,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(NtwkMgmtInitn))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:canm.001.001.04"), ValidationCheck
+value ISO20022.Canm001001.GenericIdentification183
+{
+    @XmlElement ShrtNm             : String,
+    @XmlElement Ctry               : String,
+    @XmlElement Assgnr             : String,
+    @XmlElement OthrTp             : String,
+    @XmlElement Tp                 : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("Ctry", Ctry, "[A-Z]{2,3}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:canm.001.001.04"), ValidationCheck
+value ISO20022.Canm001001.Header71
+{
+    @XmlElement Tracblt            : List<ISO20022.Canm001001.Traceability10>,
+    @XmlElement TracData           : List<ISO20022.Canm001001.AdditionalData1>,
+    @XmlElement RcptPty            : ISO20022.Canm001001.GenericIdentification183,
+    @XmlElement InitgPty           : ISO20022.Canm001001.GenericIdentification183,
+    @XmlElement BtchMgmtInf        : ISO20022.Canm001001.BatchManagementInformation1,
+    @XmlElement CreDtTm            : DateTime,
+    @XmlElement ReTrnsmssnCntr     : String,
+    @XmlElement XchgId             : String,
+    @XmlElement PrtcolVrsn         : String,
+    @XmlElement MsgFctn            : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("Tracblt", Tracblt), 
+        validElement(Tracblt), 
+        validList ("TracData", TracData), 
+        validElement(TracData), 
+        validElement(RcptPty), 
+        validElement(InitgPty), 
+        validElement(BtchMgmtInf), 
+        validPattern ("ReTrnsmssnCntr", ReTrnsmssnCntr, "[0-9]{1,3}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:canm.001.001.04"), ValidationCheck
+value ISO20022.Canm001001.Jurisdiction2
+{
+    @XmlElement DmstQlfctn         : String,
+    @XmlElement DmstInd            : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:canm.001.001.04"), ValidationCheck
+value ISO20022.Canm001001.MACData1
+{
+    @XmlElement InitlstnVctr       : String,
+    @XmlElement PddgMtd            : String,
+    @XmlElement KeyIndx            : String,
+    @XmlElement KeyPrtcn           : String,
+    @XmlElement KeyLngth           : String,
+    @XmlElement Algo               : String,
+    @XmlElement DrvdInf            : String,
+    @XmlElement KeySetIdr          : String,
+    @XmlElement Ctrl               : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("InitlstnVctr", InitlstnVctr, "([0-9A-F][0-9A-F]){1,32}"), 
+        validPattern ("PddgMtd", PddgMtd, "[0-9]{1,2}"), 
+        validPattern ("KeyIndx", KeyIndx, "[0-9]{1,5}"), 
+        validPattern ("KeyPrtcn", KeyPrtcn, "[0-9]{1,2}"), 
+        validPattern ("KeyLngth", KeyLngth, "[0-9]{1,4}"), 
+        validPattern ("Algo", Algo, "[0-9]{1,2}"), 
+        validPattern ("DrvdInf", DrvdInf, "([0-9A-F][0-9A-F]){1,32}"), 
+        validPattern ("KeySetIdr", KeySetIdr, "[0-9]{1,8}"), 
+        validPattern ("Ctrl", Ctrl, "([0-9A-F][0-9A-F]){1}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:canm.001.001.04"), ValidationCheck
+aspect ISO20022.Canm001001.NetworkManagementInitiationV04
+{
+    @XmlElement SctyTrlr           : ISO20022.Canm001001.ContentInformationType41,
+    @XmlElement SplmtryData        : List<ISO20022.Canm001001.SupplementaryData1>,
+    @XmlElement OrgnlRspnCd        : String,
+    @XmlElement PrcgRslt           : ISO20022.Canm001001.ProcessingResult26,
+    @XmlElement AddtlData          : List<ISO20022.Canm001001.AdditionalData2>,
+    @XmlElement TxDesc             : String,
+    @XmlElement Rcncltn            : ISO20022.Canm001001.Reconciliation4,
+    @XmlElement AddtlFee           : List<ISO20022.Canm001001.AdditionalFee3>,
+    @XmlElement SttlmSvc           : ISO20022.Canm001001.SettlementService6,
+    @XmlElement Jursdctn           : ISO20022.Canm001001.Jurisdiction2,
+    @XmlElement LifeCyclId         : String,
+    @XmlElement RtrvlRefNb         : String,
+    @XmlElement TrnsmssnDtTm       : DateTime,
+    @XmlElement SysTracAudtNb      : String,
+    @XmlElement MaxNbOfMsgs        : Decimal,
+    @XmlElement NbOfMsgs           : Decimal,
+    @XmlElement Prgrmm             : ISO20022.Canm001001.ProgrammeMode5,
+    @XmlElement AltrnMsgRsn        : List<String>,
+    @XmlElement MsgRsn             : List<String>,
+    @XmlElement OthrNtwkMgmtTp     : String,
+    @XmlElement NtwkMgmtTp         : String,
+    @XmlElement Hdr                : ISO20022.Canm001001.Header71,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(SctyTrlr), 
+        validList ("SplmtryData", SplmtryData), 
+        validElement(SplmtryData), 
+        validPattern ("OrgnlRspnCd", OrgnlRspnCd, "[0-9A-Z]{2,2}"), 
+        validElement(PrcgRslt), 
+        validList ("AddtlData", AddtlData), 
+        validElement(AddtlData), 
+        validElement(Rcncltn), 
+        validList ("AddtlFee", AddtlFee), 
+        validElement(AddtlFee), 
+        validElement(SttlmSvc), 
+        validElement(Jursdctn), 
+        validPattern ("SysTracAudtNb", SysTracAudtNb, "[0-9]{1,12}"), 
+        validElement(Prgrmm), 
+        validPattern ("MsgRsn", MsgRsn, "[0-9]{4,4}"), 
+        validElement(Hdr))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:canm.001.001.04")
+enum ISO20022.Canm001001.NetworkManagementType1Code
+{
+    @XmlEnum ("ERBI") ERBI          #1,
+    @XmlEnum ("DRBI") DRBI          #2,
+    @XmlEnum ("SYCL") SYCL          #3,
+    @XmlEnum ("IART") IART          #4,
+    @XmlEnum ("SPIN") SPIN          #5,
+    @XmlEnum ("MOSB") MOSB          #6,
+    @XmlEnum ("TSUN") TSUN          #7,
+    @XmlEnum ("DSFW") DSFW          #8,
+    @XmlEnum ("SGNN") SGNN          #9,
+    @XmlEnum ("SGNF") SGNF          #10,
+    @XmlEnum ("OTHP") OTHP          #11,
+    @XmlEnum ("OTHN") OTHN          #12,
+    @XmlEnum ("ESFW") ESFW          #13,
+    @XmlEnum ("ECTS") ECTS          #14,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:canm.001.001.04")
+enum ISO20022.Canm001001.PartyType17Code
+{
+    @XmlEnum ("AGNT") AGNT          #1,
+    @XmlEnum ("CISP") CISP          #2,
+    @XmlEnum ("CISS") CISS          #3,
+    @XmlEnum ("ACQP") ACQP          #4,
+    @XmlEnum ("ACQR") ACQR          #5,
+    @XmlEnum ("OTHP") OTHP          #6,
+    @XmlEnum ("OTHN") OTHN          #7,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:canm.001.001.04")
+enum ISO20022.Canm001001.PartyType18Code
+{
+    @XmlEnum ("AGNT") AGNT          #1,
+    @XmlEnum ("CSCH") CSCH          #2,
+    @XmlEnum ("CISS") CISS          #3,
+    @XmlEnum ("ACQR") ACQR          #4,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:canm.001.001.04")
+enum ISO20022.Canm001001.PartyType26Code
+{
+    @XmlEnum ("OTHP") OTHP          #1,
+    @XmlEnum ("OTHN") OTHN          #2,
+    @XmlEnum ("AGNT") AGNT          #3,
+    @XmlEnum ("DLIS") DLIS          #4,
+    @XmlEnum ("CISS") CISS          #5,
+    @XmlEnum ("ICCA") ICCA          #6,
+    @XmlEnum ("ACQR") ACQR          #7,
+    @XmlEnum ("ACCP") ACCP          #8,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:canm.001.001.04")
+enum ISO20022.Canm001001.PartyType32Code
+{
+    @XmlEnum ("OTHP") OTHP          #1,
+    @XmlEnum ("OTHN") OTHN          #2,
+    @XmlEnum ("ISUR") ISUR          #3,
+    @XmlEnum ("AGNT") AGNT          #4,
+    @XmlEnum ("ACQR") ACQR          #5,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:canm.001.001.04")
+enum ISO20022.Canm001001.PartyType9Code
+{
+    @XmlEnum ("SCHP") SCHP          #1,
+    @XmlEnum ("CSCH") CSCH          #2,
+    @XmlEnum ("CISP") CISP          #3,
+    @XmlEnum ("CISS") CISS          #4,
+    @XmlEnum ("ACQP") ACQP          #5,
+    @XmlEnum ("ACQR") ACQR          #6,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:canm.001.001.04"), ValidationCheck
+value ISO20022.Canm001001.ProcessingResult26
+{
+    @XmlElement AddtlInf           : List<ISO20022.Canm001001.AdditionalData1>,
+    @XmlElement RspnCd             : String,
+    @XmlElement RspnSrcShrtNm      : String,
+    @XmlElement RspnSrcCtry        : String,
+    @XmlElement RspnSrcAssgnr      : String,
+    @XmlElement RspnSrcOthrTp      : String,
+    @XmlElement RspnSrcTp          : String,
+    @XmlElement RspnSrcId          : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("AddtlInf", AddtlInf), 
+        validElement(AddtlInf), 
+        validPattern ("RspnCd", RspnCd, "[0-9A-Z]{2,2}"), 
+        validPattern ("RspnSrcCtry", RspnSrcCtry, "[A-Z]{2,3}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:canm.001.001.04"), ValidationCheck
+value ISO20022.Canm001001.ProgrammeMode5
+{
+    @XmlElement AddtlId            : List<ISO20022.Canm001001.AdditionalData1>,
+    @XmlElement ApldId             : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("AddtlId", AddtlId), 
+        validElement(AddtlId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:canm.001.001.04"), ValidationCheck
+value ISO20022.Canm001001.Reconciliation4
+{
+    @XmlElement ChckptRef          : String,
+    @XmlElement Dt                 : DateTime,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:canm.001.001.04"), ValidationCheck
+value ISO20022.Canm001001.SettlementService6
+{
+    @XmlElement AddtlInf           : List<ISO20022.Canm001001.AdditionalData1>,
+    @XmlElement RptgNttyId         : String,
+    @XmlElement RptgNttyTp         : String,
+    @XmlElement CutOffTm           : DateTime,
+    @XmlElement Prd                : String,
+    @XmlElement Tm                 : DateTime,
+    @XmlElement Dt                 : DateTime,
+    @XmlElement Dfrrd              : String,
+    @XmlElement ReqdDt             : DateTime,
+    @XmlElement Id                 : String,
+    @XmlElement Tp                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("AddtlInf", AddtlInf), 
+        validElement(AddtlInf))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:canm.001.001.04"), ValidationCheck
+value ISO20022.Canm001001.SupplementaryData1
+{
+    @XmlElement Envlp              : ISO20022.Canm001001.SupplementaryDataEnvelope1,
+    @XmlElement PlcAndNm           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Envlp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:canm.001.001.04"), ValidationCheck
+value ISO20022.Canm001001.SupplementaryDataEnvelope1
+{
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:canm.001.001.04"), ValidationCheck
+value ISO20022.Canm001001.Traceability10
+{
+    @XmlElement DtTmOut            : DateTime,
+    @XmlElement DtTmIn             : DateTime,
+    @XmlElement ShrtNm             : String,
+    @XmlElement Ctry               : String,
+    @XmlElement Assgnr             : String,
+    @XmlElement OthrTp             : String,
+    @XmlElement Tp                 : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("Ctry", Ctry, "[A-Z]{2,3}"))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:canm.001.001.04")
+enum ISO20022.Canm001001.TypeOfAmount21Code
+{
+    @XmlEnum ("MNIF") MNIF          #1,
+    @XmlEnum ("MXIF") MXIF          #2,
+    @XmlEnum ("CSIF") CSIF          #3,
+    @XmlEnum ("FEEA") FEEA          #4,
+    @XmlEnum ("OTHP") OTHP          #5,
+    @XmlEnum ("OTHN") OTHN          #6,
+    @XmlEnum ("FEEP") FEEP          #7,
+    @XmlEnum ("INTC") INTC          #8,
+};

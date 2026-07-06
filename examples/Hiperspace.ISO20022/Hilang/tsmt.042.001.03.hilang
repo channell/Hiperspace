@@ -1,0 +1,156 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:tsmt.042.001.03")
+enum ISO20022.Tsmt042001.Action1Code
+{
+    @XmlEnum ("ARBA") ARBA          #1,
+    @XmlEnum ("SBDS") SBDS          #2,
+    @XmlEnum ("UPDT") UPDT          #3,
+    @XmlEnum ("WAIT") WAIT          #4,
+    @XmlEnum ("ARES") ARES          #5,
+    @XmlEnum ("ARCS") ARCS          #6,
+    @XmlEnum ("ARDM") ARDM          #7,
+    @XmlEnum ("RSBS") RSBS          #8,
+    @XmlEnum ("RSTW") RSTW          #9,
+    @XmlEnum ("SBTW") SBTW          #10,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.042.001.03"), ValidationCheck
+value ISO20022.Tsmt042001.BICIdentification1
+{
+    @XmlElement BIC                : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("BIC", BIC, "[A-Z]{6,6}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3,3}){0,1}"))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:tsmt.042.001.03")
+enum ISO20022.Tsmt042001.BaselineStatus3Code
+{
+    @XmlEnum ("DARQ") DARQ          #1,
+    @XmlEnum ("SERQ") SERQ          #2,
+    @XmlEnum ("SCRQ") SCRQ          #3,
+    @XmlEnum ("CLRQ") CLRQ          #4,
+    @XmlEnum ("RARQ") RARQ          #5,
+    @XmlEnum ("AMRQ") AMRQ          #6,
+    @XmlEnum ("COMP") COMP          #7,
+    @XmlEnum ("ACTV") ACTV          #8,
+    @XmlEnum ("ESTD") ESTD          #9,
+    @XmlEnum ("PMTC") PMTC          #10,
+    @XmlEnum ("CLSD") CLSD          #11,
+    @XmlEnum ("PROP") PROP          #12,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.042.001.03"), ValidationCheck
+type ISO20022.Tsmt042001.Document
+{
+}
+[
+    @XmlElement TxRptReq           : ISO20022.Tsmt042001.TransactionReportRequestV03,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(TxRptReq))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.042.001.03"), ValidationCheck
+value ISO20022.Tsmt042001.GenericIdentification4
+{
+    @XmlElement IdTp               : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.042.001.03"), ValidationCheck
+value ISO20022.Tsmt042001.MessageIdentification1
+{
+    @XmlElement CreDtTm            : DateTime,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.042.001.03"), ValidationCheck
+value ISO20022.Tsmt042001.PartyIdentification28
+{
+    @XmlElement PrtryId            : ISO20022.Tsmt042001.GenericIdentification4,
+    @XmlElement Nm                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(PrtryId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.042.001.03"), ValidationCheck
+value ISO20022.Tsmt042001.PendingActivity1
+{
+    @XmlElement Desc               : String,
+    @XmlElement Tp                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.042.001.03"), ValidationCheck
+value ISO20022.Tsmt042001.ReportSpecification4
+{
+    @XmlElement PdgReqForActn      : List<ISO20022.Tsmt042001.PendingActivity1>,
+    @XmlElement CrspdtCtry         : List<String>,
+    @XmlElement SellrCtry          : List<String>,
+    @XmlElement BuyrCtry           : List<String>,
+    @XmlElement Sellr              : List<ISO20022.Tsmt042001.PartyIdentification28>,
+    @XmlElement Buyr               : List<ISO20022.Tsmt042001.PartyIdentification28>,
+    @XmlElement OblgrBk            : List<ISO20022.Tsmt042001.BICIdentification1>,
+    @XmlElement SubmitgBk          : List<ISO20022.Tsmt042001.BICIdentification1>,
+    @XmlElement Crspdt             : List<ISO20022.Tsmt042001.BICIdentification1>,
+    @XmlElement NttiesToBeRptd     : List<ISO20022.Tsmt042001.BICIdentification1>,
+    @XmlElement SubmitrTxRef       : List<String>,
+    @XmlElement TxSts              : List<ISO20022.Tsmt042001.TransactionStatus4>,
+    @XmlElement TxId               : List<String>,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("PdgReqForActn", PdgReqForActn), 
+        validElement(PdgReqForActn), 
+        validPattern ("CrspdtCtry", CrspdtCtry, "[A-Z]{2,2}"), 
+        validPattern ("SellrCtry", SellrCtry, "[A-Z]{2,2}"), 
+        validPattern ("BuyrCtry", BuyrCtry, "[A-Z]{2,2}"), 
+        validList ("Sellr", Sellr), 
+        validElement(Sellr), 
+        validList ("Buyr", Buyr), 
+        validElement(Buyr), 
+        validList ("OblgrBk", OblgrBk), 
+        validElement(OblgrBk), 
+        validList ("SubmitgBk", SubmitgBk), 
+        validElement(SubmitgBk), 
+        validList ("Crspdt", Crspdt), 
+        validElement(Crspdt), 
+        validList ("NttiesToBeRptd", NttiesToBeRptd), 
+        validElement(NttiesToBeRptd), 
+        validList ("TxSts", TxSts), 
+        validElement(TxSts))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.042.001.03"), ValidationCheck
+aspect ISO20022.Tsmt042001.TransactionReportRequestV03
+{
+    @XmlElement RptSpcfctn         : ISO20022.Tsmt042001.ReportSpecification4,
+    @XmlElement ReqId              : ISO20022.Tsmt042001.MessageIdentification1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(RptSpcfctn), 
+        validElement(ReqId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.042.001.03"), ValidationCheck
+value ISO20022.Tsmt042001.TransactionStatus4
+{
+    @XmlElement Sts                : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];

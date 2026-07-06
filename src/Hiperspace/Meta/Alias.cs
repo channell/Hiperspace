@@ -6,21 +6,36 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 
+#if NET8_0_OR_GREATER
 using ProtoBuf;
+#endif
+using System;
 using System.Collections;
 using System.Diagnostics;
 
 namespace Hiperspace.Meta
 {
+#if NET8_0_OR_GREATER
     [ProtoContract]
+#endif
     [DebuggerDisplay("Alias {Name} ({Id})")]
+#if NET8_0_OR_GREATER
     public struct Alias : IEquatable<Alias>
+#else
+    public struct Alias 
+#endif
     {
+#if NET8_0_OR_GREATER
         [ProtoMember(1)]
+#endif
         public string Name { get; set; }
+#if NET8_0_OR_GREATER
         [ProtoMember(2)]
+#endif
         public Relation[] Parameters { get; set; }
+#if NET8_0_OR_GREATER
         [ProtoMember(3)]
+#endif
         public int Id { get; set; }
 
         public override bool Equals(object? other)

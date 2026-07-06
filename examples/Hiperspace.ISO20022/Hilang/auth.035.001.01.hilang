@@ -1,0 +1,150 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.035.001.01"), ValidationCheck
+type ISO20022.Auth035001.Document
+{
+}
+[
+    @XmlElement FinInstrmRptgTradgVolCapDataRpt : ISO20022.Auth035001.FinancialInstrumentReportingTradingVolumeCapDataReportV01,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(FinInstrmRptgTradgVolCapDataRpt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.035.001.01"), ValidationCheck
+aspect ISO20022.Auth035001.FinancialInstrumentReportingTradingVolumeCapDataReportV01
+{
+    @XmlElement SplmtryData        : List<ISO20022.Auth035001.SupplementaryData1>,
+    @XmlElement VolCapData         : List<ISO20022.Auth035001.VolumeCapReport1>,
+    @XmlElement RptHdr             : ISO20022.Auth035001.SecuritiesMarketReportHeader1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("SplmtryData", SplmtryData), 
+        validElement(SplmtryData), 
+        validRequired ("VolCapData", VolCapData), 
+        validList ("VolCapData", VolCapData), 
+        validElement(VolCapData), 
+        validElement(RptHdr))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.035.001.01"), ValidationCheck
+value ISO20022.Auth035001.Period2
+{
+    @XmlElement ToDt               : DateTime,
+    @XmlElement FrDt               : DateTime,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.035.001.01"), ValidationCheck, AnyKey
+value ISO20022.Auth035001.Period4Choice
+{
+    @XmlElement FrDtToDt           : ISO20022.Auth035001.Period2,
+    @XmlElement ToDt               : DateTime,
+    @XmlElement FrDt               : DateTime,
+    @XmlElement Dt                 : DateTime,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(FrDtToDt), 
+        validChoice (FrDtToDt, ToDt, FrDt, Dt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.035.001.01"), ValidationCheck
+value ISO20022.Auth035001.SecuritiesMarketReportHeader1
+{
+    @XmlElement SubmissnDtTm       : DateTime,
+    @XmlElement RptgPrd            : ISO20022.Auth035001.Period4Choice,
+    @XmlElement RptgNtty           : ISO20022.Auth035001.TradingVenueIdentification1Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(RptgPrd), 
+        validElement(RptgNtty))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.035.001.01"), ValidationCheck
+value ISO20022.Auth035001.SupplementaryData1
+{
+    @XmlElement Envlp              : ISO20022.Auth035001.SupplementaryDataEnvelope1,
+    @XmlElement PlcAndNm           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Envlp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.035.001.01"), ValidationCheck
+value ISO20022.Auth035001.SupplementaryDataEnvelope1
+{
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:auth.035.001.01")
+enum ISO20022.Auth035001.TradingVenue2Code
+{
+    @XmlEnum ("CTPS") CTPS          #1,
+    @XmlEnum ("APPA") APPA          #2,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.035.001.01"), ValidationCheck, AnyKey
+value ISO20022.Auth035001.TradingVenueIdentification1Choice
+{
+    @XmlElement Othr               : ISO20022.Auth035001.TradingVenueIdentification2,
+    @XmlElement NtlCmptntAuthrty   : String,
+    @XmlElement MktIdCd            : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Othr), 
+        validPattern ("NtlCmptntAuthrty", NtlCmptntAuthrty, "[A-Z]{2,2}"), 
+        validPattern ("MktIdCd", MktIdCd, "[A-Z0-9]{4,4}"), 
+        validChoice (Othr, NtlCmptntAuthrty, MktIdCd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.035.001.01"), ValidationCheck
+value ISO20022.Auth035001.TradingVenueIdentification2
+{
+    @XmlElement Tp                 : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.035.001.01"), ValidationCheck
+value ISO20022.Auth035001.VolumeCapReport1
+{
+    @XmlElement InstrmRpt          : List<ISO20022.Auth035001.VolumeCapReport2>,
+    @XmlElement TradgVn            : String,
+    @XmlElement RptgPrd            : ISO20022.Auth035001.Period4Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validRequired ("InstrmRpt", InstrmRpt), 
+        validList ("InstrmRpt", InstrmRpt), 
+        validElement(InstrmRpt), 
+        validPattern ("TradgVn", TradgVn, "[A-Z0-9]{4,4}"), 
+        validElement(RptgPrd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.035.001.01"), ValidationCheck
+value ISO20022.Auth035001.VolumeCapReport2
+{
+    @XmlElement TtlNgtdTxsTradgVol : Decimal,
+    @XmlElement TtlRefPricTradgVol : Decimal,
+    @XmlElement TtlTradgVol        : Decimal,
+    @XmlElement Ccy                : String,
+    @XmlElement Id                 : String,
+    @XmlElement TechRcrdId         : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("Ccy", Ccy, "[A-Z]{3,3}"), 
+        validPattern ("Id", Id, "[A-Z]{2,2}[A-Z0-9]{9,9}[0-9]{1,1}"))
+];

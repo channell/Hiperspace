@@ -1,0 +1,60 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.005.001.02"), ValidationCheck
+aspect ISO20022.Tsmt005001.AmendmentAcceptanceV02
+{
+    @XmlElement AccptdAmdmntNb     : ISO20022.Tsmt005001.Count1,
+    @XmlElement DltaRptRef         : ISO20022.Tsmt005001.MessageIdentification1,
+    @XmlElement SubmitrTxRef       : ISO20022.Tsmt005001.SimpleIdentificationInformation,
+    @XmlElement TxId               : ISO20022.Tsmt005001.SimpleIdentificationInformation,
+    @XmlElement AccptncId          : ISO20022.Tsmt005001.MessageIdentification1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(AccptdAmdmntNb), 
+        validElement(DltaRptRef), 
+        validElement(SubmitrTxRef), 
+        validElement(TxId), 
+        validElement(AccptncId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.005.001.02"), ValidationCheck
+value ISO20022.Tsmt005001.Count1
+{
+    @XmlElement Nb                 : Decimal,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.005.001.02"), ValidationCheck
+type ISO20022.Tsmt005001.Document
+{
+}
+[
+    @XmlElement AmdmntAccptnc      : ISO20022.Tsmt005001.AmendmentAcceptanceV02,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(AmdmntAccptnc))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.005.001.02"), ValidationCheck
+value ISO20022.Tsmt005001.MessageIdentification1
+{
+    @XmlElement CreDtTm            : DateTime,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.005.001.02"), ValidationCheck
+value ISO20022.Tsmt005001.SimpleIdentificationInformation
+{
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];

@@ -12,7 +12,7 @@ namespace Hiperspace
 {
     public static class Result
     {
-        public enum Status { Ok, Skip, Fail, Error, EOF }
+        public enum Status { Ok, Skip, Fail, Error, EOF, NotFound }
         /// <summary>
         /// The result is ok
         /// </summary>
@@ -51,8 +51,16 @@ namespace Hiperspace
         /// <typeparam name="T"></typeparam>
         /// <param name="result">value</param>
         /// <returns>new result struct</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result<T> EOF<T>() => new Result<T>(default!, Status.EOF);
+        /// <summary>
+        /// The result is not found
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="result">value</param>
+        /// <returns>new result struct</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Result<T> NotFound<T>() => new Result<T>(default!, Status.NotFound);
     }
 
     public struct Result<T>
@@ -113,6 +121,7 @@ namespace Hiperspace
         public bool Fail => Status == Result.Status.Fail || Status == Result.Status.Error;
         public bool Error => Status == Result.Status.Error;
         public bool EOF => Status == Result.Status.EOF;
+        public bool NotFound => Status == Result.Status.NotFound;
 
         public static explicit operator T (Result<T> value) 
         {
@@ -153,6 +162,9 @@ namespace Hiperspace
                 case Result.Status.EOF:
                     return Result.EOF<R>();
 
+                case Result.Status.NotFound:
+                    return Result.NotFound<R>();
+
                 default:
                     return Result.Fail<R>(default!, "Result created by reflection");
             }
@@ -171,6 +183,7 @@ namespace Hiperspace
             {
                 case Result.Status.Fail:
                 case Result.Status.Error:
+                case Result.Status.NotFound:
                     func(this);
                     break;
                 default:

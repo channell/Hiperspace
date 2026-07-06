@@ -5,6 +5,7 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace Hiperspace.Meta
@@ -51,7 +52,7 @@ namespace Hiperspace.Meta
         /// <param name="key">id number of the element</param>
         /// <param name="poppoint">length of this node</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Push(int key, int poppoint)
+        public bool Push(int key, int poppoint)
         {
             int s = 0, e = _map.Length - 1, m = _map.Length / 2, ls = m, le = m;
             do
@@ -62,7 +63,7 @@ namespace Hiperspace.Meta
                     _currentMap = _map[s].values;
                     _current = _map[s].key;
                     _popPoint = poppoint;
-                    return;
+                    return true;
                 }
                 else if (_map[e].key == key)
                 {
@@ -70,7 +71,7 @@ namespace Hiperspace.Meta
                     _currentMap = _map[e].values;
                     _current = _map[e].key;
                     _popPoint = poppoint;
-                    return;
+                    return true;
                 }
                 else if (key >= _map[m].key)
                     s = m;
@@ -86,7 +87,7 @@ namespace Hiperspace.Meta
                 }
             }
             while (s != e);
-            return;
+            return false;
         }
 
         /// <summary>
@@ -126,13 +127,11 @@ namespace Hiperspace.Meta
             {
                 if (_currentMap[s].member == member)
                 {
-                    Push(_currentMap[s].key, poppoint);
-                    return true;
+                    return Push(_currentMap[s].key, poppoint);
                 }
                 else if (_currentMap[e].member == member)
                 {
-                    Push(_currentMap[e].key, poppoint);
-                    return true;
+                    return Push(_currentMap[e].key, poppoint);
                 }
                 else if (member >= _currentMap[m].member)
                     s = m;

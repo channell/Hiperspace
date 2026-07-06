@@ -8,17 +8,24 @@
 //------------------------------------------------------------------------------
 #nullable enable
 using Hiperspace;
+using System;
+
+#if NET8_0_OR_GREATER
 using ProtoBuf;
+#endif
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace Hiperspace.Meta
 {
 
     #region MapElement
-
+#if NET8_0_OR_GREATER
     [ProtoContract]
+#endif
 
     public partial struct MapElement : IEquatable<MapElement>
     {
@@ -50,9 +57,9 @@ namespace Hiperspace.Meta
             _value = source._value;
         }
 
-
-
+#if NET8_0_OR_GREATER
         [ProtoMember(1)]
+#endif
         public Int32? Element
         {
             get
@@ -61,12 +68,15 @@ namespace Hiperspace.Meta
             }
             set
             {
+#if NET8_0_OR_GREATER
                 if (_bound && _value.Element != value) throw new Hiperspace.ValueMutationException($"Element");
+#endif
                 _value.Element = value;
             }
         }
-
+#if NET8_0_OR_GREATER
         [ProtoMember(2)]
+#endif
         public List<Hiperspace.Meta.MapPair>? Map
         {
             get
@@ -75,14 +85,18 @@ namespace Hiperspace.Meta
             }
             set
             {
+#if NET8_0_OR_GREATER
                 if (_bound && _value.Map != value) throw new Hiperspace.ValueMutationException($"Map");
+#endif
                 _value.Map = value;
             }
         }
 
         #region state
 
+#if NET8_0_OR_GREATER
         [ProtoContract]
+#endif
         public struct KeyType : IEquatable<KeyType>, IComparable<KeyType>
         {
             internal KeyType(MapElement item)
@@ -103,6 +117,8 @@ namespace Hiperspace.Meta
             }
             public string SKey => ""; // Values can't have string keys
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
+
+#if NET8_0_OR_GREATER
             public void Bind(SubSpace space)
             {
 
@@ -112,6 +128,7 @@ namespace Hiperspace.Meta
             {
 
             }
+#endif
             public bool Equals(KeyType other)
             {
                 if (this == other) return true;
@@ -161,7 +178,9 @@ namespace Hiperspace.Meta
         }
         public static explicit operator KeyType(MapElement item) => item._key;
 
+#if NET8_0_OR_GREATER
         [ProtoContract]
+#endif
         public struct ValueType
         {
             internal ValueType(MapElement item)
@@ -171,9 +190,16 @@ namespace Hiperspace.Meta
                 Map = item.Map;
             }
 
-            [ProtoMember(1)] public Int32? Element;
-            [ProtoMember(2)] public List<Hiperspace.Meta.MapPair>? Map;
+#if NET8_0_OR_GREATER
+            [ProtoMember(1)]
+#endif
+            public Int32? Element;
+#if NET8_0_OR_GREATER
+            [ProtoMember(2)]
+#endif
+            public List<Hiperspace.Meta.MapPair>? Map;
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if NET8_0_OR_GREATER
             public void Bind(SubSpace space)
             {
 
@@ -191,6 +217,7 @@ namespace Hiperspace.Meta
                 if (this == other) return true;
                 return false;
             }
+#endif
             public override bool Equals(Object? other)
             {
                 if (other is null) return false;
@@ -230,6 +257,7 @@ namespace Hiperspace.Meta
         #endregion
 
         #region Entity
+#if NET8_0_OR_GREATER
         public Result<MapElement> Bind(SubSpace subSpace)
         {
             if (subSpace is SubSpace space)
@@ -255,6 +283,7 @@ namespace Hiperspace.Meta
 
             }
         }
+#endif
 
         public override int GetHashCode()
         {
@@ -315,5 +344,5 @@ namespace Hiperspace.Meta
             return _key.Equals(other._key);
         }
     }
-    #endregion
+#endregion
 }

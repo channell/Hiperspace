@@ -1,0 +1,203 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:casp.013.001.02"), ValidationCheck
+value ISO20022.Casp013001.AcceptorRejection2
+{
+    @XmlElement MsgInErr           : String,
+    @XmlElement AddtlInf           : String,
+    @XmlElement RjctRsn            : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:casp.013.001.02"), ValidationCheck
+type ISO20022.Casp013001.Document
+{
+}
+[
+    @XmlElement SaleToPOIMsgRjctn  : ISO20022.Casp013001.SaleToPOIMessageRejectionV02,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(SaleToPOIMsgRjctn))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:casp.013.001.02"), ValidationCheck
+value ISO20022.Casp013001.GenericIdentification177
+{
+    @XmlElement Glctn              : ISO20022.Casp013001.Geolocation1,
+    @XmlElement RmotAccs           : ISO20022.Casp013001.NetworkParameters7,
+    @XmlElement ShrtNm             : String,
+    @XmlElement Ctry               : String,
+    @XmlElement Issr               : String,
+    @XmlElement Tp                 : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Glctn), 
+        validElement(RmotAccs), 
+        validPattern ("Ctry", Ctry, "[a-zA-Z]{2,3}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:casp.013.001.02"), ValidationCheck
+value ISO20022.Casp013001.Geolocation1
+{
+    @XmlElement UTMCordints        : ISO20022.Casp013001.GeolocationUTMCoordinates1,
+    @XmlElement GeogcCordints      : ISO20022.Casp013001.GeolocationGeographicCoordinates1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(UTMCordints), 
+        validElement(GeogcCordints))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:casp.013.001.02"), ValidationCheck
+value ISO20022.Casp013001.GeolocationGeographicCoordinates1
+{
+    @XmlElement Long               : String,
+    @XmlElement Lat                : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:casp.013.001.02"), ValidationCheck
+value ISO20022.Casp013001.GeolocationUTMCoordinates1
+{
+    @XmlElement UTMNrthwrd         : String,
+    @XmlElement UTMEstwrd          : String,
+    @XmlElement UTMZone            : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:casp.013.001.02"), ValidationCheck
+value ISO20022.Casp013001.Header41
+{
+    @XmlElement Tracblt            : List<ISO20022.Casp013001.Traceability8>,
+    @XmlElement RcptPty            : ISO20022.Casp013001.GenericIdentification177,
+    @XmlElement InitgPty           : ISO20022.Casp013001.GenericIdentification177,
+    @XmlElement CreDtTm            : DateTime,
+    @XmlElement XchgId             : String,
+    @XmlElement PrtcolVrsn         : String,
+    @XmlElement MsgFctn            : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("Tracblt", Tracblt), 
+        validElement(Tracblt), 
+        validElement(RcptPty), 
+        validElement(InitgPty))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:casp.013.001.02"), ValidationCheck
+value ISO20022.Casp013001.NetworkParameters7
+{
+    @XmlElement SctyPrfl           : String,
+    @XmlElement ClntCert           : List<String>,
+    @XmlElement SvrCertIdr         : List<String>,
+    @XmlElement SvrCert            : List<String>,
+    @XmlElement AccsCd             : String,
+    @XmlElement UsrNm              : String,
+    @XmlElement Adr                : List<ISO20022.Casp013001.NetworkParameters9>,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validRequired ("Adr", Adr), 
+        validList ("Adr", Adr), 
+        validElement(Adr))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:casp.013.001.02"), ValidationCheck
+value ISO20022.Casp013001.NetworkParameters9
+{
+    @XmlElement AdrVal             : String,
+    @XmlElement NtwkTp             : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:casp.013.001.02")
+enum ISO20022.Casp013001.NetworkType1Code
+{
+    @XmlEnum ("PSTN") PSTN          #1,
+    @XmlEnum ("IPNW") IPNW          #2,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:casp.013.001.02")
+enum ISO20022.Casp013001.PartyType33Code
+{
+    @XmlEnum ("TMGT") TMGT          #1,
+    @XmlEnum ("TAXH") TAXH          #2,
+    @XmlEnum ("MTMG") MTMG          #3,
+    @XmlEnum ("DLIS") DLIS          #4,
+    @XmlEnum ("CISS") CISS          #5,
+    @XmlEnum ("ACQR") ACQR          #6,
+    @XmlEnum ("ITAG") ITAG          #7,
+    @XmlEnum ("ACCP") ACCP          #8,
+    @XmlEnum ("MERC") MERC          #9,
+    @XmlEnum ("OPOI") OPOI          #10,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:casp.013.001.02")
+enum ISO20022.Casp013001.RejectReason1Code
+{
+    @XmlEnum ("MSGT") MSGT          #1,
+    @XmlEnum ("VERS") VERS          #2,
+    @XmlEnum ("DPMG") DPMG          #3,
+    @XmlEnum ("RCPP") RCPP          #4,
+    @XmlEnum ("INTP") INTP          #5,
+    @XmlEnum ("SECU") SECU          #6,
+    @XmlEnum ("PARS") PARS          #7,
+    @XmlEnum ("IMSG") IMSG          #8,
+    @XmlEnum ("UNPR") UNPR          #9,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:casp.013.001.02")
+enum ISO20022.Casp013001.RetailerMessage1Code
+{
+    @XmlEnum ("SASP") SASP          #1,
+    @XmlEnum ("SASQ") SASQ          #2,
+    @XmlEnum ("SFSP") SFSP          #3,
+    @XmlEnum ("SFSQ") SFSQ          #4,
+    @XmlEnum ("SFRQ") SFRQ          #5,
+    @XmlEnum ("SFRP") SFRP          #6,
+    @XmlEnum ("SARP") SARP          #7,
+    @XmlEnum ("SARQ") SARQ          #8,
+    @XmlEnum ("SSRJ") SSRJ          #9,
+    @XmlEnum ("SSMR") SSMR          #10,
+    @XmlEnum ("SSMQ") SSMQ          #11,
+    @XmlEnum ("SSEN") SSEN          #12,
+    @XmlEnum ("SDDP") SDDP          #13,
+    @XmlEnum ("SDDR") SDDR          #14,
+    @XmlEnum ("SAAP") SAAP          #15,
+    @XmlEnum ("SAAQ") SAAQ          #16,
+    @XmlEnum ("SSAB") SSAB          #17,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:casp.013.001.02"), ValidationCheck
+aspect ISO20022.Casp013001.SaleToPOIMessageRejectionV02
+{
+    @XmlElement Rjct               : ISO20022.Casp013001.AcceptorRejection2,
+    @XmlElement Hdr                : ISO20022.Casp013001.Header41,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Rjct), 
+        validElement(Hdr))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:casp.013.001.02"), ValidationCheck
+value ISO20022.Casp013001.Traceability8
+{
+    @XmlElement TracDtTmOut        : DateTime,
+    @XmlElement TracDtTmIn         : DateTime,
+    @XmlElement PrtcolVrsn         : String,
+    @XmlElement PrtcolNm           : String,
+    @XmlElement RlayId             : ISO20022.Casp013001.GenericIdentification177,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(RlayId))
+];

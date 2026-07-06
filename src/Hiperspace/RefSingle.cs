@@ -137,6 +137,13 @@ namespace Hiperspace
                 setspace.Bind(_entity, true, true);
             }
         }
+        public void BindAll(SubSpace subSpace, HashSet<IElement> path, bool cache = true)
+        {
+            if (_entity is not null)
+            {
+                _entity.BindAll(subSpace, path, cache);
+            }
+        }
         public void Unbind(SubSpace subSpace)
         {
             if (SetSpace?.Space == subSpace)

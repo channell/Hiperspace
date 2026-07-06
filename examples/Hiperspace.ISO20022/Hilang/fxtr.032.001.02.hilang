@@ -1,0 +1,123 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:fxtr.032.001.02"), ValidationCheck, AnyKey
+value ISO20022.Fxtr032001.DateAndDateTime2Choice
+{
+    @XmlElement DtTm               : DateTime,
+    @XmlElement Dt                 : DateTime,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (validChoice (DtTm, Dt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:fxtr.032.001.02"), ValidationCheck, AnyKey
+value ISO20022.Fxtr032001.DateFormat45Choice
+{
+    @XmlElement NotSpcfdDt         : String,
+    @XmlElement Dt                 : ISO20022.Fxtr032001.DateAndDateTime2Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Dt), 
+        validChoice (NotSpcfdDt, Dt))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:fxtr.032.001.02")
+enum ISO20022.Fxtr032001.DateType8Code
+{
+    @XmlEnum ("ONGO") ONGO          #1,
+    @XmlEnum ("UKWN") UKWN          #2,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:fxtr.032.001.02"), ValidationCheck
+type ISO20022.Fxtr032001.Document
+{
+}
+[
+    @XmlElement FXTradCaptrRptReq  : ISO20022.Fxtr032001.ForeignExchangeTradeCaptureReportRequestV02,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(FXTradCaptrRptReq))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:fxtr.032.001.02"), ValidationCheck
+aspect ISO20022.Fxtr032001.ForeignExchangeTradeCaptureReportRequestV02
+{
+    @XmlElement SplmtryData        : List<ISO20022.Fxtr032001.SupplementaryData1>,
+    @XmlElement QryParamVal        : String,
+    @XmlElement QryPgSz            : String,
+    @XmlElement QryEndId           : String,
+    @XmlElement QryTradId          : String,
+    @XmlElement QryPrd             : ISO20022.Fxtr032001.Period12,
+    @XmlElement QryByPrd           : String,
+    @XmlElement QryStartNb         : String,
+    @XmlElement QryTp              : String,
+    @XmlElement QryOrdrSts         : String,
+    @XmlElement QryReqId           : ISO20022.Fxtr032001.MessageIdentification1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("SplmtryData", SplmtryData), 
+        validElement(SplmtryData), 
+        validPattern ("QryPgSz", QryPgSz, "[0-9]{1,35}"), 
+        validElement(QryPrd), 
+        validPattern ("QryStartNb", QryStartNb, "[0-9]{1,35}"), 
+        validElement(QryReqId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:fxtr.032.001.02"), ValidationCheck
+value ISO20022.Fxtr032001.MessageIdentification1
+{
+    @XmlElement CreDtTm            : DateTime,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:fxtr.032.001.02"), ValidationCheck
+value ISO20022.Fxtr032001.Period12
+{
+    @XmlElement EndDt              : ISO20022.Fxtr032001.DateFormat45Choice,
+    @XmlElement StartDt            : ISO20022.Fxtr032001.DateFormat45Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(EndDt), 
+        validElement(StartDt))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:fxtr.032.001.02")
+enum ISO20022.Fxtr032001.QueryDataType1Code
+{
+    @XmlEnum ("QOTD") QOTD          #1,
+    @XmlEnum ("QFXT") QFXT          #2,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:fxtr.032.001.02")
+enum ISO20022.Fxtr032001.QueryOrderStatus1Code
+{
+    @XmlEnum ("QUAO") QUAO          #1,
+    @XmlEnum ("QPEO") QPEO          #2,
+    @XmlEnum ("QFEO") QFEO          #3,
+    @XmlEnum ("QOFP") QOFP          #4,
+    @XmlEnum ("QUCO") QUCO          #5,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:fxtr.032.001.02"), ValidationCheck
+value ISO20022.Fxtr032001.SupplementaryData1
+{
+    @XmlElement Envlp              : ISO20022.Fxtr032001.SupplementaryDataEnvelope1,
+    @XmlElement PlcAndNm           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Envlp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:fxtr.032.001.02"), ValidationCheck
+value ISO20022.Fxtr032001.SupplementaryDataEnvelope1
+{
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];

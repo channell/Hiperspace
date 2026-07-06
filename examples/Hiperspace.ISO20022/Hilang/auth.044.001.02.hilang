@@ -1,0 +1,201 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.044.001.02"), ValidationCheck
+value ISO20022.Auth044001.ActiveCurrencyAndAmount
+{
+    @XmlElement Value              : Decimal,
+    @XmlAttribute Ccy              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validRequired ("Value", Value), 
+        validRequired ("Ccy", Ccy), 
+        validPattern ("Ccy", Ccy, "[A-Z]{3,3}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.044.001.02"), ValidationCheck
+type ISO20022.Auth044001.Document
+{
+}
+[
+    @XmlElement FinInstrmRptgEqtyTradgActvtyRslt : ISO20022.Auth044001.FinancialInstrumentReportingEquityTradingActivityResultV02,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(FinInstrmRptgEqtyTradgActvtyRslt))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:auth.044.001.02")
+enum ISO20022.Auth044001.EquityInstrumentReportingClassification1Code
+{
+    @XmlEnum ("CRFT") CRFT          #1,
+    @XmlEnum ("DPRS") DPRS          #2,
+    @XmlEnum ("ETFS") ETFS          #3,
+    @XmlEnum ("OTHR") OTHR          #4,
+    @XmlEnum ("SHRS") SHRS          #5,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.044.001.02"), ValidationCheck
+aspect ISO20022.Auth044001.FinancialInstrumentReportingEquityTradingActivityResultV02
+{
+    @XmlElement SplmtryData        : List<ISO20022.Auth044001.SupplementaryData1>,
+    @XmlElement EqtyTrnsprncyData  : List<ISO20022.Auth044001.TransparencyDataReport17>,
+    @XmlElement RptHdr             : ISO20022.Auth044001.SecuritiesMarketReportHeader1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("SplmtryData", SplmtryData), 
+        validElement(SplmtryData), 
+        validRequired ("EqtyTrnsprncyData", EqtyTrnsprncyData), 
+        validList ("EqtyTrnsprncyData", EqtyTrnsprncyData), 
+        validElement(EqtyTrnsprncyData), 
+        validElement(RptHdr))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.044.001.02"), ValidationCheck
+value ISO20022.Auth044001.MarketDetail2
+{
+    @XmlElement AvrgDalyNbOfTxs    : Decimal,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("Id", Id, "[A-Z0-9]{4,4}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.044.001.02"), ValidationCheck
+value ISO20022.Auth044001.Period2
+{
+    @XmlElement ToDt               : DateTime,
+    @XmlElement FrDt               : DateTime,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.044.001.02"), ValidationCheck, AnyKey
+value ISO20022.Auth044001.Period4Choice
+{
+    @XmlElement FrDtToDt           : ISO20022.Auth044001.Period2,
+    @XmlElement ToDt               : DateTime,
+    @XmlElement FrDt               : DateTime,
+    @XmlElement Dt                 : DateTime,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(FrDtToDt), 
+        validChoice (FrDtToDt, ToDt, FrDt, Dt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.044.001.02"), ValidationCheck
+value ISO20022.Auth044001.SecuritiesMarketReportHeader1
+{
+    @XmlElement SubmissnDtTm       : DateTime,
+    @XmlElement RptgPrd            : ISO20022.Auth044001.Period4Choice,
+    @XmlElement RptgNtty           : ISO20022.Auth044001.TradingVenueIdentification1Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(RptgPrd), 
+        validElement(RptgNtty))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.044.001.02"), ValidationCheck
+value ISO20022.Auth044001.StatisticsTransparency3
+{
+    @XmlElement TtlNbOfTradgDays   : Decimal,
+    @XmlElement TtlVolOfTxsExctd   : Decimal,
+    @XmlElement TtlNbOfTxsExctd    : Decimal,
+    @XmlElement AvrgDalyNbOfTxs    : Decimal,
+    @XmlElement StdMktSz           : Decimal,
+    @XmlElement LrgInScale         : Decimal,
+    @XmlElement AvrgTxVal          : ISO20022.Auth044001.ActiveCurrencyAndAmount,
+    @XmlElement AvrgDalyTrnvr      : ISO20022.Auth044001.ActiveCurrencyAndAmount,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(AvrgTxVal), 
+        validElement(AvrgDalyTrnvr))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.044.001.02"), ValidationCheck
+value ISO20022.Auth044001.SupplementaryData1
+{
+    @XmlElement Envlp              : ISO20022.Auth044001.SupplementaryDataEnvelope1,
+    @XmlElement PlcAndNm           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Envlp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.044.001.02"), ValidationCheck
+value ISO20022.Auth044001.SupplementaryDataEnvelope1
+{
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:auth.044.001.02")
+enum ISO20022.Auth044001.TradingVenue2Code
+{
+    @XmlEnum ("CTPS") CTPS          #1,
+    @XmlEnum ("APPA") APPA          #2,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.044.001.02"), ValidationCheck, AnyKey
+value ISO20022.Auth044001.TradingVenueIdentification1Choice
+{
+    @XmlElement Othr               : ISO20022.Auth044001.TradingVenueIdentification2,
+    @XmlElement NtlCmptntAuthrty   : String,
+    @XmlElement MktIdCd            : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Othr), 
+        validPattern ("NtlCmptntAuthrty", NtlCmptntAuthrty, "[A-Z]{2,2}"), 
+        validPattern ("MktIdCd", MktIdCd, "[A-Z0-9]{4,4}"), 
+        validChoice (Othr, NtlCmptntAuthrty, MktIdCd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.044.001.02"), ValidationCheck
+value ISO20022.Auth044001.TradingVenueIdentification2
+{
+    @XmlElement Tp                 : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:auth.044.001.02"), ValidationCheck
+value ISO20022.Auth044001.TransparencyDataReport17
+{
+    @XmlElement RlvntMkt           : ISO20022.Auth044001.MarketDetail2,
+    @XmlElement Sttstcs            : ISO20022.Auth044001.StatisticsTransparency3,
+    @XmlElement Mthdlgy            : String,
+    @XmlElement Lqdty              : String,
+    @XmlElement RptgPrd            : ISO20022.Auth044001.Period4Choice,
+    @XmlElement TradgVn            : String,
+    @XmlElement FullNm             : String,
+    @XmlElement FinInstrmClssfctn  : String,
+    @XmlElement Id                 : String,
+    @XmlElement TechRcrdId         : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(RlvntMkt), 
+        validElement(Sttstcs), 
+        validElement(RptgPrd), 
+        validPattern ("TradgVn", TradgVn, "[A-Z0-9]{4,4}"), 
+        validPattern ("Id", Id, "[A-Z]{2,2}[A-Z0-9]{9,9}[0-9]{1,1}"))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:auth.044.001.02")
+enum ISO20022.Auth044001.TransparencyMethodology2Code
+{
+    @XmlEnum ("ESTM") ESTM          #1,
+    @XmlEnum ("FFWK") FFWK          #2,
+    @XmlEnum ("SINT") SINT          #3,
+    @XmlEnum ("YEAR") YEAR          #4,
+};

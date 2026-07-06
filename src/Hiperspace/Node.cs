@@ -5,11 +5,13 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using Graph;
 using Graph.Cube;
 using ProtoBuf;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Xml.Serialization;
 
 /*view node #1
 (
@@ -268,7 +270,7 @@ namespace Hiperspace
         }
 
         #region state
-        [ProtoContract]
+        [ProtoContract, XmlType("Node_KeyType")]
         public struct KeyType : IEquatable<KeyType>, IComparable<KeyType>
         {
             public KeyType(Node item)
@@ -335,7 +337,7 @@ namespace Hiperspace
             }
         }
 
-        [ProtoContract]
+        [ProtoContract, XmlType("Node_ValueType")]
         public struct ValueType
         {
             public ValueType()
@@ -388,6 +390,10 @@ namespace Hiperspace
                 }
                 return result;
             }
+            return Result.Skip(this);
+        }
+        public override Result<Node> BindAll(SubSpace subspace, HashSet<IElement> path, bool cache = true)
+        {
             return Result.Skip(this);
         }
         public override void Unbind(SubSpace subSpace)

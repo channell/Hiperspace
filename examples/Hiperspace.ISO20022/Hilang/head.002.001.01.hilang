@@ -1,0 +1,82 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:head.002.001.01"), ValidationCheck
+value ISO20022.Head002001.ApplicationSpecifics1
+{
+    @XmlElement TtlNbOfDocs        : Decimal,
+    @XmlElement Sgntr              : ISO20022.Head002001.SignatureEnvelope,
+    @XmlElement SysUsr             : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Sgntr))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:head.002.001.01"), ValidationCheck
+value ISO20022.Head002001.BusinessFileHeaderV01
+{
+    @XmlElement Pyld               : List<ISO20022.Head002001.LaxPayload>,
+    @XmlElement PyldDesc           : ISO20022.Head002001.PayloadDescription2,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("Pyld", Pyld), 
+        validElement(Pyld), 
+        validElement(PyldDesc))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:head.002.001.01"), ValidationCheck
+value ISO20022.Head002001.LaxPayload
+{
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:head.002.001.01"), ValidationCheck
+value ISO20022.Head002001.ManifestData2
+{
+    @XmlElement NbOfDocs           : Decimal,
+    @XmlElement DocTp              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:head.002.001.01"), ValidationCheck
+value ISO20022.Head002001.PayloadData2
+{
+    @XmlElement PssblDplctFlg      : String,
+    @XmlElement CreDtAndTm         : DateTime,
+    @XmlElement PyldIdr            : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:head.002.001.01"), ValidationCheck
+value ISO20022.Head002001.PayloadDescription2
+{
+    @XmlElement MnfstData          : List<ISO20022.Head002001.ManifestData2>,
+    @XmlElement PyldTp             : String,
+    @XmlElement ApplSpcfcs         : ISO20022.Head002001.ApplicationSpecifics1,
+    @XmlElement PyldData           : ISO20022.Head002001.PayloadData2,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("MnfstData", MnfstData), 
+        validElement(MnfstData), 
+        validElement(ApplSpcfcs), 
+        validElement(PyldData))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:head.002.001.01"), ValidationCheck
+value ISO20022.Head002001.SignatureEnvelope
+{
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];

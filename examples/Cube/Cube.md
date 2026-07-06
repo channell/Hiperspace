@@ -3,64 +3,16 @@
 classDiagram
     class Banking.Book {
         # Id  : String
-        + Trades (Book = this) : Banking.Trade
+        + Trades (Book = ) : Banking.Trade
     }
     class Cube.Account {
         # Id  : String
         + Customer  : Cube.Customer
-        + FirstAccount (Account = this) : First.Acc
+        + FirstAccount (Account = ) : First.Acc
     }
+    Cube.Account --> Cube.Customer
+    Cube.Account ..|> Hiperspace.Node
     Cube.Account ..|> Cube.Edges
-    class Cube.Customer {
-        # Id  : String
-        + Sector  : Cube.Sector
-        + Accounts (Customer = this) : Cube.Account
-        + FirstAccount () : First.Acc
-    }
-    Cube.Customer ..|> Cube.Edges
-    class Cube.Instrument {
-        # ISIN  : String
-        + Country  : Cube.Country
-        + Product  : Cube.Product
-        + Price () : Cube.Price
-        + Market () = Price?.Market
-    }
-    Cube.Instrument ..|> Cube.Edges
-    class First.Acc {
-        + Account  : Cube.Account
-    }
-    class Valued {
-        # Name  : String
-        + Value  : Decimal
-    }
-    class Cube.Portfolio {
-        # Id  : String
-        + Parent  : Cube.Portfolio
-        + Tier  : Int32
-        + Children (Parent = this) : Cube.Portfolio
-    }
-    Cube.Portfolio ..|> Cube.Edges
-    class Cube.Product {
-        # Id  : String
-        + Parent  : Cube.Product
-        + Tier  : Int32
-        + Children (Parent = this) : Cube.Product
-        + ProductInstruments (Product = this) : Cube.Instrument
-    }
-    Cube.Product ..|> Cube.Edges
-    class Cube.Country {
-        # ISO  : String
-        + Instruments (Country = this) : Cube.Instrument
-    }
-    class Cube.Sector {
-        # Id  : Int32
-        + Name  : String
-        + Parent  : Cube.Sector
-        + Tier  : Int32
-        + Children (Parent = this) : Cube.Sector
-        + Customers (Sector = this) : Cube.Customer
-    }
-    Cube.Sector ..|> Cube.Edges
     class Cube.Contract {
         # Id  : Int64
         + Quantity  : Decimal
@@ -73,29 +25,96 @@ classDiagram
         + Percentile () = Value
         + Avg () = Value
     }
+    Cube.Contract --> Cube.Instrument
+    Cube.Contract --> Cube.Portfolio
+    Cube.Contract --> Cube.Account
     Cube.Contract ..|> Valued
-    class Cube.Price {
-        + Market  : Decimal
+    Cube.Contract ..|> Hiperspace.Node
+    class Cube.Country {
+        # ISO  : String
+        + Instruments (Country = ) : Cube.Instrument
     }
+    Cube.Country ..|> Hiperspace.Node
+    class Cube.Customer {
+        # Id  : String
+        + Sector  : Cube.Sector
+        + Accounts (Customer = ) : Cube.Account
+        + FirstAccount () : First.Acc
+    }
+    Cube.Customer --> Cube.Sector
+    Cube.Customer o-- First.Acc
+    Cube.Customer ..|> Hiperspace.Node
+    Cube.Customer ..|> Cube.Edges
     class Cube.Edges {
-        # From  : Node
-        # To  : Node
+        # From  : Hiperspace.Node
+        # To  : Hiperspace.Node
         # FromTypeName  : String
         # ToTypeName  : String
         + Name  : String
     }
-    class Edge {
-        # From  : Node
-        # To  : Node
+    Cube.Edges ..|> Hiperspace.Edge
+    class Cube.Instrument {
+        # ISIN  : String
+        + Country  : Cube.Country
+        + Product  : Cube.Product
+        + Price () : Cube.Price
+        + Market () = Price?.Market
+    }
+    Cube.Instrument --> Cube.Country
+    Cube.Instrument --> Cube.Product
+    Cube.Instrument o-- Cube.Price
+    Cube.Instrument ..|> Hiperspace.Node
+    Cube.Instrument ..|> Cube.Edges
+    class Cube.Portfolio {
+        # Id  : String
+        + Parent  : Cube.Portfolio
+        + Tier  : Int32
+        + Children (Parent = ) : Cube.Portfolio
+    }
+    Cube.Portfolio ..|> Hiperspace.Node
+    Cube.Portfolio ..|> Cube.Edges
+    class Cube.Price {
+        + Market  : Decimal
+    }
+    class Cube.Product {
+        # Id  : String
+        + Parent  : Cube.Product
+        + Tier  : Int32
+        + Children (Parent = ) : Cube.Product
+        + ProductInstruments (Product = ) : Cube.Instrument
+    }
+    Cube.Product ..|> Hiperspace.Node
+    Cube.Product ..|> Cube.Edges
+    class Cube.Sector {
+        # Id  : Int32
+        + Name  : String
+        + Parent  : Cube.Sector
+        + Tier  : Int32
+        + Children (Parent = ) : Cube.Sector
+        + Customers (Sector = ) : Cube.Customer
+    }
+    Cube.Sector ..|> Hiperspace.Node
+    Cube.Sector ..|> Cube.Edges
+    class Hiperspace.Edge {
+        # From  : Hiperspace.Node
+        # To  : Hiperspace.Node
         # TypeName  : String
         + Name  : String
     }
-    class Node {
+    class First.Acc {
+        + Account  : Cube.Account
+    }
+    First.Acc --> Cube.Account
+    class Hiperspace.Node {
         # SKey  : String
         + TypeName  : String
         + Name  : String
-        + Froms (From = this) : Edge
-        + Tos (To = this) : Edge
+        + Froms (From = ) : Hiperspace.Edge
+        + Tos (To = ) : Hiperspace.Edge
+    }
+    class Valued {
+        # Name  : String
+        + Value  : Decimal
     }
 ```
 > The tables below contain descriptions of the members of each Element. 
@@ -113,7 +132,18 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|String||||
-||Trades|Banking.Trade|||Book = this|
+||Trades|Banking.Trade|||Book = |
+
+---
+
+## Type Banking.TradeBase
+
+
+| |Name|Type|*|@|=|
+|-|-|-|-|-|-|
+|#|Id|String||||
+|+|Book|Banking.Book||AlternateIndex("""Banking.EQ.Trade""", 145), AlternateIndex("""Banking.FI.Trade""", 143), AlternateIndex("""Banking.FX.Trade""", 144), AlternateIndex("""Banking.Trade""", 58)||
+|+|Value|Decimal||CubeMeasure(Aggregate?.Sum)||
 
 ---
 
@@ -124,100 +154,7 @@ classDiagram
 |-|-|-|-|-|-|
 |#|Id|String||||
 |+|Customer|Cube.Customer||||
-||FirstAccount|First.Acc|||Account = this|
-
----
-
-## Entity Cube.Customer
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|Id|String||||
-|+|Sector|Cube.Sector||||
-||Accounts|Cube.Account|||Customer = this|
-|+|FirstAccount|First.Acc||||
-
----
-
-## Entity Cube.Instrument
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|ISIN|String||||
-|+|Country|Cube.Country||||
-|+|Product|Cube.Product||||
-|+|Price|Cube.Price||||
-||Market|Some(Decimal)|||Price?.Market|
-
----
-
-## Aspect First.Acc
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|+|Account|Cube.Account||AlternateIndex("Cube.CustomerFirstAccount", 78)||
-
----
-
-## View Valued
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|Name|String||||
-|+|Value|Decimal||||
-
----
-
-## Entity Cube.Portfolio
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|Id|String||||
-|+|Parent|Cube.Portfolio||||
-|+|Tier|Int32||||
-||Children|Cube.Portfolio|||Parent = this|
-
----
-
-## Entity Cube.Product
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|Id|String||||
-|+|Parent|Cube.Product||||
-|+|Tier|Int32||||
-||Children|Cube.Product|||Parent = this|
-||ProductInstruments|Cube.Instrument|||Product = this|
-
----
-
-## Entity Cube.Country
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|ISO|String||||
-||Instruments|Cube.Instrument|||Country = this|
-
----
-
-## Entity Cube.Sector
-
-
-| |Name|Type|*|@|=|
-|-|-|-|-|-|-|
-|#|Id|Int32||||
-|+|Name|String||||
-|+|Parent|Cube.Sector||||
-|+|Tier|Int32||||
-||Children|Cube.Sector|||Parent = this|
-||Customers|Cube.Customer|||Sector = this|
+||FirstAccount|First.Acc|||Account = |
 
 ---
 
@@ -239,6 +176,66 @@ classDiagram
 
 ---
 
+## Entity Cube.Country
+
+
+| |Name|Type|*|@|=|
+|-|-|-|-|-|-|
+|#|ISO|String||||
+||Instruments|Cube.Instrument|||Country = |
+
+---
+
+## Entity Cube.Customer
+
+
+| |Name|Type|*|@|=|
+|-|-|-|-|-|-|
+|#|Id|String||||
+|+|Sector|Cube.Sector||||
+||Accounts|Cube.Account|||Customer = |
+|+|FirstAccount|First.Acc||||
+
+---
+
+## View Cube.Edges
+Bidirectional Edge, implemented with two Cube.Edges
+
+| |Name|Type|*|@|=|
+|-|-|-|-|-|-|
+|#|From|Hiperspace.Node||||
+|#|To|Hiperspace.Node||||
+|#|FromTypeName|String||||
+|#|ToTypeName|String||||
+|+|Name|String||||
+
+---
+
+## Entity Cube.Instrument
+
+
+| |Name|Type|*|@|=|
+|-|-|-|-|-|-|
+|#|ISIN|String||||
+|+|Country|Cube.Country||||
+|+|Product|Cube.Product||||
+|+|Price|Cube.Price||||
+||Market|Some(Decimal)|||Price?.Market|
+
+---
+
+## Entity Cube.Portfolio
+
+
+| |Name|Type|*|@|=|
+|-|-|-|-|-|-|
+|#|Id|String||||
+|+|Parent|Cube.Portfolio||||
+|+|Tier|Int32||||
+||Children|Cube.Portfolio|||Parent = |
+
+---
+
 ## Aspect Cube.Price
 
 
@@ -248,43 +245,55 @@ classDiagram
 
 ---
 
-## Type Banking.TradeBase
+## Entity Cube.Product
 
 
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Id|String||||
-|+|Book|Banking.Book||AlternateIndex("Banking.EQ.Trade", 145), AlternateIndex("Banking.FI.Trade", 143), AlternateIndex("Banking.FX.Trade", 144), AlternateIndex("Banking.Trade", 58)||
-|+|Value|Decimal||CubeMeasure(Aggregate?.Sum)||
+|+|Parent|Cube.Product||||
+|+|Tier|Int32||||
+||Children|Cube.Product|||Parent = |
+||ProductInstruments|Cube.Instrument|||Product = |
 
 ---
 
-## View Cube.Edges
-Bidirectional Edge, implemented with two Cube.Edges
+## Entity Cube.Sector
+
 
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
-|#|FromTypeName|String||||
-|#|ToTypeName|String||||
+|#|Id|Int32||||
 |+|Name|String||||
+|+|Parent|Cube.Sector||||
+|+|Tier|Int32||||
+||Children|Cube.Sector|||Parent = |
+||Customers|Cube.Customer|||Sector = |
 
 ---
 
-## View Edge
+## View Hiperspace.Edge
 edge between nodes
 
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
+|#|From|Hiperspace.Node||||
+|#|To|Hiperspace.Node||||
 |#|TypeName|String||||
 |+|Name|String||||
 
 ---
 
-## View Node
+## Aspect First.Acc
+
+
+| |Name|Type|*|@|=|
+|-|-|-|-|-|-|
+|+|Account|Cube.Account||AlternateIndex("""Cube.CustomerFirstAccount""", 78)||
+
+---
+
+## View Hiperspace.Node
 node in a graph view of data
 
 | |Name|Type|*|@|=|
@@ -292,6 +301,16 @@ node in a graph view of data
 |#|SKey|String||||
 |+|TypeName|String||||
 |+|Name|String||||
-||Froms|Edge|||From = this|
-||Tos|Edge|||To = this|
+||Froms|Hiperspace.Edge|||From = |
+||Tos|Hiperspace.Edge|||To = |
+
+---
+
+## View Valued
+
+
+| |Name|Type|*|@|=|
+|-|-|-|-|-|-|
+|#|Name|String||||
+|+|Value|Decimal||||
 

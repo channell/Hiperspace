@@ -1,0 +1,58 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.050.001.01"), ValidationCheck
+type ISO20022.Tsmt050001.Document
+{
+}
+[
+    @XmlElement RoleAndBaselnRjctn : ISO20022.Tsmt050001.RoleAndBaselineRejectionV01,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(RoleAndBaselnRjctn))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.050.001.01"), ValidationCheck
+value ISO20022.Tsmt050001.MessageIdentification1
+{
+    @XmlElement CreDtTm            : DateTime,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.050.001.01"), ValidationCheck
+value ISO20022.Tsmt050001.Reason2
+{
+    @XmlElement Desc               : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.050.001.01"), ValidationCheck
+aspect ISO20022.Tsmt050001.RoleAndBaselineRejectionV01
+{
+    @XmlElement RjctnRsn           : ISO20022.Tsmt050001.Reason2,
+    @XmlElement TxId               : ISO20022.Tsmt050001.SimpleIdentificationInformation,
+    @XmlElement RltdMsgRef         : ISO20022.Tsmt050001.MessageIdentification1,
+    @XmlElement RjctnId            : ISO20022.Tsmt050001.MessageIdentification1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(RjctnRsn), 
+        validElement(TxId), 
+        validElement(RltdMsgRef), 
+        validElement(RjctnId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.050.001.01"), ValidationCheck
+value ISO20022.Tsmt050001.SimpleIdentificationInformation
+{
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];

@@ -11,8 +11,10 @@ public class BaseTypeModel
     , ISerializer<Element> 
     , ISerializer<Field> 
     , ISerializer<MetaModel> 
-    , ISerializer<Name> 
+    , ISerializer<Name>
     , ISerializer<Relation>
+    , ISerializer<View>
+    , ISerializer<ViewRelation>
     , ISerializer<Edge.KeyType>
     , ISerializer<Edge.ValueType>
     , ISerializer<KeyRef<Edge.KeyType, Edge>>
@@ -79,7 +81,6 @@ public class BaseTypeModel
     }
 
     void ISerializer<Alias>.Write(ref ProtoWriter.State state, Alias value)
-
     {
         string name = value.Name;
         state.WriteString(1, name, null);
@@ -97,6 +98,7 @@ public class BaseTypeModel
     }
     Element ISerializer<Element>.Read(ref ProtoReader.State state, Element value)
     {
+        value = value ?? new();
         int num;
         while ((num = state.ReadFieldHeader()) > 0)
         {
@@ -160,6 +162,31 @@ public class BaseTypeModel
                         value.Versioned = versioned;
                         break;
                     }
+                case 8:
+                    {
+                        value.SetSpace = state.ReadString();
+                        break;
+                    }
+                case 9:
+                    {
+                        View[]? views = value.Views;
+                        views = RepeatedSerializer.CreateVector<View>().ReadRepeated(ref state, (SerializerFeatures)146, views, this);
+                        if (views is not null)
+                        {
+                            value.Views= views;
+                        }
+                        break;
+                    }
+                case 10:
+                    {
+                        Field[] extents = value.Extents;
+                        extents = RepeatedSerializer.CreateVector<Field>().ReadRepeated(ref state, (SerializerFeatures)146, extents, this);
+                        if (extents is not null)
+                        {
+                            value.Extents = extents;
+                        }
+                        break;
+                    }
                 default:
                     state.SkipField();
                     break;
@@ -203,9 +230,23 @@ public class BaseTypeModel
             state.WriteFieldHeader(7, 0);
             state.WriteBoolean(versioned);
         }
+        state.WriteString(8, value.SetSpace, null);
+
+        View[]? views = value.Views;
+        if (views is not null)
+        {
+            RepeatedSerializer.CreateVector<View>().WriteRepeated(ref state, 9, (SerializerFeatures)146, views, this);
+        }
+        Field[] extents = value.Extents;
+        if (extents is not null)
+        {
+            Field[] array = extents;
+            RepeatedSerializer.CreateVector<Field>().WriteRepeated(ref state, 10, (SerializerFeatures)146, array, this);
+        }
     }
     Field ISerializer<Field>.Read(ref ProtoReader.State state, Field value)
     {
+        value = value ?? new();
         int num;
         while ((num = state.ReadFieldHeader()) > 0)
         {
@@ -1000,10 +1041,6 @@ public class BaseTypeModel
                 case 14:
                     value.Length = state.ReadInt32();
                     break;
-                case 15:
-                    value.Measures = RepeatedSerializer.CreateList<List<Graph.Cube.Measure>, Graph.Cube.Measure>().ReadRepeated(ref state, SerializerFeatures.WireTypeString | SerializerFeatures.OptionPackedDisabled, value.Measures!, this);
-                    break;
-
                 default:
                     state.SkipField();
                     break;
@@ -1032,10 +1069,6 @@ public class BaseTypeModel
         {
             state.WriteFieldHeader(14, WireType.Varint);
             state.WriteInt32(value.Length.Value);
-        }
-        if (value.Measures is not null)
-        {
-            RepeatedSerializer.CreateList<List<Graph.Cube.Measure>, Graph.Cube.Measure>().WriteRepeated(ref state, 11, SerializerFeatures.WireTypeString | SerializerFeatures.OptionPackedDisabled, value.Measures, this);
         }
     }
 
@@ -1136,9 +1169,6 @@ public class BaseTypeModel
                     break;
                 case 14:
                     item._value.Length = state.ReadInt32();
-                    break;
-                case 15:
-                    item.Measures = RepeatedSerializer.CreateList<List<Graph.Cube.Measure>, Graph.Cube.Measure>().ReadRepeated(ref state, SerializerFeatures.WireTypeString | SerializerFeatures.OptionPackedDisabled, value.Measures!, this);
                     break;
 
                 default:
@@ -1346,5 +1376,91 @@ public class BaseTypeModel
         {
             state.WriteMessage<Graph.Cube.MeasureValue>(2, SerializerFeatures.CategoryRepeated, value.Value.Value, this);
         }
+    }
+
+    public View Read(ref ProtoReader.State state, View value)
+    {
+        int num;
+        while ((num = state.ReadFieldHeader()) > 0)
+        {
+            switch (num)
+            {
+                case 1:
+                    {
+                        string text = state.ReadString(null);
+                        if (text is not null)
+                        {
+                            value.Name = text;
+                        }
+                        break;
+                    }
+                case 2:
+                    {
+                        ViewRelation[]? mapping = value.Mapping;
+                        mapping = RepeatedSerializer.CreateVector<ViewRelation>().ReadRepeated(ref state, (SerializerFeatures)146, mapping, this);
+                        if (mapping is not null)
+                        {
+                            value.Mapping = mapping;
+                        }
+                        break;
+                    }
+                default:
+                    state.SkipField();
+                    break;
+            }
+        }
+        return value;
+    }
+
+    public void Write(ref ProtoWriter.State state, View value)
+    {
+        string name = value.Name;
+        state.WriteString(1, name, null);
+        ViewRelation[]? mapping = value.Mapping;
+        if (mapping is not null)
+        {
+            RepeatedSerializer.CreateVector<ViewRelation>().WriteRepeated(ref state, 2, (SerializerFeatures)146, mapping, this);
+        }
+    }
+
+    public ViewRelation Read(ref ProtoReader.State state, ViewRelation value)
+    {
+        int num;
+        while ((num = state.ReadFieldHeader()) > 0)
+        {
+            switch (num)
+            {
+                case 1:
+                    {
+                        string text = state.ReadString(null);
+                        if (text is not null)
+                        {
+                            value.Name = text;
+                        }
+                        break;
+                    }
+                case 2:
+                    {
+                        string text = state.ReadString(null);
+                        if (text is not null)
+                        {
+                            value.Source = text;
+                        }
+                        break;
+                    }
+                default:
+                    state.SkipField();
+                    break;
+            }
+        }
+        return value;
+    }
+
+    public void Write(ref ProtoWriter.State state, ViewRelation value)
+    {
+        string name = value.Name;
+        state.WriteString(1, name, null);
+        string source = value.Name;
+        state.WriteString(2, source, null);
     }
 }

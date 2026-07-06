@@ -1,0 +1,174 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:fxtr.038.001.02"), ValidationCheck
+value ISO20022.Fxtr038001.AdditionalInformation5
+{
+    @XmlElement Inf                : List<String>,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validRequired ("Inf", Inf))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:fxtr.038.001.02")
+enum ISO20022.Fxtr038001.AffirmStatus1Code
+{
+    @XmlEnum ("UNRE") UNRE          #1,
+    @XmlEnum ("RECE") RECE          #2,
+    @XmlEnum ("OUOS") OUOS          #3,
+    @XmlEnum ("OUOR") OUOR          #4,
+    @XmlEnum ("NOTP") NOTP          #5,
+    @XmlEnum ("MISE") MISE          #6,
+    @XmlEnum ("MISM") MISM          #7,
+    @XmlEnum ("COMP") COMP          #8,
+    @XmlEnum ("ATSC") ATSC          #9,
+    @XmlEnum ("ATCN") ATCN          #10,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:fxtr.038.001.02"), ValidationCheck
+type ISO20022.Fxtr038001.Document
+{
+}
+[
+    @XmlElement FXTradConfStsAdvcAck : ISO20022.Fxtr038001.ForeignExchangeTradeConfirmationStatusAdviceAcknowledgementV02,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(FXTradConfStsAdvcAck))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:fxtr.038.001.02"), ValidationCheck
+aspect ISO20022.Fxtr038001.ForeignExchangeTradeConfirmationStatusAdviceAcknowledgementV02
+{
+    @XmlElement SplmtryData        : List<ISO20022.Fxtr038001.SupplementaryData1>,
+    @XmlElement AddtlInf           : ISO20022.Fxtr038001.AdditionalInformation5,
+    @XmlElement MktId              : ISO20022.Fxtr038001.MarketIdentification88,
+    @XmlElement ConfSts            : String,
+    @XmlElement AffirmSts          : String,
+    @XmlElement TradgMd            : String,
+    @XmlElement TradId             : String,
+    @XmlElement TradDt             : DateTime,
+    @XmlElement ReqId              : ISO20022.Fxtr038001.MessageIdentification1,
+    @XmlElement AdvcAckId          : ISO20022.Fxtr038001.MessageIdentification1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("SplmtryData", SplmtryData), 
+        validElement(SplmtryData), 
+        validElement(AddtlInf), 
+        validElement(MktId), 
+        validElement(ReqId), 
+        validElement(AdvcAckId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:fxtr.038.001.02"), ValidationCheck
+value ISO20022.Fxtr038001.GenericIdentification1
+{
+    @XmlElement Issr               : String,
+    @XmlElement SchmeNm            : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:fxtr.038.001.02"), ValidationCheck, AnyKey
+value ISO20022.Fxtr038001.MarketIdentification1Choice
+{
+    @XmlElement Desc               : String,
+    @XmlElement MktIdrCd           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("MktIdrCd", MktIdrCd, "[A-Z0-9]{4,4}"), 
+        validChoice (Desc, MktIdrCd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:fxtr.038.001.02"), ValidationCheck
+value ISO20022.Fxtr038001.MarketIdentification88
+{
+    @XmlElement Tp                 : ISO20022.Fxtr038001.MarketType13Choice,
+    @XmlElement Id                 : ISO20022.Fxtr038001.MarketIdentification1Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Tp), 
+        validElement(Id))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:fxtr.038.001.02"), ValidationCheck, AnyKey
+value ISO20022.Fxtr038001.MarketType13Choice
+{
+    @XmlElement Prtry              : ISO20022.Fxtr038001.GenericIdentification1,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Prtry), 
+        validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:fxtr.038.001.02")
+enum ISO20022.Fxtr038001.MarketType8Code
+{
+    @XmlEnum ("VARI") VARI          #1,
+    @XmlEnum ("EXCH") EXCH          #2,
+    @XmlEnum ("SECM") SECM          #3,
+    @XmlEnum ("PRIM") PRIM          #4,
+    @XmlEnum ("OTCO") OTCO          #5,
+    @XmlEnum ("INBA") INBA          #6,
+    @XmlEnum ("COUN") COUN          #7,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:fxtr.038.001.02"), ValidationCheck
+value ISO20022.Fxtr038001.MessageIdentification1
+{
+    @XmlElement CreDtTm            : DateTime,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:fxtr.038.001.02"), ValidationCheck
+value ISO20022.Fxtr038001.SupplementaryData1
+{
+    @XmlElement Envlp              : ISO20022.Fxtr038001.SupplementaryDataEnvelope1,
+    @XmlElement PlcAndNm           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Envlp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:fxtr.038.001.02"), ValidationCheck
+value ISO20022.Fxtr038001.SupplementaryDataEnvelope1
+{
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:fxtr.038.001.02")
+enum ISO20022.Fxtr038001.TradeConfirmationStatus1Code
+{
+    @XmlEnum ("UNCN") UNCN          #1,
+    @XmlEnum ("SNCN") SNCN          #2,
+    @XmlEnum ("SNCC") SNCC          #3,
+    @XmlEnum ("SCCN") SCCN          #4,
+    @XmlEnum ("MISM") MISM          #5,
+    @XmlEnum ("EMCN") EMCN          #6,
+    @XmlEnum ("DISA") DISA          #7,
+    @XmlEnum ("CONF") CONF          #8,
+    @XmlEnum ("ALST") ALST          #9,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:fxtr.038.001.02")
+enum ISO20022.Fxtr038001.TradingModeType1Code
+{
+    @XmlEnum ("ANON") ANON          #1,
+    @XmlEnum ("BILA") BILA          #2,
+    @XmlEnum ("MARC") MARC          #3,
+    @XmlEnum ("AUCT") AUCT          #4,
+    @XmlEnum ("NETR") NETR          #5,
+    @XmlEnum ("ORDR") ORDR          #6,
+    @XmlEnum ("QUDR") QUDR          #7,
+};

@@ -5,7 +5,10 @@
 //
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
+using System.Xml.Serialization;
 
 namespace Hiperspace
 {
@@ -16,6 +19,9 @@ namespace Hiperspace
     public abstract class ElementVersion<TEntity> : Element<TEntity>
         where TEntity : ElementVersion<TEntity>, new()
     {
+        public ElementVersion() : base(DurableType.Versioned) { }
+        public ElementVersion(DurableType durableType) : base(durableType) { }
+
         /// <summary>
         /// Timestamp when this element was created.  Used as part of the stored key for versions in hiperspace
         /// </summary>
@@ -24,7 +30,8 @@ namespace Hiperspace
         /// <summary>
         /// Timestamp of the version that this element replaced.  Used to implement optimistic concurrency control
         /// </summary>
-        public DateTime? AsWas { get; protected set; }
+        [XmlIgnore, JsonIgnore, NotMapped]
+        public DateTime? AsWas { get;  protected set; }
         public abstract IEnumerable<TEntity> GetVersions();
 
         /// <remarks>

@@ -8,6 +8,7 @@
 using ProtoBuf;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Xml.Serialization;
 
 /*
 "edge between nodes"
@@ -104,7 +105,7 @@ namespace Hiperspace
         }
 
         #region state
-        [ProtoContract]
+        [ProtoContract, XmlType("Edge_KeyType")]
         public struct KeyType : IEquatable<KeyType>, IComparable<KeyType>
         {
             public KeyType(Edge item)
@@ -180,7 +181,7 @@ namespace Hiperspace
             }
         }
 
-        [ProtoContract]
+        [ProtoContract, XmlType("Edge_ValueType")]
         public struct ValueType
         {
             public ValueType()
@@ -221,6 +222,27 @@ namespace Hiperspace
                 return result;
             }
             return Result.Skip(this);
+        }
+        public override Result<Edge> BindAll(SubSpace subspace, HashSet<IElement> path, bool cache = true)
+        {
+            if (path.Contains(this)) return Result.Skip(this);
+            if (SetSpace != subspace.Edges)
+            {
+                if (From is not null)
+                {
+                    var value = From;
+                    value.BindAll(subspace, path, cache);
+                    From = value;
+                }
+                if (To is not null)
+                {
+                    var value = To;
+                    value.BindAll(subspace, path, cache);
+                    To = value;
+                }
+                return Result.Ok(this);
+            }
+            return Result.Fail(this);
         }
         public override void Unbind(SubSpace subSpace)
         {

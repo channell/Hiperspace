@@ -6,8 +6,10 @@
 // This file is part of Hiperspace and is distributed under the GPL Open Source License. 
 // ---------------------------------------------------------------------------------------
 using ProtoBuf;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
+using System.Xml.Serialization;
 
 namespace Hiperspace
 {
@@ -99,11 +101,23 @@ namespace Hiperspace
         /// </summary>
         public bool HasValue => _entity is not null;
 
+        [JsonIgnore, XmlIgnore, NotMapped]
         public SetSpace<TEntity>? SetSpace { get; set; }
 
         public void Bind(SetSpace<TEntity> entities)
         {
             SetSpace = entities;
+            if (_entity is not null &&_entity.SetSpace != entities)
+            {
+                _entity.Bind(entities.Space);
+            }
+        }
+        public void BindAll(SubSpace subSpace, HashSet<IElement> path, bool cache = true)
+        {
+            if (_entity is not null)
+            {
+                _entity.BindAll(subSpace, path, cache);
+            }
         }
         public void Unbind(SetSpace<TEntity> subSpace)
         {

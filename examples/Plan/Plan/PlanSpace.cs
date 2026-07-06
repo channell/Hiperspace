@@ -35,12 +35,12 @@ namespace Plan
         protected static Horizon[] _finance =
             _read.Union(_financeonly).ToArray();
 
-        public override Horizon[]? Horizon { get => base.Horizon == null ? _read : _read.Union(base.Horizon).ToArray(); init => base.Horizon = value; }
+        //public override Horizon[]? Horizon { get => base.Horizon == null ? _read : _read.Union(base.Horizon).ToArray(); init => base.Horizon = value; }
 
-        public PlanSpace(HiperSpace space, bool write = true, DateTime? AsAt = null, DateTime? DeltaFrom = null) 
-            : this(space, null, AsAt, DeltaFrom)
-        {
-            ContextLabel = write ? "write" : "read";
-        }
+        //public PlanSpace(HiperSpace space, bool write = true, DateTime? AsAt = null, DateTime? DeltaFrom = null) 
+        //    : this(space, null, AsAt, DeltaFrom)
+        //{
+        //    ContextLabel = write ? "write" : "read";
+        //}
     }
 }

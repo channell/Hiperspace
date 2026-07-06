@@ -218,6 +218,10 @@ namespace Hiperspace
         {
             return Result.Skip(this);
         }
+        public override Result<VectorNode> BindAll(SubSpace subspace, HashSet<IElement> path, bool cache = true)
+        {
+            return Result.Skip(this);
+        }
         public override void Unbind(SubSpace subSpace)
         {
         }

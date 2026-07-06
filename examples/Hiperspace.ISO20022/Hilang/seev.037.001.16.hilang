@@ -1,0 +1,901 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck, AnyKey
+value ISO20022.Seev037001.Account10Choice
+{
+    @XmlElement TaxAcct            : ISO20022.Seev037001.CashAccountIdentification5Choice,
+    @XmlElement ChrgsAcct          : ISO20022.Seev037001.CashAccountIdentification5Choice,
+    @XmlElement CshAcct            : ISO20022.Seev037001.CashAccountIdentification9Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(TaxAcct), 
+        validElement(ChrgsAcct), 
+        validElement(CshAcct), 
+        validChoice (TaxAcct, ChrgsAcct, CshAcct))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck
+value ISO20022.Seev037001.AccountAndBalance50
+{
+    @XmlElement ConfdBal           : ISO20022.Seev037001.BalanceFormat11Choice,
+    @XmlElement BlckChainAdrOrWllt : String,
+    @XmlElement SfkpgAcct          : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(ConfdBal))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck
+value ISO20022.Seev037001.ActiveCurrencyAndAmount
+{
+    @XmlElement Value              : Decimal,
+    @XmlAttribute Ccy              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validRequired ("Value", Value), 
+        validRequired ("Ccy", Ccy), 
+        validPattern ("Ccy", Ccy, "[A-Z]{3,3}"))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16")
+enum ISO20022.Seev037001.AdditionalBusinessProcess7Code
+{
+    @XmlEnum ("FPRE") FPRE          #1,
+    @XmlEnum ("PPRE") PPRE          #2,
+    @XmlEnum ("PPUT") PPUT          #3,
+    @XmlEnum ("SCHM") SCHM          #4,
+    @XmlEnum ("NPLE") NPLE          #5,
+    @XmlEnum ("NAMC") NAMC          #6,
+    @XmlEnum ("CONS") CONS          #7,
+    @XmlEnum ("CNTR") CNTR          #8,
+    @XmlEnum ("ATXF") ATXF          #9,
+    @XmlEnum ("ACLA") ACLA          #10,
+    @XmlEnum ("TAXR") TAXR          #11,
+    @XmlEnum ("CLAI") CLAI          #12,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck, AnyKey
+value ISO20022.Seev037001.AdditionalBusinessProcessFormat11Choice
+{
+    @XmlElement Prtry              : ISO20022.Seev037001.GenericIdentification30,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Prtry), 
+        validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16")
+enum ISO20022.Seev037001.AddressType2Code
+{
+    @XmlEnum ("DLVY") DLVY          #1,
+    @XmlEnum ("MLTO") MLTO          #2,
+    @XmlEnum ("BIZZ") BIZZ          #3,
+    @XmlEnum ("HOME") HOME          #4,
+    @XmlEnum ("PBOX") PBOX          #5,
+    @XmlEnum ("ADDR") ADDR          #6,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck, AnyKey
+value ISO20022.Seev037001.BalanceFormat11Choice
+{
+    @XmlElement NotElgblBal        : ISO20022.Seev037001.SignedQuantityFormat10,
+    @XmlElement ElgblBal           : ISO20022.Seev037001.SignedQuantityFormat10,
+    @XmlElement Bal                : ISO20022.Seev037001.SignedQuantityFormat11,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(NotElgblBal), 
+        validElement(ElgblBal), 
+        validElement(Bal), 
+        validChoice (NotElgblBal, ElgblBal, Bal))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck
+value ISO20022.Seev037001.BlockChainAddressWallet3
+{
+    @XmlElement Nm                 : String,
+    @XmlElement Tp                 : ISO20022.Seev037001.GenericIdentification30,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Tp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck, AnyKey
+value ISO20022.Seev037001.CashAccountIdentification5Choice
+{
+    @XmlElement Prtry              : String,
+    @XmlElement IBAN               : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("IBAN", IBAN, "[A-Z]{2,2}[0-9]{2,2}[a-zA-Z0-9]{1,30}"), 
+        validChoice (Prtry, IBAN))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck, AnyKey
+value ISO20022.Seev037001.CashAccountIdentification9Choice
+{
+    @XmlElement Prtry              : String,
+    @XmlElement BlckChainCshWllt   : ISO20022.Seev037001.BlockChainAddressWallet3,
+    @XmlElement IBAN               : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(BlckChainCshWllt), 
+        validPattern ("IBAN", IBAN, "[A-Z]{2,2}[0-9]{2,2}[a-zA-Z0-9]{1,30}"), 
+        validChoice (Prtry, BlckChainCshWllt, IBAN))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck
+value ISO20022.Seev037001.CashOption109
+{
+    @XmlElement PstngAmt           : ISO20022.Seev037001.ActiveCurrencyAndAmount,
+    @XmlElement ValDt              : DateTime,
+    @XmlElement OrgnlPstngDt       : ISO20022.Seev037001.DateAndDateTime2Choice,
+    @XmlElement PstngDt            : ISO20022.Seev037001.DateAndDateTime2Choice,
+    @XmlElement Acct               : ISO20022.Seev037001.Account10Choice,
+    @XmlElement CdtDbtInd          : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(PstngAmt), 
+        validElement(OrgnlPstngDt), 
+        validElement(PstngDt), 
+        validElement(Acct))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck
+value ISO20022.Seev037001.CorporateAction70
+{
+    @XmlElement LtryTp             : ISO20022.Seev037001.LotteryTypeFormat4Choice,
+    @XmlElement IntrmdtSctiesDstrbtnTp : ISO20022.Seev037001.IntermediateSecuritiesDistributionTypeFormat15Choice,
+    @XmlElement AddtlBizPrcInd     : ISO20022.Seev037001.AdditionalBusinessProcessFormat11Choice,
+    @XmlElement EvtStag            : ISO20022.Seev037001.CorporateActionEventStageFormat14Choice,
+    @XmlElement DtDtls             : ISO20022.Seev037001.CorporateActionDate86,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(LtryTp), 
+        validElement(IntrmdtSctiesDstrbtnTp), 
+        validElement(AddtlBizPrcInd), 
+        validElement(EvtStag), 
+        validElement(DtDtls))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck
+value ISO20022.Seev037001.CorporateActionDate86
+{
+    @XmlElement ExDvddDt           : ISO20022.Seev037001.DateFormat30Choice,
+    @XmlElement RcrdDt             : ISO20022.Seev037001.DateFormat30Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(ExDvddDt), 
+        validElement(RcrdDt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck
+value ISO20022.Seev037001.CorporateActionEventReference3
+{
+    @XmlElement LkgTp              : ISO20022.Seev037001.ProcessingPosition7Choice,
+    @XmlElement EvtId              : ISO20022.Seev037001.CorporateActionEventReference3Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(LkgTp), 
+        validElement(EvtId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck, AnyKey
+value ISO20022.Seev037001.CorporateActionEventReference3Choice
+{
+    @XmlElement LkdCorpActnId      : String,
+    @XmlElement LkdOffclCorpActnEvtId : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (validChoice (LkdCorpActnId, LkdOffclCorpActnEvtId))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16")
+enum ISO20022.Seev037001.CorporateActionEventStage4Code
+{
+    @XmlEnum ("RESC") RESC          #1,
+    @XmlEnum ("PART") PART          #2,
+    @XmlEnum ("FULL") FULL          #3,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck, AnyKey
+value ISO20022.Seev037001.CorporateActionEventStageFormat14Choice
+{
+    @XmlElement Prtry              : ISO20022.Seev037001.GenericIdentification30,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Prtry), 
+        validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck, AnyKey
+value ISO20022.Seev037001.CorporateActionEventType109Choice
+{
+    @XmlElement Prtry              : ISO20022.Seev037001.GenericIdentification30,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Prtry), 
+        validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16")
+enum ISO20022.Seev037001.CorporateActionEventType37Code
+{
+    @XmlEnum ("RCLA") RCLA          #1,
+    @XmlEnum ("TNDP") TNDP          #2,
+    @XmlEnum ("MTNG") MTNG          #3,
+    @XmlEnum ("ACCU") ACCU          #4,
+    @XmlEnum ("WRTH") WRTH          #5,
+    @XmlEnum ("WTRC") WTRC          #6,
+    @XmlEnum ("EXWA") EXWA          #7,
+    @XmlEnum ("SUSP") SUSP          #8,
+    @XmlEnum ("DLST") DLST          #9,
+    @XmlEnum ("TEND") TEND          #10,
+    @XmlEnum ("TREC") TREC          #11,
+    @XmlEnum ("SPLF") SPLF          #12,
+    @XmlEnum ("DVSE") DVSE          #13,
+    @XmlEnum ("SOFF") SOFF          #14,
+    @XmlEnum ("SMAL") SMAL          #15,
+    @XmlEnum ("SHPR") SHPR          #16,
+    @XmlEnum ("DVSC") DVSC          #17,
+    @XmlEnum ("RHTS") RHTS          #18,
+    @XmlEnum ("SPLR") SPLR          #19,
+    @XmlEnum ("BIDS") BIDS          #20,
+    @XmlEnum ("REMK") REMK          #21,
+    @XmlEnum ("REDO") REDO          #22,
+    @XmlEnum ("BPUT") BPUT          #23,
+    @XmlEnum ("PRIO") PRIO          #24,
+    @XmlEnum ("PDEF") PDEF          #25,
+    @XmlEnum ("PLAC") PLAC          #26,
+    @XmlEnum ("PINK") PINK          #27,
+    @XmlEnum ("PRED") PRED          #28,
+    @XmlEnum ("PCAL") PCAL          #29,
+    @XmlEnum ("PARI") PARI          #30,
+    @XmlEnum ("OTHR") OTHR          #31,
+    @XmlEnum ("ODLT") ODLT          #32,
+    @XmlEnum ("CERT") CERT          #33,
+    @XmlEnum ("NOOF") NOOF          #34,
+    @XmlEnum ("MRGR") MRGR          #35,
+    @XmlEnum ("EXTM") EXTM          #36,
+    @XmlEnum ("LIQU") LIQU          #37,
+    @XmlEnum ("RHDI") RHDI          #38,
+    @XmlEnum ("INTR") INTR          #39,
+    @XmlEnum ("PPMT") PPMT          #40,
+    @XmlEnum ("INCR") INCR          #41,
+    @XmlEnum ("MCAL") MCAL          #42,
+    @XmlEnum ("REDM") REDM          #43,
+    @XmlEnum ("EXOF") EXOF          #44,
+    @XmlEnum ("DTCH") DTCH          #45,
+    @XmlEnum ("DRAW") DRAW          #46,
+    @XmlEnum ("DRIP") DRIP          #47,
+    @XmlEnum ("DVOP") DVOP          #48,
+    @XmlEnum ("DSCL") DSCL          #49,
+    @XmlEnum ("DETI") DETI          #50,
+    @XmlEnum ("DECR") DECR          #51,
+    @XmlEnum ("CREV") CREV          #52,
+    @XmlEnum ("CONV") CONV          #53,
+    @XmlEnum ("CONS") CONS          #54,
+    @XmlEnum ("CLSA") CLSA          #55,
+    @XmlEnum ("COOP") COOP          #56,
+    @XmlEnum ("CHAN") CHAN          #57,
+    @XmlEnum ("DVCA") DVCA          #58,
+    @XmlEnum ("DRCA") DRCA          #59,
+    @XmlEnum ("CAPI") CAPI          #60,
+    @XmlEnum ("CAPG") CAPG          #61,
+    @XmlEnum ("CAPD") CAPD          #62,
+    @XmlEnum ("EXRI") EXRI          #63,
+    @XmlEnum ("BONU") BONU          #64,
+    @XmlEnum ("DFLT") DFLT          #65,
+    @XmlEnum ("BRUP") BRUP          #66,
+    @XmlEnum ("ATTI") ATTI          #67,
+    @XmlEnum ("ACTV") ACTV          #68,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck
+value ISO20022.Seev037001.CorporateActionGeneralInformation179
+{
+    @XmlElement FrctnlQty          : ISO20022.Seev037001.FinancialInstrumentQuantity33Choice,
+    @XmlElement FinInstrmId        : ISO20022.Seev037001.SecurityIdentification19,
+    @XmlElement EvtTp              : ISO20022.Seev037001.CorporateActionEventType109Choice,
+    @XmlElement ClssActnNb         : String,
+    @XmlElement OffclCorpActnEvtId : String,
+    @XmlElement CorpActnEvtId      : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(FrctnlQty), 
+        validElement(FinInstrmId), 
+        validElement(EvtTp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck
+aspect ISO20022.Seev037001.CorporateActionMovementReversalAdviceV16
+{
+    @XmlElement SplmtryData        : List<ISO20022.Seev037001.SupplementaryData1>,
+    @XmlElement SubPngAgt          : List<ISO20022.Seev037001.PartyIdentification120Choice>,
+    @XmlElement PngAgt             : List<ISO20022.Seev037001.PartyIdentification120Choice>,
+    @XmlElement IssrAgt            : List<ISO20022.Seev037001.PartyIdentification120Choice>,
+    @XmlElement AddtlInf           : ISO20022.Seev037001.CorporateActionNarrative31,
+    @XmlElement CorpActnConfDtls   : ISO20022.Seev037001.CorporateActionOption240,
+    @XmlElement CorpActnDtls       : ISO20022.Seev037001.CorporateAction70,
+    @XmlElement AcctDtls           : ISO20022.Seev037001.AccountAndBalance50,
+    @XmlElement CorpActnGnlInf     : ISO20022.Seev037001.CorporateActionGeneralInformation179,
+    @XmlElement TxId               : ISO20022.Seev037001.TransactionIdentification15,
+    @XmlElement RvslRsn            : ISO20022.Seev037001.CorporateActionReversalReason8,
+    @XmlElement EvtsLkg            : List<ISO20022.Seev037001.CorporateActionEventReference3>,
+    @XmlElement OthrDocId          : List<ISO20022.Seev037001.DocumentIdentification32>,
+    @XmlElement MvmntConfId        : ISO20022.Seev037001.DocumentIdentification31,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("SplmtryData", SplmtryData), 
+        validElement(SplmtryData), 
+        validList ("SubPngAgt", SubPngAgt), 
+        validElement(SubPngAgt), 
+        validList ("PngAgt", PngAgt), 
+        validElement(PngAgt), 
+        validList ("IssrAgt", IssrAgt), 
+        validElement(IssrAgt), 
+        validElement(AddtlInf), 
+        validElement(CorpActnConfDtls), 
+        validElement(CorpActnDtls), 
+        validElement(AcctDtls), 
+        validElement(CorpActnGnlInf), 
+        validElement(TxId), 
+        validElement(RvslRsn), 
+        validList ("EvtsLkg", EvtsLkg), 
+        validElement(EvtsLkg), 
+        validList ("OthrDocId", OthrDocId), 
+        validElement(OthrDocId), 
+        validElement(MvmntConfId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck
+value ISO20022.Seev037001.CorporateActionNarrative31
+{
+    @XmlElement TaxtnConds         : List<String>,
+    @XmlElement PtyCtctNrrtv       : List<String>,
+    @XmlElement NrrtvVrsn          : List<String>,
+    @XmlElement AddtlTxt           : List<String>,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16")
+enum ISO20022.Seev037001.CorporateActionOption12Code
+{
+    @XmlEnum ("PRUN") PRUN          #1,
+    @XmlEnum ("SLLE") SLLE          #2,
+    @XmlEnum ("SECU") SECU          #3,
+    @XmlEnum ("QINV") QINV          #4,
+    @XmlEnum ("OVER") OVER          #5,
+    @XmlEnum ("OTHR") OTHR          #6,
+    @XmlEnum ("OFFR") OFFR          #7,
+    @XmlEnum ("NOQU") NOQU          #8,
+    @XmlEnum ("NOAC") NOAC          #9,
+    @XmlEnum ("MPUT") MPUT          #10,
+    @XmlEnum ("MKUP") MKUP          #11,
+    @XmlEnum ("MKDW") MKDW          #12,
+    @XmlEnum ("LAPS") LAPS          #13,
+    @XmlEnum ("EXER") EXER          #14,
+    @XmlEnum ("CTEN") CTEN          #15,
+    @XmlEnum ("CONY") CONY          #16,
+    @XmlEnum ("CONN") CONN          #17,
+    @XmlEnum ("CEXC") CEXC          #18,
+    @XmlEnum ("CASH") CASH          #19,
+    @XmlEnum ("CASE") CASE          #20,
+    @XmlEnum ("BUYA") BUYA          #21,
+    @XmlEnum ("BSPL") BSPL          #22,
+    @XmlEnum ("ABST") ABST          #23,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck
+value ISO20022.Seev037001.CorporateActionOption240
+{
+    @XmlElement CshMvmntDtls       : List<ISO20022.Seev037001.CashOption109>,
+    @XmlElement SctiesMvmntDtls    : List<ISO20022.Seev037001.SecuritiesOption80>,
+    @XmlElement OptnTp             : ISO20022.Seev037001.CorporateActionOption33Choice,
+    @XmlElement OptnNb             : ISO20022.Seev037001.OptionNumber1Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("CshMvmntDtls", CshMvmntDtls), 
+        validElement(CshMvmntDtls), 
+        validList ("SctiesMvmntDtls", SctiesMvmntDtls), 
+        validElement(SctiesMvmntDtls), 
+        validElement(OptnTp), 
+        validElement(OptnNb))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck, AnyKey
+value ISO20022.Seev037001.CorporateActionOption33Choice
+{
+    @XmlElement Prtry              : ISO20022.Seev037001.GenericIdentification30,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Prtry), 
+        validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck, AnyKey
+value ISO20022.Seev037001.CorporateActionReversalReason10Choice
+{
+    @XmlElement Prtry              : ISO20022.Seev037001.GenericIdentification30,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Prtry), 
+        validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16")
+enum ISO20022.Seev037001.CorporateActionReversalReason3Code
+{
+    @XmlEnum ("OTHR") OTHR          #1,
+    @XmlEnum ("UPAY") UPAY          #2,
+    @XmlEnum ("IVAD") IVAD          #3,
+    @XmlEnum ("IPRI") IPRI          #4,
+    @XmlEnum ("IPCU") IPCU          #5,
+    @XmlEnum ("IETR") IETR          #6,
+    @XmlEnum ("IRED") IRED          #7,
+    @XmlEnum ("FNRC") FNRC          #8,
+    @XmlEnum ("DCBD") DCBD          #9,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck
+value ISO20022.Seev037001.CorporateActionReversalReason8
+{
+    @XmlElement AddtlRsnInf        : String,
+    @XmlElement Rsn                : ISO20022.Seev037001.CorporateActionReversalReason10Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Rsn))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16")
+enum ISO20022.Seev037001.CreditDebitCode
+{
+    @XmlEnum ("DBIT") DBIT          #1,
+    @XmlEnum ("CRDT") CRDT          #2,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck, AnyKey
+value ISO20022.Seev037001.DateAndDateTime2Choice
+{
+    @XmlElement DtTm               : DateTime,
+    @XmlElement Dt                 : DateTime,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (validChoice (DtTm, Dt))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck, AnyKey
+value ISO20022.Seev037001.DateCode19Choice
+{
+    @XmlElement Prtry              : ISO20022.Seev037001.GenericIdentification30,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Prtry), 
+        validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck, AnyKey
+value ISO20022.Seev037001.DateFormat30Choice
+{
+    @XmlElement DtCd               : ISO20022.Seev037001.DateCode19Choice,
+    @XmlElement Dt                 : DateTime,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(DtCd), 
+        validChoice (DtCd, Dt))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16")
+enum ISO20022.Seev037001.DateType8Code
+{
+    @XmlEnum ("ONGO") ONGO          #1,
+    @XmlEnum ("UKWN") UKWN          #2,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck
+type ISO20022.Seev037001.Document
+{
+}
+[
+    @XmlElement CorpActnMvmntRvslAdvc : ISO20022.Seev037001.CorporateActionMovementReversalAdviceV16,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(CorpActnMvmntRvslAdvc))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck
+value ISO20022.Seev037001.DocumentIdentification31
+{
+    @XmlElement LkgTp              : ISO20022.Seev037001.ProcessingPosition7Choice,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(LkgTp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck
+value ISO20022.Seev037001.DocumentIdentification32
+{
+    @XmlElement LkgTp              : ISO20022.Seev037001.ProcessingPosition7Choice,
+    @XmlElement DocNb              : ISO20022.Seev037001.DocumentNumber5Choice,
+    @XmlElement Id                 : ISO20022.Seev037001.DocumentIdentification3Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(LkgTp), 
+        validElement(DocNb), 
+        validElement(Id))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck, AnyKey
+value ISO20022.Seev037001.DocumentIdentification3Choice
+{
+    @XmlElement AcctOwnrDocId      : String,
+    @XmlElement AcctSvcrDocId      : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (validChoice (AcctOwnrDocId, AcctSvcrDocId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck, AnyKey
+value ISO20022.Seev037001.DocumentNumber5Choice
+{
+    @XmlElement PrtryNb            : ISO20022.Seev037001.GenericIdentification36,
+    @XmlElement LngNb              : String,
+    @XmlElement ShrtNb             : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(PrtryNb), 
+        validPattern ("LngNb", LngNb, "[a-z]{4}\.[0-9]{3}\.[0-9]{3}\.[0-9]{2}"), 
+        validPattern ("ShrtNb", ShrtNb, "[0-9]{3}"), 
+        validChoice (PrtryNb, LngNb, ShrtNb))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck, AnyKey
+value ISO20022.Seev037001.FinancialInstrumentQuantity33Choice
+{
+    @XmlElement DgtlTknUnit        : Decimal,
+    @XmlElement AmtsdVal           : Decimal,
+    @XmlElement FaceAmt            : Decimal,
+    @XmlElement Unit               : Decimal,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (validChoice (DgtlTknUnit, AmtsdVal, FaceAmt, Unit))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck
+value ISO20022.Seev037001.GenericIdentification30
+{
+    @XmlElement SchmeNm            : String,
+    @XmlElement Issr               : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("Id", Id, "[a-zA-Z0-9]{4}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck
+value ISO20022.Seev037001.GenericIdentification36
+{
+    @XmlElement SchmeNm            : String,
+    @XmlElement Issr               : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck, AnyKey
+value ISO20022.Seev037001.IdentificationSource3Choice
+{
+    @XmlElement Prtry              : String,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck, AnyKey
+value ISO20022.Seev037001.IntermediateSecuritiesDistributionTypeFormat15Choice
+{
+    @XmlElement Prtry              : ISO20022.Seev037001.GenericIdentification30,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Prtry), 
+        validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16")
+enum ISO20022.Seev037001.IntermediateSecurityDistributionType5Code
+{
+    @XmlEnum ("MRGR") MRGR          #1,
+    @XmlEnum ("EXOF") EXOF          #2,
+    @XmlEnum ("BONU") BONU          #3,
+    @XmlEnum ("SPLF") SPLF          #4,
+    @XmlEnum ("SOFF") SOFF          #5,
+    @XmlEnum ("LIQU") LIQU          #6,
+    @XmlEnum ("INTR") INTR          #7,
+    @XmlEnum ("DVSE") DVSE          #8,
+    @XmlEnum ("DVSC") DVSC          #9,
+    @XmlEnum ("PRIO") PRIO          #10,
+    @XmlEnum ("EXRI") EXRI          #11,
+    @XmlEnum ("DVOP") DVOP          #12,
+    @XmlEnum ("DVCA") DVCA          #13,
+    @XmlEnum ("DRIP") DRIP          #14,
+    @XmlEnum ("BIDS") BIDS          #15,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16")
+enum ISO20022.Seev037001.LotteryType1Code
+{
+    @XmlEnum ("SUPP") SUPP          #1,
+    @XmlEnum ("ORIG") ORIG          #2,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck, AnyKey
+value ISO20022.Seev037001.LotteryTypeFormat4Choice
+{
+    @XmlElement Prtry              : ISO20022.Seev037001.GenericIdentification30,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Prtry), 
+        validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck
+value ISO20022.Seev037001.NameAndAddress5
+{
+    @XmlElement Adr                : ISO20022.Seev037001.PostalAddress1,
+    @XmlElement Nm                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Adr))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck, AnyKey
+value ISO20022.Seev037001.OptionNumber1Choice
+{
+    @XmlElement Cd                 : String,
+    @XmlElement Nb                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("Nb", Nb, "[0-9]{3}"), 
+        validChoice (Cd, Nb))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16")
+enum ISO20022.Seev037001.OptionNumber1Code
+{
+    @XmlEnum ("UNSO") UNSO          #1,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck
+value ISO20022.Seev037001.OriginalAndCurrentQuantities1
+{
+    @XmlElement AmtsdVal           : Decimal,
+    @XmlElement FaceAmt            : Decimal,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck
+value ISO20022.Seev037001.OtherIdentification1
+{
+    @XmlElement Tp                 : ISO20022.Seev037001.IdentificationSource3Choice,
+    @XmlElement Sfx                : String,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Tp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck, AnyKey
+value ISO20022.Seev037001.PartyIdentification120Choice
+{
+    @XmlElement NmAndAdr           : ISO20022.Seev037001.NameAndAddress5,
+    @XmlElement PrtryId            : ISO20022.Seev037001.GenericIdentification36,
+    @XmlElement AnyBIC             : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(NmAndAdr), 
+        validElement(PrtryId), 
+        validPattern ("AnyBIC", AnyBIC, "[A-Z0-9]{4,4}[A-Z]{2,2}[A-Z0-9]{2,2}([A-Z0-9]{3,3}){0,1}"), 
+        validChoice (NmAndAdr, PrtryId, AnyBIC))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck
+value ISO20022.Seev037001.PostalAddress1
+{
+    @XmlElement Ctry               : String,
+    @XmlElement CtrySubDvsn        : String,
+    @XmlElement TwnNm              : String,
+    @XmlElement PstCd              : String,
+    @XmlElement BldgNb             : String,
+    @XmlElement StrtNm             : String,
+    @XmlElement AdrLine            : List<String>,
+    @XmlElement AdrTp              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("Ctry", Ctry, "[A-Z]{2,2}"), 
+        validListMax ("AdrLine", AdrLine, 5))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16")
+enum ISO20022.Seev037001.ProcessingPosition3Code
+{
+    @XmlEnum ("INFO") INFO          #1,
+    @XmlEnum ("BEFO") BEFO          #2,
+    @XmlEnum ("WITH") WITH          #3,
+    @XmlEnum ("AFTE") AFTE          #4,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck, AnyKey
+value ISO20022.Seev037001.ProcessingPosition7Choice
+{
+    @XmlElement Prtry              : ISO20022.Seev037001.GenericIdentification30,
+    @XmlElement Cd                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Prtry), 
+        validChoice (Prtry, Cd))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck
+value ISO20022.Seev037001.ProprietaryQuantity8
+{
+    @XmlElement SchmeNm            : String,
+    @XmlElement Issr               : String,
+    @XmlElement QtyTp              : String,
+    @XmlElement Qty                : Decimal,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validPattern ("QtyTp", QtyTp, "[a-zA-Z0-9]{4}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck, AnyKey
+value ISO20022.Seev037001.Quantity48Choice
+{
+    @XmlElement PrtryQty           : ISO20022.Seev037001.ProprietaryQuantity8,
+    @XmlElement Qty                : ISO20022.Seev037001.FinancialInstrumentQuantity33Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(PrtryQty), 
+        validElement(Qty), 
+        validChoice (PrtryQty, Qty))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck, AnyKey
+value ISO20022.Seev037001.Quantity51Choice
+{
+    @XmlElement OrgnlAndCurFace    : ISO20022.Seev037001.OriginalAndCurrentQuantities1,
+    @XmlElement Qty                : ISO20022.Seev037001.FinancialInstrumentQuantity33Choice,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(OrgnlAndCurFace), 
+        validElement(Qty), 
+        validChoice (OrgnlAndCurFace, Qty))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck
+value ISO20022.Seev037001.SecuritiesOption80
+{
+    @XmlElement OrgnlPstngDt       : ISO20022.Seev037001.DateAndDateTime2Choice,
+    @XmlElement PstngDt            : ISO20022.Seev037001.DateAndDateTime2Choice,
+    @XmlElement PstngQty           : ISO20022.Seev037001.Quantity51Choice,
+    @XmlElement CdtDbtInd          : String,
+    @XmlElement FinInstrmId        : ISO20022.Seev037001.SecurityIdentification19,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(OrgnlPstngDt), 
+        validElement(PstngDt), 
+        validElement(PstngQty), 
+        validElement(FinInstrmId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck
+value ISO20022.Seev037001.SecurityIdentification19
+{
+    @XmlElement Desc               : String,
+    @XmlElement OthrId             : List<ISO20022.Seev037001.OtherIdentification1>,
+    @XmlElement ISIN               : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("OthrId", OthrId), 
+        validElement(OthrId), 
+        validPattern ("ISIN", ISIN, "[A-Z]{2,2}[A-Z0-9]{9,9}[0-9]{1,1}"))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16")
+enum ISO20022.Seev037001.ShortLong1Code
+{
+    @XmlEnum ("LONG") LONG          #1,
+    @XmlEnum ("SHOR") SHOR          #2,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck
+value ISO20022.Seev037001.SignedQuantityFormat10
+{
+    @XmlElement Qty                : ISO20022.Seev037001.FinancialInstrumentQuantity33Choice,
+    @XmlElement ShrtLngPos         : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Qty))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck
+value ISO20022.Seev037001.SignedQuantityFormat11
+{
+    @XmlElement QtyChc             : ISO20022.Seev037001.Quantity48Choice,
+    @XmlElement ShrtLngPos         : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(QtyChc))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck
+value ISO20022.Seev037001.SupplementaryData1
+{
+    @XmlElement Envlp              : ISO20022.Seev037001.SupplementaryDataEnvelope1,
+    @XmlElement PlcAndNm           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Envlp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck
+value ISO20022.Seev037001.SupplementaryDataEnvelope1
+{
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:seev.037.001.16"), ValidationCheck
+value ISO20022.Seev037001.TransactionIdentification15
+{
+    @XmlElement MktInfrstrctrTxId  : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];

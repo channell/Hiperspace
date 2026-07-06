@@ -1,0 +1,46 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.004.001.02"), ValidationCheck
+aspect ISO20022.Tsmt004001.ActivityReportSetUpRequestV02
+{
+    @XmlElement UTCOffset          : ISO20022.Tsmt004001.UTCOffset1,
+    @XmlElement ReqId              : ISO20022.Tsmt004001.MessageIdentification1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(UTCOffset), 
+        validElement(ReqId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.004.001.02"), ValidationCheck
+type ISO20022.Tsmt004001.Document
+{
+}
+[
+    @XmlElement ActvtyRptSetUpReq  : ISO20022.Tsmt004001.ActivityReportSetUpRequestV02,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(ActvtyRptSetUpReq))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.004.001.02"), ValidationCheck
+value ISO20022.Tsmt004001.MessageIdentification1
+{
+    @XmlElement CreDtTm            : DateTime,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.004.001.02"), ValidationCheck
+value ISO20022.Tsmt004001.UTCOffset1
+{
+    @XmlElement NbOfHrs            : DateTime,
+    @XmlElement Sgn                : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];

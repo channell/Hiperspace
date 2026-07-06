@@ -3,18 +3,28 @@
 classDiagram
     class API.CustomerActivity {
         # Customer  : Acc.Customer
-        + CustomerTree  : List~Acc.Customer~
-        + Sector  : List~Acc.Sector~
-        + Accounts  : List~Acc.Account~
-        + Cube  : List~Acc.Transaction_Cube~
-        + Facts  : List~Acc.Transaction_Fact~
+        + CustomerTree  : global::System.Collections.Generic.List~Acc.Customer~
+        + Sector  : global::System.Collections.Generic.List~Acc.Sector~
+        + Accounts  : global::System.Collections.Generic.List~Acc.Account~
+        + Cube  : global::System.Collections.Generic.List~Acc.Transaction_Cube~
+        + Facts  : global::System.Collections.Generic.List~Acc.Transaction_Fact~
     }
     API.CustomerActivity --> Acc.Customer
-    class Acc.Sector {
-        # Name  : String
-        + Description  : String
-        + Customers (Sector = this) : Acc.Customer
+    API.CustomerActivity *-- Acc.Customer
+    API.CustomerActivity *-- Acc.Sector
+    API.CustomerActivity *-- Acc.Account
+    class Acc.Account {
+        + Title  : String
+        + Opened  : DateTime
+        + Closed  : DateTime
+        + Transactions () : Acc.Transaction
+        + Balance () : Acc.Balance
+        + CurrentBalance () = deltasum(Transactions?.Amount)
+        + Debit () = sum(Transactions?.Debit)
+        + Credit () = sum(Transactions?.Credit)
     }
+    Acc.Account o-- Acc.Transaction
+    Acc.Account o-- Acc.Balance
     class Acc.Balance {
         + When  : DateTime
         + Current  : Decimal
@@ -27,17 +37,14 @@ classDiagram
         + Sector  : Acc.Sector
         + Tier  : Int32
         + Accounts () : Acc.Account
-        + Children (Parent = this) : Acc.Customer
+        + Children (Parent = ) : Acc.Customer
     }
-    class Acc.Account {
-        # Title  : String
-        + Opened  : DateTime
-        + Closed  : DateTime
-        + Transactions () : Acc.Transaction
-        + Balance () : Acc.Balance
-        + CurrentBalance () = deltasum(Transactions.Amount)
-        + Debit () = sum(Transactions.Debit)
-        + Credit () = sum(Transactions.Credit)
+    Acc.Customer --> Acc.Sector
+    Acc.Customer o-- Acc.Account
+    class Acc.Sector {
+        # Name  : String
+        + Description  : String
+        + Customers (Sector = ) : Acc.Customer
     }
     class Acc.Transaction {
         # At  : DateTime
@@ -48,18 +55,19 @@ classDiagram
         + Credit () = credit(Amount)
         + Amount2 () = Amount
     }
-    class Edge {
-        # From  : Node
-        # To  : Node
+    Acc.Transaction --> Acc.Customer
+    class Hiperspace.Edge {
+        # From  : Hiperspace.Node
+        # To  : Hiperspace.Node
         # TypeName  : String
         + Name  : String
     }
-    class Node {
+    class Hiperspace.Node {
         # SKey  : String
         + TypeName  : String
         + Name  : String
-        + Froms (From = this) : Edge
-        + Tos (To = this) : Edge
+        + Froms (From = ) : Hiperspace.Edge
+        + Tos (To = ) : Hiperspace.Edge
     }
 ```
 > The tables below contain descriptions of the members of each Element. 
@@ -77,22 +85,27 @@ classDiagram
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
 |#|Customer|Acc.Customer||||
-|+|CustomerTree|List<Acc.Customer>||||
-|+|Sector|List<Acc.Sector>||||
-|+|Accounts|List<Acc.Account>||||
-|+|Cube|List<Acc.Transaction_Cube>||||
-|+|Facts|List<Acc.Transaction_Fact>||||
+|+|CustomerTree|global::System.Collections.Generic.List<Acc.Customer>||||
+|+|Sector|global::System.Collections.Generic.List<Acc.Sector>||||
+|+|Accounts|global::System.Collections.Generic.List<Acc.Account>||||
+|+|Cube|global::System.Collections.Generic.List<Acc.Transaction_Cube>||||
+|+|Facts|global::System.Collections.Generic.List<Acc.Transaction_Fact>||||
 
 ---
 
-## Entity Acc.Sector
-
+## Segment Acc.Account
+An Account for a customer
 
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
-|#|Name|String|name of the sector|||
-|+|Description|String|description of the sector|||
-||Customers|Acc.Customer|customers in this sector||Sector = this|
+|+|Title|String||Key()||
+|+|Opened|DateTime||||
+|+|Closed|DateTime||||
+|+|Transactions|Acc.Transaction|transactions against the account|||
+|+|Balance|Acc.Balance|the last closing balance|||
+||CurrentBalance|Some(Decimal)||CubeMeasure(Aggregate?.Sum)|deltasum(Transactions?.Amount)|
+||Debit|Some(Decimal)|||sum(Transactions?.Debit)|
+||Credit|Some(Decimal)|||sum(Transactions?.Credit)|
 
 ---
 
@@ -118,23 +131,18 @@ A Customer
 |+|Sector|Acc.Sector||||
 |+|Tier|Int32||||
 |+|Accounts|Acc.Account|Account that the customer owns|||
-||Children|Acc.Customer|||Parent = this|
+||Children|Acc.Customer|||Parent = |
 
 ---
 
-## Segment Acc.Account
-An Account for a customer
+## Entity Acc.Sector
+
 
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
-|#|Title|String||||
-|+|Opened|DateTime||||
-|+|Closed|DateTime||||
-|+|Transactions|Acc.Transaction|transactions against the account|||
-|+|Balance|Acc.Balance|the last closing balance|||
-||CurrentBalance|Some(Decimal)||CubeMeasure(Aggregate?.Sum)|deltasum(Transactions.Amount)|
-||Debit|Some(Decimal)|||sum(Transactions.Debit)|
-||Credit|Some(Decimal)|||sum(Transactions.Credit)|
+|#|Name|String|name of the sector|||
+|+|Description|String|description of the sector|||
+||Customers|Acc.Customer|customers in this sector||Sector = |
 
 ---
 
@@ -153,19 +161,19 @@ a transaction against account
 
 ---
 
-## View Edge
+## View Hiperspace.Edge
 edge between nodes
 
 | |Name|Type|*|@|=|
 |-|-|-|-|-|-|
-|#|From|Node||||
-|#|To|Node||||
+|#|From|Hiperspace.Node||||
+|#|To|Hiperspace.Node||||
 |#|TypeName|String||||
 |+|Name|String||||
 
 ---
 
-## View Node
+## View Hiperspace.Node
 node in a graph view of data
 
 | |Name|Type|*|@|=|
@@ -173,6 +181,6 @@ node in a graph view of data
 |#|SKey|String||||
 |+|TypeName|String||||
 |+|Name|String||||
-||Froms|Edge|||From = this|
-||Tos|Edge|||To = this|
+||Froms|Hiperspace.Edge|||From = |
+||Tos|Hiperspace.Edge|||To = |
 

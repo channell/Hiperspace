@@ -1,0 +1,76 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:tsmt.029.001.02")
+enum ISO20022.Tsmt029001.BaselineStatus2Code
+{
+    @XmlEnum ("ACTV") ACTV          #1,
+    @XmlEnum ("CLSD") CLSD          #2,
+    @XmlEnum ("COMP") COMP          #3,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.029.001.02"), ValidationCheck
+type ISO20022.Tsmt029001.Document
+{
+}
+[
+    @XmlElement StsChngReqRjctn    : ISO20022.Tsmt029001.StatusChangeRequestRejectionV02,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(StsChngReqRjctn))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.029.001.02"), ValidationCheck
+value ISO20022.Tsmt029001.MessageIdentification1
+{
+    @XmlElement CreDtTm            : DateTime,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.029.001.02"), ValidationCheck
+value ISO20022.Tsmt029001.Reason2
+{
+    @XmlElement Desc               : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.029.001.02"), ValidationCheck
+value ISO20022.Tsmt029001.SimpleIdentificationInformation
+{
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.029.001.02"), ValidationCheck
+aspect ISO20022.Tsmt029001.StatusChangeRequestRejectionV02
+{
+    @XmlElement RjctnRsn           : ISO20022.Tsmt029001.Reason2,
+    @XmlElement RjctdStsChng       : ISO20022.Tsmt029001.TransactionStatus3,
+    @XmlElement SubmitrTxRef       : ISO20022.Tsmt029001.SimpleIdentificationInformation,
+    @XmlElement TxId               : ISO20022.Tsmt029001.SimpleIdentificationInformation,
+    @XmlElement RjctnId            : ISO20022.Tsmt029001.MessageIdentification1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(RjctnRsn), 
+        validElement(RjctdStsChng), 
+        validElement(SubmitrTxRef), 
+        validElement(TxId), 
+        validElement(RjctnId))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:tsmt.029.001.02"), ValidationCheck
+value ISO20022.Tsmt029001.TransactionStatus3
+{
+    @XmlElement Sts                : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];

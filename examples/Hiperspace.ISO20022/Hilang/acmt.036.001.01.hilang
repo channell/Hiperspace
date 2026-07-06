@@ -1,0 +1,112 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:acmt.036.001.01"), ValidationCheck
+value ISO20022.Acmt036001.AccountSwitchDetails1
+{
+    @XmlElement Rspn               : List<ISO20022.Acmt036001.ResponseDetails1>,
+    @XmlElement BalTrfWndw         : String,
+    @XmlElement SwtchSts           : String,
+    @XmlElement SwtchTp            : String,
+    @XmlElement SwtchDt            : DateTime,
+    @XmlElement SwtchRcvdDtTm      : DateTime,
+    @XmlElement RtgUnqRefNb        : String,
+    @XmlElement UnqRefNb           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("Rspn", Rspn), 
+        validElement(Rspn))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:acmt.036.001.01"), ValidationCheck
+aspect ISO20022.Acmt036001.AccountSwitchTerminationSwitchV01
+{
+    @XmlElement SplmtryData        : List<ISO20022.Acmt036001.SupplementaryData1>,
+    @XmlElement AcctSwtchDtls      : ISO20022.Acmt036001.AccountSwitchDetails1,
+    @XmlElement MsgId              : ISO20022.Acmt036001.MessageIdentification1,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("SplmtryData", SplmtryData), 
+        validElement(SplmtryData), 
+        validElement(AcctSwtchDtls), 
+        validElement(MsgId))
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:acmt.036.001.01")
+enum ISO20022.Acmt036001.BalanceTransferWindow1Code
+{
+    @XmlEnum ("EARL") EARL          #1,
+    @XmlEnum ("DAYH") DAYH          #2,
+};
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:acmt.036.001.01"), ValidationCheck
+type ISO20022.Acmt036001.Document
+{
+}
+[
+    @XmlElement AcctSwtchTermntnSwtch : ISO20022.Acmt036001.AccountSwitchTerminationSwitchV01,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(AcctSwtchTermntnSwtch))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:acmt.036.001.01"), ValidationCheck
+value ISO20022.Acmt036001.MessageIdentification1
+{
+    @XmlElement CreDtTm            : DateTime,
+    @XmlElement Id                 : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:acmt.036.001.01"), ValidationCheck
+value ISO20022.Acmt036001.ResponseDetails1
+{
+    @XmlElement AddtlDtls          : String,
+    @XmlElement RspnCd             : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:acmt.036.001.01"), ValidationCheck
+value ISO20022.Acmt036001.SupplementaryData1
+{
+    @XmlElement Envlp              : ISO20022.Acmt036001.SupplementaryDataEnvelope1,
+    @XmlElement PlcAndNm           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Envlp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:acmt.036.001.01"), ValidationCheck
+value ISO20022.Acmt036001.SupplementaryDataEnvelope1
+{
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
+
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:acmt.036.001.01")
+enum ISO20022.Acmt036001.SwitchStatus1Code
+{
+    @XmlEnum ("TMTN") TMTN          #1,
+    @XmlEnum ("REQU") REQU          #2,
+    @XmlEnum ("REJT") REJT          #3,
+    @XmlEnum ("REDE") REDE          #4,
+    @XmlEnum ("REDT") REDT          #5,
+    @XmlEnum ("COMP") COMP          #6,
+    @XmlEnum ("BTRS") BTRS          #7,
+    @XmlEnum ("BTRQ") BTRQ          #8,
+    @XmlEnum ("ACPT") ACPT          #9,
+};
+@XmlNameSpace("urn:iso:std:iso:20022:tech:xsd:acmt.036.001.01")
+enum ISO20022.Acmt036001.SwitchType1Code
+{
+    @XmlEnum ("PART") PART          #1,
+    @XmlEnum ("FULL") FULL          #2,
+};

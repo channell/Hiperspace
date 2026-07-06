@@ -105,11 +105,6 @@ namespace Hiperspace
             return _sessionSpace.Bind(key, value, source);
         }
 
-        [Obsolete("use Bind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
-        public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, object? source = null)
-        {
-            return _sessionSpace.Bind(key, value, version, source);
-        }
         public override Result<byte[]> Bind(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
         {
             return _sessionSpace.Bind(key, value, version, priorVersion, source);
@@ -118,11 +113,6 @@ namespace Hiperspace
         public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, object? source)
         {
             return _sessionSpace.BindAsync(key, value, source);
-        }
-        [Obsolete("use BatchBind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
-        public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, object? source = null)
-        {
-            return _sessionSpace.BindAsync(key, value, version, source);
         }
         public override Task<Result<byte[]>> BindAsync(byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source = null)
         {
@@ -333,21 +323,11 @@ namespace Hiperspace
         {
             return _sessionSpace.BatchBind(batch);
         }
-        [Obsolete("use BatchBind((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
-        public override Result<(byte[] Key, byte[] Value)>[] BatchBind((byte[] key, byte[] value, DateTime version, object? source)[] batch)
-        {
-            return _sessionSpace.BatchBind(batch);
-        }
         public override Result<(byte[] Key, byte[] Value)>[] BatchBind((byte[] key, byte[] value, object? source)[] batch)
         {
             return _sessionSpace.BatchBind(batch);
         }
         public override Task<Result<(byte[] Key, byte[] Value)>[]> BatchBindAsync((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)
-        {
-            return _sessionSpace.BatchBindAsync(batch);
-        }
-        [Obsolete("use BatchBindAsync((byte[] key, byte[] value, DateTime version, DateTime? priorVersion, object? source)[] batch)")]
-        public override Task<Result<(byte[] Key, byte[] Value)>[]> BatchBindAsync((byte[] key, byte[] value, DateTime version, object? source)[] batch)
         {
             return _sessionSpace.BatchBindAsync(batch);
         }
@@ -484,6 +464,7 @@ namespace Hiperspace
             }
             return null;
         }
+        [Obsolete("Use messages instead")]
         public override IEnumerable<(byte[] key, byte[] value)> GetMany(IEnumerable<byte[]> keys)
         {
             for (int c = 0; c < _spaces.Length; c++)
@@ -492,6 +473,7 @@ namespace Hiperspace
                     yield return b;
             }
         }
+        [Obsolete("Use messages instead")]
         public override async IAsyncEnumerable<(byte[] key, byte[] value)> GetManyAsync(IAsyncEnumerable<byte[]> keys, [EnumeratorCancellation]CancellationToken cancellationToken = default)
         {
             for (int c = 0; c < _spaces.Length; c++)
@@ -500,6 +482,7 @@ namespace Hiperspace
                     yield return b;
             }
         }
+        [Obsolete("Use messages instead")]
         public override IEnumerable<(byte[] key, byte[] Value, DateTime version)> GetMany(IEnumerable<byte[]> keys, DateTime? version)
         {
             for (int c = 0; c < _spaces.Length; c++)
@@ -508,6 +491,7 @@ namespace Hiperspace
                     yield return b;
             }
         }
+        [Obsolete("Use messages instead")]
         public override async IAsyncEnumerable<(byte[] key, byte[] Value, DateTime version)> GetManyAsync(IAsyncEnumerable<byte[]> keys, DateTime? version, [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             for (int c = 0; c < _spaces.Length; c++)
@@ -516,6 +500,7 @@ namespace Hiperspace
                     yield return b;
             }
         }
+        [Obsolete("use transactional Find instead")]
         public override IEnumerable<(byte[] Key, byte[] Value)> Scan(byte[] begin, byte[] end, byte[][] values)
         {
             for (int c = 0; c < _spaces.Length; c++)
@@ -524,6 +509,7 @@ namespace Hiperspace
                     yield return b;
             }
         }
+        [Obsolete("use transactional Find instead")]
         public override IEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> Scan(byte[] begin, byte[] end, byte[][] values, DateTime? version)
         {
             for (int c = 0; c < _spaces.Length; c++)
@@ -532,6 +518,7 @@ namespace Hiperspace
                     yield return b;
             }
         }
+        [Obsolete("use transactional Find instead")]
         public override async IAsyncEnumerable<(byte[] Key, byte[] Value)> ScanAsync(byte[] begin, byte[] end, byte[][] values, [EnumeratorCancellation]CancellationToken cancellationToken = default)
         {
             for (int c = 0; c < _spaces.Length; c++)
@@ -540,6 +527,7 @@ namespace Hiperspace
                     yield return b;
             }
         }
+        [Obsolete("use transactional Find instead")]
         public override async IAsyncEnumerable<(byte[] Key, DateTime AsAt, byte[] Value)> ScanAsync(byte[] begin, byte[] end, byte[][] values, DateTime? version, [EnumeratorCancellation]CancellationToken cancellationToken = default)
         {
             for (int c = 0; c < _spaces.Length; c++)

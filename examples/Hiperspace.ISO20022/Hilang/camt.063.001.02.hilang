@@ -1,0 +1,59 @@
+%json;
+%xml;
+%markdown;
+
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.063.001.02"), ValidationCheck, AnyKey
+value ISO20022.Camt063001.AcknowledgementDetails1Choice
+{
+    @XmlElement PayInCallRef       : String,
+    @XmlElement PayInSchdlRef      : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (validChoice (PayInCallRef, PayInSchdlRef))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.063.001.02"), ValidationCheck
+type ISO20022.Camt063001.Document
+{
+}
+[
+    @XmlElement PayInEvtAck        : ISO20022.Camt063001.PayInEventAcknowledgementV02,
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(PayInEvtAck))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.063.001.02"), ValidationCheck
+aspect ISO20022.Camt063001.PayInEventAcknowledgementV02
+{
+    @XmlElement SplmtryData        : List<ISO20022.Camt063001.SupplementaryData1>,
+    @XmlElement AckDtls            : ISO20022.Camt063001.AcknowledgementDetails1Choice,
+    @XmlElement SttlmSsnIdr        : String,
+    @XmlElement MsgId              : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validList ("SplmtryData", SplmtryData), 
+        validElement(SplmtryData), 
+        validElement(AckDtls), 
+        validPattern ("SttlmSsnIdr", SttlmSsnIdr, "[a-zA-Z0-9]{4}"))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.063.001.02"), ValidationCheck
+value ISO20022.Camt063001.SupplementaryData1
+{
+    @XmlElement Envlp              : ISO20022.Camt063001.SupplementaryDataEnvelope1,
+    @XmlElement PlcAndNm           : String,
+}
+[
+    @XmlIgnore, JsonIgnore Validation = validation (
+        validElement(Envlp))
+];
+
+@XmlNameSpace ("urn:iso:std:iso:20022:tech:xsd:camt.063.001.02"), ValidationCheck
+value ISO20022.Camt063001.SupplementaryDataEnvelope1
+{
+}
+[
+    @XmlIgnore, JsonIgnore Validation = ""
+];
