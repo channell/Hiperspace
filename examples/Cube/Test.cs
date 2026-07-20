@@ -1,4 +1,5 @@
 ﻿using AwesomeAssertions;
+using Hiperspace;
 using Hiperspace.Heap;
 using Xunit;
 using Xunit.Abstractions;
@@ -40,6 +41,7 @@ namespace Cube.Tests
             customer.FirstAccount = new(facc);
             foreach (var a in customer.Accounts)
             {
+                a.Include(a => { var t = a.Customer; });
                 _output.WriteLine(a.Id);
             }
             customer.Accounts.Count().Should().Be(1);

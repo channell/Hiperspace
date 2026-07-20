@@ -1,0 +1,593 @@
+﻿// ---------------------------------------------------------------------------------------
+//                                   Hiperspace
+//                        Copyright (c) 2023, 2024, 2025, 2026 Cepheis Ltd
+//                                    www.cepheis.com
+//
+// This file is part of Hiperspace and is distributed under the GPL Open Source License. 
+// ---------------------------------------------------------------------------------------
+using System.Diagnostics;
+using System.Net.NetworkInformation;
+using System.Numerics;
+using System.Text;
+
+namespace Hiperspace
+{
+    public static class Functions
+    {
+        public static T Sum<T, S>(IEnumerable<S>? source, Func<S, T> func)
+            where T : INumber<T>, new()
+        {
+            T result = T.Zero;
+            if (source is not null)
+                foreach (var item in source.ToArray())
+                {
+                    result += func(item);
+                }
+            return result;
+        }
+        public static T Avg<T, S>(IEnumerable<S>? source, Func<S, T> func)
+            where T : INumber<T>, new()
+        {
+            T result = T.Zero;
+            T count = T.Zero;
+            if (source is not null)
+                foreach (var item in source.ToArray())
+                {
+                    result += func(item);
+                    count++;
+                }
+            return result / count;
+        }
+        public static T Max<T, S>(IEnumerable<S>? source, Func<S, T> func)
+            where T : INumber<T>, new()
+        {
+            bool first = true;
+            T returner = T.Zero;
+            if (source is not null)
+                foreach (var item in source.ToArray())
+                {
+                    T result = func(item);
+                    if (first)
+                    {
+                        first = false;
+                        returner = result;
+                    }
+                    else
+                    {
+                        returner = T.Max(result, returner);
+                    }
+                }
+            return returner;
+        }
+        public static T Min<T, S>(IEnumerable<S>? source, Func<S, T> func)
+            where T : INumber<T>, new()
+        {
+            bool first = true;
+            T returner = T.Zero;
+            if (source is not null)
+                foreach (var item in source.ToArray())
+                {
+                    T result = func(item);
+                    if (first)
+                    {
+                        first = false;
+                        returner = result;
+                    }
+                    else
+                    {
+                        returner = T.Min(result, returner);
+                    }
+                }
+            return returner;
+        }
+        public static T? First<T>(RefSet<T>? source) where T : Element<T>, new()
+        {
+            if (source is null) return default(T?);
+            foreach (var item in source)
+                return item;
+            return default(T?);
+        }
+        public static T? First<T>(List<T>? source)
+        {
+            if (source is null) return default(T?);
+            foreach (var item in source)
+                return item;
+            return default(T?);
+        }
+        public static T? First<T>(List<List<T>>? source)
+        {
+            if (source is null) return default(T?);
+            foreach (var item in source)
+                return First(item);
+            return default(T?);
+        }
+        public static T? First<T>(List<List<List<T>>>? source)
+        {
+            if (source is null) return default(T?);
+            foreach (var item in source)
+                return First(item);
+            return default(T?);
+        }
+        public static T? Last<T>(RefSet<T>? source) where T: Element<T>, new()
+        {
+            T? last = default(T?);
+            if (source is null) return default(T?);
+            foreach (var item in source)
+                last = item;
+            return last;
+        }
+        public static T? Last<T>(List<T>? source)
+        {
+            T? last = default(T?);
+            if (source is null) return default(T?);
+            foreach (var item in source)
+                last = item;
+            return last;
+        }
+        public static T? Last<T>(List<List<T>>? source)
+        {
+            T? last = default(T?);
+            if (source is null) return default(T?);
+            foreach (var item in source)
+                last = Last(item);
+            return last;
+        }
+        public static T? Last<T>(List<List<List<T>>>? source)
+        {
+            T? last = default(T?);
+            if (source is null) return default(T?);
+            foreach (var item in source)
+                last = Last(item);
+            return last;
+        }
+        public static T Count<T, S>(IEnumerable<S>? source, Func<S, T> func)
+            where T : INumber<T>, new()
+        {
+            T returner = T.Zero;
+            if (source is not null)
+                foreach (var item in source.ToArray())
+                {
+                    T result = func(item);
+                    if (result is not null && returner is not null)
+                    {
+                        returner = returner + T.One;
+                    }
+                }
+            return returner ?? T.Zero;
+        }
+        public static T DeltaSum<T, S>(RefSet<S> source, Func<S, T> func)
+            where S : ElementVersion<S>, new()
+            where T : INumber<T>, new()
+        {
+            if (source?.SetSpace is SetSpaceVersion<S> versionspace && versionspace.DeltaFrom.HasValue)
+            {
+                T result = T.Zero;
+                foreach (var item in source.ToArray())
+                {
+                    var last = versionspace?.Get(item, item!.SetSpace!.Space.DeltaFrom);
+                    // subtract the prior value if exits to allow the sum to provide the delta
+                    if (last is not null) result -= func(item);
+                    result += func(item);
+                }
+                return result;
+            }
+            else if (source is not null)
+                return Sum(source, func);
+            return T.Zero;
+        }
+        public static T DeltaMax<T, S>(RefSet<S> source, Func<S, T> func)
+            where S : ElementVersion<S>, new()
+            where T : INumber<T>, new()
+        {
+            if (source?.SetSpace is SetSpaceVersion<S> versionspace && versionspace.DeltaFrom.HasValue)
+            {
+                bool first = true;
+
+                T returner = T.Zero;
+                foreach (var item in source.ToArray())
+                {
+                    T result = func(item);
+                    var last = versionspace?.Get(item, item!.SetSpace!.Space.DeltaFrom);
+                    // subtract the prior value if exits to allow the sum to provide the delta
+                    if (last is not null) result = T.Max(result, func(item));
+                    if (first)
+                    {
+                        first = false;
+                        returner = result;
+                    }
+                    else
+                    {
+                        returner = T.Max(result, returner);
+                    }
+                }
+                return returner;
+            }
+            else if (source is not null)
+                return Sum(source, func);
+            return T.Zero;
+        }
+        public static T DeltaMin<T, S>(RefSet<S> source, Func<S, T> func)
+            where S : ElementVersion<S>, new()
+            where T : INumber<T>, new()
+        {
+            if (source?.SetSpace is SetSpaceVersion<S> versionspace && versionspace.DeltaFrom.HasValue)
+            {
+                bool first = true;
+                T returner = T.Zero;
+                foreach (var item in source.ToArray())
+                {
+                    T result = func(item);
+                    var last = versionspace?.Get(item, item!.SetSpace!.Space.DeltaFrom);
+                    // subtract the prior value if exits to allow the sum to provide the delta
+                    if (last is not null) result = T.Min(result, func(item));
+                    if (first)
+                    {
+                        first = false;
+                        returner = result;
+                    }
+                    else
+                    {
+                        returner = T.Min(result, returner);
+                    }
+                }
+                return returner;
+            }
+            else if (source is not null)
+                return Sum(source, func);
+            return T.Zero;
+        }
+        public static T DeltaCount<T, S>(RefSet<S> source, Func<S, T> func)
+            where S : ElementVersion<S>, new()
+            where T : INumber<T>, new()
+        {
+            if (source?.SetSpace is SetSpaceVersion<S> versionspace && versionspace.DeltaFrom.HasValue)
+            {
+                T returner = T.Zero;
+                foreach (var item in source.ToArray())
+                {
+                    T result = func(item);
+                    var last = versionspace?.Get(item, item!.SetSpace!.Space.DeltaFrom);
+                    // subtract the prior value if exits to allow the sum to provide the delta
+                    if (last is not null) result -= T.One;
+                    if (result is not null && returner is not null)
+                    {
+                        returner = returner + T.One;
+                    }
+                }
+                return returner ?? T.Zero;
+            }
+            else if (source is not null)
+                return Sum(source, func);
+            return T.Zero;
+        }
+
+        public static T? First<T>(SetSpace<T> source)
+            where T : Element<T>, new()
+        {
+            if (source is not null)
+            {
+                return source.GetFirst();
+            }
+            return null;
+        }
+        public static T? Last<T>(SetSpace<T> source)
+            where T : Element<T>, new()
+        {
+            if (source is not null)
+            {
+                return source.GetLast();
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Get the CubeSlice of the current Cube + CubeSlice for the target element
+        /// </summary>
+        /// <typeparam name="TEntity">the  dimension being drilled down to</typeparam>
+        /// <param name="source">the current cube</param>
+        /// <returns>source.CubeSlice + new dimension slice</returns>
+        public static string CubeSlice<TEntity>(ICubeFact source)
+            where TEntity : Element<TEntity>, ICubeDimension, new()
+        {
+            var template = new TEntity() as ICubeDimension;
+            if (int.TryParse(template.CubeSlice, out var id))
+            {
+                var parts = source.CubeSlice?.Split(',') ?? Array.Empty<string>();
+                var newParts = new int[parts.Length + 1];
+                for (int c = 1; c < newParts.Length; c++)
+                {
+                    if (int.TryParse(parts[c - 1], out int part))
+                    {
+                        // if already included
+                        if (part == id) return source.CubeSlice!;
+                        newParts[c] = part;
+                    }
+                }
+                newParts[0] = int.Parse(template.CubeSlice);
+                Array.Sort(newParts);
+                var slice = String.Join(',', newParts);
+                return slice;
+
+            }
+            return source.CubeSlice;
+        }
+        /// <summary>
+        /// Get the CubeSlice for a new Cube
+        /// </summary>
+        /// <param name="source">an array of Dimensions</param>
+        /// <returns>the cubeslice to use as a key</returns>
+        public static string? CubeSlice(ICubeDimension?[] source)
+        {
+            var slices = source.Where(cd => cd != null).Select(cd => int.Parse(cd!.CubeSlice)).ToArray();
+            if (slices.Length == 0) return null;
+            Array.Sort(slices);
+            var slice = String.Join(",", slices);
+            return slice;
+        }
+        /// <summary>
+        /// Get the CubeSlice for a new Cube
+        /// </summary>
+        /// <param name="source">an array of Dimensions</param>
+        /// <returns>the cubeslice to use as a key</returns>
+        public static string CubeSlice(ISet<ICubeDimension> source)
+        {
+            var slices = source.Where(cd => cd != null).Select(cd => int.Parse(cd!.CubeSlice)).ToArray();
+            Array.Sort(slices);
+            var slice = String.Join(",", slices);
+            return slice;
+        }
+
+        /// <summary>
+        /// Get the name of a cube observation based on the dimensions provided
+        /// </summary>
+        /// <param name="dimensions">dimensions to the cube</param>
+        /// <returns></returns>
+        public static string CubeName(params ICubeDimension?[]? dimensions)
+        {
+            StringBuilder sb = new StringBuilder();
+            if (dimensions is null || dimensions.Length == 0) return string.Empty;
+            for (int i = 0; i < dimensions.Length; i++)
+            {
+                if (dimensions[i] is null)
+                    continue;
+                else
+                {
+                    if (sb.Length > 0)
+                        sb.Append(',');
+                    sb.Append($"{dimensions[i]?.CubeName}:{dimensions[i]?.Name}");
+                }
+            }
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Return the number of dimensions for this Cube, to indicate the level of the summary
+        /// </summary>
+        /// <param name="dimensions">the cube's collection of dimensions</param>
+        /// <returns>count</returns>
+        /// <remarks>
+        /// 1 : a top level summary that describes the the node at the source of the edge
+        /// 2 : Intersection between two nodes, and the summary of the connection
+        /// # : etc
+        /// </remarks>
+        public static int CubeDimensions(params ICubeDimension?[]? dimensions)
+        {
+            if (dimensions is null || dimensions?.Length == 0) return 0;
+            int i = 0;
+            for (int c = 0; c < dimensions!.Length; c++)
+            {
+                if (dimensions[c] is not null) i++;
+            }
+            return i;
+        }
+
+        /// <summary>
+        /// Retrieves the context label associated with the SubSpace of the specified element.
+        /// </summary>
+        /// <typeparam name="T">The type of the element, which must inherit from <see cref="Element{T}"/></typeparam>
+        /// <param name="t">The element instance for which to retrieve the context label</param>
+        /// <returns>The context label of the specified element if any</returns>
+        public static string? ContextLabel<T>(T? t) where T : Element<T>, new()
+        {
+            return t?.SetSpace?.Space?.ContextLabel;
+        }
+
+        /// <summary>
+        /// Make a reference to a Node defined in another database
+        /// </summary>
+        /// <param name="skey">The SKey of the external node</param>
+        /// <returns>An external node with the specified SKey, or null if the SKey is missing</returns>
+        public static Node? ExternalNode(string? skey)
+        {
+            if (string.IsNullOrWhiteSpace(skey)) return null;
+            return new Node { SKey = skey };
+        }
+
+        /// <summary>
+        /// Creates a new graph rule with the specified source type, edge type, and target type. Wildcard values are
+        /// used for any unspecified types.
+        /// </summary>
+        /// <remarks>This function is for rule definition with a hilang model</remarks>
+        /// <param name="fromType">The source node type for the rule. If null, a wildcard ('*') is used to match any type.</param>
+        /// <param name="edgeType">The edge type for the rule. If null, a wildcard ('*') is used to match any edge type.</param>
+        /// <param name="toType">The target node type for the rule. If null, a wildcard ('*') is used to match any type.</param>
+        /// <returns>A new <see cref="Graph.Rule"/> instance representing the specified rule, with wildcards for any unspecified
+        /// types.</returns>
+        public static Graph.Rule Rule(string? fromType, string? edgeType, string? toType)
+        {
+            return new Graph.Rule
+            {
+                FromType = fromType ?? "*",
+                EdgeType = edgeType ?? "*",
+                ToType = toType ?? "*"
+            };
+        }
+        /// <summary>
+        /// Creates a new route with the specified name and a set of rules.
+        /// </summary>
+        /// <param name="name">The name to assign to the route. Cannot be null.</param>
+        /// <param name="rules">An array of rules to associate with the route. May be empty.</param>
+        /// <returns>A new <see cref="Graph.Route"/> instance with the specified name and rules.</returns>
+        public static Graph.Route? Route(string name, params Graph.Rule[] rules)
+        {
+            return new Graph.Route
+            {
+                Name = name,
+                Rules = new HashSet<Graph.Rule>(rules)
+            };
+        }
+
+        public static HashSet<Graph.HiperEdge> Path<T>(T subject, Graph.Route? route, int? length = null, HashSet<string>? targets = null)
+            where T : Element<T>, new()
+        {
+            var node = subject.Cast<Node>();
+            if (node is not null && subject?.SetSpace?.Space is not null && route is not null)
+            {
+                var space = subject.SetSpace.Space;
+                return space.FindPathsAsync(node, route.Value, length, targets).GetAwaiter().GetResult();
+            }
+            return new HashSet<Graph.HiperEdge>();
+        }
+        public static T? Cast<T, S>(S? s)
+            where T : Element<T>, new()
+            where S : Element<T>, new()
+        {
+            return s?.Cast<T>();
+        }
+
+        public static double? StdDev(Vector? vector)
+        {
+            if (vector is null) return null;
+            return vector.Value.StandardDeviation();
+        }
+
+        public static double? Percentile(Vector? vector, int? percent)
+        {
+            if (vector is null || percent is null) return null;
+            if (percent < 0 || percent > 100) throw new ArgumentOutOfRangeException(nameof(percent));
+            vector.Value.Sort();
+            var doubles = vector.Value.Doubles;
+            if (doubles is null || doubles.Length == 0) return null;
+            var position = doubles.Length / 100 * percent.Value;
+            return doubles[position];
+        }
+
+        public static HashSet<Edge> DrilldownEdges<T>(T subject)
+            where T : Element<T>, new()
+        {
+            if (subject is ICubeFact fact)
+            {
+                return fact.DrillDownEdges().ToHashSet();
+            }
+            else if (subject is ICubeFactBase factBase)
+            {
+                return factBase.DrillDownEdges().ToHashSet();
+            }
+            return new HashSet<Edge>();
+        }
+
+        public static string? Validation(params string?[] args)
+        {
+            if (args is null) return string.Empty;
+            var sb = new StringBuilder ();
+            for (int c = 0; c < args.Length; c++)
+            {
+                if (!String.IsNullOrWhiteSpace(args[c]))
+                {
+                    if (args[c]?.EndsWith('\n') ?? false)
+                        sb.AppendFormat("{0}", args[c]);
+                    else
+                        sb.AppendFormat("{0}\n", args[c]);
+                }
+            }
+            return sb.ToString();
+        }
+        public static string ValidChoice(params object?[] args)
+        {
+            for (int c = 0; c < args.Length; c++)
+            {
+                if (args[c] is not null) return string.Empty;
+            }
+            return "At least one value must be provided";
+        }
+        public static string ValidPattern<T>(string name, T? source, string regex)
+        {
+
+            if (source is null) return string.Empty;
+            var str = source.ToString();
+            if (str is not null && !System.Text.RegularExpressions.Regex.IsMatch(str, regex))
+            {
+                return $"{name} does not match {regex}";
+            }
+            return string.Empty;
+        }
+        public static string ValidPattern<T>(string name, List<T>? source, string regex)
+        {
+
+            if (source is null) return string.Empty;
+
+            foreach (var s in source)
+            {
+                var str = s?.ToString();
+                if (str is not null &&!System.Text.RegularExpressions.Regex.IsMatch(str, regex))
+                {
+                    return $"{name} does not match {regex} with value \"{s}\"";
+                }
+            }
+            return string.Empty;
+        }
+        public static string ValidLength(string name, string source, int min, int max)
+        {
+            if (source is null) return string.Empty;
+            if (source.Length < min) return $"{name} is too short";
+            if (source.Length > max) return $"{name} is too long";
+            return string.Empty;
+        }
+        public static string ValidMin<T>(string name, T source, T min) where T : INumber<T>
+        {
+            if (source is null) return string.Empty;
+            if (source < min) return $"{name} is too short";
+            return string.Empty;
+        }
+        public static string ValidMax<T>(string name, T source, T max) where T : INumber<T>
+        {
+            if (source is null) return string.Empty;
+            if (source > max) return $"{name} is too long";
+            return string.Empty;
+        }
+        public static string ValidListMin<T>(string name, IEnumerable<T>? source, int min)
+        {
+            if (source is null) return string.Empty;
+            if (source.Count() < min) return $"{name} is too short";
+            return string.Empty;
+        }
+        public static string ValidListMax<T>(string name, IEnumerable<T>? source, int max)
+        {
+            if (source is null) return string.Empty;
+            if (source.Count() > max) return $"{name} is too long";
+            return string.Empty;
+        }
+        public static string ValidList<T>(string name, IEnumerable<T>? source) where T : IValidationCheck
+        {
+            if (source is null || source.Count() == 0) return string.Empty;
+            var sb = new StringBuilder();
+            foreach (var i in source)
+                sb.Append(i.Validation);
+            return sb.ToString();
+        }
+        public static string ValidRequired<T>(string name, T? source)
+        {
+            if (source is null) return $"{name} is required";
+            return string.Empty;
+        }
+        public static string? ValidElement<T>(T? source) 
+        {
+            if (source is null) return string.Empty;
+            if (source is IValidationCheck vc)
+            {
+                return vc.Validation;
+            }
+            return string.Empty;
+        }
+    }
+}

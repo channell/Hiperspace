@@ -1,0 +1,145 @@
+﻿// ---------------------------------------------------------------------------------------
+//                                   Hiperspace
+//                        Copyright (c) 2023, 2024, 2025, 2026 Cepheis Ltd
+//                                    www.cepheis.com
+//
+// This file is part of Hiperspace and is distributed under the GPL Open Source License. 
+// ---------------------------------------------------------------------------------------
+using System.Diagnostics;
+using System.Numerics;
+
+namespace Hiperspace
+{
+    /// <summary>
+    /// Indicates that this element is a fact in a cube
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Class)]
+    public class CubeFactAttribute : Attribute
+    {
+        public CubeFactAttribute(int id) : base() { }
+        public CubeFactAttribute(int id, int drillId) : base() { }
+        public CubeFactAttribute() : base() { }
+    }
+    /// <summary>
+    /// Indicates that this attribute is a reference to cube fact
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+    public class CubeFactReferenceAttribute : Attribute
+    {
+        public CubeFactReferenceAttribute() : base()
+        {
+        }
+    }
+    /// <summary>
+    /// A base Fact stream calculated in Hiperspace.DB
+    /// </summary>
+    public interface ICubeFactBase
+    {
+        /// <summary>
+        /// Set of dimensions for this Cube fact
+        /// </summary>
+        public ISet<ICubeDimension> Dimensions { get; }
+
+        /// <summary>
+        /// Dictionary of measures for this Cube fact
+        /// </summary>
+        public IDictionary<string, (Aggregate, object)> Measures { get; }
+
+        /// <summary>
+        /// Gets the number of underlying facts associated with this cube node.
+        /// </summary>
+        public Int64? Facts { get; }
+
+        /// <summary>
+        /// The Skey of the underlying element
+        /// </summary>
+        public string SKey { get; }
+
+        /// <summary>
+        /// Provide the Drilldown Edges from each dimension to to this fact.
+        /// Provide the Dimension Edges from this fact to each dimension.
+        /// </summary>
+        /// <returns>list of edges</returns>
+        public IEnumerable<Edge> DrillDownEdges();
+    }
+
+    /// <summary>
+    /// An element that provides the CubeFactAttribute 
+    /// </summary>
+    /// <remarks>
+    /// TODO Make ICubeFact a specialization of ICubeFactBase in the next version
+    /// </remarks>
+    public interface ICubeFact
+    {
+        /// <summary>
+        /// The slice of the cube that this fact belongs to.
+        /// If Dimensions are {Customer #1, Product #2} the slice is "1,2"
+        /// </summary>
+        public string CubeSlice { get; }
+
+        /// <summary>
+        /// add this dimension to the cube fact
+        /// </summary>
+        /// <typeparam name="TEntity">type of the dimension</typeparam>
+        /// <param name="dimension">value of the dimension</param>
+        /// <remarks>
+        /// The implementation is expected to update teh CubeSlice if this dimension was not previously added
+        /// </remarks>
+        public void Dimension<TEntity>(TEntity dimension) where TEntity : ICubeDimension;
+
+        /// <summary>
+        /// add this dimension to the fact without knowing (at compile time) the type of the dimension
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="dimension"></param>
+        public void Dimension(Type type, object dimension);
+
+        /// <summary>
+        /// Set of dimensions for this Cube fact
+        /// </summary>
+        public ISet<ICubeDimension> Dimensions { get; }
+
+        /// <summary>
+        /// Dictionary of measures for this Cube fact
+        /// </summary>
+        public IDictionary<string, (Aggregate, object)> Measures { get; }
+
+        /// <summary>
+        /// Calculate the summary using the the drilldown elements, and measure methods 
+        /// </summary>
+        /// <remarks>
+        /// Every Cube (that is not a fact) has a set of drilldown links that can be used to retrieve the 
+        /// underlying facts that can be used to calculate a summary.  Calculation of a fact is the same
+        /// as the fact itself.
+        /// The Drilldown is created by the aggregation process that creates the base fact elements
+        /// method.
+        /// </remarks>
+        public ICubeFact Calculate();
+
+        /// <summary>
+        /// Gets the number of underlying facts associated with this cube node.
+        /// </summary>
+        public Int64? Facts { get; }
+
+        /// <summary>
+        /// Drilldown from the cube/fact to the set associated with the dimension
+        /// </summary>
+        /// <param name="dimension">dimension to drilldown too</param>
+        /// <returns>set of Drilldown Facts</returns>
+        public IEnumerable<ICubeFact> DrillDown(Type dimension);
+
+        /// <summary>
+        /// The Skey of the underlying element
+        /// </summary>
+        public string SKey { get; }
+
+        /// <summary>
+        /// Provide the Drilldown Edges from each dimension to to this fact when there is only one dimension.
+        /// Provide the Dimension Edges from this fact to each dimension when there is only one dimension.
+        /// Provide the Drilldown Edges from more specific cubes to this cube when there are multiple dimensions.
+        /// Provide the Dimension Edges from this cube to more specific cubes when there are multiple dimensions.
+        /// </summary>
+        /// <returns>list of edges</returns>
+        public IEnumerable<Edge> DrillDownEdges();
+    }
+}

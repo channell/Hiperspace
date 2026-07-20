@@ -1,0 +1,153 @@
+﻿// ---------------------------------------------------------------------------------------
+//                                   Hiperspace
+//                        Copyright (c) 2023, 2024, 2025, 2026 Cepheis Ltd
+//                                    www.cepheis.com
+//
+// This file is part of Hiperspace and is distributed under the GPL Open Source License. 
+// ---------------------------------------------------------------------------------------
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+
+namespace Hiperspace.Meta
+{
+    /// <summary>
+    /// Meta Map to process protobuf byte[] buffer transform
+    /// </summary>
+    public struct MetaMap
+    {
+        private (int key, (int member, int key)[] values)[] _map;
+        private (int member, int key)[] _currentMap;
+        private int _current = 0;
+        private Stack<(int key, int poppoint, (int member, int key)[])> _stack;
+        private int _popPoint;
+        private bool _part;
+
+        public MetaMap((int key, (int member, int key)[] values)[] map, int popPoint, bool part = false)
+        {
+            _map = map;
+            _currentMap = map[0].values;
+            _stack = new Stack<(int key, int poppoint, (int member, int key)[])>(popPoint / 2);
+            _popPoint = popPoint;
+            _part = part;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the MetaMap class using the durably stored map
+        /// </summary>
+        /// <param name="map">The MapMap instance used to initialize the internal map structure. Cannot be null.</param>
+        /// <param name="popPoint">The pop point value that determines stack capacity and influences internal state. Must be a positive
+        /// integer.</param>
+        public MetaMap(MapMap map, int popPoint)
+        {
+            _map = map.ToMap();
+            _currentMap = _map[0].values;
+            _stack = new Stack<(int key, int poppoint, (int member, int key)[])>(popPoint / 2);
+            _popPoint = popPoint;
+            _part = false;
+        }
+
+        /// <summary>
+        /// Push the history 
+        /// </summary>
+        /// <param name="key">id number of the element</param>
+        /// <param name="poppoint">length of this node</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Push(int key, int poppoint)
+        {
+            int s = 0, e = _map.Length - 1, m = _map.Length / 2, ls = m, le = m;
+            do
+            {
+                if (_map[s].key == key)
+                {
+                    _stack.Push((_current, _popPoint, _currentMap));
+                    _currentMap = _map[s].values;
+                    _current = _map[s].key;
+                    _popPoint = poppoint;
+                    return true;
+                }
+                else if (_map[e].key == key)
+                {
+                    _stack.Push((_current, _popPoint, _currentMap));
+                    _currentMap = _map[e].values;
+                    _current = _map[e].key;
+                    _popPoint = poppoint;
+                    return true;
+                }
+                else if (key >= _map[m].key)
+                    s = m;
+                else
+                    e = m;
+                m = (s + e) / 2;
+                if (s == ls && e == le)
+                    break;
+                else
+                {
+                    ls = s;
+                    le = e;
+                }
+            }
+            while (s != e);
+            return false;
+        }
+
+        /// <summary>
+        /// Pop the stack if we're past the length of the current node
+        /// </summary>
+        /// <param name="pos">position in the byte[] that we've reached</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void PopIf(int pos)
+        {
+            if (_part)
+            {
+                while (pos >= _popPoint)
+                {
+                    (_current, _popPoint, _) = _stack.Pop();
+                }
+            }
+            else
+            {
+                while (pos > _popPoint)
+                {
+                    (_current, _popPoint, _currentMap) = _stack.Pop();
+                }
+            }
+        }
+
+        /// <summary>
+        /// process the next field within the node
+        /// </summary>
+        /// <param name="member">key of the field</param>
+        /// <param name="poppoint">length of the current node</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Next(int member, int poppoint)
+        {
+            if (_currentMap.Length == 0) return false;
+            int s = 0, e = _currentMap.Length - 1, m = _currentMap.Length / 2, ls = m, le = m;
+            do
+            {
+                if (_currentMap[s].member == member)
+                {
+                    return Push(_currentMap[s].key, poppoint);
+                }
+                else if (_currentMap[e].member == member)
+                {
+                    return Push(_currentMap[e].key, poppoint);
+                }
+                else if (member >= _currentMap[m].member)
+                    s = m;
+                else
+                    e = m;
+                m = (s + e) / 2;
+                if (s == ls && e == le)
+                    break;
+                else
+                {
+                    ls = s;
+                    le = e;
+                }
+            }
+            while (s != e);
+            return false;
+        }
+    }
+}
